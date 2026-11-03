@@ -37129,146 +37129,685 @@
           "steps": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "key": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120
-                },
-                "situation": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 120
-                },
-                "kind": {
-                  "type": "string",
-                  "enum": [
-                    "message"
-                  ]
-                },
-                "position": {
-                  "type": "integer",
-                  "minimum": 1
-                },
-                "channel": {
-                  "type": "string",
-                  "enum": [
-                    "whatsapp",
-                    "same_chat",
-                    "instagram",
-                    "email",
-                    "call",
-                    "sms"
-                  ]
-                },
-                "fallback_channel": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "enum": [
-                    "whatsapp",
-                    "same_chat",
-                    "instagram",
-                    "email",
-                    "call",
-                    "sms"
-                  ]
-                },
-                "wait": {
-                  "oneOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "duration"
-                          ]
-                        },
-                        "value": {
-                          "type": "number"
-                        },
-                        "unit": {
-                          "type": "string",
-                          "enum": [
-                            "minutes",
-                            "hours",
-                            "days"
-                          ]
-                        },
-                        "from": {
-                          "type": "string",
-                          "enum": [
-                            "previous_step",
-                            "start"
-                          ]
-                        },
-                        "from_step": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "hours": {
-                          "type": "number"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "value",
-                        "unit",
-                        "from",
-                        "from_step",
-                        "hours"
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "situation": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 120
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "message"
                       ]
                     },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
+                    "position": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "channel": {
+                      "type": "string",
+                      "enum": [
+                        "whatsapp",
+                        "same_chat",
+                        "instagram",
+                        "email",
+                        "call",
+                        "sms"
+                      ]
+                    },
+                    "fallback_channel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "whatsapp",
+                        "same_chat",
+                        "instagram",
+                        "email",
+                        "call",
+                        "sms"
+                      ]
+                    },
+                    "wait": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "duration"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "unit": {
+                              "type": "string",
+                              "enum": [
+                                "minutes",
+                                "hours",
+                                "days"
+                              ]
+                            },
+                            "from": {
+                              "type": "string",
+                              "enum": [
+                                "previous_step",
+                                "start"
+                              ]
+                            },
+                            "from_step": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "hours": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value",
+                            "unit",
+                            "from",
+                            "from_step",
+                            "hours"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "event": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
                             "event"
                           ]
                         },
-                        "event": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "event"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "agreed_time"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "type"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "before_appointment"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "agreed_time"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type"
                           ]
                         },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "before_appointment"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "unit": {
+                              "type": "string",
+                              "enum": [
+                                "minutes",
+                                "hours",
+                                "days"
+                              ]
+                            },
+                            "hours": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value",
+                            "unit",
+                            "hours"
+                          ],
+                          "description": "Custom sequences: this long before the booked appointment (a reminder). Only with entry `appointment_booked`."
+                        }
+                      ]
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "auto",
+                        "auto_unless_assigned",
+                        "approval",
+                        "skip"
+                      ]
+                    },
+                    "content": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "ai_message"
+                              ]
+                            },
+                            "template_after_window": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "template_after_window"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "template_ladder"
+                              ]
+                            },
+                            "templates": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "templates"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "email"
+                              ]
+                            },
+                            "subject": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "custom_body": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "subject",
+                            "custom_body"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "promise"
+                              ]
+                            },
+                            "followup_id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "trigger_key": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "followup_id",
+                            "trigger_key"
+                          ]
+                        }
+                      ]
+                    },
+                    "config_ref": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "recontacto"
+                              ]
+                            },
+                            "rail": {
+                              "type": "string",
+                              "enum": [
+                                "unanswered_message",
+                                "stalled",
+                                "never_replied",
+                                "lost"
+                              ]
+                            },
+                            "step": {
+                              "type": "integer"
+                            },
+                            "after_hours": {
+                              "type": "number"
+                            },
+                            "unit": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                "d",
+                                "h"
+                              ]
+                            },
+                            "autonomy": {
+                              "type": "string",
+                              "enum": [
+                                "auto",
+                                "assignee",
+                                "approval"
+                              ]
+                            },
+                            "channel": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                "whatsapp",
+                                "instagram",
+                                "email",
+                                "voice"
+                              ]
+                            },
+                            "min_score": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "rail",
+                            "step",
+                            "after_hours",
+                            "unit",
+                            "autonomy",
+                            "channel",
+                            "min_score"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "first_touch"
+                              ]
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "config_origin": {
+                              "type": "string",
+                              "enum": [
+                                "configured",
+                                "inherited",
+                                "platform_default"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "source",
+                            "config_origin"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "followup"
+                              ]
+                            },
+                            "followup_id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "trigger_key": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "followup_id",
+                            "trigger_key"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "custom"
+                              ]
+                            },
+                            "sequence_id": {
+                              "type": "string",
+                              "format": "uuid"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "sequence_id"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Where a built-in step is stored (keep it as read); null for a step added in the draft."
+                    },
+                    "next": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 120,
+                      "description": "Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position."
+                    },
+                    "label": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "situation",
+                    "kind",
+                    "position",
+                    "channel",
+                    "fallback_channel",
+                    "wait",
+                    "mode",
+                    "content",
+                    "config_ref",
+                    "label"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "situation": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 120
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "condition"
+                      ]
+                    },
+                    "position": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "wait": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "duration"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "unit": {
+                              "type": "string",
+                              "enum": [
+                                "minutes",
+                                "hours",
+                                "days"
+                              ]
+                            },
+                            "from": {
+                              "type": "string",
+                              "enum": [
+                                "previous_step",
+                                "start"
+                              ]
+                            },
+                            "from_step": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "hours": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value",
+                            "unit",
+                            "from",
+                            "from_step",
+                            "hours"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "event": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "event"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "agreed_time"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "before_appointment"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "unit": {
+                              "type": "string",
+                              "enum": [
+                                "minutes",
+                                "hours",
+                                "days"
+                              ]
+                            },
+                            "hours": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value",
+                            "unit",
+                            "hours"
+                          ],
+                          "description": "Custom sequences: this long before the booked appointment (a reminder). Only with entry `appointment_booked`."
+                        }
+                      ]
+                    },
+                    "test": {
+                      "type": "string",
+                      "enum": [
+                        "replied",
+                        "paid",
+                        "booked",
+                        "ai_decides",
+                        "call_outcome"
+                      ],
+                      "description": "`replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). `call_outcome` (how the latest AI call step ended: one branch per outcome answered | promised_pay | promised_visit | call_later | no_answer | do_not_contact, 2 to 6, the branch key is the outcome; `default_branch` for an outcome with no branch). The fixed tests (replied, paid, booked) have exactly the branches `yes` and `no`."
+                    },
+                    "ai_prompt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 2000,
+                      "default": null
+                    },
+                    "branches": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SequenceBranch"
+                      },
+                      "minItems": 1,
+                      "maxItems": 6
+                    },
+                    "default_branch": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 60,
+                      "default": null
+                    },
+                    "config_ref": {
+                      "type": "null"
+                    },
+                    "label": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "situation",
+                    "kind",
+                    "position",
+                    "wait",
+                    "test",
+                    "branches",
+                    "label"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "situation": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 120
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "wait_until"
+                      ]
+                    },
+                    "position": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "until": {
+                      "$ref": "#/components/schemas/SequenceWaitUntil"
+                    },
+                    "timeout": {
+                      "type": "object",
+                      "properties": {
                         "value": {
-                          "type": "number"
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 2160
                         },
                         "unit": {
                           "type": "string",
@@ -37277,306 +37816,91 @@
                             "hours",
                             "days"
                           ]
-                        },
-                        "hours": {
-                          "type": "number"
                         }
                       },
                       "required": [
-                        "type",
                         "value",
-                        "unit",
-                        "hours"
-                      ],
-                      "description": "Custom sequences: this long before the booked appointment (a reminder). Only with entry `appointment_booked`."
-                    }
-                  ]
-                },
-                "mode": {
-                  "type": "string",
-                  "enum": [
-                    "auto",
-                    "auto_unless_assigned",
-                    "approval",
-                    "skip"
-                  ]
-                },
-                "content": {
-                  "oneOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "ai_message"
-                          ]
-                        },
-                        "template_after_window": {
-                          "type": "boolean"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "template_after_window"
+                        "unit"
                       ]
                     },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "template_ladder"
-                          ]
-                        },
-                        "templates": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "name": {
-                                "type": "string"
-                              },
-                              "language": {
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "name",
-                              "language"
-                            ]
-                          }
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "templates"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "email"
-                          ]
-                        },
-                        "subject": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "custom_body": {
-                          "type": "boolean"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "subject",
-                        "custom_body"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "promise"
-                          ]
-                        },
-                        "followup_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "trigger_key": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "followup_id",
-                        "trigger_key"
-                      ]
-                    }
-                  ]
-                },
-                "config_ref": {
-                  "oneOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "recontacto"
-                          ]
-                        },
-                        "rail": {
-                          "type": "string",
-                          "enum": [
-                            "unanswered_message",
-                            "stalled",
-                            "never_replied",
-                            "lost"
-                          ]
-                        },
-                        "step": {
-                          "type": "integer"
-                        },
-                        "after_hours": {
-                          "type": "number"
-                        },
-                        "unit": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "enum": [
-                            "d",
-                            "h"
-                          ]
-                        },
-                        "autonomy": {
-                          "type": "string",
-                          "enum": [
-                            "auto",
-                            "assignee",
-                            "approval"
-                          ]
-                        },
-                        "channel": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "enum": [
-                            "whatsapp",
-                            "instagram",
-                            "email",
-                            "voice"
-                          ]
-                        },
-                        "min_score": {
-                          "type": [
-                            "number",
-                            "null"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "rail",
-                        "step",
-                        "after_hours",
-                        "unit",
-                        "autonomy",
-                        "channel",
-                        "min_score"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "first_touch"
-                          ]
-                        },
-                        "source": {
-                          "type": "string"
-                        },
-                        "config_origin": {
-                          "type": "string",
-                          "enum": [
-                            "configured",
-                            "inherited",
-                            "platform_default"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "source",
-                        "config_origin"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "followup"
-                          ]
-                        },
-                        "followup_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "trigger_key": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "followup_id",
-                        "trigger_key"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "custom"
-                          ]
-                        },
-                        "sequence_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "sequence_id"
-                      ]
-                    },
-                    {
+                    "config_ref": {
                       "type": "null"
+                    },
+                    "next": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 120,
+                      "description": "Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position."
+                    },
+                    "label": {
+                      "type": "string"
                     }
-                  ],
-                  "description": "Where a built-in step is stored (keep it as read); null for a step added in the draft."
+                  },
+                  "required": [
+                    "key",
+                    "situation",
+                    "kind",
+                    "position",
+                    "until",
+                    "timeout",
+                    "label"
+                  ]
                 },
-                "next": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 120,
-                  "description": "Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position."
-                },
-                "label": {
-                  "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "situation": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 120
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "goto"
+                      ]
+                    },
+                    "position": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "target_step": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "max_times": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 5,
+                      "default": 2,
+                      "description": "How many times one person takes this jump (default 2, at most 5)."
+                    },
+                    "config_ref": {
+                      "type": "null"
+                    },
+                    "label": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "situation",
+                    "kind",
+                    "position",
+                    "target_step",
+                    "label"
+                  ]
                 }
-              },
-              "required": [
-                "key",
-                "situation",
-                "kind",
-                "position",
-                "channel",
-                "fallback_channel",
-                "wait",
-                "mode",
-                "content",
-                "config_ref",
-                "label"
               ]
             }
           }
@@ -286640,10 +286964,88 @@
                           "label": "Llamada de cobranza"
                         },
                         {
+                          "situation": null,
+                          "config_ref": null,
+                          "key": "call-1-outcome",
+                          "kind": "condition",
+                          "position": 3,
+                          "wait": {
+                            "type": "duration",
+                            "value": 0,
+                            "unit": "hours",
+                            "from": "previous_step",
+                            "from_step": "step-2",
+                            "hours": 0
+                          },
+                          "test": "call_outcome",
+                          "ai_prompt": null,
+                          "branches": [
+                            {
+                              "key": "promised_pay",
+                              "label": "Prometió pagar",
+                              "to": "promise-1-wait"
+                            },
+                            {
+                              "key": "no_answer",
+                              "label": "No contestó",
+                              "to": "step-3"
+                            }
+                          ],
+                          "default_branch": "no_answer",
+                          "label": "¿Cómo salió la llamada?"
+                        },
+                        {
+                          "situation": null,
+                          "config_ref": null,
+                          "key": "promise-1-wait",
+                          "kind": "wait_until",
+                          "position": 4,
+                          "until": {
+                            "kind": "date_field",
+                            "field": "promised_date"
+                          },
+                          "timeout": {
+                            "value": 14,
+                            "unit": "days"
+                          },
+                          "label": "Esperar hasta la fecha prometida"
+                        },
+                        {
+                          "situation": null,
+                          "config_ref": null,
+                          "key": "paid-1",
+                          "kind": "condition",
+                          "position": 5,
+                          "wait": {
+                            "type": "duration",
+                            "value": 1,
+                            "unit": "days",
+                            "from": "previous_step",
+                            "from_step": "promise-1-wait",
+                            "hours": 24
+                          },
+                          "test": "paid",
+                          "ai_prompt": null,
+                          "branches": [
+                            {
+                              "key": "yes",
+                              "label": "Sí",
+                              "to": "end"
+                            },
+                            {
+                              "key": "no",
+                              "label": "No",
+                              "to": "step-3"
+                            }
+                          ],
+                          "default_branch": null,
+                          "label": "¿Pagó?"
+                        },
+                        {
                           "key": "step-3",
                           "situation": null,
                           "kind": "message",
-                          "position": 3,
+                          "position": 6,
                           "channel": "whatsapp",
                           "fallback_channel": null,
                           "wait": {
@@ -286666,7 +287068,7 @@
                           "key": "step-4",
                           "situation": null,
                           "kind": "message",
-                          "position": 4,
+                          "position": 7,
                           "channel": "call",
                           "fallback_channel": null,
                           "wait": {
@@ -286686,10 +287088,88 @@
                           "label": "Segunda llamada"
                         },
                         {
+                          "situation": null,
+                          "config_ref": null,
+                          "key": "call-2-outcome",
+                          "kind": "condition",
+                          "position": 8,
+                          "wait": {
+                            "type": "duration",
+                            "value": 0,
+                            "unit": "hours",
+                            "from": "previous_step",
+                            "from_step": "step-4",
+                            "hours": 0
+                          },
+                          "test": "call_outcome",
+                          "ai_prompt": null,
+                          "branches": [
+                            {
+                              "key": "promised_pay",
+                              "label": "Prometió pagar",
+                              "to": "promise-2-wait"
+                            },
+                            {
+                              "key": "no_answer",
+                              "label": "No contestó",
+                              "to": "step-5"
+                            }
+                          ],
+                          "default_branch": "no_answer",
+                          "label": "¿Cómo salió la llamada?"
+                        },
+                        {
+                          "situation": null,
+                          "config_ref": null,
+                          "key": "promise-2-wait",
+                          "kind": "wait_until",
+                          "position": 9,
+                          "until": {
+                            "kind": "date_field",
+                            "field": "promised_date"
+                          },
+                          "timeout": {
+                            "value": 14,
+                            "unit": "days"
+                          },
+                          "label": "Esperar hasta la fecha prometida"
+                        },
+                        {
+                          "situation": null,
+                          "config_ref": null,
+                          "key": "paid-2",
+                          "kind": "condition",
+                          "position": 10,
+                          "wait": {
+                            "type": "duration",
+                            "value": 1,
+                            "unit": "days",
+                            "from": "previous_step",
+                            "from_step": "promise-2-wait",
+                            "hours": 24
+                          },
+                          "test": "paid",
+                          "ai_prompt": null,
+                          "branches": [
+                            {
+                              "key": "yes",
+                              "label": "Sí",
+                              "to": "end"
+                            },
+                            {
+                              "key": "no",
+                              "label": "No",
+                              "to": "step-5"
+                            }
+                          ],
+                          "default_branch": null,
+                          "label": "¿Pagó?"
+                        },
+                        {
                           "key": "step-5",
                           "situation": null,
                           "kind": "message",
-                          "position": 5,
+                          "position": 11,
                           "channel": "email",
                           "fallback_channel": null,
                           "wait": {

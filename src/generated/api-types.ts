@@ -176951,10 +176951,88 @@ export interface paths {
                          *               "label": "Llamada de cobranza"
                          *             },
                          *             {
+                         *               "situation": null,
+                         *               "config_ref": null,
+                         *               "key": "call-1-outcome",
+                         *               "kind": "condition",
+                         *               "position": 3,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 0,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-2",
+                         *                 "hours": 0
+                         *               },
+                         *               "test": "call_outcome",
+                         *               "ai_prompt": null,
+                         *               "branches": [
+                         *                 {
+                         *                   "key": "promised_pay",
+                         *                   "label": "Prometió pagar",
+                         *                   "to": "promise-1-wait"
+                         *                 },
+                         *                 {
+                         *                   "key": "no_answer",
+                         *                   "label": "No contestó",
+                         *                   "to": "step-3"
+                         *                 }
+                         *               ],
+                         *               "default_branch": "no_answer",
+                         *               "label": "¿Cómo salió la llamada?"
+                         *             },
+                         *             {
+                         *               "situation": null,
+                         *               "config_ref": null,
+                         *               "key": "promise-1-wait",
+                         *               "kind": "wait_until",
+                         *               "position": 4,
+                         *               "until": {
+                         *                 "kind": "date_field",
+                         *                 "field": "promised_date"
+                         *               },
+                         *               "timeout": {
+                         *                 "value": 14,
+                         *                 "unit": "days"
+                         *               },
+                         *               "label": "Esperar hasta la fecha prometida"
+                         *             },
+                         *             {
+                         *               "situation": null,
+                         *               "config_ref": null,
+                         *               "key": "paid-1",
+                         *               "kind": "condition",
+                         *               "position": 5,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "promise-1-wait",
+                         *                 "hours": 24
+                         *               },
+                         *               "test": "paid",
+                         *               "ai_prompt": null,
+                         *               "branches": [
+                         *                 {
+                         *                   "key": "yes",
+                         *                   "label": "Sí",
+                         *                   "to": "end"
+                         *                 },
+                         *                 {
+                         *                   "key": "no",
+                         *                   "label": "No",
+                         *                   "to": "step-3"
+                         *                 }
+                         *               ],
+                         *               "default_branch": null,
+                         *               "label": "¿Pagó?"
+                         *             },
+                         *             {
                          *               "key": "step-3",
                          *               "situation": null,
                          *               "kind": "message",
-                         *               "position": 3,
+                         *               "position": 6,
                          *               "channel": "whatsapp",
                          *               "fallback_channel": null,
                          *               "wait": {
@@ -176977,7 +177055,7 @@ export interface paths {
                          *               "key": "step-4",
                          *               "situation": null,
                          *               "kind": "message",
-                         *               "position": 4,
+                         *               "position": 7,
                          *               "channel": "call",
                          *               "fallback_channel": null,
                          *               "wait": {
@@ -176997,10 +177075,88 @@ export interface paths {
                          *               "label": "Segunda llamada"
                          *             },
                          *             {
+                         *               "situation": null,
+                         *               "config_ref": null,
+                         *               "key": "call-2-outcome",
+                         *               "kind": "condition",
+                         *               "position": 8,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 0,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-4",
+                         *                 "hours": 0
+                         *               },
+                         *               "test": "call_outcome",
+                         *               "ai_prompt": null,
+                         *               "branches": [
+                         *                 {
+                         *                   "key": "promised_pay",
+                         *                   "label": "Prometió pagar",
+                         *                   "to": "promise-2-wait"
+                         *                 },
+                         *                 {
+                         *                   "key": "no_answer",
+                         *                   "label": "No contestó",
+                         *                   "to": "step-5"
+                         *                 }
+                         *               ],
+                         *               "default_branch": "no_answer",
+                         *               "label": "¿Cómo salió la llamada?"
+                         *             },
+                         *             {
+                         *               "situation": null,
+                         *               "config_ref": null,
+                         *               "key": "promise-2-wait",
+                         *               "kind": "wait_until",
+                         *               "position": 9,
+                         *               "until": {
+                         *                 "kind": "date_field",
+                         *                 "field": "promised_date"
+                         *               },
+                         *               "timeout": {
+                         *                 "value": 14,
+                         *                 "unit": "days"
+                         *               },
+                         *               "label": "Esperar hasta la fecha prometida"
+                         *             },
+                         *             {
+                         *               "situation": null,
+                         *               "config_ref": null,
+                         *               "key": "paid-2",
+                         *               "kind": "condition",
+                         *               "position": 10,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "promise-2-wait",
+                         *                 "hours": 24
+                         *               },
+                         *               "test": "paid",
+                         *               "ai_prompt": null,
+                         *               "branches": [
+                         *                 {
+                         *                   "key": "yes",
+                         *                   "label": "Sí",
+                         *                   "to": "end"
+                         *                 },
+                         *                 {
+                         *                   "key": "no",
+                         *                   "label": "No",
+                         *                   "to": "step-5"
+                         *                 }
+                         *               ],
+                         *               "default_branch": null,
+                         *               "label": "¿Pagó?"
+                         *             },
+                         *             {
                          *               "key": "step-5",
                          *               "situation": null,
                          *               "kind": "message",
-                         *               "position": 5,
+                         *               "position": 11,
                          *               "channel": "email",
                          *               "fallback_channel": null,
                          *               "wait": {
@@ -284613,7 +284769,7 @@ export interface components {
                 label: string;
             };
             channels: ("whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms")[];
-            steps: {
+            steps: ({
                 key: string;
                 situation: string | null;
                 /** @enum {string} */
@@ -284709,7 +284865,80 @@ export interface components {
                 /** @description Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position. */
                 next?: string | null;
                 label: string;
-            }[];
+            } | {
+                key: string;
+                situation: string | null;
+                /** @enum {string} */
+                kind: "condition";
+                position: number;
+                wait: {
+                    /** @enum {string} */
+                    type: "duration";
+                    value: number;
+                    /** @enum {string} */
+                    unit: "minutes" | "hours" | "days";
+                    /** @enum {string} */
+                    from: "previous_step" | "start";
+                    from_step: string | null;
+                    hours: number;
+                } | {
+                    /** @enum {string} */
+                    type: "event";
+                    event: string;
+                } | {
+                    /** @enum {string} */
+                    type: "agreed_time";
+                } | {
+                    /** @enum {string} */
+                    type: "before_appointment";
+                    value: number;
+                    /** @enum {string} */
+                    unit: "minutes" | "hours" | "days";
+                    hours: number;
+                };
+                /**
+                 * @description `replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). `call_outcome` (how the latest AI call step ended: one branch per outcome answered | promised_pay | promised_visit | call_later | no_answer | do_not_contact, 2 to 6, the branch key is the outcome; `default_branch` for an outcome with no branch). The fixed tests (replied, paid, booked) have exactly the branches `yes` and `no`.
+                 * @enum {string}
+                 */
+                test: "replied" | "paid" | "booked" | "ai_decides" | "call_outcome";
+                /** @default null */
+                ai_prompt: string | null;
+                branches: components["schemas"]["SequenceBranch"][];
+                /** @default null */
+                default_branch: string | null;
+                config_ref?: null;
+                label: string;
+            } | {
+                key: string;
+                situation: string | null;
+                /** @enum {string} */
+                kind: "wait_until";
+                position: number;
+                until: components["schemas"]["SequenceWaitUntil"];
+                timeout: {
+                    value: number;
+                    /** @enum {string} */
+                    unit: "minutes" | "hours" | "days";
+                };
+                config_ref?: null;
+                /** @description Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position. */
+                next?: string | null;
+                label: string;
+            } | {
+                key: string;
+                situation: string | null;
+                /** @enum {string} */
+                kind: "goto";
+                position: number;
+                target_step: string;
+                /**
+                 * @description How many times one person takes this jump (default 2, at most 5).
+                 * @default 2
+                 */
+                max_times: number;
+                config_ref?: null;
+                label: string;
+            })[];
         };
         SequenceCreateResult: {
             sequence: components["schemas"]["Sequence"];
