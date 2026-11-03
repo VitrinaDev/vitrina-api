@@ -140115,7 +140115,7 @@ export interface paths {
                 query?: {
                     contact_id?: string;
                     state?: "pending" | "partial" | "paid" | "overpaid" | "overdue" | "overdue_partial" | "cancelled" | "waived" | "open";
-                    kind?: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "real_estate_reserva" | "real_estate_pie" | "other";
+                    kind?: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "real_estate_reserva" | "real_estate_pie" | "installment" | "other";
                     group_id?: string;
                     limit?: number;
                     offset?: number | null;
@@ -140312,7 +140312,7 @@ export interface paths {
                         /** Format: uuid */
                         contact_id: string;
                         /** @enum {string} */
-                        kind: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "real_estate_reserva" | "real_estate_pie" | "other";
+                        kind: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "real_estate_reserva" | "real_estate_pie" | "installment" | "other";
                         expected_clp: number;
                         label: string;
                         opened_on?: string;
@@ -141623,6 +141623,1514 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/installment-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List installment plans
+         * @description `payments:read`. Plans newest first, each with its cuotas. Filter by `contact_id` or `external_ref`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    contact_id?: string;
+                    external_ref?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Installment plans */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example [
+                         *       {
+                         *         "id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *         "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *         "label": "Plan de cuotas",
+                         *         "external_ref": "CONTRATO-2291",
+                         *         "currency": "CLP",
+                         *         "count": 6,
+                         *         "total_amount": 510000,
+                         *         "paid_amount": 85000,
+                         *         "outstanding": 425000,
+                         *         "status": "active",
+                         *         "installments": [
+                         *           {
+                         *             "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *             "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *             "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *             "number": 2,
+                         *             "count": 6,
+                         *             "amount": 85000,
+                         *             "currency": "CLP",
+                         *             "due_date": "2026-11-05",
+                         *             "status": "overdue",
+                         *             "ledger_state": "overdue",
+                         *             "paid_amount": 0,
+                         *             "outstanding": 85000,
+                         *             "paid_at": null,
+                         *             "days_overdue": 4,
+                         *             "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *           }
+                         *         ],
+                         *         "created_at": "2026-10-05T14:00:00.000Z"
+                         *       }
+                         *     ]
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create an installment plan
+         * @description `payments:write`. A customer owes money in cuotas. Send the debtor (`contact_id`, or `rut` / `phone` / `email` to find or create them) and either the cuotas (`installments`: amount, due date, optional own `payment_link_url`) or an even `schedule` (`total_amount`, `count`, `first_due_date`: monthly, the last cuota absorbs the rounding). `external_ref` is your own reference (contract, loan): it must be unique (409 otherwise) and is what the import matches on. Amounts are whole CLP. A plan is an obligation group on the payments ledger and each cuota one of its obligations: paid and overdue are derived from payments, never set. Nothing here sends a message: a debtor who is not a contact yet is created silently (no `new_contact` trigger).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "rut": "12.345.678-5",
+                     *       "name": "Marta Rojas",
+                     *       "external_ref": "CONTRATO-2291",
+                     *       "schedule": {
+                     *         "total_amount": 510000,
+                     *         "count": 6,
+                     *         "first_due_date": "2026-10-05"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        contact_id?: string;
+                        name?: string;
+                        phone?: string;
+                        email?: string;
+                        rut?: string;
+                        label?: string;
+                        external_ref?: string;
+                        installments?: {
+                            number?: number;
+                            amount: number;
+                            due_date: string;
+                            /** Format: uri */
+                            payment_link_url?: string | null;
+                        }[];
+                        schedule?: {
+                            total_amount: number;
+                            count: number;
+                            first_due_date: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The plan with its cuotas */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *       "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *       "label": "Plan de cuotas",
+                         *       "external_ref": "CONTRATO-2291",
+                         *       "currency": "CLP",
+                         *       "count": 6,
+                         *       "total_amount": 510000,
+                         *       "paid_amount": 85000,
+                         *       "outstanding": 425000,
+                         *       "status": "active",
+                         *       "installments": [
+                         *         {
+                         *           "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *           "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *           "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *           "number": 2,
+                         *           "count": 6,
+                         *           "amount": 85000,
+                         *           "currency": "CLP",
+                         *           "due_date": "2026-11-05",
+                         *           "status": "overdue",
+                         *           "ledger_state": "overdue",
+                         *           "paid_amount": 0,
+                         *           "outstanding": 85000,
+                         *           "paid_at": null,
+                         *           "days_overdue": 4,
+                         *           "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *         }
+                         *       ],
+                         *       "created_at": "2026-10-05T14:00:00.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/installment-plans/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import cuotas in bulk (JSON)
+         * @description `payments:write`. One row per cuota (`external_ref`, `number`, `amount`, `due_date`, and the debtor as `contact_id` / `rut` / `phone` / `email` + `name`; optional `count`, `payment_link_url`, `label`, `paid_on`). Rows sharing an `external_ref` are one plan. **Idempotent on `external_ref`**: the same rows again change nothing; a new amount, date or link updates a cuota that is still owing; `paid_on` marks it paid; a paid cuota never moves. Up to 2000 rows. Row problems are listed in `errors` and do not stop the rest. Nothing here sends a message: a debtor who is not a contact yet is created silently (no `new_contact` trigger).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "rows": [
+                     *         {
+                     *           "external_ref": "CONTRATO-2291",
+                     *           "number": 1,
+                     *           "count": 6,
+                     *           "amount": 85000,
+                     *           "due_date": "2026-10-05",
+                     *           "rut": "12.345.678-5",
+                     *           "name": "Marta Rojas",
+                     *           "paid_on": "2026-10-04"
+                     *         },
+                     *         {
+                     *           "external_ref": "CONTRATO-2291",
+                     *           "number": 2,
+                     *           "amount": 85000,
+                     *           "due_date": "2026-11-05",
+                     *           "rut": "12.345.678-5"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        rows: {
+                            /** Format: uuid */
+                            contact_id?: string;
+                            name?: string;
+                            phone?: string;
+                            email?: string;
+                            rut?: string;
+                            external_ref: string;
+                            number: number;
+                            count?: number | null;
+                            amount: number;
+                            due_date: string;
+                            /** Format: uri */
+                            payment_link_url?: string | null;
+                            label?: string | null;
+                            paid_on?: string | null;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description What the import did */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "total_rows": 6,
+                         *       "plans_created": 1,
+                         *       "plans_updated": 0,
+                         *       "installments_created": 6,
+                         *       "installments_updated": 0,
+                         *       "installments_unchanged": 0,
+                         *       "marked_paid": 1,
+                         *       "contacts_created": 1,
+                         *       "errors": []
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/installment-plans/import-file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import cuotas from a CSV file
+         * @description `payments:write`. The same import as `POST /installment-plans/import`, from a CSV (`file`, up to 5 MB). Headers (Spanish or English): `external_ref`/`referencia`, `number`/`cuota`, `amount`/`monto`, `due_date`/`vencimiento`, and optional `count`, `rut`, `phone`/`telefono`, `email`/`correo`, `name`/`nombre`, `contact_id`, `payment_link_url`/`link_pago`, `label`, `paid_on`/`pagado_el`. Comma or semicolon separated; pesos as `$85.000`; dates as `2026-11-05` or `05/11/2026`. Nothing here sends a message: a debtor who is not a contact yet is created silently (no `new_contact` trigger).
+         *
+         *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary CSV part)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        file?: unknown;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "cuotas.csv",
+                     *       "content": "external_ref,number,amount,due_date,rut,name\nCONTRATO-2291,1,85000,2026-10-05,12.345.678-5,Marta Rojas"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description What the import did */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "total_rows": 6,
+                         *       "plans_created": 1,
+                         *       "plans_updated": 0,
+                         *       "installments_created": 6,
+                         *       "installments_updated": 0,
+                         *       "installments_unchanged": 0,
+                         *       "marked_paid": 1,
+                         *       "contacts_created": 1,
+                         *       "errors": []
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/installment-plans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fetch one installment plan
+         * @description `payments:read`. The plan with every cuota, its status and what is still owed.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *       "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *       "label": "Plan de cuotas",
+                         *       "external_ref": "CONTRATO-2291",
+                         *       "currency": "CLP",
+                         *       "count": 6,
+                         *       "total_amount": 510000,
+                         *       "paid_amount": 85000,
+                         *       "outstanding": 425000,
+                         *       "status": "active",
+                         *       "installments": [
+                         *         {
+                         *           "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *           "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *           "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *           "number": 2,
+                         *           "count": 6,
+                         *           "amount": 85000,
+                         *           "currency": "CLP",
+                         *           "due_date": "2026-11-05",
+                         *           "status": "overdue",
+                         *           "ledger_state": "overdue",
+                         *           "paid_amount": 0,
+                         *           "outstanding": 85000,
+                         *           "paid_at": null,
+                         *           "days_overdue": 4,
+                         *           "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *         }
+                         *       ],
+                         *       "created_at": "2026-10-05T14:00:00.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rename an installment plan
+         * @description `payments:write`. Changes the plan label.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "label": "Plan matrícula 2027"
+                     *     }
+                     */
+                    "application/json": {
+                        label: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *       "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *       "label": "Plan de cuotas",
+                         *       "external_ref": "CONTRATO-2291",
+                         *       "currency": "CLP",
+                         *       "count": 6,
+                         *       "total_amount": 510000,
+                         *       "paid_amount": 85000,
+                         *       "outstanding": 425000,
+                         *       "status": "active",
+                         *       "installments": [
+                         *         {
+                         *           "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *           "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *           "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *           "number": 2,
+                         *           "count": 6,
+                         *           "amount": 85000,
+                         *           "currency": "CLP",
+                         *           "due_date": "2026-11-05",
+                         *           "status": "overdue",
+                         *           "ledger_state": "overdue",
+                         *           "paid_amount": 0,
+                         *           "outstanding": 85000,
+                         *           "paid_at": null,
+                         *           "days_overdue": 4,
+                         *           "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *         }
+                         *       ],
+                         *       "created_at": "2026-10-05T14:00:00.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/installment-plans/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an installment plan
+         * @description `payments:write`. Cancels every cuota still owing (money already paid stays) and ends the person's collection sequence. Needs a `reason`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "Se refinanció la deuda"
+                     *     }
+                     */
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *       "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *       "label": "Plan de cuotas",
+                         *       "external_ref": "CONTRATO-2291",
+                         *       "currency": "CLP",
+                         *       "count": 6,
+                         *       "total_amount": 510000,
+                         *       "paid_amount": 85000,
+                         *       "outstanding": 425000,
+                         *       "status": "active",
+                         *       "installments": [
+                         *         {
+                         *           "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *           "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *           "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *           "number": 2,
+                         *           "count": 6,
+                         *           "amount": 85000,
+                         *           "currency": "CLP",
+                         *           "due_date": "2026-11-05",
+                         *           "status": "overdue",
+                         *           "ledger_state": "overdue",
+                         *           "paid_amount": 0,
+                         *           "outstanding": 85000,
+                         *           "paid_at": null,
+                         *           "days_overdue": 4,
+                         *           "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *         }
+                         *       ],
+                         *       "created_at": "2026-10-05T14:00:00.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/installments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List cuotas
+         * @description `payments:read`. Cuotas across plans. `status` is `pending`, `paid`, `overdue` (past the due day and still owing) or `cancelled`; it is derived from payments, so filtering on it reads a bounded window of 500. Filter by `contact_id` or `plan_id`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    contact_id?: string;
+                    plan_id?: string;
+                    status?: "pending" | "paid" | "overdue" | "cancelled";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cuotas */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example [
+                         *       {
+                         *         "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *         "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *         "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *         "number": 2,
+                         *         "count": 6,
+                         *         "amount": 85000,
+                         *         "currency": "CLP",
+                         *         "due_date": "2026-11-05",
+                         *         "status": "overdue",
+                         *         "ledger_state": "overdue",
+                         *         "paid_amount": 0,
+                         *         "outstanding": 85000,
+                         *         "paid_at": null,
+                         *         "days_overdue": 4,
+                         *         "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *       }
+                         *     ]
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/installments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fetch one cuota
+         * @description `payments:read`. One cuota with its status, what is owed and its payment link.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cuota */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *       "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *       "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *       "number": 2,
+                         *       "count": 6,
+                         *       "amount": 85000,
+                         *       "currency": "CLP",
+                         *       "due_date": "2026-11-05",
+                         *       "status": "overdue",
+                         *       "ledger_state": "overdue",
+                         *       "paid_amount": 0,
+                         *       "outstanding": 85000,
+                         *       "paid_at": null,
+                         *       "days_overdue": 4,
+                         *       "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change a cuota
+         * @description `payments:write`. Amount, due date and/or the payment link. Amount and date only while the cuota is open; changes are audited with `reason`. `payment_link_url: null` removes the link.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "due_date": "2026-11-20",
+                     *       "reason": "Pidió más plazo"
+                     *     }
+                     */
+                    "application/json": {
+                        amount?: number;
+                        due_date?: string;
+                        /** Format: uri */
+                        payment_link_url?: string | null;
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The cuota */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *       "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *       "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *       "number": 2,
+                         *       "count": 6,
+                         *       "amount": 85000,
+                         *       "currency": "CLP",
+                         *       "due_date": "2026-11-05",
+                         *       "status": "overdue",
+                         *       "ledger_state": "overdue",
+                         *       "paid_amount": 0,
+                         *       "outstanding": 85000,
+                         *       "paid_at": null,
+                         *       "days_overdue": 4,
+                         *       "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/installments/{id}/mark-paid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a cuota paid
+         * @description `payments:write`. Records a payment for what is still owed on the cuota (`instrument` default `otro`, `paid_on` default today) and ends the person's collection sequence with the goal met. Already paid: nothing changes. A cancelled cuota answers 409.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "paid_on": "2026-11-09",
+                     *       "instrument": "transferencia"
+                     *     }
+                     */
+                    "application/json": {
+                        paid_on?: string;
+                        /** @enum {string} */
+                        instrument?: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | "bancame";
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The cuota */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *       "plan_id": "0192f0b2-0000-7000-8000-00000000c000",
+                         *       "contact_id": "0192f0b2-0000-7000-8000-00000000a001",
+                         *       "number": 2,
+                         *       "count": 6,
+                         *       "amount": 85000,
+                         *       "currency": "CLP",
+                         *       "due_date": "2026-11-05",
+                         *       "status": "paid",
+                         *       "ledger_state": "overdue",
+                         *       "paid_amount": 0,
+                         *       "outstanding": 85000,
+                         *       "paid_at": null,
+                         *       "days_overdue": 4,
+                         *       "payment_link_url": "https://pagos.ejemplo.cl/c/8842"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -165131,6 +166639,7 @@ export interface paths {
                          *             "label": "Agenda visita"
                          *           },
                          *           "agent_id": null,
+                         *           "collection": false,
                          *           "priority": 4,
                          *           "situations": [],
                          *           "steps": [
@@ -165571,6 +167080,7 @@ export interface paths {
                          *               "label": "Agenda visita"
                          *             },
                          *             "agent_id": null,
+                         *             "collection": false,
                          *             "priority": 4,
                          *             "situations": [],
                          *             "steps": [
@@ -166983,6 +168493,7 @@ export interface paths {
                          *             "label": "Agenda visita"
                          *           },
                          *           "agent_id": null,
+                         *           "collection": false,
                          *           "priority": 4,
                          *           "situations": [],
                          *           "steps": [
@@ -167423,6 +168934,7 @@ export interface paths {
                          *               "label": "Agenda visita"
                          *             },
                          *             "agent_id": null,
+                         *             "collection": false,
                          *             "priority": 4,
                          *             "situations": [],
                          *             "steps": [
@@ -167767,7 +169279,7 @@ export interface paths {
         put?: never;
         /**
          * Simulate what one customer will receive
-         * @description Walks «Si no responde» for ONE person: a real `contact_id` or a test `persona` (`has_whatsapp`, `has_email` optional, `opted_out`), from the moment our last message went out (`last_message_at`), with what the customer does (`behavior`: `never_replies`, `replies_after_step`; `pays` and `promises_date` are collections behaviors and are no-ops for sequences without payment steps). Returns the `timeline` (each step with the moment the ladder draws it, `planned_at`, and the moment the engine really sends it after contact hours and pacing, `shifted_at`, with `shift_reason`, a `preview` when a stored draft or approved template exists, and a `status`) and the real `end` reason: replied, end_of_sequence, marked_lost, no_fitting_approved_message, no_channel_left, message_limit_reached or opted_out. It is the same simulation `GET /followups/recontacto/plan` renders, so it follows the engine’s rules (contact hours from 9:00, the 24 h WhatsApp window, per-person limits, opt-out). Deterministic: no model call, nothing is sent or stored. `version` is `published` (default), `draft` (the open draft, `GET /sequences/{id}/draft`) or a version id (`GET /sequences/{id}/versions`). `builtin:si-no-responde` and custom sequences are simulable (a custom sequence walks its own steps through the same engine rules; steps timed before an appointment are listed in `notes`). Custom sequences with conditions, waits until and loops follow the scenario: `replies_after_step` → the `yes` branch of «¿Respondió?» (a reply ends the sequence only when its goal is a reply), `pays` → «¿Pagó?», `promises_date` → «Esperar hasta la fecha prometida» ends that day; `decisions` (`{step key or id: branch key}`) picks any condition’s branch, and «La IA decide» is never called here (without a decision it takes its first branch). The response then carries `path` (every step passed, the branch taken, loop laps) and timeline entries met again in a loop carry `iteration`. Requires `followups:read`.
+         * @description Walks «Si no responde» for ONE person: a real `contact_id` or a test `persona` (`has_whatsapp`, `has_email` optional, `opted_out`), from the moment our last message went out (`last_message_at`), with what the customer does (`behavior`: `never_replies`, `replies_after_step`; `pays` and `promises_date` are collections behaviors and are no-ops for sequences without payment steps). AI call steps end as `call_outcomes` says (`{step_id: outcome}`, default `no_answer`; nothing is called and no model runs). Returns the `timeline` (each step with the moment the ladder draws it, `planned_at`, and the moment the engine really sends it after contact hours and pacing, `shifted_at`, with `shift_reason`, a `preview` when a stored draft or approved template exists, and a `status`) and the real `end` reason: replied, end_of_sequence, marked_lost, no_fitting_approved_message, no_channel_left, message_limit_reached or opted_out. It is the same simulation `GET /followups/recontacto/plan` renders, so it follows the engine’s rules (contact hours from 9:00, the 24 h WhatsApp window, per-person limits, opt-out). Deterministic: no model call, nothing is sent or stored. `version` is `published` (default), `draft` (the open draft, `GET /sequences/{id}/draft`) or a version id (`GET /sequences/{id}/versions`). `builtin:si-no-responde` and custom sequences are simulable (a custom sequence walks its own steps through the same engine rules; steps timed before an appointment are listed in `notes`). Custom sequences with conditions, waits until and loops follow the scenario: `replies_after_step` → the `yes` branch of «¿Respondió?» (a reply ends the sequence only when its goal is a reply), `pays` → «¿Pagó?», `promises_date` → «Esperar hasta la fecha prometida» ends that day; `decisions` (`{step key or id: branch key}`) picks any condition’s branch, and «La IA decide» is never called here (without a decision it takes its first branch). The response then carries `path` (every step passed, the branch taken, loop laps) and timeline entries met again in a loop carry `iteration`. Requires `followups:read`.
          */
         post: {
             parameters: {
@@ -172420,6 +173932,534 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/collection-rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Collection rules of the workspace
+         * @description The days, hours and caps collection sequences obey on top of the shared guards (contact hours, per-person limits): `weekdays`, the `hours` window, `calls_per_day`, `calls_per_week`, `messages_per_week`, `min_spacing_hours` and `over_cap` (`skip` or `move`). The defaults are the limits of Ley 19.496 art. 37 (Ley 21.320) and CPC art. 59: Monday to Saturday except holidays, 08:00 to 20:00, one call per week, two messages per week at least 48 h apart. `ceilings` are those legal limits: a workspace may be stricter, never looser. `version` is 0 until the rules are saved. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The rules */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "rules": {
+                         *           "weekdays": [
+                         *             1,
+                         *             2,
+                         *             3,
+                         *             4,
+                         *             5,
+                         *             6
+                         *           ],
+                         *           "hours": {
+                         *             "start": "08:00",
+                         *             "end": "20:00"
+                         *           },
+                         *           "skip_holidays": true,
+                         *           "calls_per_day": 1,
+                         *           "calls_per_week": 1,
+                         *           "messages_per_week": 2,
+                         *           "min_spacing_hours": 48,
+                         *           "over_cap": "skip"
+                         *         },
+                         *         "version": 3,
+                         *         "is_default": false,
+                         *         "updated_at": "2027-03-02T14:20:00.000Z",
+                         *         "updated_by": {
+                         *           "kind": "user",
+                         *           "id": "0192f0b2-0000-7000-8000-00000000a001"
+                         *         },
+                         *         "ceilings": {
+                         *           "weekdays": [
+                         *             1,
+                         *             2,
+                         *             3,
+                         *             4,
+                         *             5,
+                         *             6
+                         *           ],
+                         *           "hours": {
+                         *             "start": "08:00",
+                         *             "end": "20:00"
+                         *           },
+                         *           "calls_per_day": 1,
+                         *           "calls_per_week": 1,
+                         *           "messages_per_week": 2,
+                         *           "min_spacing_hours": 48
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CollectionRulesView"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Replace the collection rules
+         * @description Replaces the rules (fields left out take the platform defaults). 422 `VALIDATION_ERROR` with `details.problems` when a value is looser than the law allows. A real change raises `version`, which makes every recorded legal review outdated: collection sequences need a new review before they publish again. Saving the rules already in force changes nothing. Requires `followups:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "messages_per_week": 1,
+                     *       "hours": {
+                     *         "start": "09:00",
+                     *         "end": "19:00"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CollectionRulesReplaceRequest"];
+                };
+            };
+            responses: {
+                /** @description The rules */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "rules": {
+                         *           "weekdays": [
+                         *             1,
+                         *             2,
+                         *             3,
+                         *             4,
+                         *             5,
+                         *             6
+                         *           ],
+                         *           "hours": {
+                         *             "start": "09:00",
+                         *             "end": "19:00"
+                         *           },
+                         *           "skip_holidays": true,
+                         *           "calls_per_day": 1,
+                         *           "calls_per_week": 1,
+                         *           "messages_per_week": 1,
+                         *           "min_spacing_hours": 48,
+                         *           "over_cap": "skip"
+                         *         },
+                         *         "version": 3,
+                         *         "is_default": false,
+                         *         "updated_at": "2027-03-02T14:20:00.000Z",
+                         *         "updated_by": {
+                         *           "kind": "user",
+                         *           "id": "0192f0b2-0000-7000-8000-00000000a001"
+                         *         },
+                         *         "ceilings": {
+                         *           "weekdays": [
+                         *             1,
+                         *             2,
+                         *             3,
+                         *             4,
+                         *             5,
+                         *             6
+                         *           ],
+                         *           "hours": {
+                         *             "start": "08:00",
+                         *             "end": "20:00"
+                         *           },
+                         *           "calls_per_day": 1,
+                         *           "calls_per_week": 1,
+                         *           "messages_per_week": 2,
+                         *           "min_spacing_hours": 48
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CollectionRulesView"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/legal-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Where the legal review of a collection sequence stands
+         * @description `status`: `not_required` (not a collection sequence), `missing`, `valid` (recorded against the current rules version) or `outdated` (the rules changed since). `review` is the newest recorded one. Publishing a collection sequence is refused with `review_required` unless the status is `valid`. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The review state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sequence_id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *         "required": true,
+                         *         "status": "valid",
+                         *         "rules_version": 3,
+                         *         "review": {
+                         *           "id": "0192f0b2-0000-7000-8000-00000000d001",
+                         *           "reviewer_member_id": "0192f0b2-0000-7000-8000-00000000a002",
+                         *           "reviewed_on": "2027-03-02",
+                         *           "note": "Revisado con la abogada del estudio",
+                         *           "attachment_url": "https://docs.ejemplo.cl/opinion-legal.pdf",
+                         *           "rules_version": 3,
+                         *           "created_at": "2027-03-02T14:25:00.000Z",
+                         *           "created_by": {
+                         *             "kind": "user",
+                         *             "id": "0192f0b2-0000-7000-8000-00000000a001"
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceLegalReview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Record the legal review of a collection sequence
+         * @description Records who reviewed the sequence and the rules (`reviewer_member_id`, `reviewed_on`, a `note` and/or an `attachment_url`) against the current rules version, which clears the `review_required` blocker. Append-only: the history is kept. 422 for a sequence that is not a collection sequence; 409 `rules_version_stale` when `rules_version` is no longer current. Requires `followups:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reviewer_member_id": "0192f0b2-0000-7000-8000-00000000a002",
+                     *       "reviewed_on": "2027-03-02",
+                     *       "note": "Revisado con la abogada del estudio",
+                     *       "attachment_url": "https://docs.ejemplo.cl/opinion-legal.pdf"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SequenceLegalReviewRequest"];
+                };
+            };
+            responses: {
+                /** @description The review state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sequence_id": "0192f0b2-0000-7000-8000-00000000c001",
+                         *         "required": true,
+                         *         "status": "valid",
+                         *         "rules_version": 3,
+                         *         "review": {
+                         *           "id": "0192f0b2-0000-7000-8000-00000000d001",
+                         *           "reviewer_member_id": "0192f0b2-0000-7000-8000-00000000a002",
+                         *           "reviewed_on": "2027-03-02",
+                         *           "note": "Revisado con la abogada del estudio",
+                         *           "attachment_url": "https://docs.ejemplo.cl/opinion-legal.pdf",
+                         *           "rules_version": 3,
+                         *           "created_at": "2027-03-02T14:25:00.000Z",
+                         *           "created_by": {
+                         *             "kind": "user",
+                         *             "id": "0192f0b2-0000-7000-8000-00000000a001"
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceLegalReview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -281629,10 +283669,10 @@ export interface components {
             } | null;
             at_hours: number | null;
             /**
-             * @description `replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). The fixed tests have exactly the branches `yes` and `no`.
+             * @description `replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). `call_outcome` (how the latest AI call step ended: one branch per outcome answered | promised_pay | promised_visit | call_later | no_answer | do_not_contact, 2 to 6, the branch key is the outcome; `default_branch` for an outcome with no branch). The fixed tests (replied, paid, booked) have exactly the branches `yes` and `no`.
              * @enum {string}
              */
-            test: "replied" | "paid" | "booked" | "ai_decides";
+            test: "replied" | "paid" | "booked" | "ai_decides" | "call_outcome";
             ai_prompt: string | null;
             branches: components["schemas"]["SequenceBranch"][];
             default_branch: string | null;
@@ -281818,13 +283858,22 @@ export interface components {
                 type: "event";
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
-                filters: {
+                filters: ({
                     /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
                     values: string[];
-                }[];
+                } | {
+                    /**
+                     * @description Only for the `installment_overdue` entry: `days_overdue` (days past the due day) or `amount` (pesos still owed), at least `value`.
+                     * @enum {string}
+                     */
+                    field: "days_overdue" | "amount";
+                    /** @enum {string} */
+                    op: "gte";
+                    value: number;
+                })[];
             } | {
                 /** @enum {string} */
                 type: "list";
@@ -281838,6 +283887,8 @@ export interface components {
             };
             /** Format: uuid */
             agent_id: string | null;
+            /** @description A collection sequence (Cobranza): it obeys the workspace’s collection rules (`GET /sequences/collection-rules`) and needs a recorded legal review to publish (`POST /sequences/{id}/legal-review`). True for the «Cobranza de cuotas» template, an entry of `installment_overdue` or a goal of `pays`. */
+            collection: boolean;
             priority: number;
             situations: {
                 key: string;
@@ -281900,6 +283951,11 @@ export interface components {
                 updated_at: string;
             } | null;
         };
+        /**
+         * @description AI call steps only: the outcome the scenario supplied (default no_answer).
+         * @enum {string}
+         */
+        SequenceCallOutcome: "answered" | "promised_pay" | "promised_visit" | "call_later" | "no_answer" | "do_not_contact";
         SequenceSimulation: {
             timeline: {
                 /** Format: uuid */
@@ -281912,16 +283968,22 @@ export interface components {
                 /** Format: date-time */
                 shifted_at: string;
                 /** @enum {string} */
-                shift_reason?: "outside_contact_hours" | "previous_late" | "unanswered_hold" | "agreed_reminder" | "min_gap" | "max_per_day" | "automated_gap" | "person_ceiling" | "appointment_soon" | "daily_cap";
+                shift_reason?: "outside_contact_hours" | "previous_late" | "unanswered_hold" | "agreed_reminder" | "min_gap" | "max_per_day" | "automated_gap" | "person_ceiling" | "appointment_soon" | "daily_cap" | "non_collection_day" | "holiday" | "outside_collection_hours" | "min_spacing" | "calls_per_day" | "calls_per_week" | "messages_per_week";
+                /**
+                 * @description Why the collection rules skipped the step (status `skipped_by_collection_rules`).
+                 * @enum {string}
+                 */
+                skip_reason?: "non_collection_day" | "holiday" | "outside_collection_hours" | "min_spacing" | "calls_per_day" | "calls_per_week" | "messages_per_week";
                 preview?: string;
+                call_outcome?: components["schemas"]["SequenceCallOutcome"];
                 /** @enum {string} */
-                status: "sends" | "awaits_approval" | "skipped_no_channel" | "skipped_no_template";
+                status: "sends" | "awaits_approval" | "skipped_no_channel" | "skipped_no_template" | "skipped_by_collection_rules";
                 /** @description Custom sequences: 2 on the first lap back through a loop, 3 on the next (absent = first pass). */
                 iteration?: number;
             }[];
             end: {
                 /** @enum {string} */
-                reason: "replied" | "end_of_sequence" | "marked_lost" | "no_fitting_approved_message" | "no_channel_left" | "message_limit_reached" | "opted_out";
+                reason: "replied" | "paid" | "end_of_sequence" | "marked_lost" | "no_fitting_approved_message" | "no_channel_left" | "blocked_by_collection_rules" | "message_limit_reached" | "opted_out";
                 /** Format: uuid */
                 at_step?: string;
                 /** Format: date-time */
@@ -281986,6 +284048,10 @@ export interface components {
             };
             /** @description `published` (default), `draft` (the open draft) or a version id from `GET /sequences/{id}/versions`. */
             version?: string;
+            /** @description AI call steps: how each call ends in this scenario, keyed by step id. A call step not named ends `no_answer`. Nothing is called and no model runs; `do_not_contact` ends the walk at that call. */
+            call_outcomes?: {
+                [key: string]: components["schemas"]["SequenceCallOutcome"] & unknown;
+            };
             /** @description Custom sequences: the branch each condition takes, `{ <step key or step id>: <branch key> }`. «La IA decide» is never called in a simulation; without an entry it takes its first branch. Other conditions follow `behavior` unless listed here. */
             decisions?: {
                 [key: string]: string;
@@ -282119,10 +284185,10 @@ export interface components {
                 hours: number;
             };
             /**
-             * @description `replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). The fixed tests have exactly the branches `yes` and `no`.
+             * @description `replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). `call_outcome` (how the latest AI call step ended: one branch per outcome answered | promised_pay | promised_visit | call_later | no_answer | do_not_contact, 2 to 6, the branch key is the outcome; `default_branch` for an outcome with no branch). The fixed tests (replied, paid, booked) have exactly the branches `yes` and `no`.
              * @enum {string}
              */
-            test: "replied" | "paid" | "booked" | "ai_decides";
+            test: "replied" | "paid" | "booked" | "ai_decides" | "call_outcome";
             /** @default null */
             ai_prompt: string | null;
             branches: components["schemas"]["SequenceBranch"][];
@@ -282168,13 +284234,22 @@ export interface components {
                 type: "event";
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
-                filters: {
+                filters: ({
                     /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
                     values: string[];
-                }[];
+                } | {
+                    /**
+                     * @description Only for the `installment_overdue` entry: `days_overdue` (days past the due day) or `amount` (pesos still owed), at least `value`.
+                     * @enum {string}
+                     */
+                    field: "days_overdue" | "amount";
+                    /** @enum {string} */
+                    op: "gte";
+                    value: number;
+                })[];
             } | {
                 /** @enum {string} */
                 type: "list";
@@ -282187,6 +284262,8 @@ export interface components {
             };
             /** Format: uuid */
             agent_id: string | null;
+            /** @description Mark the sequence as a collection sequence. Optional (false when left out); an entry of `installment_overdue` or a goal of `pays` makes it one anyway. */
+            collection?: boolean;
             priority: number;
             situations: {
                 key: string;
@@ -282362,6 +284439,105 @@ export interface components {
             blockers: components["schemas"]["SequenceValidationProblem"][];
             warnings: components["schemas"]["SequenceValidationProblem"][];
         };
+        CollectionRules: {
+            /** @description Days collection may contact, ISO (1 = Monday … 7 = Sunday). Sunday is never allowed. */
+            weekdays: number[];
+            /** @description Local window (workspace time zone), start inclusive, end exclusive. */
+            hours: {
+                start: string;
+                end: string;
+            };
+            /** @description National public holidays never allow a contact. Must be true. */
+            skip_holidays: boolean;
+            calls_per_day: number;
+            calls_per_week: number;
+            messages_per_week: number;
+            min_spacing_hours: number;
+            /**
+             * @description `skip` drops a step that would go over a cap; `move` pushes it to the next week.
+             * @enum {string}
+             */
+            over_cap: "skip" | "move";
+        };
+        CollectionRulesView: {
+            rules: components["schemas"]["CollectionRules"];
+            /** @description 0 = the platform defaults, never saved. Goes up on every real change; a legal review names the version it reviewed. */
+            version: number;
+            is_default: boolean;
+            updated_at: string | null;
+            updated_by: {
+                kind: string | null;
+                id: string | null;
+                via?: string | null;
+            } | null;
+            ceilings: {
+                weekdays: number[];
+                hours: {
+                    start: string;
+                    end: string;
+                };
+                calls_per_day: number;
+                calls_per_week: number;
+                messages_per_week: number;
+                min_spacing_hours: number;
+            };
+        };
+        CollectionRulesReplaceRequest: {
+            /** @description Days collection may contact, ISO (1 = Monday … 7 = Sunday). Sunday is never allowed. */
+            weekdays?: number[];
+            /** @description Local window (workspace time zone), start inclusive, end exclusive. */
+            hours?: {
+                start: string;
+                end: string;
+            };
+            /** @description National public holidays never allow a contact. Must be true. */
+            skip_holidays?: boolean;
+            calls_per_day?: number;
+            calls_per_week?: number;
+            messages_per_week?: number;
+            min_spacing_hours?: number;
+            /**
+             * @description `skip` drops a step that would go over a cap; `move` pushes it to the next week.
+             * @enum {string}
+             */
+            over_cap?: "skip" | "move";
+        };
+        SequenceLegalReview: {
+            /** Format: uuid */
+            sequence_id: string;
+            /** @description True for a collection sequence. */
+            required: boolean;
+            /** @enum {string} */
+            status: "not_required" | "missing" | "valid" | "outdated";
+            rules_version: number;
+            review: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                reviewer_member_id: string;
+                reviewed_on: string;
+                note: string | null;
+                attachment_url: string | null;
+                rules_version: number;
+                created_at: string;
+                created_by: {
+                    kind: string | null;
+                    id: string | null;
+                    via?: string | null;
+                } | null;
+            } | null;
+        };
+        SequenceLegalReviewRequest: {
+            /** Format: uuid */
+            reviewer_member_id: string;
+            /** @description Day of the review (YYYY-MM-DD). Default today; not in the future. */
+            reviewed_on?: string;
+            note?: string | null;
+            /** Format: uri */
+            attachment_url?: string | null;
+            /** @description The rules version the reviewer looked at. 409 `rules_version_stale` when the rules changed since; default the current version. */
+            rules_version?: number;
+        };
         SequencePublishResult: {
             /** Format: uuid */
             sequence_id: string;
@@ -282409,13 +284585,22 @@ export interface components {
                 type: "event";
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
-                filters: {
+                filters: ({
                     /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
                     values: string[];
-                }[];
+                } | {
+                    /**
+                     * @description Only for the `installment_overdue` entry: `days_overdue` (days past the due day) or `amount` (pesos still owed), at least `value`.
+                     * @enum {string}
+                     */
+                    field: "days_overdue" | "amount";
+                    /** @enum {string} */
+                    op: "gte";
+                    value: number;
+                })[];
             } | {
                 /** @enum {string} */
                 type: "list";
@@ -282543,13 +284728,22 @@ export interface components {
                 type: "event";
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
-                filters: {
+                filters: ({
                     /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
                     values: string[];
-                }[];
+                } | {
+                    /**
+                     * @description Only for the `installment_overdue` entry: `days_overdue` (days past the due day) or `amount` (pesos still owed), at least `value`.
+                     * @enum {string}
+                     */
+                    field: "days_overdue" | "amount";
+                    /** @enum {string} */
+                    op: "gte";
+                    value: number;
+                })[];
             } | {
                 /** @enum {string} */
                 type: "list";
@@ -282574,13 +284768,22 @@ export interface components {
                 type: "event";
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
-                filters: {
+                filters: ({
                     /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
                     values: string[];
-                }[];
+                } | {
+                    /**
+                     * @description Only for the `installment_overdue` entry: `days_overdue` (days past the due day) or `amount` (pesos still owed), at least `value`.
+                     * @enum {string}
+                     */
+                    field: "days_overdue" | "amount";
+                    /** @enum {string} */
+                    op: "gte";
+                    value: number;
+                })[];
             } | {
                 /** @enum {string} */
                 type: "list";
