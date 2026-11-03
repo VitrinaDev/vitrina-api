@@ -30065,7 +30065,9 @@ export interface paths {
                      *     }
                      */
                     "application/json": {
-                        name: string;
+                        name?: string;
+                        first_name?: string | null;
+                        last_name?: string | null;
                         /** Format: email */
                         email?: string | null;
                         phone?: string | null;
@@ -30430,6 +30432,8 @@ export interface paths {
                     "application/json": {
                         email_consent?: boolean;
                         name?: string | null;
+                        first_name?: string | null;
+                        last_name?: string | null;
                         /** Format: email */
                         email?: string | null;
                         phone?: string | null;
