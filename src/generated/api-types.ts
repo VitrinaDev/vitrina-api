@@ -143952,6 +143952,7 @@ export interface paths {
                         /** @enum {string|null} */
                         comision_type?: "percentage" | "fixed" | null;
                         comision_value?: number | null;
+                        comision_mas_iva?: boolean;
                         minimo_clp?: number | null;
                         minimo_effective_on?: string;
                         vencimiento?: string | null;
@@ -144352,6 +144353,7 @@ export interface paths {
                         /** @enum {string} */
                         comision_type?: "percentage" | "fixed";
                         comision_value?: number;
+                        comision_mas_iva?: boolean;
                         minimo_clp?: number | null;
                         minimo_effective_on?: string;
                         vencimiento?: string | null;
