@@ -165075,7 +165075,833 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        /**
+         * Create a custom sequence
+         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage` or `tag`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
+         *
+         *     Creates the sequence from `template` (a key from `GET /sequences/templates`; its suggested steps become the first draft) or from scratch (`blank`), as a DRAFT: `status: draft`, nothing runs until it is published. `name`, `entry` and `goal` override the template’s. It goes to the bottom of the priority list. Every suggested step starts as «Con tu OK» (`approval`). Requires `followups:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "template": "quote_followup",
+                     *       "name": "Seguimiento de cotización"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SequenceCreateRequest"];
+                };
+            };
+            responses: {
+                /** @description The new sequence and its draft */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sequence": {
+                         *           "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "key": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "kind": "custom",
+                         *           "name": "Seguimiento de cotización",
+                         *           "description": "Cotizó y no agendó visita: recordatorio, luego un llamado.",
+                         *           "status": "draft",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "quoted_not_booked",
+                         *             "filters": []
+                         *           },
+                         *           "goal": {
+                         *             "type": "books_visit",
+                         *             "label": "Agenda visita"
+                         *           },
+                         *           "agent_id": null,
+                         *           "priority": 4,
+                         *           "situations": [],
+                         *           "steps": [
+                         *             {
+                         *               "id": "affce008-6fdb-52eb-8273-329b6da03c90",
+                         *               "key": "step-1",
+                         *               "situation": null,
+                         *               "position": 1,
+                         *               "config_ref": {
+                         *                 "type": "custom",
+                         *                 "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               },
+                         *               "kind": "message",
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "days",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 72
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 3,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 72,
+                         *               "mode": "approval",
+                         *               "mode_effective": "approval",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "fed60c11-4a4e-50dd-adbd-bdc25a39fc35",
+                         *               "key": "step-2",
+                         *               "situation": null,
+                         *               "position": 2,
+                         *               "config_ref": {
+                         *                 "type": "custom",
+                         *                 "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               },
+                         *               "kind": "message",
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-1",
+                         *                 "hours": 24
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 1,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 96,
+                         *               "mode": "approval",
+                         *               "mode_effective": "approval",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "81573e28-456d-5a69-9c16-b7e2082b589a",
+                         *               "key": "step-3",
+                         *               "situation": null,
+                         *               "position": 3,
+                         *               "config_ref": {
+                         *                 "type": "custom",
+                         *                 "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               },
+                         *               "kind": "message",
+                         *               "channel": "call",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-2",
+                         *                 "hours": 24
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 1,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 120,
+                         *               "mode": "approval",
+                         *               "mode_effective": "approval",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": false,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               }
+                         *             }
+                         *           ],
+                         *           "connections": [
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "step-1",
+                         *               "kind": "next",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-1",
+                         *               "to": "step-2",
+                         *               "kind": "next",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-2",
+                         *               "to": "step-3",
+                         *               "kind": "next",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-3",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-3",
+                         *               "to": "end",
+                         *               "kind": "end",
+                         *               "situation": null
+                         *             }
+                         *           ],
+                         *           "window_markers": [
+                         *             {
+                         *               "situation": null,
+                         *               "after_step": null,
+                         *               "label": "Pasadas las 24 h, solo plantillas aprobadas"
+                         *             }
+                         *           ],
+                         *           "ends": [
+                         *             {
+                         *               "key": "end",
+                         *               "situation": null,
+                         *               "type": "finish",
+                         *               "after": null,
+                         *               "at_hours": null,
+                         *               "label": "Termina",
+                         *               "detail": null,
+                         *               "continues_in": null
+                         *             }
+                         *           ],
+                         *           "stats": {
+                         *             "waiting_now": 0,
+                         *             "sent_30d": 0,
+                         *             "reply_rate_30d": null,
+                         *             "daily_14d": [
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0
+                         *             ]
+                         *           },
+                         *           "published_version": null,
+                         *           "draft": {
+                         *             "version_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e10",
+                         *             "change_count": 6,
+                         *             "updated_at": "2026-11-02T15:00:00.000Z"
+                         *           }
+                         *         },
+                         *         "draft": {
+                         *           "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "sequence_key": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "version_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e10",
+                         *           "based_on_version": null,
+                         *           "change_count": 6,
+                         *           "created_at": "2026-11-02T15:00:00.000Z",
+                         *           "updated_at": "2026-11-02T15:00:00.000Z",
+                         *           "created_by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222",
+                         *             "via": null
+                         *           },
+                         *           "updated_by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222"
+                         *           },
+                         *           "definition": {
+                         *             "schema_version": 1,
+                         *             "name": "Seguimiento de cotización",
+                         *             "description": "Cotizó y no agendó visita: recordatorio, luego un llamado.",
+                         *             "entry": {
+                         *               "type": "event",
+                         *               "event": "quoted_not_booked",
+                         *               "filters": []
+                         *             },
+                         *             "goal": {
+                         *               "type": "books_visit"
+                         *             },
+                         *             "agent_id": null,
+                         *             "priority": 0,
+                         *             "situations": [],
+                         *             "steps": [
+                         *               {
+                         *                 "key": "step-1",
+                         *                 "situation": null,
+                         *                 "kind": "message",
+                         *                 "position": 1,
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 3,
+                         *                   "unit": "days",
+                         *                   "from": "start",
+                         *                   "from_step": null,
+                         *                   "hours": 72
+                         *                 },
+                         *                 "mode": "approval",
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 },
+                         *                 "config_ref": null
+                         *               },
+                         *               {
+                         *                 "key": "step-2",
+                         *                 "situation": null,
+                         *                 "kind": "message",
+                         *                 "position": 2,
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-1",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "mode": "approval",
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 },
+                         *                 "config_ref": null
+                         *               },
+                         *               {
+                         *                 "key": "step-3",
+                         *                 "situation": null,
+                         *                 "kind": "message",
+                         *                 "position": 3,
+                         *                 "channel": "call",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-2",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "mode": "approval",
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 },
+                         *                 "config_ref": null
+                         *               }
+                         *             ],
+                         *             "connections": [
+                         *               {
+                         *                 "from": "entry",
+                         *                 "to": "step-1",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "step-2",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "step-3",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "end",
+                         *                 "kind": "end",
+                         *                 "situation": null
+                         *               }
+                         *             ],
+                         *             "ends": [
+                         *               {
+                         *                 "key": "end",
+                         *                 "situation": null,
+                         *                 "type": "finish",
+                         *                 "after": null,
+                         *                 "continues_in": null
+                         *               }
+                         *             ],
+                         *             "settings": {
+                         *               "type": "none"
+                         *             }
+                         *           },
+                         *           "sequence": {
+                         *             "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "key": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "kind": "custom",
+                         *             "name": "Seguimiento de cotización",
+                         *             "description": "Cotizó y no agendó visita: recordatorio, luego un llamado.",
+                         *             "status": "draft",
+                         *             "entry": {
+                         *               "type": "event",
+                         *               "event": "quoted_not_booked",
+                         *               "filters": []
+                         *             },
+                         *             "goal": {
+                         *               "type": "books_visit",
+                         *               "label": "Agenda visita"
+                         *             },
+                         *             "agent_id": null,
+                         *             "priority": 4,
+                         *             "situations": [],
+                         *             "steps": [
+                         *               {
+                         *                 "id": "affce008-6fdb-52eb-8273-329b6da03c90",
+                         *                 "key": "step-1",
+                         *                 "situation": null,
+                         *                 "position": 1,
+                         *                 "config_ref": {
+                         *                   "type": "custom",
+                         *                   "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *                 },
+                         *                 "warnings": [],
+                         *                 "stats": {
+                         *                   "waiting_now": 0,
+                         *                   "sent_30d": 0,
+                         *                   "reply_rate_30d": null,
+                         *                   "daily_14d": [
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0
+                         *                   ]
+                         *                 },
+                         *                 "kind": "message",
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 3,
+                         *                   "unit": "days",
+                         *                   "from": "start",
+                         *                   "from_step": null,
+                         *                   "hours": 72
+                         *                 },
+                         *                 "wait_after_previous": {
+                         *                   "value": 3,
+                         *                   "unit": "days"
+                         *                 },
+                         *                 "at_hours": 72,
+                         *                 "mode": "approval",
+                         *                 "mode_effective": "approval",
+                         *                 "sends": true,
+                         *                 "not_sent_reason": null,
+                         *                 "needs_template": true,
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 }
+                         *               },
+                         *               {
+                         *                 "id": "fed60c11-4a4e-50dd-adbd-bdc25a39fc35",
+                         *                 "key": "step-2",
+                         *                 "situation": null,
+                         *                 "position": 2,
+                         *                 "config_ref": {
+                         *                   "type": "custom",
+                         *                   "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *                 },
+                         *                 "warnings": [],
+                         *                 "stats": {
+                         *                   "waiting_now": 0,
+                         *                   "sent_30d": 0,
+                         *                   "reply_rate_30d": null,
+                         *                   "daily_14d": [
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0
+                         *                   ]
+                         *                 },
+                         *                 "kind": "message",
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-1",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "wait_after_previous": {
+                         *                   "value": 1,
+                         *                   "unit": "days"
+                         *                 },
+                         *                 "at_hours": 96,
+                         *                 "mode": "approval",
+                         *                 "mode_effective": "approval",
+                         *                 "sends": true,
+                         *                 "not_sent_reason": null,
+                         *                 "needs_template": true,
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 }
+                         *               },
+                         *               {
+                         *                 "id": "81573e28-456d-5a69-9c16-b7e2082b589a",
+                         *                 "key": "step-3",
+                         *                 "situation": null,
+                         *                 "position": 3,
+                         *                 "config_ref": {
+                         *                   "type": "custom",
+                         *                   "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *                 },
+                         *                 "warnings": [],
+                         *                 "stats": {
+                         *                   "waiting_now": 0,
+                         *                   "sent_30d": 0,
+                         *                   "reply_rate_30d": null,
+                         *                   "daily_14d": [
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0
+                         *                   ]
+                         *                 },
+                         *                 "kind": "message",
+                         *                 "channel": "call",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-2",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "wait_after_previous": {
+                         *                   "value": 1,
+                         *                   "unit": "days"
+                         *                 },
+                         *                 "at_hours": 120,
+                         *                 "mode": "approval",
+                         *                 "mode_effective": "approval",
+                         *                 "sends": true,
+                         *                 "not_sent_reason": null,
+                         *                 "needs_template": false,
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 }
+                         *               }
+                         *             ],
+                         *             "connections": [
+                         *               {
+                         *                 "from": "entry",
+                         *                 "to": "step-1",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "step-2",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "step-3",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "end",
+                         *                 "kind": "end",
+                         *                 "situation": null
+                         *               }
+                         *             ],
+                         *             "window_markers": [
+                         *               {
+                         *                 "situation": null,
+                         *                 "after_step": null,
+                         *                 "label": "Pasadas las 24 h, solo plantillas aprobadas"
+                         *               }
+                         *             ],
+                         *             "ends": [
+                         *               {
+                         *                 "key": "end",
+                         *                 "situation": null,
+                         *                 "type": "finish",
+                         *                 "after": null,
+                         *                 "at_hours": null,
+                         *                 "label": "Termina",
+                         *                 "detail": null,
+                         *                 "continues_in": null
+                         *               }
+                         *             ],
+                         *             "stats": {
+                         *               "waiting_now": 0,
+                         *               "sent_30d": 0,
+                         *               "reply_rate_30d": null,
+                         *               "daily_14d": [
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0
+                         *               ]
+                         *             },
+                         *             "published_version": null,
+                         *             "draft": {
+                         *               "version_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e10",
+                         *               "change_count": 6,
+                         *               "updated_at": "2026-11-02T15:00:00.000Z"
+                         *             }
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceCreateResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -166011,10 +166837,923 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete a custom sequence
+         * @description Deletes a custom sequence. People still in it leave with reason `sequence_deleted` (`exited` says how many) and its queued messages are cancelled, never sent; its history stays. Built-ins cannot be deleted (404). Requires `followups:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description What was deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "deleted": true,
+                         *         "exited": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceDeleteResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Edit a custom sequence’s name, entry, goal or agent
+         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage` or `tag`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
+         *
+         *     Writes `name`, `description`, `entry` and `goal` and `agent_id` (the AI agent that runs it; 400 unless it is an active agent of the workspace, `null` = the workspace’s current agent) into the draft (opening one from the published version when there is none), so who enters a running sequence changes only when it is published. Before the first publish the list shows the new name at once. Built-ins: 404 (edit them through their draft). Requires `followups:write`.
+         */
+        patch: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Cotizó y no vino a la tienda"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SequencePatchRequest"];
+                };
+            };
+            responses: {
+                /** @description The sequence and its draft */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sequence": {
+                         *           "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "key": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "kind": "custom",
+                         *           "name": "Cotizó y no vino a la tienda",
+                         *           "description": "Cotizó y no agendó visita: recordatorio, luego un llamado.",
+                         *           "status": "draft",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "quoted_not_booked",
+                         *             "filters": []
+                         *           },
+                         *           "goal": {
+                         *             "type": "books_visit",
+                         *             "label": "Agenda visita"
+                         *           },
+                         *           "agent_id": null,
+                         *           "priority": 4,
+                         *           "situations": [],
+                         *           "steps": [
+                         *             {
+                         *               "id": "affce008-6fdb-52eb-8273-329b6da03c90",
+                         *               "key": "step-1",
+                         *               "situation": null,
+                         *               "position": 1,
+                         *               "config_ref": {
+                         *                 "type": "custom",
+                         *                 "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               },
+                         *               "kind": "message",
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "days",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 72
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 3,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 72,
+                         *               "mode": "approval",
+                         *               "mode_effective": "approval",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "fed60c11-4a4e-50dd-adbd-bdc25a39fc35",
+                         *               "key": "step-2",
+                         *               "situation": null,
+                         *               "position": 2,
+                         *               "config_ref": {
+                         *                 "type": "custom",
+                         *                 "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               },
+                         *               "kind": "message",
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-1",
+                         *                 "hours": 24
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 1,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 96,
+                         *               "mode": "approval",
+                         *               "mode_effective": "approval",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "81573e28-456d-5a69-9c16-b7e2082b589a",
+                         *               "key": "step-3",
+                         *               "situation": null,
+                         *               "position": 3,
+                         *               "config_ref": {
+                         *                 "type": "custom",
+                         *                 "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               },
+                         *               "kind": "message",
+                         *               "channel": "call",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-2",
+                         *                 "hours": 24
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 1,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 120,
+                         *               "mode": "approval",
+                         *               "mode_effective": "approval",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": false,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               }
+                         *             }
+                         *           ],
+                         *           "connections": [
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "step-1",
+                         *               "kind": "next",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-1",
+                         *               "to": "step-2",
+                         *               "kind": "next",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-2",
+                         *               "to": "step-3",
+                         *               "kind": "next",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-3",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": null
+                         *             },
+                         *             {
+                         *               "from": "step-3",
+                         *               "to": "end",
+                         *               "kind": "end",
+                         *               "situation": null
+                         *             }
+                         *           ],
+                         *           "window_markers": [
+                         *             {
+                         *               "situation": null,
+                         *               "after_step": null,
+                         *               "label": "Pasadas las 24 h, solo plantillas aprobadas"
+                         *             }
+                         *           ],
+                         *           "ends": [
+                         *             {
+                         *               "key": "end",
+                         *               "situation": null,
+                         *               "type": "finish",
+                         *               "after": null,
+                         *               "at_hours": null,
+                         *               "label": "Termina",
+                         *               "detail": null,
+                         *               "continues_in": null
+                         *             }
+                         *           ],
+                         *           "stats": {
+                         *             "waiting_now": 0,
+                         *             "sent_30d": 0,
+                         *             "reply_rate_30d": null,
+                         *             "daily_14d": [
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0,
+                         *               0
+                         *             ]
+                         *           },
+                         *           "published_version": null,
+                         *           "draft": {
+                         *             "version_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e10",
+                         *             "change_count": 6,
+                         *             "updated_at": "2026-11-02T15:00:00.000Z"
+                         *           }
+                         *         },
+                         *         "draft": {
+                         *           "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "sequence_key": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "version_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e10",
+                         *           "based_on_version": null,
+                         *           "change_count": 6,
+                         *           "created_at": "2026-11-02T15:00:00.000Z",
+                         *           "updated_at": "2026-11-02T15:00:00.000Z",
+                         *           "created_by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222",
+                         *             "via": null
+                         *           },
+                         *           "updated_by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222"
+                         *           },
+                         *           "definition": {
+                         *             "schema_version": 1,
+                         *             "name": "Seguimiento de cotización",
+                         *             "description": "Cotizó y no agendó visita: recordatorio, luego un llamado.",
+                         *             "entry": {
+                         *               "type": "event",
+                         *               "event": "quoted_not_booked",
+                         *               "filters": []
+                         *             },
+                         *             "goal": {
+                         *               "type": "books_visit"
+                         *             },
+                         *             "agent_id": null,
+                         *             "priority": 0,
+                         *             "situations": [],
+                         *             "steps": [
+                         *               {
+                         *                 "key": "step-1",
+                         *                 "situation": null,
+                         *                 "kind": "message",
+                         *                 "position": 1,
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 3,
+                         *                   "unit": "days",
+                         *                   "from": "start",
+                         *                   "from_step": null,
+                         *                   "hours": 72
+                         *                 },
+                         *                 "mode": "approval",
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 },
+                         *                 "config_ref": null
+                         *               },
+                         *               {
+                         *                 "key": "step-2",
+                         *                 "situation": null,
+                         *                 "kind": "message",
+                         *                 "position": 2,
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-1",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "mode": "approval",
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 },
+                         *                 "config_ref": null
+                         *               },
+                         *               {
+                         *                 "key": "step-3",
+                         *                 "situation": null,
+                         *                 "kind": "message",
+                         *                 "position": 3,
+                         *                 "channel": "call",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-2",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "mode": "approval",
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 },
+                         *                 "config_ref": null
+                         *               }
+                         *             ],
+                         *             "connections": [
+                         *               {
+                         *                 "from": "entry",
+                         *                 "to": "step-1",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "step-2",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "step-3",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "end",
+                         *                 "kind": "end",
+                         *                 "situation": null
+                         *               }
+                         *             ],
+                         *             "ends": [
+                         *               {
+                         *                 "key": "end",
+                         *                 "situation": null,
+                         *                 "type": "finish",
+                         *                 "after": null,
+                         *                 "continues_in": null
+                         *               }
+                         *             ],
+                         *             "settings": {
+                         *               "type": "none"
+                         *             }
+                         *           },
+                         *           "sequence": {
+                         *             "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "key": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "kind": "custom",
+                         *             "name": "Seguimiento de cotización",
+                         *             "description": "Cotizó y no agendó visita: recordatorio, luego un llamado.",
+                         *             "status": "draft",
+                         *             "entry": {
+                         *               "type": "event",
+                         *               "event": "quoted_not_booked",
+                         *               "filters": []
+                         *             },
+                         *             "goal": {
+                         *               "type": "books_visit",
+                         *               "label": "Agenda visita"
+                         *             },
+                         *             "agent_id": null,
+                         *             "priority": 4,
+                         *             "situations": [],
+                         *             "steps": [
+                         *               {
+                         *                 "id": "affce008-6fdb-52eb-8273-329b6da03c90",
+                         *                 "key": "step-1",
+                         *                 "situation": null,
+                         *                 "position": 1,
+                         *                 "config_ref": {
+                         *                   "type": "custom",
+                         *                   "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *                 },
+                         *                 "warnings": [],
+                         *                 "stats": {
+                         *                   "waiting_now": 0,
+                         *                   "sent_30d": 0,
+                         *                   "reply_rate_30d": null,
+                         *                   "daily_14d": [
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0
+                         *                   ]
+                         *                 },
+                         *                 "kind": "message",
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 3,
+                         *                   "unit": "days",
+                         *                   "from": "start",
+                         *                   "from_step": null,
+                         *                   "hours": 72
+                         *                 },
+                         *                 "wait_after_previous": {
+                         *                   "value": 3,
+                         *                   "unit": "days"
+                         *                 },
+                         *                 "at_hours": 72,
+                         *                 "mode": "approval",
+                         *                 "mode_effective": "approval",
+                         *                 "sends": true,
+                         *                 "not_sent_reason": null,
+                         *                 "needs_template": true,
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 }
+                         *               },
+                         *               {
+                         *                 "id": "fed60c11-4a4e-50dd-adbd-bdc25a39fc35",
+                         *                 "key": "step-2",
+                         *                 "situation": null,
+                         *                 "position": 2,
+                         *                 "config_ref": {
+                         *                   "type": "custom",
+                         *                   "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *                 },
+                         *                 "warnings": [],
+                         *                 "stats": {
+                         *                   "waiting_now": 0,
+                         *                   "sent_30d": 0,
+                         *                   "reply_rate_30d": null,
+                         *                   "daily_14d": [
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0
+                         *                   ]
+                         *                 },
+                         *                 "kind": "message",
+                         *                 "channel": "whatsapp",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-1",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "wait_after_previous": {
+                         *                   "value": 1,
+                         *                   "unit": "days"
+                         *                 },
+                         *                 "at_hours": 96,
+                         *                 "mode": "approval",
+                         *                 "mode_effective": "approval",
+                         *                 "sends": true,
+                         *                 "not_sent_reason": null,
+                         *                 "needs_template": true,
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 }
+                         *               },
+                         *               {
+                         *                 "id": "81573e28-456d-5a69-9c16-b7e2082b589a",
+                         *                 "key": "step-3",
+                         *                 "situation": null,
+                         *                 "position": 3,
+                         *                 "config_ref": {
+                         *                   "type": "custom",
+                         *                   "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
+                         *                 },
+                         *                 "warnings": [],
+                         *                 "stats": {
+                         *                   "waiting_now": 0,
+                         *                   "sent_30d": 0,
+                         *                   "reply_rate_30d": null,
+                         *                   "daily_14d": [
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0,
+                         *                     0
+                         *                   ]
+                         *                 },
+                         *                 "kind": "message",
+                         *                 "channel": "call",
+                         *                 "fallback_channel": null,
+                         *                 "wait": {
+                         *                   "type": "duration",
+                         *                   "value": 1,
+                         *                   "unit": "days",
+                         *                   "from": "previous_step",
+                         *                   "from_step": "step-2",
+                         *                   "hours": 24
+                         *                 },
+                         *                 "wait_after_previous": {
+                         *                   "value": 1,
+                         *                   "unit": "days"
+                         *                 },
+                         *                 "at_hours": 120,
+                         *                 "mode": "approval",
+                         *                 "mode_effective": "approval",
+                         *                 "sends": true,
+                         *                 "not_sent_reason": null,
+                         *                 "needs_template": false,
+                         *                 "content": {
+                         *                   "type": "ai_message",
+                         *                   "template_after_window": true
+                         *                 }
+                         *               }
+                         *             ],
+                         *             "connections": [
+                         *               {
+                         *                 "from": "entry",
+                         *                 "to": "step-1",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-1",
+                         *                 "to": "step-2",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-2",
+                         *                 "to": "step-3",
+                         *                 "kind": "next",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "exit",
+                         *                 "kind": "reply_exit",
+                         *                 "situation": null
+                         *               },
+                         *               {
+                         *                 "from": "step-3",
+                         *                 "to": "end",
+                         *                 "kind": "end",
+                         *                 "situation": null
+                         *               }
+                         *             ],
+                         *             "window_markers": [
+                         *               {
+                         *                 "situation": null,
+                         *                 "after_step": null,
+                         *                 "label": "Pasadas las 24 h, solo plantillas aprobadas"
+                         *               }
+                         *             ],
+                         *             "ends": [
+                         *               {
+                         *                 "key": "end",
+                         *                 "situation": null,
+                         *                 "type": "finish",
+                         *                 "after": null,
+                         *                 "at_hours": null,
+                         *                 "label": "Termina",
+                         *                 "detail": null,
+                         *                 "continues_in": null
+                         *               }
+                         *             ],
+                         *             "stats": {
+                         *               "waiting_now": 0,
+                         *               "sent_30d": 0,
+                         *               "reply_rate_30d": null,
+                         *               "daily_14d": [
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0
+                         *               ]
+                         *             },
+                         *             "published_version": null,
+                         *             "draft": {
+                         *               "version_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e10",
+                         *               "change_count": 6,
+                         *               "updated_at": "2026-11-02T15:00:00.000Z"
+                         *             }
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceCreateResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/sequences/{id}/simulate": {
@@ -166028,7 +167767,7 @@ export interface paths {
         put?: never;
         /**
          * Simulate what one customer will receive
-         * @description Walks «Si no responde» for ONE person: a real `contact_id` or a test `persona` (`has_whatsapp`, `opted_out`), from the moment our last message went out (`last_message_at`), with what the customer does (`behavior`: `never_replies`, `replies_after_step`; `pays` and `promises_date` are collections behaviors and are no-ops for sequences without payment steps). Returns the `timeline` (each step with the moment the ladder draws it, `planned_at`, and the moment the engine really sends it after contact hours and pacing, `shifted_at`, with `shift_reason`, a `preview` when a stored draft or approved template exists, and a `status`) and the real `end` reason: replied, end_of_sequence, marked_lost, no_fitting_approved_message, no_channel_left, message_limit_reached or opted_out. It is the same simulation `GET /followups/recontacto/plan` renders, so it follows the engine’s rules (contact hours from 9:00, the 24 h WhatsApp window, per-person limits, opt-out). Deterministic: no model call, nothing is sent or stored. `version` is `published` (default), `draft` (the open draft, `GET /sequences/{id}/draft`) or a version id (`GET /sequences/{id}/versions`). Only `builtin:si-no-responde` is simulable today. Requires `followups:read`.
+         * @description Walks «Si no responde» for ONE person: a real `contact_id` or a test `persona` (`has_whatsapp`, `has_email` optional, `opted_out`), from the moment our last message went out (`last_message_at`), with what the customer does (`behavior`: `never_replies`, `replies_after_step`; `pays` and `promises_date` are collections behaviors and are no-ops for sequences without payment steps). Returns the `timeline` (each step with the moment the ladder draws it, `planned_at`, and the moment the engine really sends it after contact hours and pacing, `shifted_at`, with `shift_reason`, a `preview` when a stored draft or approved template exists, and a `status`) and the real `end` reason: replied, end_of_sequence, marked_lost, no_fitting_approved_message, no_channel_left, message_limit_reached or opted_out. It is the same simulation `GET /followups/recontacto/plan` renders, so it follows the engine’s rules (contact hours from 9:00, the 24 h WhatsApp window, per-person limits, opt-out). Deterministic: no model call, nothing is sent or stored. `version` is `published` (default), `draft` (the open draft, `GET /sequences/{id}/draft`) or a version id (`GET /sequences/{id}/versions`). `builtin:si-no-responde` and custom sequences are simulable (a custom sequence walks its own steps through the same engine rules; steps timed before an appointment are listed in `notes`). Custom sequences with conditions, waits until and loops follow the scenario: `replies_after_step` → the `yes` branch of «¿Respondió?» (a reply ends the sequence only when its goal is a reply), `pays` → «¿Pagó?», `promises_date` → «Esperar hasta la fecha prometida» ends that day; `decisions` (`{step key or id: branch key}`) picks any condition’s branch, and «La IA decide» is never called here (without a decision it takes its first branch). The response then carries `path` (every step passed, the branch taken, loop laps) and timeline entries met again in a loop carry `iteration`. Requires `followups:read`.
          */
         post: {
             parameters: {
@@ -166161,6 +167900,655 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/definition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read a sequence’s whole definition
+         * @description The complete `SequenceDefinition` of one version: the thing to start a draft from (`PUT /sequences/{id}/draft` takes the whole definition back). `version` is `published` (default; for a built-in, what its engine reads today, rungs and `settings` included), `draft`, or a version number. `version` and `version_id` are null for a built-in that was never versioned and for a draft. 404 `sequence_draft` when asking for a draft that does not exist, `sequence_version` for an unknown number. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    version?: "published" | "draft" | number;
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The definition */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sequence_id": "dd63825c-cb16-553d-90cc-6cb4fa694ce8",
+                         *         "sequence_key": "builtin:si-no-responde",
+                         *         "version_id": "0192f0a1-7c3e-7b2a-9d4e-5f6a7b8c9d0e",
+                         *         "version": 2,
+                         *         "status": "published",
+                         *         "definition": {
+                         *           "schema_version": 1,
+                         *           "name": null,
+                         *           "description": null,
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "customer_went_quiet",
+                         *             "filters": [
+                         *               {
+                         *                 "field": "situation",
+                         *                 "op": "in",
+                         *                 "values": [
+                         *                   "conversed",
+                         *                   "never_replied",
+                         *                   "lost"
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           },
+                         *           "goal": {
+                         *             "type": "reply"
+                         *           },
+                         *           "agent_id": null,
+                         *           "priority": 3,
+                         *           "steps": [
+                         *             {
+                         *               "key": "unanswered_message-1",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "same_chat",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 4,
+                         *                 "unit": "hours",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 4
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "unanswered_message",
+                         *                 "step": 1,
+                         *                 "after_hours": 4,
+                         *                 "unit": null,
+                         *                 "autonomy": "auto",
+                         *                 "channel": null,
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "unanswered_message-2",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "same_chat",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 30,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "unanswered_message-1",
+                         *                 "hours": 30
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "unanswered_message",
+                         *                 "step": 2,
+                         *                 "after_hours": 30,
+                         *                 "unit": null,
+                         *                 "autonomy": "auto",
+                         *                 "channel": null,
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "stalled-1",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 2,
+                         *                 "unit": "days",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 48
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "stalled",
+                         *                 "step": 1,
+                         *                 "after_hours": 48,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "stalled-2",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 4,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 2,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "stalled-1",
+                         *                 "hours": 48
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "stalled",
+                         *                 "step": 2,
+                         *                 "after_hours": 48,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "never_replied-1",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "hours",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 3
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 1,
+                         *                 "after_hours": 3,
+                         *                 "unit": "h",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "never_replied-2",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 5,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "never_replied-1",
+                         *                 "hours": 5
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 2,
+                         *                 "after_hours": 5,
+                         *                 "unit": "h",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "never_replied-3",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 40,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "never_replied-2",
+                         *                 "hours": 40
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 3,
+                         *                 "after_hours": 40,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "never_replied-4",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 4,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "never_replied-3",
+                         *                 "hours": 72
+                         *               },
+                         *               "mode": "auto",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 4,
+                         *                 "after_hours": 72,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "lost-1",
+                         *               "situation": "lost",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 30,
+                         *                 "unit": "days",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 720
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "lost",
+                         *                 "step": 1,
+                         *                 "after_hours": 720,
+                         *                 "unit": "d",
+                         *                 "autonomy": "approval",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               }
+                         *             }
+                         *           ],
+                         *           "connections": [
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "unanswered_message-1",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-1",
+                         *               "to": "unanswered_message-2",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-2",
+                         *               "to": "stalled-1",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-1",
+                         *               "to": "stalled-2",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-2",
+                         *               "to": "end:conversed",
+                         *               "kind": "end",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "never_replied-1",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-1",
+                         *               "to": "never_replied-2",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-2",
+                         *               "to": "never_replied-3",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-3",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-3",
+                         *               "to": "never_replied-4",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-4",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-4",
+                         *               "to": "end:never_replied",
+                         *               "kind": "end",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "lost-1",
+                         *               "kind": "next",
+                         *               "situation": "lost"
+                         *             },
+                         *             {
+                         *               "from": "lost-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "lost"
+                         *             },
+                         *             {
+                         *               "from": "lost-1",
+                         *               "to": "end:lost",
+                         *               "kind": "end",
+                         *               "situation": "lost"
+                         *             }
+                         *           ],
+                         *           "ends": [
+                         *             {
+                         *               "key": "end:conversed",
+                         *               "situation": "conversed",
+                         *               "type": "mark_lost",
+                         *               "after": {
+                         *                 "value": 7,
+                         *                 "unit": "days"
+                         *               },
+                         *               "continues_in": {
+                         *                 "sequence_key": "builtin:si-no-responde",
+                         *                 "situation": "lost"
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "end:never_replied",
+                         *               "situation": "never_replied",
+                         *               "type": "mark_lost",
+                         *               "after": {
+                         *                 "value": 7,
+                         *                 "unit": "days"
+                         *               },
+                         *               "continues_in": {
+                         *                 "sequence_key": "builtin:si-no-responde",
+                         *                 "situation": "lost"
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "end:lost",
+                         *               "situation": "lost",
+                         *               "type": "finish",
+                         *               "after": null,
+                         *               "continues_in": null
+                         *             }
+                         *           ],
+                         *           "situations": [
+                         *             {
+                         *               "key": "conversed",
+                         *               "name": null,
+                         *               "enabled": true
+                         *             },
+                         *             {
+                         *               "key": "never_replied",
+                         *               "name": null,
+                         *               "enabled": true
+                         *             },
+                         *             {
+                         *               "key": "lost",
+                         *               "name": null,
+                         *               "enabled": true
+                         *             }
+                         *           ],
+                         *           "settings": {
+                         *             "type": "recontacto",
+                         *             "config": {
+                         *               "enabled": true,
+                         *               "daily_cap": 200,
+                         *               "daily_review_budget": 500,
+                         *               "lost_lookback_days": 90,
+                         *               "max_evaluations_per_step": 3,
+                         *               "re_evaluation_after_days": 1,
+                         *               "excluded_template_ids": [],
+                         *               "voice_examples": [],
+                         *               "pacing": {
+                         *                 "min_gap_hours": null,
+                         *                 "max_per_day": null,
+                         *                 "pause_after_unanswered_days": null,
+                         *                 "approval_after_silence_days": null,
+                         *                 "approval_fallback_hours": null,
+                         *                 "entry_max_silence_days": 45,
+                         *                 "hot_leads_faster": false,
+                         *                 "max_paths_per_lead": 3,
+                         *                 "max_messages_per_person_90d": 6
+                         *               },
+                         *               "after_handoff": {
+                         *                 "followups": "draft_for_owner",
+                         *                 "auto_send_after_hours": 1,
+                         *                 "while_silent": "draft_auto_send",
+                         *                 "ai_answers_waiting": "after_minutes",
+                         *                 "ai_answers_waiting_after_minutes": 60,
+                         *                 "ai_answers_waiting_after_hours": 1,
+                         *                 "ai_answers_waiting_keep_owner": true
+                         *               },
+                         *               "situations": {
+                         *                 "never_replied": {
+                         *                   "enabled": true,
+                         *                   "lose_after_days": 7
+                         *                 },
+                         *                 "stalled": {
+                         *                   "enabled": true,
+                         *                   "lose_after_days": 7
+                         *                 },
+                         *                 "lost": {
+                         *                   "enabled": true,
+                         *                   "lose_after_days": null
+                         *                 }
+                         *               },
+                         *               "unanswered_message": {
+                         *                 "enabled": true,
+                         *                 "conversation_lifetime_cap": 4,
+                         *                 "template_after_window": true
+                         *               }
+                         *             }
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceDefinitionView"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -167660,7 +170048,7 @@ export interface paths {
          * Save a sequence’s draft
          * @description Editing a sequence writes a DRAFT beside the published version; nothing reaches a customer until it is published. A draft holds the whole `SequenceDefinition`: the steps (channel, `wait`, `mode`), the situations (`enabled`), and for a built-in its `settings` (what is not a step: Recontacto’s «Ritmo», the first-touch source blocks). Publishing a built-in writes it through to the storage its engine reads (`/followups/recontacto`, the «Al llegar» source blocks, the `/followups` recipes) in the same transaction, so «Al llegar» is configurable here by API key and connector too. A published change to a wait applies to people already in the sequence from their next message.
          *
-         *     Creates the draft or replaces it with `definition` (start from `GET /sequences/{id}/draft`, or from the `definition` of a version). The stored draft is what the definition compiles to, read back: a built-in cannot express everything (a «Si no responde» step cannot be skipped, the first message of «Al llegar» always waits 5 minutes), and what it cannot express is a 400 naming the step. A built-in’s first draft also records today’s config as version 1. Requires `followups:write`.
+         *     Creates the draft or replaces it with `definition` (start from `GET /sequences/{id}/definition`). The stored draft is what the definition compiles to, read back: a built-in cannot express everything (a «Si no responde» step cannot be skipped, the first message of «Al llegar» always waits 5 minutes), and what it cannot express is a 400 naming the step. A built-in’s first draft also records today’s config as version 1. Requires `followups:write`.
          */
         put: {
             parameters: {
@@ -169918,7 +172306,7 @@ export interface paths {
         };
         /**
          * What blocks publishing the draft
-         * @description Checks the open draft the way publishing does. `blockers` stop `POST /sequences/{id}/publish`; `warnings` do not. Each problem has a machine-readable `code`, the `step_id` it is about (null for the whole draft), a Spanish `message` and a `fix`: `kind` is `draft_template` (have the AI write the missing WhatsApp template: `POST /followups/recontacto/template-draft`), `connect_channel`, `request_review`, `remove_step`, `change_channel` or `contact_support`, with a `target` (the same vocabulary as notifications) when there is a screen for it. Blocker codes: `no_fitting_approved_template` (a WhatsApp step past the 24 h window with no approved template Vitrina can fill), `channel_not_connected` (WhatsApp, email, Instagram), `step_type_unavailable` (a channel the workspace cannot use yet, e.g. SMS), `review_required`. Warning codes: `instagram_past_24h`, `whatsapp_past_24h_without_template`. Steps that never send (mode `skip`, a situation switched off) are not checked. Never calls a model. 404 when there is no draft. Requires `followups:read`.
+         * @description Checks the open draft the way publishing does. `blockers` stop `POST /sequences/{id}/publish`; `warnings` do not. Each problem has a machine-readable `code`, the `step_id` it is about (null for the whole draft), a Spanish `message` and a `fix`: `kind` is `draft_template` (have the AI write the missing WhatsApp template: `POST /followups/recontacto/template-draft`), `connect_channel`, `request_review`, `remove_step`, `change_channel`, `pick_agent` or `contact_support`, with a `target` (the same vocabulary as notifications) when there is a screen for it. Blocker codes: `no_fitting_approved_template` (a WhatsApp step past the 24 h window with no approved template Vitrina can fill), `channel_not_connected` (WhatsApp, email, Instagram), `step_type_unavailable` (a channel the workspace cannot use yet, e.g. SMS), `agent_unavailable` (the chosen AI agent is no longer active), `agent_not_supported` (an agent set on «Al llegar» or «Avisos»), `review_required`. Warning codes: `instagram_past_24h`, `whatsapp_past_24h_without_template`. Steps that never send (mode `skip`, a situation switched off) are not checked. Never calls a model. 404 when there is no draft. Requires `followups:read`.
          */
         get: {
             parameters: {
@@ -172120,6 +174508,1799 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the templates for a new sequence
+         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage` or `tag`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
+         *
+         *     The «Nueva secuencia» catalogue: Seguimiento de cotización, Reactivar clientes, Se registró y no pagó, Cobranza de cuotas, Recordatorio de cita and Desde cero, each with its entry, goal and suggested steps (a step whose channel is not available yet is flagged by the draft validation, not hidden). Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The templates */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "key": "quote_followup",
+                         *           "name": "Seguimiento de cotización",
+                         *           "description": "Cotizó y no agendó visita: recordatorio, luego un llamado.",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "quoted_not_booked",
+                         *             "filters": []
+                         *           },
+                         *           "goal": {
+                         *             "type": "books_visit",
+                         *             "label": "Agenda visita"
+                         *           },
+                         *           "channels": [
+                         *             "whatsapp",
+                         *             "whatsapp",
+                         *             "call"
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "key": "step-1",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "days",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 72
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Recordatorio de la cotización"
+                         *             },
+                         *             {
+                         *               "key": "step-2",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-1",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Quedan 24 h de cotización"
+                         *             },
+                         *             {
+                         *               "key": "step-3",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "call",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-2",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Llamada para agendar"
+                         *             }
+                         *           ]
+                         *         },
+                         *         {
+                         *           "key": "reactivate",
+                         *           "name": "Reactivar clientes",
+                         *           "description": "Clientes con una compra anterior: novedad y oferta.",
+                         *           "entry": {
+                         *             "type": "list",
+                         *             "list_id": null
+                         *           },
+                         *           "goal": {
+                         *             "type": "books_visit",
+                         *             "label": "Agenda visita"
+                         *           },
+                         *           "channels": [
+                         *             "whatsapp",
+                         *             "email",
+                         *             "whatsapp"
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "key": "step-1",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 0,
+                         *                 "unit": "hours",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 0
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Novedad personalizada"
+                         *             },
+                         *             {
+                         *               "key": "step-2",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "email",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 2,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-1",
+                         *                 "hours": 48
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "email",
+                         *                 "subject": null,
+                         *                 "custom_body": false
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Detalle de la oferta"
+                         *             },
+                         *             {
+                         *               "key": "step-3",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 5,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-2",
+                         *                 "hours": 120
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Último recordatorio"
+                         *             }
+                         *           ]
+                         *         },
+                         *         {
+                         *           "key": "signup_not_paid",
+                         *           "name": "Se registró y no pagó",
+                         *           "description": "Usuarios que crearon cuenta pero no compraron: ofrece una demo.",
+                         *           "entry": {
+                         *             "type": "list",
+                         *             "list_id": null
+                         *           },
+                         *           "goal": {
+                         *             "type": "books_demo",
+                         *             "label": "Agenda demo"
+                         *           },
+                         *           "channels": [
+                         *             "email",
+                         *             "whatsapp",
+                         *             "call",
+                         *             "email"
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "key": "step-1",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "email",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 0,
+                         *                 "unit": "hours",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 0
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "email",
+                         *                 "subject": null,
+                         *                 "custom_body": false
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Bienvenida + link a demo"
+                         *             },
+                         *             {
+                         *               "key": "step-2",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-1",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Te ayudo a configurarlo"
+                         *             },
+                         *             {
+                         *               "key": "step-3",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "call",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-2",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Llamada para agendar demo"
+                         *             },
+                         *             {
+                         *               "key": "step-4",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 4,
+                         *               "channel": "email",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 32,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-3",
+                         *                 "hours": 32
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "email",
+                         *                 "subject": null,
+                         *                 "custom_body": false
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Caso de éxito de su rubro"
+                         *             }
+                         *           ]
+                         *         },
+                         *         {
+                         *           "key": "installments",
+                         *           "name": "Cobranza de cuotas",
+                         *           "description": "Cuota vencida: correo, llamada, WhatsApp y aviso formal.",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "installment_overdue",
+                         *             "filters": []
+                         *           },
+                         *           "goal": {
+                         *             "type": "pays",
+                         *             "label": "Paga"
+                         *           },
+                         *           "channels": [
+                         *             "email",
+                         *             "call",
+                         *             "whatsapp",
+                         *             "call",
+                         *             "email"
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "key": "step-1",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "email",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 0,
+                         *                 "unit": "hours",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 0
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "email",
+                         *                 "subject": null,
+                         *                 "custom_body": false
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Recordatorio con link de pago"
+                         *             },
+                         *             {
+                         *               "key": "step-2",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "call",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-1",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Llamada de cobranza"
+                         *             },
+                         *             {
+                         *               "key": "step-3",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-2",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Recordatorio + link"
+                         *             },
+                         *             {
+                         *               "key": "step-4",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 4,
+                         *               "channel": "call",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 1,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-3",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Segunda llamada"
+                         *             },
+                         *             {
+                         *               "key": "step-5",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 5,
+                         *               "channel": "email",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 32,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "step-4",
+                         *                 "hours": 32
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "email",
+                         *                 "subject": null,
+                         *                 "custom_body": false
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Aviso formal"
+                         *             }
+                         *           ]
+                         *         },
+                         *         {
+                         *           "key": "appointment_reminder",
+                         *           "name": "Recordatorio de cita",
+                         *           "description": "Antes de una visita o cita agendada, confirma asistencia.",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "appointment_booked",
+                         *             "filters": []
+                         *           },
+                         *           "goal": {
+                         *             "type": "reply",
+                         *             "label": "Responde"
+                         *           },
+                         *           "channels": [
+                         *             "whatsapp",
+                         *             "whatsapp"
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "key": "step-1",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "before_appointment",
+                         *                 "value": 24,
+                         *                 "unit": "hours",
+                         *                 "hours": 24
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Confirmar asistencia"
+                         *             },
+                         *             {
+                         *               "key": "step-2",
+                         *               "situation": null,
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "before_appointment",
+                         *                 "value": 2,
+                         *                 "unit": "hours",
+                         *                 "hours": 2
+                         *               },
+                         *               "mode": "approval",
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": null,
+                         *               "label": "Te esperamos hoy"
+                         *             }
+                         *           ]
+                         *         },
+                         *         {
+                         *           "key": "blank",
+                         *           "name": "Desde cero",
+                         *           "description": "Elige quién entra, el objetivo y arma los pasos.",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "customer_went_quiet",
+                         *             "filters": []
+                         *           },
+                         *           "goal": {
+                         *             "type": "reply",
+                         *             "label": "Responde"
+                         *           },
+                         *           "channels": [],
+                         *           "steps": []
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceTemplate"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the priority order of the sequences
+         * @description The ONE priority list a person is placed by: `builtin:si-no-responde` and every custom sequence id, highest first, each exactly once (400 otherwise, naming what is missing or unknown). A person who qualifies for two enters only the higher one, and is in one at a time. «Avisos» (1) and «Al llegar» (2) keep their places outside the list. Answers the list with each sequence’s `id`, `key` and `priority` as `GET /sequences` shows it (a built-in’s uuid is accepted too). Requires `followups:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "order": [
+                     *         "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                     *         "builtin:si-no-responde"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SequenceOrderRequest"];
+                };
+            };
+            responses: {
+                /** @description The order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "order": [
+                         *           {
+                         *             "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "key": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "priority": 3
+                         *           },
+                         *           {
+                         *             "id": "dd63825c-cb16-553d-90cc-6cb4fa694ce8",
+                         *             "key": "builtin:si-no-responde",
+                         *             "priority": 4
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceOrder"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/enrollments/{enrollment_id}/promised-date": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record the date a customer promised
+         * @description Sets (or clears, with `date: null`) the day a person in a custom sequence promised, e.g. to pay. A step `wait_until` `{kind:"date_field", field:"promised_date"}` («Esperar hasta la fecha prometida») waits until 00:00 of that day in the workspace’s time zone instead of its timeout, and consumes the date when it ends (a loop back waits for a NEW promise). A person already waiting at such a step is re-timed at once (`waiting_for_date: true`). The `enrollment_id` travels on every message the sequence queues (`decision_payload.enrollment_id` on `GET /outbound/approvals`). 404 `sequence_enrollment` when the person is no longer in that sequence. Requires `followups:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    enrollment_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "date": "2026-11-15"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SequencePromisedDateRequest"];
+                };
+            };
+            responses: {
+                /** @description The enrollment and its promised date */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enrollment_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e11",
+                         *         "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *         "contact_id": "33333333-3333-4333-8333-333333333333",
+                         *         "promised_date": "2026-11-15",
+                         *         "current_step": "step-2",
+                         *         "next_due_at": "2026-11-02T15:00:00.000Z",
+                         *         "waiting_for_date": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceEnrollmentPromise"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/enrollments/from-list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview and record the consent to enroll a list
+         * @description Step 1 of enrolling a list into a custom sequence. Records the consent basis (`customer_relationship`, `explicit_opt_in`, `other_documented`) with the evidence `note`, who chose it and when, and answers the funnel: `total` (the list) -> `reachable` (a usable phone or email for the first step, not opted out) -> `will_enroll` (free to enter), with a count per exclusion reason (`blocked`, `spam`, `no_identifier`, `opted_out` by reason, `in_higher_sequence`, ...). For WhatsApp the `warnings` carry the cost note: the first message is an approved marketing template and Meta charges per marketing conversation. **Nothing is sent and nobody is enrolled**: the batch is `pending_activation` until `POST .../activate`. A list is a saved audience; importing contacts never enrolls anyone. 201. Requires `followups:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "list_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e30",
+                     *       "consent_basis": "explicit_opt_in",
+                     *       "note": "Aceptaron términos al registrarse"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SequenceEnrollFromListRequest"];
+                };
+            };
+            responses: {
+                /** @description The pending batch with its funnel */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e20",
+                         *         "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *         "list_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e30",
+                         *         "list_name": "Registrados sin comprar",
+                         *         "status": "pending_activation",
+                         *         "channel": "whatsapp",
+                         *         "consent": {
+                         *           "basis": "explicit_opt_in",
+                         *           "note": "Aceptaron términos al registrarse",
+                         *           "by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222",
+                         *             "via": null
+                         *           },
+                         *           "at": "2026-11-02T15:00:00.000Z"
+                         *         },
+                         *         "funnel": {
+                         *           "total": 120,
+                         *           "reachable": 96,
+                         *           "will_enroll": 90,
+                         *           "excluded": {
+                         *             "blocked": 2,
+                         *             "spam": 0,
+                         *             "archived": 1,
+                         *             "no_identifier": 15,
+                         *             "invalid_identifier": 3,
+                         *             "duplicate": 3,
+                         *             "opted_out": 5,
+                         *             "already_in_sequence": 0,
+                         *             "in_higher_sequence": 6,
+                         *             "in_lower_sequence": 0,
+                         *             "in_recontacto": 0
+                         *           },
+                         *           "opted_out_by": {
+                         *             "stop_keyword": 4,
+                         *             "unsubscribe": 1
+                         *           }
+                         *         },
+                         *         "warnings": [
+                         *           {
+                         *             "code": "whatsapp_marketing_cost",
+                         *             "message": "El primer mensaje por WhatsApp a quien no te escribió en las últimas 24 horas sale como plantilla de marketing aprobada, y Meta cobra cada conversación de marketing. Revisa la tarifa vigente en tu cuenta de Meta antes de activar."
+                         *           }
+                         *         ],
+                         *         "result": null,
+                         *         "activated_at": null,
+                         *         "activated_by": null,
+                         *         "created_at": "2026-11-02T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceEnrollmentBatch"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/enrollments/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the enrollment batches of a sequence
+         * @description Every batch made from a list for this sequence, newest first, with status, consent and funnel. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The batches */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e20",
+                         *           "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "list_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e30",
+                         *           "list_name": "Registrados sin comprar",
+                         *           "status": "pending_activation",
+                         *           "channel": "whatsapp",
+                         *           "consent": {
+                         *             "basis": "explicit_opt_in",
+                         *             "note": "Aceptaron términos al registrarse",
+                         *             "by": {
+                         *               "kind": "user",
+                         *               "id": "22222222-2222-4222-8222-222222222222",
+                         *               "via": null
+                         *             },
+                         *             "at": "2026-11-02T15:00:00.000Z"
+                         *           },
+                         *           "funnel": {
+                         *             "total": 120,
+                         *             "reachable": 96,
+                         *             "will_enroll": 90,
+                         *             "excluded": {
+                         *               "blocked": 2,
+                         *               "spam": 0,
+                         *               "archived": 1,
+                         *               "no_identifier": 15,
+                         *               "invalid_identifier": 3,
+                         *               "duplicate": 3,
+                         *               "opted_out": 5,
+                         *               "already_in_sequence": 0,
+                         *               "in_higher_sequence": 6,
+                         *               "in_lower_sequence": 0,
+                         *               "in_recontacto": 0
+                         *             },
+                         *             "opted_out_by": {
+                         *               "stop_keyword": 4,
+                         *               "unsubscribe": 1
+                         *             }
+                         *           },
+                         *           "warnings": [
+                         *             {
+                         *               "code": "whatsapp_marketing_cost",
+                         *               "message": "El primer mensaje por WhatsApp a quien no te escribió en las últimas 24 horas sale como plantilla de marketing aprobada, y Meta cobra cada conversación de marketing. Revisa la tarifa vigente en tu cuenta de Meta antes de activar."
+                         *             }
+                         *           ],
+                         *           "result": null,
+                         *           "activated_at": null,
+                         *           "activated_by": null,
+                         *           "created_at": "2026-11-02T15:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceEnrollmentBatch"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/enrollments/batches/{batch_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read an enrollment batch
+         * @description The batch status (`pending_activation`, `activated`, `cancelled`), its consent, the preview funnel and, once activated, the `result` (`enrolled` and what was skipped and why). Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    batch_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The batch */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e20",
+                         *         "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *         "list_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e30",
+                         *         "list_name": "Registrados sin comprar",
+                         *         "status": "pending_activation",
+                         *         "channel": "whatsapp",
+                         *         "consent": {
+                         *           "basis": "explicit_opt_in",
+                         *           "note": "Aceptaron términos al registrarse",
+                         *           "by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222",
+                         *             "via": null
+                         *           },
+                         *           "at": "2026-11-02T15:00:00.000Z"
+                         *         },
+                         *         "funnel": {
+                         *           "total": 120,
+                         *           "reachable": 96,
+                         *           "will_enroll": 90,
+                         *           "excluded": {
+                         *             "blocked": 2,
+                         *             "spam": 0,
+                         *             "archived": 1,
+                         *             "no_identifier": 15,
+                         *             "invalid_identifier": 3,
+                         *             "duplicate": 3,
+                         *             "opted_out": 5,
+                         *             "already_in_sequence": 0,
+                         *             "in_higher_sequence": 6,
+                         *             "in_lower_sequence": 0,
+                         *             "in_recontacto": 0
+                         *           },
+                         *           "opted_out_by": {
+                         *             "stop_keyword": 4,
+                         *             "unsubscribe": 1
+                         *           }
+                         *         },
+                         *         "warnings": [
+                         *           {
+                         *             "code": "whatsapp_marketing_cost",
+                         *             "message": "El primer mensaje por WhatsApp a quien no te escribió en las últimas 24 horas sale como plantilla de marketing aprobada, y Meta cobra cada conversación de marketing. Revisa la tarifa vigente en tu cuenta de Meta antes de activar."
+                         *           }
+                         *         ],
+                         *         "result": null,
+                         *         "activated_at": null,
+                         *         "activated_by": null,
+                         *         "created_at": "2026-11-02T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceEnrollmentBatch"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/enrollments/batches/{batch_id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Activate an enrollment batch
+         * @description Step 2: the owner starts it. Everyone is checked again (opt-out, blocked, no channel, exclusivity): a person already in a higher sequence (or in «Si no responde» when it ranks above) is skipped and counted in `result.excluded`. The rest are enrolled with the batch and basis on their enrollment, and the sequence runs them like any other: its own agent writes, contact hours, pause and per-person limits apply. The sequence must be published (409 `sequence_not_published`); a batch activates once (409 `batch_not_pending`). Requires `followups:write` and `campaigns:write` (it starts outbound messages).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    batch_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The activated batch */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e20",
+                         *         "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *         "list_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e30",
+                         *         "list_name": "Registrados sin comprar",
+                         *         "status": "activated",
+                         *         "channel": "whatsapp",
+                         *         "consent": {
+                         *           "basis": "explicit_opt_in",
+                         *           "note": "Aceptaron términos al registrarse",
+                         *           "by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222",
+                         *             "via": null
+                         *           },
+                         *           "at": "2026-11-02T15:00:00.000Z"
+                         *         },
+                         *         "funnel": {
+                         *           "total": 120,
+                         *           "reachable": 96,
+                         *           "will_enroll": 90,
+                         *           "excluded": {
+                         *             "blocked": 2,
+                         *             "spam": 0,
+                         *             "archived": 1,
+                         *             "no_identifier": 15,
+                         *             "invalid_identifier": 3,
+                         *             "duplicate": 3,
+                         *             "opted_out": 5,
+                         *             "already_in_sequence": 0,
+                         *             "in_higher_sequence": 6,
+                         *             "in_lower_sequence": 0,
+                         *             "in_recontacto": 0
+                         *           },
+                         *           "opted_out_by": {
+                         *             "stop_keyword": 4,
+                         *             "unsubscribe": 1
+                         *           }
+                         *         },
+                         *         "warnings": [
+                         *           {
+                         *             "code": "whatsapp_marketing_cost",
+                         *             "message": "El primer mensaje por WhatsApp a quien no te escribió en las últimas 24 horas sale como plantilla de marketing aprobada, y Meta cobra cada conversación de marketing. Revisa la tarifa vigente en tu cuenta de Meta antes de activar."
+                         *           }
+                         *         ],
+                         *         "result": {
+                         *           "total": 120,
+                         *           "reachable": 96,
+                         *           "will_enroll": 90,
+                         *           "excluded": {
+                         *             "blocked": 2,
+                         *             "spam": 0,
+                         *             "archived": 1,
+                         *             "no_identifier": 15,
+                         *             "invalid_identifier": 3,
+                         *             "duplicate": 3,
+                         *             "opted_out": 5,
+                         *             "already_in_sequence": 0,
+                         *             "in_higher_sequence": 6,
+                         *             "in_lower_sequence": 0,
+                         *             "in_recontacto": 0
+                         *           },
+                         *           "opted_out_by": {
+                         *             "stop_keyword": 4,
+                         *             "unsubscribe": 1
+                         *           },
+                         *           "enrolled": 90
+                         *         },
+                         *         "activated_at": "2026-11-02T15:10:00.000Z",
+                         *         "activated_by": {
+                         *           "kind": "user",
+                         *           "id": "22222222-2222-4222-8222-222222222222"
+                         *         },
+                         *         "created_at": "2026-11-02T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceEnrollmentBatch"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/enrollments/batches/{batch_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a pending enrollment batch
+         * @description Drops a batch that was never activated; nothing was sent. 409 `batch_not_pending` otherwise. Requires `followups:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    batch_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cancelled batch */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e20",
+                         *         "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *         "list_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e30",
+                         *         "list_name": "Registrados sin comprar",
+                         *         "status": "cancelled",
+                         *         "channel": "whatsapp",
+                         *         "consent": {
+                         *           "basis": "explicit_opt_in",
+                         *           "note": "Aceptaron términos al registrarse",
+                         *           "by": {
+                         *             "kind": "user",
+                         *             "id": "22222222-2222-4222-8222-222222222222",
+                         *             "via": null
+                         *           },
+                         *           "at": "2026-11-02T15:00:00.000Z"
+                         *         },
+                         *         "funnel": {
+                         *           "total": 120,
+                         *           "reachable": 96,
+                         *           "will_enroll": 90,
+                         *           "excluded": {
+                         *             "blocked": 2,
+                         *             "spam": 0,
+                         *             "archived": 1,
+                         *             "no_identifier": 15,
+                         *             "invalid_identifier": 3,
+                         *             "duplicate": 3,
+                         *             "opted_out": 5,
+                         *             "already_in_sequence": 0,
+                         *             "in_higher_sequence": 6,
+                         *             "in_lower_sequence": 0,
+                         *             "in_recontacto": 0
+                         *           },
+                         *           "opted_out_by": {
+                         *             "stop_keyword": 4,
+                         *             "unsubscribe": 1
+                         *           }
+                         *         },
+                         *         "warnings": [
+                         *           {
+                         *             "code": "whatsapp_marketing_cost",
+                         *             "message": "El primer mensaje por WhatsApp a quien no te escribió en las últimas 24 horas sale como plantilla de marketing aprobada, y Meta cobra cada conversación de marketing. Revisa la tarifa vigente en tu cuenta de Meta antes de activar."
+                         *           }
+                         *         ],
+                         *         "result": null,
+                         *         "activated_at": null,
+                         *         "activated_by": null,
+                         *         "created_at": "2026-11-02T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceEnrollmentBatch"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/enrollments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the people in a sequence with their consent
+         * @description Enrollments of the sequence, newest first, each with the consent it entered on (`consent.basis`, note, time; null for people who entered by an event). Filter by `contact_id` (a person’s record) or `batch_id`. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    contact_id?: string;
+                    batch_id?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The enrollments */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e50",
+                         *           "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "contact_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e40",
+                         *           "status": "active",
+                         *           "exit_reason": null,
+                         *           "entered_at": "2026-11-02T15:10:00.000Z",
+                         *           "exited_at": null,
+                         *           "batch_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e20",
+                         *           "consent": {
+                         *             "basis": "explicit_opt_in",
+                         *             "note": "Aceptaron términos al registrarse",
+                         *             "at": "2026-11-02T15:00:00.000Z"
+                         *           }
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceEnrollment"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -246513,7 +250694,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    rail?: "service_lifecycle" | "recontacto" | "seguimiento" | "campaign" | "first_touch" | "api" | "budget_followup";
+                    rail?: "service_lifecycle" | "recontacto" | "seguimiento" | "campaign" | "first_touch" | "api" | "budget_followup" | "sequence";
                     assignee_user_id?: string;
                     limit?: number;
                 };
@@ -247554,7 +251735,7 @@ export interface paths {
                         /** @enum {boolean} */
                         all?: true;
                         /** @enum {string} */
-                        rail?: "service_lifecycle" | "recontacto" | "seguimiento" | "campaign" | "first_touch" | "api" | "budget_followup";
+                        rail?: "service_lifecycle" | "recontacto" | "seguimiento" | "campaign" | "first_touch" | "api" | "budget_followup" | "sequence";
                         purpose?: string;
                         note?: string | null;
                     };
@@ -247695,7 +251876,7 @@ export interface paths {
                         /** @enum {boolean} */
                         all?: true;
                         /** @enum {string} */
-                        rail?: "service_lifecycle" | "recontacto" | "seguimiento" | "campaign" | "first_touch" | "api" | "budget_followup";
+                        rail?: "service_lifecycle" | "recontacto" | "seguimiento" | "campaign" | "first_touch" | "api" | "budget_followup" | "sequence";
                         purpose?: string;
                         reason?: string | null;
                         /** @enum {string|null} */
@@ -277282,12 +281463,15 @@ export interface components {
                 requestId?: string;
             };
         };
-        SequenceStep: {
+        SequenceMessageStep: {
             /** Format: uuid */
             id: string;
             key: string;
             situation: string | null;
-            /** @enum {string} */
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
             kind: "message";
             position: number;
             /** @enum {string} */
@@ -277311,6 +281495,13 @@ export interface components {
             } | {
                 /** @enum {string} */
                 type: "agreed_time";
+            } | {
+                /** @enum {string} */
+                type: "before_appointment";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                hours: number;
             };
             wait_after_previous: {
                 value: number;
@@ -277374,6 +281565,11 @@ export interface components {
                 /** Format: uuid */
                 followup_id: string;
                 trigger_key: string;
+            } | {
+                /** @enum {string} */
+                type: "custom";
+                /** Format: uuid */
+                sequence_id: string;
             };
             warnings: string[];
             stats: {
@@ -277383,6 +281579,230 @@ export interface components {
                 daily_14d: number[];
             };
         };
+        SequenceBranch: {
+            key: string;
+            label: string;
+            /** @description A step key, `end` (the sequence ends), or null = the next step by position. */
+            to: string | null;
+        };
+        SequenceConditionStep: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            situation: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "condition";
+            position: number;
+            label: string;
+            wait: {
+                /** @enum {string} */
+                type: "duration";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                /** @enum {string} */
+                from: "previous_step" | "start";
+                from_step: string | null;
+                hours: number;
+            } | {
+                /** @enum {string} */
+                type: "event";
+                event: string;
+            } | {
+                /** @enum {string} */
+                type: "agreed_time";
+            } | {
+                /** @enum {string} */
+                type: "before_appointment";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                hours: number;
+            };
+            wait_after_previous: {
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+            } | null;
+            at_hours: number | null;
+            /**
+             * @description `replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). The fixed tests have exactly the branches `yes` and `no`.
+             * @enum {string}
+             */
+            test: "replied" | "paid" | "booked" | "ai_decides";
+            ai_prompt: string | null;
+            branches: components["schemas"]["SequenceBranch"][];
+            default_branch: string | null;
+            config_ref: {
+                /** @enum {string} */
+                type: "recontacto";
+                /** @enum {string} */
+                rail: "unanswered_message" | "stalled" | "never_replied" | "lost";
+                step: number;
+                after_hours: number;
+                /** @enum {string|null} */
+                unit: "d" | "h" | null;
+                /** @enum {string} */
+                autonomy: "auto" | "assignee" | "approval";
+                /** @enum {string|null} */
+                channel: "whatsapp" | "instagram" | "email" | "voice" | null;
+                min_score: number | null;
+            } | {
+                /** @enum {string} */
+                type: "first_touch";
+                source: string;
+                /** @enum {string} */
+                config_origin: "configured" | "inherited" | "platform_default";
+            } | {
+                /** @enum {string} */
+                type: "followup";
+                /** Format: uuid */
+                followup_id: string;
+                trigger_key: string;
+            } | {
+                /** @enum {string} */
+                type: "custom";
+                /** Format: uuid */
+                sequence_id: string;
+            };
+            warnings: string[];
+            stats: {
+                waiting_now: number | null;
+                sent_30d: number;
+                reply_rate_30d: number | null;
+                daily_14d: number[];
+            };
+        };
+        /** @description `date_field promised_date`: the day set with POST /sequences/{id}/enrollments/{enrollment_id}/promised-date. `event paid`: unavailable until app#6456. */
+        SequenceWaitUntil: {
+            /** @enum {string} */
+            kind: "date_field";
+            /** @enum {string} */
+            field: "promised_date";
+        } | {
+            /** @enum {string} */
+            kind: "event";
+            /** @enum {string} */
+            event: "paid";
+        };
+        SequenceWaitUntilStep: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            situation: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "wait_until";
+            position: number;
+            label: string;
+            until: components["schemas"]["SequenceWaitUntil"];
+            timeout: {
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+            };
+            at_hours: number | null;
+            config_ref: {
+                /** @enum {string} */
+                type: "recontacto";
+                /** @enum {string} */
+                rail: "unanswered_message" | "stalled" | "never_replied" | "lost";
+                step: number;
+                after_hours: number;
+                /** @enum {string|null} */
+                unit: "d" | "h" | null;
+                /** @enum {string} */
+                autonomy: "auto" | "assignee" | "approval";
+                /** @enum {string|null} */
+                channel: "whatsapp" | "instagram" | "email" | "voice" | null;
+                min_score: number | null;
+            } | {
+                /** @enum {string} */
+                type: "first_touch";
+                source: string;
+                /** @enum {string} */
+                config_origin: "configured" | "inherited" | "platform_default";
+            } | {
+                /** @enum {string} */
+                type: "followup";
+                /** Format: uuid */
+                followup_id: string;
+                trigger_key: string;
+            } | {
+                /** @enum {string} */
+                type: "custom";
+                /** Format: uuid */
+                sequence_id: string;
+            };
+            warnings: string[];
+            stats: {
+                waiting_now: number | null;
+                sent_30d: number;
+                reply_rate_30d: number | null;
+                daily_14d: number[];
+            };
+        };
+        SequenceGotoStep: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            situation: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "goto";
+            position: number;
+            label: string;
+            target_step: string;
+            max_times: number;
+            at_hours: number | null;
+            config_ref: {
+                /** @enum {string} */
+                type: "recontacto";
+                /** @enum {string} */
+                rail: "unanswered_message" | "stalled" | "never_replied" | "lost";
+                step: number;
+                after_hours: number;
+                /** @enum {string|null} */
+                unit: "d" | "h" | null;
+                /** @enum {string} */
+                autonomy: "auto" | "assignee" | "approval";
+                /** @enum {string|null} */
+                channel: "whatsapp" | "instagram" | "email" | "voice" | null;
+                min_score: number | null;
+            } | {
+                /** @enum {string} */
+                type: "first_touch";
+                source: string;
+                /** @enum {string} */
+                config_origin: "configured" | "inherited" | "platform_default";
+            } | {
+                /** @enum {string} */
+                type: "followup";
+                /** Format: uuid */
+                followup_id: string;
+                trigger_key: string;
+            } | {
+                /** @enum {string} */
+                type: "custom";
+                /** Format: uuid */
+                sequence_id: string;
+            };
+            warnings: string[];
+            stats: {
+                waiting_now: number | null;
+                sent_30d: number;
+                reply_rate_30d: number | null;
+                daily_14d: number[];
+            };
+        };
+        SequenceStep: components["schemas"]["SequenceMessageStep"] | components["schemas"]["SequenceConditionStep"] | components["schemas"]["SequenceWaitUntilStep"] | components["schemas"]["SequenceGotoStep"];
         Sequence: {
             /** Format: uuid */
             id: string;
@@ -277392,13 +281812,14 @@ export interface components {
             name: string;
             description: string;
             /** @enum {string} */
-            status: "active" | "paused";
+            status: "active" | "paused" | "draft";
             entry: {
                 /** @enum {string} */
                 type: "event";
                 /** @enum {string} */
-                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder";
+                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
                 filters: {
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
@@ -277408,11 +281829,11 @@ export interface components {
                 /** @enum {string} */
                 type: "list";
                 /** Format: uuid */
-                list_id: string;
+                list_id: string | null;
             };
             goal: {
                 /** @enum {string} */
-                type: "reply" | "promise_kept";
+                type: "reply" | "promise_kept" | "books_visit" | "books_demo" | "pays";
                 label: string;
             };
             /** Format: uuid */
@@ -277431,8 +281852,14 @@ export interface components {
                 from: string;
                 to: string;
                 /** @enum {string} */
-                kind: "next" | "reply_exit" | "end";
+                kind: "next" | "reply_exit" | "end" | "branch" | "loop";
                 situation: string | null;
+                /** @description Drawn on the arrow (vitrina-app#6454): the branch label, the loop bound, «Después de 2 vueltas». */
+                label?: string | null;
+                /** @description `branch` connections: the condition branch key. */
+                branch?: string | null;
+                /** @description `loop` connections: the goto bound. */
+                max_times?: number | null;
             }[];
             window_markers: {
                 situation: string | null;
@@ -277443,7 +281870,7 @@ export interface components {
                 key: string;
                 situation: string | null;
                 /** @enum {string} */
-                type: "mark_lost" | "finish" | "continue";
+                type: "mark_lost" | "finish" | "continue" | "handoff";
                 after: {
                     value: number;
                     /** @enum {string} */
@@ -277489,6 +281916,8 @@ export interface components {
                 preview?: string;
                 /** @enum {string} */
                 status: "sends" | "awaits_approval" | "skipped_no_channel" | "skipped_no_template";
+                /** @description Custom sequences: 2 on the first lap back through a loop, 3 on the next (absent = first pass). */
+                iteration?: number;
             }[];
             end: {
                 /** @enum {string} */
@@ -277499,6 +281928,22 @@ export interface components {
                 at: string;
             };
             notes: string[];
+            /** @description Custom sequences with branches, waits until or loops (vitrina-app#6454): every step the person passes, in order, with the branch taken, what ended a wait, and whether a goto jumped. */
+            path?: {
+                /** Format: uuid */
+                step_id: string;
+                step_key: string;
+                /** @enum {string} */
+                kind: "message" | "condition" | "wait_until" | "goto";
+                iteration: number;
+                at_hours: number | null;
+                branch?: string;
+                /** @enum {string} */
+                decided_by?: "scenario" | "decision" | "default";
+                jumped?: boolean;
+                /** @enum {string} */
+                resolved_by?: "promised_date" | "event" | "timeout";
+            }[];
         };
         SequenceSimulateRequest: {
             /**
@@ -277510,6 +281955,7 @@ export interface components {
             persona?: {
                 name?: string;
                 has_whatsapp: boolean;
+                has_email?: boolean;
                 opted_out: boolean;
             };
             /**
@@ -277540,6 +281986,177 @@ export interface components {
             };
             /** @description `published` (default), `draft` (the open draft) or a version id from `GET /sequences/{id}/versions`. */
             version?: string;
+            /** @description Custom sequences: the branch each condition takes, `{ <step key or step id>: <branch key> }`. «La IA decide» is never called in a simulation; without an entry it takes its first branch. Other conditions follow `behavior` unless listed here. */
+            decisions?: {
+                [key: string]: string;
+            };
+        };
+        /** @description A step: `message` (any sequence), or — custom sequences only (vitrina-app#6454) — `condition`, `wait_until`, `goto`. A built-in refuses the last three (400). */
+        SequenceDefinitionStep: {
+            key: string;
+            situation: string | null;
+            /** @enum {string} */
+            kind: "message";
+            position: number;
+            /** @enum {string} */
+            channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms";
+            /** @enum {string|null} */
+            fallback_channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms" | null;
+            wait: {
+                /** @enum {string} */
+                type: "duration";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                /** @enum {string} */
+                from: "previous_step" | "start";
+                from_step: string | null;
+                hours: number;
+            } | {
+                /** @enum {string} */
+                type: "event";
+                event: string;
+            } | {
+                /** @enum {string} */
+                type: "agreed_time";
+            } | {
+                /** @enum {string} */
+                type: "before_appointment";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                hours: number;
+            };
+            /** @enum {string} */
+            mode: "auto" | "auto_unless_assigned" | "approval" | "skip";
+            content: {
+                /** @enum {string} */
+                type: "ai_message";
+                template_after_window: boolean;
+            } | {
+                /** @enum {string} */
+                type: "template_ladder";
+                templates: {
+                    name: string;
+                    language: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "email";
+                subject: string | null;
+                custom_body: boolean;
+            } | {
+                /** @enum {string} */
+                type: "promise";
+                /** Format: uuid */
+                followup_id: string;
+                trigger_key: string;
+            };
+            /** @description Where a built-in step is stored (keep it as read); null for a step added in the draft. */
+            config_ref: {
+                /** @enum {string} */
+                type: "recontacto";
+                /** @enum {string} */
+                rail: "unanswered_message" | "stalled" | "never_replied" | "lost";
+                step: number;
+                after_hours: number;
+                /** @enum {string|null} */
+                unit: "d" | "h" | null;
+                /** @enum {string} */
+                autonomy: "auto" | "assignee" | "approval";
+                /** @enum {string|null} */
+                channel: "whatsapp" | "instagram" | "email" | "voice" | null;
+                min_score: number | null;
+            } | {
+                /** @enum {string} */
+                type: "first_touch";
+                source: string;
+                /** @enum {string} */
+                config_origin: "configured" | "inherited" | "platform_default";
+            } | {
+                /** @enum {string} */
+                type: "followup";
+                /** Format: uuid */
+                followup_id: string;
+                trigger_key: string;
+            } | {
+                /** @enum {string} */
+                type: "custom";
+                /** Format: uuid */
+                sequence_id: string;
+            } | null;
+            /** @description Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position. */
+            next?: string | null;
+        } | {
+            key: string;
+            situation: string | null;
+            /** @enum {string} */
+            kind: "condition";
+            position: number;
+            wait: {
+                /** @enum {string} */
+                type: "duration";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                /** @enum {string} */
+                from: "previous_step" | "start";
+                from_step: string | null;
+                hours: number;
+            } | {
+                /** @enum {string} */
+                type: "event";
+                event: string;
+            } | {
+                /** @enum {string} */
+                type: "agreed_time";
+            } | {
+                /** @enum {string} */
+                type: "before_appointment";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                hours: number;
+            };
+            /**
+             * @description `replied` (the customer wrote since our last message), `paid` (unavailable until app#6456), `booked` (an appointment since entering), `ai_decides` (the sequence agent picks a branch; `default_branch` on failure). The fixed tests have exactly the branches `yes` and `no`.
+             * @enum {string}
+             */
+            test: "replied" | "paid" | "booked" | "ai_decides";
+            /** @default null */
+            ai_prompt: string | null;
+            branches: components["schemas"]["SequenceBranch"][];
+            /** @default null */
+            default_branch: string | null;
+            config_ref?: null;
+        } | {
+            key: string;
+            situation: string | null;
+            /** @enum {string} */
+            kind: "wait_until";
+            position: number;
+            until: components["schemas"]["SequenceWaitUntil"];
+            timeout: {
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+            };
+            config_ref?: null;
+            /** @description Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position. */
+            next?: string | null;
+        } | {
+            key: string;
+            situation: string | null;
+            /** @enum {string} */
+            kind: "goto";
+            position: number;
+            target_step: string;
+            /**
+             * @description How many times one person takes this jump (default 2, at most 5).
+             * @default 2
+             */
+            max_times: number;
+            config_ref?: null;
         };
         SequenceDefinition: {
             /** @enum {number} */
@@ -277550,8 +282167,9 @@ export interface components {
                 /** @enum {string} */
                 type: "event";
                 /** @enum {string} */
-                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder";
+                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
                 filters: {
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
@@ -277561,11 +282179,11 @@ export interface components {
                 /** @enum {string} */
                 type: "list";
                 /** Format: uuid */
-                list_id: string;
+                list_id: string | null;
             };
             goal: {
                 /** @enum {string} */
-                type: "reply" | "promise_kept";
+                type: "reply" | "promise_kept" | "books_visit" | "books_demo" | "pays";
             };
             /** Format: uuid */
             agent_id: string | null;
@@ -277575,100 +282193,25 @@ export interface components {
                 name: string | null;
                 enabled: boolean;
             }[];
-            steps: {
-                key: string;
-                situation: string | null;
-                /** @enum {string} */
-                kind: "message";
-                position: number;
-                /** @enum {string} */
-                channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms";
-                /** @enum {string|null} */
-                fallback_channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms" | null;
-                wait: {
-                    /** @enum {string} */
-                    type: "duration";
-                    value: number;
-                    /** @enum {string} */
-                    unit: "minutes" | "hours" | "days";
-                    /** @enum {string} */
-                    from: "previous_step" | "start";
-                    from_step: string | null;
-                    hours: number;
-                } | {
-                    /** @enum {string} */
-                    type: "event";
-                    event: string;
-                } | {
-                    /** @enum {string} */
-                    type: "agreed_time";
-                };
-                /** @enum {string} */
-                mode: "auto" | "auto_unless_assigned" | "approval" | "skip";
-                content: {
-                    /** @enum {string} */
-                    type: "ai_message";
-                    template_after_window: boolean;
-                } | {
-                    /** @enum {string} */
-                    type: "template_ladder";
-                    templates: {
-                        name: string;
-                        language: string;
-                    }[];
-                } | {
-                    /** @enum {string} */
-                    type: "email";
-                    subject: string | null;
-                    custom_body: boolean;
-                } | {
-                    /** @enum {string} */
-                    type: "promise";
-                    /** Format: uuid */
-                    followup_id: string;
-                    trigger_key: string;
-                };
-                /** @description Where a built-in step is stored (keep it as read); null for a step added in the draft. */
-                config_ref: {
-                    /** @enum {string} */
-                    type: "recontacto";
-                    /** @enum {string} */
-                    rail: "unanswered_message" | "stalled" | "never_replied" | "lost";
-                    step: number;
-                    after_hours: number;
-                    /** @enum {string|null} */
-                    unit: "d" | "h" | null;
-                    /** @enum {string} */
-                    autonomy: "auto" | "assignee" | "approval";
-                    /** @enum {string|null} */
-                    channel: "whatsapp" | "instagram" | "email" | "voice" | null;
-                    min_score: number | null;
-                } | {
-                    /** @enum {string} */
-                    type: "first_touch";
-                    source: string;
-                    /** @enum {string} */
-                    config_origin: "configured" | "inherited" | "platform_default";
-                } | {
-                    /** @enum {string} */
-                    type: "followup";
-                    /** Format: uuid */
-                    followup_id: string;
-                    trigger_key: string;
-                } | null;
-            }[];
+            steps: components["schemas"]["SequenceDefinitionStep"][];
             connections: {
                 from: string;
                 to: string;
                 /** @enum {string} */
-                kind: "next" | "reply_exit" | "end";
+                kind: "next" | "reply_exit" | "end" | "branch" | "loop";
                 situation: string | null;
+                /** @description Drawn on the arrow (vitrina-app#6454): the branch label, the loop bound, «Después de 2 vueltas». */
+                label?: string | null;
+                /** @description `branch` connections: the condition branch key. */
+                branch?: string | null;
+                /** @description `loop` connections: the goto bound. */
+                max_times?: number | null;
             }[];
             ends: {
                 key: string;
                 situation: string | null;
                 /** @enum {string} */
-                type: "mark_lost" | "finish" | "continue";
+                type: "mark_lost" | "finish" | "continue" | "handoff";
                 after: {
                     value: number;
                     /** @enum {string} */
@@ -277746,6 +282289,21 @@ export interface components {
                 type: "none";
             };
         };
+        SequenceDefinitionView: {
+            /** Format: uuid */
+            sequence_id: string;
+            sequence_key: string;
+            /**
+             * Format: uuid
+             * @description Null for the published version of a built-in that was never versioned (today’s config).
+             */
+            version_id: string | null;
+            /** @description Null for a draft (numbered on publish) or when unversioned. */
+            version: number | null;
+            /** @enum {string} */
+            status: "draft" | "published" | "archived";
+            definition: components["schemas"]["SequenceDefinition"];
+        };
         SequenceDraft: {
             /** Format: uuid */
             sequence_id: string;
@@ -277796,7 +282354,7 @@ export interface components {
             message: string;
             fix: {
                 /** @enum {string} */
-                kind: "draft_template" | "connect_channel" | "request_review" | "remove_step" | "change_channel" | "contact_support";
+                kind: "draft_template" | "connect_channel" | "request_review" | "remove_step" | "change_channel" | "pick_agent" | "contact_support";
                 target?: components["schemas"]["NotificationTarget"];
             };
         };
@@ -277839,6 +282397,342 @@ export interface components {
                 kind: string | null;
                 id: string | null;
                 via?: string | null;
+            } | null;
+        };
+        SequenceTemplate: {
+            /** @enum {string} */
+            key: "blank" | "quote_followup" | "reactivate" | "signup_not_paid" | "installments" | "appointment_reminder";
+            name: string;
+            description: string;
+            entry: {
+                /** @enum {string} */
+                type: "event";
+                /** @enum {string} */
+                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
+                filters: {
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    field: string;
+                    /** @enum {string} */
+                    op: "in";
+                    values: string[];
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "list";
+                /** Format: uuid */
+                list_id: string | null;
+            };
+            goal: {
+                /** @enum {string} */
+                type: "reply" | "promise_kept" | "books_visit" | "books_demo" | "pays";
+                label: string;
+            };
+            channels: ("whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms")[];
+            steps: {
+                key: string;
+                situation: string | null;
+                /** @enum {string} */
+                kind: "message";
+                position: number;
+                /** @enum {string} */
+                channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms";
+                /** @enum {string|null} */
+                fallback_channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms" | null;
+                wait: {
+                    /** @enum {string} */
+                    type: "duration";
+                    value: number;
+                    /** @enum {string} */
+                    unit: "minutes" | "hours" | "days";
+                    /** @enum {string} */
+                    from: "previous_step" | "start";
+                    from_step: string | null;
+                    hours: number;
+                } | {
+                    /** @enum {string} */
+                    type: "event";
+                    event: string;
+                } | {
+                    /** @enum {string} */
+                    type: "agreed_time";
+                } | {
+                    /** @enum {string} */
+                    type: "before_appointment";
+                    value: number;
+                    /** @enum {string} */
+                    unit: "minutes" | "hours" | "days";
+                    hours: number;
+                };
+                /** @enum {string} */
+                mode: "auto" | "auto_unless_assigned" | "approval" | "skip";
+                content: {
+                    /** @enum {string} */
+                    type: "ai_message";
+                    template_after_window: boolean;
+                } | {
+                    /** @enum {string} */
+                    type: "template_ladder";
+                    templates: {
+                        name: string;
+                        language: string;
+                    }[];
+                } | {
+                    /** @enum {string} */
+                    type: "email";
+                    subject: string | null;
+                    custom_body: boolean;
+                } | {
+                    /** @enum {string} */
+                    type: "promise";
+                    /** Format: uuid */
+                    followup_id: string;
+                    trigger_key: string;
+                };
+                /** @description Where a built-in step is stored (keep it as read); null for a step added in the draft. */
+                config_ref: {
+                    /** @enum {string} */
+                    type: "recontacto";
+                    /** @enum {string} */
+                    rail: "unanswered_message" | "stalled" | "never_replied" | "lost";
+                    step: number;
+                    after_hours: number;
+                    /** @enum {string|null} */
+                    unit: "d" | "h" | null;
+                    /** @enum {string} */
+                    autonomy: "auto" | "assignee" | "approval";
+                    /** @enum {string|null} */
+                    channel: "whatsapp" | "instagram" | "email" | "voice" | null;
+                    min_score: number | null;
+                } | {
+                    /** @enum {string} */
+                    type: "first_touch";
+                    source: string;
+                    /** @enum {string} */
+                    config_origin: "configured" | "inherited" | "platform_default";
+                } | {
+                    /** @enum {string} */
+                    type: "followup";
+                    /** Format: uuid */
+                    followup_id: string;
+                    trigger_key: string;
+                } | {
+                    /** @enum {string} */
+                    type: "custom";
+                    /** Format: uuid */
+                    sequence_id: string;
+                } | null;
+                /** @description Custom sequences: the step key (or `end`) this step goes to; absent/null = the next step by position. */
+                next?: string | null;
+                label: string;
+            }[];
+        };
+        SequenceCreateResult: {
+            sequence: components["schemas"]["Sequence"];
+            draft: components["schemas"]["SequenceDraft"];
+        };
+        SequenceCreateRequest: {
+            /**
+             * @description A template from `GET /sequences/templates` (its suggested steps become the first draft); omitted = `blank` (from scratch).
+             * @enum {string}
+             */
+            template?: "blank" | "quote_followup" | "reactivate" | "signup_not_paid" | "installments" | "appointment_reminder";
+            name?: string;
+            description?: string | null;
+            entry?: {
+                /** @enum {string} */
+                type: "event";
+                /** @enum {string} */
+                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
+                filters: {
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    field: string;
+                    /** @enum {string} */
+                    op: "in";
+                    values: string[];
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "list";
+                /** Format: uuid */
+                list_id: string | null;
+            };
+            goal?: {
+                /** @enum {string} */
+                type: "reply" | "promise_kept" | "books_visit" | "books_demo" | "pays";
+            };
+            /**
+             * Format: uuid
+             * @description The AI agent that runs this sequence: writes its messages with its own persona and knowledge, and answers when the person replies. Must be an active agent of the workspace. `null` = the workspace's current agent.
+             */
+            agent_id?: string | null;
+        };
+        SequencePatchRequest: {
+            name?: string;
+            description?: string | null;
+            entry?: {
+                /** @enum {string} */
+                type: "event";
+                /** @enum {string} */
+                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
+                filters: {
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    field: string;
+                    /** @enum {string} */
+                    op: "in";
+                    values: string[];
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "list";
+                /** Format: uuid */
+                list_id: string | null;
+            };
+            goal?: {
+                /** @enum {string} */
+                type: "reply" | "promise_kept" | "books_visit" | "books_demo" | "pays";
+            };
+            /**
+             * Format: uuid
+             * @description The AI agent that runs this sequence: writes its messages with its own persona and knowledge, and answers when the person replies. Must be an active agent of the workspace. `null` = the workspace's current agent.
+             */
+            agent_id?: string | null;
+        };
+        SequenceDeleteResult: {
+            deleted: boolean;
+            exited: number;
+        };
+        SequenceOrder: {
+            order: {
+                /** Format: uuid */
+                id: string;
+                key: string;
+                priority: number;
+            }[];
+        };
+        SequenceOrderRequest: {
+            /** @description Highest priority first: `builtin:si-no-responde` and every custom sequence id, each exactly once. */
+            order: string[];
+        };
+        SequenceEnrollmentPromise: {
+            /** Format: uuid */
+            enrollment_id: string;
+            /** Format: uuid */
+            sequence_id: string;
+            /** Format: uuid */
+            contact_id: string;
+            promised_date: string | null;
+            /** @description The step key the person is at. */
+            current_step: string | null;
+            next_due_at: string | null;
+            /** @description True when the person is at a «Esperar hasta la fecha prometida» step (it now waits for this date). */
+            waiting_for_date: boolean;
+        };
+        SequencePromisedDateRequest: {
+            /**
+             * @description The day the customer promised (`YYYY-MM-DD`, workspace calendar); null clears it.
+             * @example 2026-11-15
+             */
+            date: string | null;
+        };
+        SequenceEnrollmentFunnel: {
+            total: number;
+            reachable: number;
+            will_enroll: number;
+            excluded: {
+                blocked: number;
+                spam: number;
+                archived: number;
+                no_identifier: number;
+                invalid_identifier: number;
+                duplicate: number;
+                opted_out: number;
+                already_in_sequence: number;
+                in_higher_sequence: number;
+                in_lower_sequence: number;
+                in_recontacto: number;
+            };
+            opted_out_by: {
+                [key: string]: number;
+            };
+        };
+        SequenceEnrollmentBatch: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            sequence_id: string;
+            /** Format: uuid */
+            list_id: string;
+            list_name: string;
+            /** @enum {string} */
+            status: "pending_activation" | "activated" | "cancelled";
+            /** @enum {string} */
+            channel: "whatsapp" | "email";
+            consent: {
+                /**
+                 * @description Why the owner may write to this list: `customer_relationship` (past or current customers), `explicit_opt_in` (they registered and accepted terms, or consented in a form), `other_documented` (anything else, described in the note).
+                 * @enum {string}
+                 */
+                basis: "customer_relationship" | "explicit_opt_in" | "other_documented";
+                note: string;
+                by: {
+                    kind: string | null;
+                    id: string | null;
+                    via: string | null;
+                };
+                at: string;
+            };
+            funnel: components["schemas"]["SequenceEnrollmentFunnel"];
+            warnings: {
+                /** @enum {string} */
+                code: "whatsapp_marketing_cost";
+                message: string;
+            }[];
+            result: components["schemas"]["SequenceEnrollmentFunnel"] & ({
+                enrolled: number;
+            } | null);
+            activated_at: string | null;
+            activated_by: {
+                kind: string | null;
+                id: string | null;
+            } | null;
+            created_at: string;
+        };
+        SequenceEnrollFromListRequest: {
+            /**
+             * Format: uuid
+             * @description The list to enroll: the id of a saved audience (`GET /audiences`). A CSV import becomes a list by importing with `tags` and saving an audience on that tag.
+             */
+            list_id: string;
+            /**
+             * @description Why the owner may write to this list: `customer_relationship` (past or current customers), `explicit_opt_in` (they registered and accepted terms, or consented in a form), `other_documented` (anything else, described in the note).
+             * @enum {string}
+             */
+            consent_basis: "customer_relationship" | "explicit_opt_in" | "other_documented";
+            /** @description Evidence of the consent: where and when it was given. Stored with who and when. */
+            note: string;
+        };
+        SequenceEnrollment: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            sequence_id: string;
+            /** Format: uuid */
+            contact_id: string;
+            /** @enum {string} */
+            status: "active" | "exited" | "completed";
+            exit_reason: string | null;
+            entered_at: string;
+            exited_at: string | null;
+            /** Format: uuid */
+            batch_id: string | null;
+            consent: {
+                /**
+                 * @description Why the owner may write to this list: `customer_relationship` (past or current customers), `explicit_opt_in` (they registered and accepted terms, or consented in a form), `other_documented` (anything else, described in the note).
+                 * @enum {string}
+                 */
+                basis: "customer_relationship" | "explicit_opt_in" | "other_documented";
+                note: string | null;
+                at: string | null;
             } | null;
         };
         MetaAdsAccount: {
