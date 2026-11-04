@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.5.0",
+    "version": "17.7.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -50949,6 +50949,145 @@
           "optin",
           "consent"
         ]
+      },
+      "InboxViewFilters": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "messagingAccountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "conversation",
+              "marketplace",
+              "manual",
+              "import",
+              "ai_agent",
+              "chileautos",
+              "yapo",
+              "mercadolibre",
+              "website"
+            ]
+          },
+          "convStatus": {
+            "type": "string",
+            "enum": [
+              "open",
+              "pending",
+              "snoozed",
+              "resolved",
+              "closed"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "handler": {
+            "type": "string",
+            "enum": [
+              "bot",
+              "human",
+              "external"
+            ]
+          },
+          "assigneeUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "unassigned": {
+            "type": "boolean"
+          },
+          "teamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "aiReplied": {
+            "type": "boolean"
+          },
+          "fromAd": {
+            "type": "boolean"
+          },
+          "fromCampaign": {
+            "type": "boolean"
+          },
+          "waiting": {
+            "anyOf": [
+              {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "closed"
+                ]
+              }
+            ]
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "contains",
+                    "equals"
+                  ],
+                  "default": "contains"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "key",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          }
+        },
+        "additionalProperties": false,
+        "description": "A subset of `GET /conversations` filters, same names and meaning. `attributes` are ANDed (`{ key, op: contains|equals, value }`, case- and accent-insensitive on the stored value as text; `key: \"*\"` matches the value under ANY attribute key); `tagIds` matches ANY of the tags; `waiting: true` lists only the matches a customer is waiting on (`closed`: the ones left out of the queue). At least one criterion other than `waiting` is required.",
+        "example": {
+          "attributes": [
+            {
+              "key": "*",
+              "op": "contains",
+              "value": "18 pro max"
+            }
+          ],
+          "active": true
+        }
       },
       "Property": {
         "type": "object",
@@ -250934,11 +251073,84 @@
                   "type": "null"
                 }
               ],
-              "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays); a customer who announced a store visit («mañana paso», «el martes voy») waits through that day and is left out once it is over with nothing newer from them (`visit_passed`: a «Recordatorio acordado» to check whether they came falls due the next morning). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why (`closed_by_customer` | `nothing_owed` | `paid_or_in_store` | `promised_later` | `visit_passed`), `waiting_due_at` when a promised follow-up or the visit reminder falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order."
+              "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays); a customer who announced a store visit («mañana paso», «el martes voy») waits through that day and is left out once it is over with nothing newer from them (`visit_passed`: a «Recordatorio acordado» to check whether they came falls due the next morning). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why (`closed_by_customer` | `nothing_owed` | `paid_or_in_store` | `promised_later` | `visit_passed`), `waiting_due_at` when a promised follow-up or the visit reminder falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order. Conversations matching a workspace inbox view with «Sacar de Esperando respuesta» (`exclude_from_waiting`) are left out of `waiting=true` (and of the `waiting` count) unless the request names that view with `viewId`; they keep their `waiting_since`. An urgent (`handoff_urgent`) thread is never left out."
             },
             "required": false,
-            "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays); a customer who announced a store visit («mañana paso», «el martes voy») waits through that day and is left out once it is over with nothing newer from them (`visit_passed`: a «Recordatorio acordado» to check whether they came falls due the next morning). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why (`closed_by_customer` | `nothing_owed` | `paid_or_in_store` | `promised_later` | `visit_passed`), `waiting_due_at` when a promised follow-up or the visit reminder falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order.",
+            "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays); a customer who announced a store visit («mañana paso», «el martes voy») waits through that day and is left out once it is over with nothing newer from them (`visit_passed`: a «Recordatorio acordado» to check whether they came falls due the next morning). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why (`closed_by_customer` | `nothing_owed` | `paid_or_in_store` | `promised_later` | `visit_passed`), `waiting_due_at` when a promised follow-up or the visit reminder falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order. Conversations matching a workspace inbox view with «Sacar de Esperando respuesta» (`exclude_from_waiting`) are left out of `waiting=true` (and of the `waiting` count) unless the request names that view with `viewId`; they keep their `waiting_since`. An urgent (`handoff_urgent`) thread is never left out.",
             "name": "waiting",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "op": {
+                    "type": "string",
+                    "enum": [
+                      "contains",
+                      "equals"
+                    ],
+                    "default": "contains"
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "key",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 10,
+              "description": "Conversation-attribute condition(s) — what the AI agent recorded with `add_metadata` or a person set (`conversation_attribute`). Format `<key>:<op>:<value>`, `op` = `contains` | `equals` (`<key>:<value>` reads as `contains`); repeat the parameter to AND several. Case- and accent-insensitive («18 pro máx» matches «18 Pro Max»), on the stored value as text (a string without its JSON quotes). Key `*` matches the value under ANY attribute key. Examples: `attribute=modelo_buscado:contains:18 pro max`, `attribute=*:contains:18 pro max`. Keys and their common values: `GET /inbox-views/attribute-keys`."
+            },
+            "required": false,
+            "description": "Conversation-attribute condition(s) — what the AI agent recorded with `add_metadata` or a person set (`conversation_attribute`). Format `<key>:<op>:<value>`, `op` = `contains` | `equals` (`<key>:<value>` reads as `contains`); repeat the parameter to AND several. Case- and accent-insensitive («18 pro máx» matches «18 Pro Max»), on the stored value as text (a string without its JSON quotes). Key `*` matches the value under ANY attribute key. Examples: `attribute=modelo_buscado:contains:18 pro max`, `attribute=*:contains:18 pro max`. Keys and their common values: `GET /inbox-views/attribute-keys`.",
+            "name": "attribute",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "minItems": 1,
+              "maxItems": 20,
+              "description": "Only conversations carrying ANY of these tags (`GET /tags` ids), comma-separated or repeated; at most 20."
+            },
+            "required": false,
+            "description": "Only conversations carrying ANY of these tags (`GET /tags` ids), comma-separated or repeated; at most 20.",
+            "name": "tagIds",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Apply a saved inbox view (`GET /inbox-views`): its filters are ANDed with every other parameter here, and its `waiting` (if any) applies when `waiting` is not given. A workspace view, or one of your own personal views; any other id is a 404. A view with «Sacar de Esperando respuesta» still lists its matches (with their `waiting_since`) — the exclusion only applies to `waiting=true` WITHOUT a `viewId`."
+            },
+            "required": false,
+            "description": "Apply a saved inbox view (`GET /inbox-views`): its filters are ANDed with every other parameter here, and its `waiting` (if any) applies when `waiting` is not given. A workspace view, or one of your own personal views; any other id is a 404. A view with «Sacar de Esperando respuesta» still lists its matches (with their `waiting_since`) — the exclusion only applies to `waiting=true` WITHOUT a `viewId`.",
+            "name": "viewId",
             "in": "query"
           },
           {
@@ -251626,7 +251838,7 @@
     "/conversations/counts": {
       "get": {
         "summary": "Inbox badge counts (my open / unread / mentions / unassigned / waiting)",
-        "description": "The four badge counts on their own, scoped to the calling principal: `myOpen` and `myUnread` are the conversations assigned to the member behind the credential, `myMentions` the ones that @-mention them, `unassigned` the whole workspace’s unowned queue. An API key has no member behind it, so its three \"my\" counts read 0 and only `unassigned` is meaningful — use a personal token to get a person’s badges.\n\n«Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h»; `waitingClosed` how many live threads were left out because the customer closed the chat, nothing is owed, they paid or are in the store, or a follow-up we promised is not due yet (the list `waiting=closed`).\n\n`GET /conversations?include=counts` returns the same payload beside a page of conversations; this route exists for the caller that wants the badges without one.",
+        "description": "The four badge counts on their own, scoped to the calling principal: `myOpen` and `myUnread` are the conversations assigned to the member behind the credential, `myMentions` the ones that @-mention them, `unassigned` the whole workspace’s unowned queue. An API key has no member behind it, so its three \"my\" counts read 0 and only `unassigned` is meaningful — use a personal token to get a person’s badges.\n\n«Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h»; `waitingClosed` how many live threads were left out because the customer closed the chat, nothing is owed, they paid or are in the store, or a follow-up we promised is not due yet (the list `waiting=closed`); `waitingExcluded` how many waiting conversations a workspace view with «Sacar de Esperando respuesta» (`exclude_from_waiting`) took out of `waiting` — they are not in the queue, the banner or the urgent / mine / oldest figures, and they wait in their view (an urgent `handoff_urgent` thread is never taken out) (`GET /inbox-views` gives each view its `waiting_count`).\n\n`GET /conversations?include=counts` returns the same payload beside a page of conversations; this route exists for the caller that wants the badges without one.",
         "security": [
           {
             "BearerAuth": []
@@ -251660,7 +251872,8 @@
                     "waitingUrgent": 1,
                     "waitingMine": 1,
                     "waitingOldestSince": "2026-10-31T13:05:00.000Z",
-                    "waitingClosed": 4
+                    "waitingClosed": 4,
+                    "waitingExcluded": 0
                   }
                 }
               }
@@ -340701,6 +340914,935 @@
                         "error": null
                       }
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/inbox-views": {
+      "get": {
+        "summary": "List the inbox views you see, with their counts",
+        "description": "The workspace views (position order), then your personal views. A view: `{ id, name, scope: workspace|personal, owner_user_id, filters, exclude_from_waiting, position, created_by, created_at, updated_at, editable }` — `editable` says whether the caller may change it.\n\nEach view carries `count` — exactly the total of `GET /conversations?viewId=<id>` for you (your row visibility applies) — and `waiting_count`, how many of its matches have a customer waiting on a human (the sidebar badge of a view with `exclude_from_waiting`). `counts=false` skips both.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Inbox views"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "required": false,
+            "name": "counts",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inbox views",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                      "name": "Piden 18 Pro Max",
+                      "scope": "workspace",
+                      "owner_user_id": null,
+                      "filters": {
+                        "active": true,
+                        "attributes": [
+                          {
+                            "key": "*",
+                            "op": "contains",
+                            "value": "18 pro max"
+                          }
+                        ]
+                      },
+                      "exclude_from_waiting": true,
+                      "position": 0,
+                      "created_by": "0b9e2f4a-8c1d-4f37-b6a2-5d3e7c9a1b20",
+                      "created_at": "2026-11-04T12:00:00.000Z",
+                      "updated_at": "2026-11-04T12:00:00.000Z",
+                      "editable": true,
+                      "count": 21,
+                      "waiting_count": 15
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Create an inbox view",
+        "description": "`scope: personal` (the default) is yours alone; `scope: workspace` is the whole team’s and needs `routing:write` (a workspace admin). `filters` takes the `InboxViewFilters` subset of `GET /conversations` filters and needs at least one criterion besides `waiting`. An attribute condition `{ key, op, value }` compares the value case- and accent-insensitively; `key: \"*\"` matches it under any attribute key (one view for `modelo_buscado` and `handoff.reason` alike). `exclude_from_waiting: true` («Sacar de Esperando respuesta») is refused (400) on a personal view; on a workspace view it never takes out an urgent (`handoff_urgent`) thread. A name already used in the same scope (case-insensitive) is a 409. At most 50 views per scope. Answers 201 with the view.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Inbox views"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "workspace",
+                      "personal"
+                    ],
+                    "default": "personal"
+                  },
+                  "filters": {
+                    "$ref": "#/components/schemas/InboxViewFilters"
+                  },
+                  "exclude_from_waiting": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "required": [
+                  "name",
+                  "filters"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "name": "Piden 18 Pro Max",
+                "scope": "workspace",
+                "filters": {
+                  "active": true,
+                  "attributes": [
+                    {
+                      "key": "*",
+                      "op": "contains",
+                      "value": "18 pro max"
+                    }
+                  ]
+                },
+                "exclude_from_waiting": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                    "name": "Piden 18 Pro Max",
+                    "scope": "workspace",
+                    "owner_user_id": null,
+                    "filters": {
+                      "active": true,
+                      "attributes": [
+                        {
+                          "key": "*",
+                          "op": "contains",
+                          "value": "18 pro max"
+                        }
+                      ]
+                    },
+                    "exclude_from_waiting": true,
+                    "position": 0,
+                    "created_by": "0b9e2f4a-8c1d-4f37-b6a2-5d3e7c9a1b20",
+                    "created_at": "2026-11-04T12:00:00.000Z",
+                    "updated_at": "2026-11-04T12:00:00.000Z",
+                    "editable": true,
+                    "count": 21,
+                    "waiting_count": 15
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/inbox-views/attribute-keys": {
+      "get": {
+        "summary": "Conversation-attribute keys and their common values",
+        "description": "The workspace’s conversation-attribute keys (what the AI agent recorded with `add_metadata`, or a person set), most used first, each with `count` (conversations carrying it) and `top_values` — the `top` most frequent scalar values, cut to 120 characters — for a view editor’s picker. `key` narrows to one key.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Inbox views"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "required": false,
+            "name": "key",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 50,
+              "default": 5
+            },
+            "required": false,
+            "name": "top",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "key": "modelo",
+                      "count": 1334,
+                      "top_values": [
+                        {
+                          "value": "iPhone 18 Pro 256 GB",
+                          "count": 72
+                        },
+                        {
+                          "value": "iPhone 18 Pro Max",
+                          "count": 26
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/inbox-views/reorder": {
+      "post": {
+        "summary": "Reorder inbox views",
+        "description": "Sets each listed view’s `position` to its index in `ids`. All ids must be views of `scope` that you write (workspace: `routing:write`; personal: your own); views left out keep their position. Answers the views you see, in their new order.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Inbox views"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "workspace",
+                      "personal"
+                    ]
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 100
+                  }
+                },
+                "required": [
+                  "scope",
+                  "ids"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inbox views, reordered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/inbox-views/{id}": {
+      "get": {
+        "summary": "Fetch one inbox view",
+        "description": "A view: `{ id, name, scope: workspace|personal, owner_user_id, filters, exclude_from_waiting, position, created_by, created_at, updated_at, editable }` — `editable` says whether the caller may change it. Another member’s personal view is a 404.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Inbox views"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Delete an inbox view",
+        "description": "Deletes the view (never a conversation). A view with `exclude_from_waiting` puts its matches back in «Esperando respuesta». Answers 204.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Inbox views"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      },
+      "patch": {
+        "summary": "Update an inbox view",
+        "description": "Any of `name`, `filters` (replaced whole), `exclude_from_waiting`, `position`. Same rules as create; the scope cannot change. Turning `exclude_from_waiting` off puts the matches back in «Esperando respuesta» on the next read.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Inbox views"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "filters": {
+                    "$ref": "#/components/schemas/InboxViewFilters"
+                  },
+                  "exclude_from_waiting": {
+                    "type": "boolean"
+                  },
+                  "position": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
                   }
                 }
               }

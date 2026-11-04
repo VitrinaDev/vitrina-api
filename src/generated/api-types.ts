@@ -144974,8 +144974,22 @@ export interface paths {
                     aiReplied?: boolean | null;
                     fromAd?: boolean | null;
                     fromCampaign?: boolean | null;
-                    /** @description true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays); a customer who announced a store visit («mañana paso», «el martes voy») waits through that day and is left out once it is over with nothing newer from them (`visit_passed`: a «Recordatorio acordado» to check whether they came falls due the next morning). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why (`closed_by_customer` | `nothing_owed` | `paid_or_in_store` | `promised_later` | `visit_passed`), `waiting_due_at` when a promised follow-up or the visit reminder falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order. */
+                    /** @description true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays); a customer who announced a store visit («mañana paso», «el martes voy») waits through that day and is left out once it is over with nothing newer from them (`visit_passed`: a «Recordatorio acordado» to check whether they came falls due the next morning). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why (`closed_by_customer` | `nothing_owed` | `paid_or_in_store` | `promised_later` | `visit_passed`), `waiting_due_at` when a promised follow-up or the visit reminder falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order. Conversations matching a workspace inbox view with «Sacar de Esperando respuesta» (`exclude_from_waiting`) are left out of `waiting=true` (and of the `waiting` count) unless the request names that view with `viewId`; they keep their `waiting_since`. An urgent (`handoff_urgent`) thread is never left out. */
                     waiting?: boolean | "closed" | null;
+                    /** @description Conversation-attribute condition(s) — what the AI agent recorded with `add_metadata` or a person set (`conversation_attribute`). Format `<key>:<op>:<value>`, `op` = `contains` | `equals` (`<key>:<value>` reads as `contains`); repeat the parameter to AND several. Case- and accent-insensitive («18 pro máx» matches «18 Pro Max»), on the stored value as text (a string without its JSON quotes). Key `*` matches the value under ANY attribute key. Examples: `attribute=modelo_buscado:contains:18 pro max`, `attribute=*:contains:18 pro max`. Keys and their common values: `GET /inbox-views/attribute-keys`. */
+                    attribute?: {
+                        key: string;
+                        /**
+                         * @default contains
+                         * @enum {string}
+                         */
+                        op?: "contains" | "equals";
+                        value: string;
+                    }[] | null;
+                    /** @description Only conversations carrying ANY of these tags (`GET /tags` ids), comma-separated or repeated; at most 20. */
+                    tagIds?: string[] | null;
+                    /** @description Apply a saved inbox view (`GET /inbox-views`): its filters are ANDed with every other parameter here, and its `waiting` (if any) applies when `waiting` is not given. A workspace view, or one of your own personal views; any other id is a 404. A view with «Sacar de Esperando respuesta» still lists its matches (with their `waiting_since`) — the exclusion only applies to `waiting=true` WITHOUT a `viewId`. */
+                    viewId?: string;
                     /** @description `wait`: urgent (`handoff_urgent`) first, then by `waiting_since` — `order=desc` (default) is the longest wait first, `asc` the newest; conversations that are not waiting go last. */
                     sort?: "created_at" | "updated_at" | "last_message_date" | "wait";
                     order?: "asc" | "desc";
@@ -145553,7 +145567,7 @@ export interface paths {
          * Inbox badge counts (my open / unread / mentions / unassigned / waiting)
          * @description The four badge counts on their own, scoped to the calling principal: `myOpen` and `myUnread` are the conversations assigned to the member behind the credential, `myMentions` the ones that @-mention them, `unassigned` the whole workspace’s unowned queue. An API key has no member behind it, so its three "my" counts read 0 and only `unassigned` is meaningful — use a personal token to get a person’s badges.
          *
-         *     «Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h»; `waitingClosed` how many live threads were left out because the customer closed the chat, nothing is owed, they paid or are in the store, or a follow-up we promised is not due yet (the list `waiting=closed`).
+         *     «Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h»; `waitingClosed` how many live threads were left out because the customer closed the chat, nothing is owed, they paid or are in the store, or a follow-up we promised is not due yet (the list `waiting=closed`); `waitingExcluded` how many waiting conversations a workspace view with «Sacar de Esperando respuesta» (`exclude_from_waiting`) took out of `waiting` — they are not in the queue, the banner or the urgent / mine / oldest figures, and they wait in their view (an urgent `handoff_urgent` thread is never taken out) (`GET /inbox-views` gives each view its `waiting_count`).
          *
          *     `GET /conversations?include=counts` returns the same payload beside a page of conversations; this route exists for the caller that wants the badges without one.
          */
@@ -145583,7 +145597,8 @@ export interface paths {
                          *         "waitingUrgent": 1,
                          *         "waitingMine": 1,
                          *         "waitingOldestSince": "2026-10-31T13:05:00.000Z",
-                         *         "waitingClosed": 4
+                         *         "waitingClosed": 4,
+                         *         "waitingExcluded": 0
                          *       }
                          *     }
                          */
@@ -216940,6 +216955,780 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/inbox-views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the inbox views you see, with their counts
+         * @description The workspace views (position order), then your personal views. A view: `{ id, name, scope: workspace|personal, owner_user_id, filters, exclude_from_waiting, position, created_by, created_at, updated_at, editable }` — `editable` says whether the caller may change it.
+         *
+         *     Each view carries `count` — exactly the total of `GET /conversations?viewId=<id>` for you (your row visibility applies) — and `waiting_count`, how many of its matches have a customer waiting on a human (the sidebar badge of a view with `exclude_from_waiting`). `counts=false` skips both.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    counts?: boolean | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Inbox views */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                         *           "name": "Piden 18 Pro Max",
+                         *           "scope": "workspace",
+                         *           "owner_user_id": null,
+                         *           "filters": {
+                         *             "active": true,
+                         *             "attributes": [
+                         *               {
+                         *                 "key": "*",
+                         *                 "op": "contains",
+                         *                 "value": "18 pro max"
+                         *               }
+                         *             ]
+                         *           },
+                         *           "exclude_from_waiting": true,
+                         *           "position": 0,
+                         *           "created_by": "0b9e2f4a-8c1d-4f37-b6a2-5d3e7c9a1b20",
+                         *           "created_at": "2026-11-04T12:00:00.000Z",
+                         *           "updated_at": "2026-11-04T12:00:00.000Z",
+                         *           "editable": true,
+                         *           "count": 21,
+                         *           "waiting_count": 15
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create an inbox view
+         * @description `scope: personal` (the default) is yours alone; `scope: workspace` is the whole team’s and needs `routing:write` (a workspace admin). `filters` takes the `InboxViewFilters` subset of `GET /conversations` filters and needs at least one criterion besides `waiting`. An attribute condition `{ key, op, value }` compares the value case- and accent-insensitively; `key: "*"` matches it under any attribute key (one view for `modelo_buscado` and `handoff.reason` alike). `exclude_from_waiting: true` («Sacar de Esperando respuesta») is refused (400) on a personal view; on a workspace view it never takes out an urgent (`handoff_urgent`) thread. A name already used in the same scope (case-insensitive) is a 409. At most 50 views per scope. Answers 201 with the view.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Piden 18 Pro Max",
+                     *       "scope": "workspace",
+                     *       "filters": {
+                     *         "active": true,
+                     *         "attributes": [
+                     *           {
+                     *             "key": "*",
+                     *             "op": "contains",
+                     *             "value": "18 pro max"
+                     *           }
+                     *         ]
+                     *       },
+                     *       "exclude_from_waiting": true
+                     *     }
+                     */
+                    "application/json": {
+                        name: string;
+                        /**
+                         * @default personal
+                         * @enum {string}
+                         */
+                        scope?: "workspace" | "personal";
+                        filters: components["schemas"]["InboxViewFilters"];
+                        /** @default false */
+                        exclude_from_waiting?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The created view */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                         *         "name": "Piden 18 Pro Max",
+                         *         "scope": "workspace",
+                         *         "owner_user_id": null,
+                         *         "filters": {
+                         *           "active": true,
+                         *           "attributes": [
+                         *             {
+                         *               "key": "*",
+                         *               "op": "contains",
+                         *               "value": "18 pro max"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "exclude_from_waiting": true,
+                         *         "position": 0,
+                         *         "created_by": "0b9e2f4a-8c1d-4f37-b6a2-5d3e7c9a1b20",
+                         *         "created_at": "2026-11-04T12:00:00.000Z",
+                         *         "updated_at": "2026-11-04T12:00:00.000Z",
+                         *         "editable": true,
+                         *         "count": 21,
+                         *         "waiting_count": 15
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/inbox-views/attribute-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Conversation-attribute keys and their common values
+         * @description The workspace’s conversation-attribute keys (what the AI agent recorded with `add_metadata`, or a person set), most used first, each with `count` (conversations carrying it) and `top_values` — the `top` most frequent scalar values, cut to 120 characters — for a view editor’s picker. `key` narrows to one key.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    key?: string;
+                    limit?: number;
+                    top?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attribute keys */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "key": "modelo",
+                         *           "count": 1334,
+                         *           "top_values": [
+                         *             {
+                         *               "value": "iPhone 18 Pro 256 GB",
+                         *               "count": 72
+                         *             },
+                         *             {
+                         *               "value": "iPhone 18 Pro Max",
+                         *               "count": 26
+                         *             }
+                         *           ]
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/inbox-views/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reorder inbox views
+         * @description Sets each listed view’s `position` to its index in `ids`. All ids must be views of `scope` that you write (workspace: `routing:write`; personal: your own); views left out keep their position. Answers the views you see, in their new order.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        scope: "workspace" | "personal";
+                        ids: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Inbox views, reordered */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/inbox-views/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fetch one inbox view
+         * @description A view: `{ id, name, scope: workspace|personal, owner_user_id, filters, exclude_from_waiting, position, created_by, created_at, updated_at, editable }` — `editable` says whether the caller may change it. Another member’s personal view is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The view */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete an inbox view
+         * @description Deletes the view (never a conversation). A view with `exclude_from_waiting` puts its matches back in «Esperando respuesta». Answers 204.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Update an inbox view
+         * @description Any of `name`, `filters` (replaced whole), `exclude_from_waiting`, `position`. Same rules as create; the scope cannot change. Turning `exclude_from_waiting` off puts the matches back in «Esperando respuesta» on the next read.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        filters?: components["schemas"]["InboxViewFilters"];
+                        exclude_from_waiting?: boolean;
+                        position?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated view */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/voice-clips": {
@@ -288434,6 +289223,50 @@ export interface components {
                 /** @description SHA-256 of `text`; sent back to turn it on. */
                 text_hash: string;
             };
+        };
+        /**
+         * @description A subset of `GET /conversations` filters, same names and meaning. `attributes` are ANDed (`{ key, op: contains|equals, value }`, case- and accent-insensitive on the stored value as text; `key: "*"` matches the value under ANY attribute key); `tagIds` matches ANY of the tags; `waiting: true` lists only the matches a customer is waiting on (`closed`: the ones left out of the queue). At least one criterion other than `waiting` is required.
+         * @example {
+         *       "attributes": [
+         *         {
+         *           "key": "*",
+         *           "op": "contains",
+         *           "value": "18 pro max"
+         *         }
+         *       ],
+         *       "active": true
+         *     }
+         */
+        InboxViewFilters: {
+            channel?: string;
+            /** Format: uuid */
+            messagingAccountId?: string;
+            /** @enum {string} */
+            source?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website";
+            /** @enum {string} */
+            convStatus?: "open" | "pending" | "snoozed" | "resolved" | "closed";
+            active?: boolean;
+            /** @enum {string} */
+            handler?: "bot" | "human" | "external";
+            /** Format: uuid */
+            assigneeUserId?: string;
+            unassigned?: boolean;
+            /** Format: uuid */
+            teamId?: string;
+            aiReplied?: boolean;
+            fromAd?: boolean;
+            fromCampaign?: boolean;
+            waiting?: true | "closed";
+            attributes?: {
+                key: string;
+                /**
+                 * @default contains
+                 * @enum {string}
+                 */
+                op: "contains" | "equals";
+                value: string;
+            }[];
+            tagIds?: string[];
         };
         Property: {
             /** Format: uuid */
