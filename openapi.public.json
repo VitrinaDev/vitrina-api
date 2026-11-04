@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.4.0",
+    "version": "17.5.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -389007,7 +389007,7 @@
     "/outbound/approvals": {
       "get": {
         "summary": "List proactive messages waiting on a person",
-        "description": "Every composed outbound message this workspace is holding for a human decision, oldest OBLIGATION first — ordered by `due_at` rather than by when the draft was written, because what is running out of time is the obligation, not the proposal. Each entry carries the draft exactly as it would be sent, the model's operator-facing `reason` (never shown to a customer), who was asked, and `expired: true` once the obligation passed its lateness bound — those stay in the list on purpose, so a reviewer sees that one ran out of time rather than finding it silently gone. Filter by `rail` for one rail's queue, or by `assignee_user_id` for one person's. An entry with a null `assignee_user_id` was routed to the workspace admins, which is a real answer and not a missing one. Rail `api` holds the sends a CONNECTED APP made past its fan-out limit (ADR 0106 §3.2); those entries carry `via: { kind, name }` — the app that wrote them («vía Claude») — and `via` is null on every other rail. `whyNow` is the owner-facing reason, in the product's register (null when the composer wrote none; `reason` stays audit material). Rail `recontacto` entries carry `recontacto: { attempt_id, step_label, auto_send_at, auto_send_at_label, template, window_closes_at, window_note }`: the step as «Si no responde» names it and, for a handed-off conversation's draft, when it sends itself if nobody reviews it («mañana 18:00», the conversation strip's own words), and whether the draft rides an approved WhatsApp template; for a free-text WhatsApp or Instagram draft, when its 24 h window closes (`window_closes_at`, tenant clock) and that in the owner’s words (`window_note`: «Envíalo antes de mañana 14:05; después sale como plantilla aprobada»). Approving a WhatsApp draft past its window re-composes it as an approved template (outcome `deferred` when it must wait for one); an Instagram one past its window is dropped (outcome `stale`, G53). `due_at` is not that moment. Null on every other rail.",
+        "description": "Every composed outbound message this workspace is holding for a human decision, oldest OBLIGATION first — ordered by `due_at` rather than by when the draft was written, because what is running out of time is the obligation, not the proposal. Each entry carries the draft exactly as it would be sent, the model's operator-facing `reason` (never shown to a customer), who was asked, and `expired: true` once the obligation passed its lateness bound — those stay in the list on purpose, so a reviewer sees that one ran out of time rather than finding it silently gone. `expiresAt` is that bound: `dueAt` plus the action’s maximum lateness, as an ISO timestamp, or null when the action has no limit and never expires. Filter by `rail` for one rail's queue, or by `assignee_user_id` for one person's. An entry with a null `assignee_user_id` was routed to the workspace admins, which is a real answer and not a missing one. Rail `api` holds the sends a CONNECTED APP made past its fan-out limit (ADR 0106 §3.2); those entries carry `via: { kind, name }` — the app that wrote them («vía Claude») — and `via` is null on every other rail. `whyNow` is the owner-facing reason, in the product's register (null when the composer wrote none; `reason` stays audit material). Rail `recontacto` entries carry `recontacto: { attempt_id, step_label, auto_send_at, auto_send_at_label, template, window_closes_at, window_note }`: the step as «Si no responde» names it and, for a handed-off conversation's draft, when it sends itself if nobody reviews it («mañana 18:00», the conversation strip's own words), and whether the draft rides an approved WhatsApp template; for a free-text WhatsApp or Instagram draft, when its 24 h window closes (`window_closes_at`, tenant clock) and that in the owner’s words (`window_note`: «Envíalo antes de mañana 14:05; después sale como plantilla aprobada»). Approving a WhatsApp draft past its window re-composes it as an approved template (outcome `deferred` when it must wait for one); an Instagram one past its window is dropped (outcome `stale`, G53). `due_at` is not that moment. Null on every other rail.",
         "security": [
           {
             "BearerAuth": []
@@ -389102,7 +389102,8 @@
                         "channel": "whatsapp",
                         "via": null,
                         "decisionVersion": 1,
-                        "expired": false
+                        "expired": false,
+                        "expiresAt": "2026-11-10T13:00:00.000Z"
                       }
                     ],
                     "total": 1
@@ -389243,7 +389244,8 @@
                     "channel": "whatsapp",
                     "via": null,
                     "decisionVersion": 1,
-                    "expired": false
+                    "expired": false,
+                    "expiresAt": "2026-11-10T13:00:00.000Z"
                   }
                 }
               }
