@@ -275772,7 +275772,7 @@ export interface components {
             /** @enum {string} */
             kind: "page";
             /** @enum {string} */
-            page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+            page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "settings.payment_methods" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
             params?: {
                 [key: string]: string | number | boolean;
             };
@@ -275814,7 +275814,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "page";
                 /** @enum {string} */
-                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "settings.payment_methods" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
                 params?: {
                     [key: string]: string | number | boolean;
                 };
@@ -275841,7 +275841,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "page";
                 /** @enum {string} */
-                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "settings.payment_methods" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
                 params?: {
                     [key: string]: string | number | boolean;
                 };
