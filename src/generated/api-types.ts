@@ -40803,6 +40803,8 @@ export interface paths {
                         tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
                         /** Format: date-time */
                         issued_at?: string | null;
+                        /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
+                        notes?: string | null;
                         lines?: {
                             description: string;
                             net_clp: number;
@@ -41104,6 +41106,8 @@ export interface paths {
                         tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                         /** Format: date-time */
                         issued_at?: string;
+                        /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
+                        notes?: string | null;
                         lines?: {
                             description: string;
                             net_clp: number;
@@ -143962,6 +143966,8 @@ export interface paths {
                         vencimiento?: string | null;
                         /** @enum {string|null} */
                         sale_iva_regime?: "afecto" | "exento" | null;
+                        /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
+                        notes?: string | null;
                     };
                 };
             };
@@ -144365,6 +144371,8 @@ export interface paths {
                         estado?: "activo" | "vendido" | "devuelto" | "vencido";
                         /** @enum {string|null} */
                         sale_iva_regime?: "afecto" | "exento" | null;
+                        /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
+                        notes?: string | null;
                     };
                 };
             };

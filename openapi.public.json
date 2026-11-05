@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.7.1",
+    "version": "17.8.5",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -120434,6 +120434,14 @@
                     ],
                     "format": "date-time"
                   },
+                  "notes": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 4000,
+                    "description": "Internal free-text notes. Never printed on the document. Blank clears them."
+                  },
                   "lines": {
                     "type": "array",
                     "items": {
@@ -120928,6 +120936,14 @@
                   "issued_at": {
                     "type": "string",
                     "format": "date-time"
+                  },
+                  "notes": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 4000,
+                    "description": "Internal free-text notes. Never printed on the document. Blank clears them."
                   },
                   "lines": {
                     "type": "array",
@@ -249690,6 +249706,14 @@
                       "afecto",
                       "exento"
                     ]
+                  },
+                  "notes": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 4000,
+                    "description": "Internal free-text notes. Never printed on the document. Blank clears them."
                   }
                 },
                 "required": [
@@ -250175,6 +250199,14 @@
                       "afecto",
                       "exento"
                     ]
+                  },
+                  "notes": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 4000,
+                    "description": "Internal free-text notes. Never printed on the document. Blank clears them."
                   }
                 }
               },
