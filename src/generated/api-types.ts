@@ -277150,12 +277150,12 @@ export interface components {
                 closed: boolean;
             };
             /**
-             * @description `metered`: rate card. `fixed_contract`: one fixed monthly price, usage shown at $0. `not_billed`: usage only, no prices. `billing_not_started`: billing begins on `billing_starts_on`. `external_month`: the month is invoiced outside the system. `clinic_plan`: billed on the plan anniversary, not by this view.
+             * @description `metered`: rate card. `fixed_contract`: one fixed monthly price, usage shown at $0. `not_billed`: usage only, no prices. `complimentary`: never billed («se calcula, no se cobra») but priced exactly like `metered` for reference — lines, totals, projection and UF, `show_prices` true, `next_charge` null; show the amounts with a note that the workspace is not charged. `billing_not_started`: billing begins on `billing_starts_on`. `external_month`: the month is invoiced outside the system. `clinic_plan`: billed on the plan anniversary, not by this view.
              * @enum {string}
              */
-            mode: "metered" | "fixed_contract" | "not_billed" | "billing_not_started" | "external_month" | "clinic_plan";
+            mode: "metered" | "fixed_contract" | "not_billed" | "complimentary" | "billing_not_started" | "external_month" | "clinic_plan";
             billing_starts_on: string | null;
-            /** @description False: render usage only, no amounts anywhere. */
+            /** @description False: render usage only, no amounts anywhere. True for `complimentary` too: show the amounts, but as a reference (never charged). */
             show_prices: boolean;
             /** @description Today's UF, for the CLP estimate only (the close freezes its own). */
             uf: {
@@ -277335,7 +277335,7 @@ export interface components {
                 waiver_until: string | null;
             }[];
             /**
-             * @description Where `lines`/`totals` come from. `estimate`: the open month priced at today's UF. `invoice`: the issued cobro, exactly as frozen at the close (never recomputed); a cobro issued by hand for the month reads the same, with its totals. `external`: the month was invoiced by hand outside the system and its amount is not on this month (no cobro on record, or it was billed on a cobro listed on another month — then `invoice` names that cobro). `none`: nothing was billed or prices are hidden — usage only.
+             * @description Where `lines`/`totals` come from. `estimate`: the open month priced at today's UF, or a closed `complimentary` month priced on the rate card at its close day's UF (reference only). `invoice`: the issued cobro, exactly as frozen at the close (never recomputed); a cobro issued by hand for the month reads the same, with its totals. `external`: the month was invoiced by hand outside the system and its amount is not on this month (no cobro on record, or it was billed on a cobro listed on another month — then `invoice` names that cobro). `none`: nothing was billed or prices are hidden — usage only.
              * @enum {string}
              */
             amount_source: "estimate" | "invoice" | "external" | "none";
