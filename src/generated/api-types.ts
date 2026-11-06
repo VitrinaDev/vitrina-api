@@ -18470,6 +18470,7 @@ export interface paths {
                         /** @enum {string|null} */
                         merch_label?: "oferta" | "liquidacion" | "poco_km" | "cuatro_x_cuatro" | "full_equipo" | "recien_llegado" | "unico_dueno" | null;
                         is_featured?: boolean;
+                        sold_outside_vitrina?: boolean;
                         /** @enum {string} */
                         vehicle_type?: "auto" | "camion" | "maquinaria" | "nautico";
                         sale_status?: string | null;
@@ -19131,6 +19132,7 @@ export interface paths {
                         /** @enum {string|null} */
                         merch_label?: "oferta" | "liquidacion" | "poco_km" | "cuatro_x_cuatro" | "full_equipo" | "recien_llegado" | "unico_dueno" | null;
                         is_featured?: boolean;
+                        sold_outside_vitrina?: boolean;
                         /** @enum {string} */
                         vehicle_type?: "auto" | "camion" | "maquinaria" | "nautico";
                         sale_status?: string | null;
