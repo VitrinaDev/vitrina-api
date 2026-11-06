@@ -38626,7 +38626,7 @@ export interface paths {
          * Print the nota de venta
          * @description The nota de venta as a printable PDF (`application/pdf`, served `inline`): the workspace’s default `sale_note` template — or `template_id` — filled with this sale’s facts (dealership legal identity, folio, ejecutivo, buyer, seller, vehicle, price, payments). With no live template it prints the standard text. Rendered on demand and not stored (the frozen legal instrument is the compraventa). Any status prints; a voided note carries an «ANULADA» banner. The `X-Template-Version` header names the prose used.
          *
-         *     **409** when a fact the template needs is missing — nothing is printed with a blank. `details.blocked_reason` is `sale_note_print_incomplete` (or the legal-seller code when the seller is what is missing), `details.missing` lists Spanish labels (e.g. «RUT de la automotora», «RUT del comprador») and `details.missing_fields[]` carries `{ variable, label, fix, contact_id? }` where `fix` is `organization_legal` | `buyer_contact` | `sale_note` | `legal_seller` — the form to open. Requires `sale_notes:read`.
+         *     **409** when a fact the template needs is missing — nothing is printed with a blank. `details.blocked_reason` is `sale_note_print_incomplete` (or the legal-seller code when the seller is what is missing), `details.missing` lists Spanish labels (e.g. «RUT de la automotora», «RUT del comprador») and `details.missing_fields[]` carries `{ variable, label, fix, contact_id? }` where `fix` is `organization_legal` | `buyer_contact` | `owner_contact` | `sale_note` | `legal_seller` — the form to open. Requires `sale_notes:read`.
          */
         get: {
             parameters: {
@@ -217387,6 +217387,15 @@ export interface paths {
             };
             requestBody?: {
                 content: {
+                    /**
+                     * @example {
+                     *       "scope": "workspace",
+                     *       "ids": [
+                     *         "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                     *         "9d4b7a10-52c3-4e8f-a1b6-7e0c3f2d8a55"
+                     *       ]
+                     *     }
+                     */
                     "application/json": {
                         /** @enum {string} */
                         scope: "workspace" | "personal";
@@ -217401,6 +217410,36 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                         *           "name": "Piden 18 Pro Max",
+                         *           "scope": "workspace",
+                         *           "owner_user_id": null,
+                         *           "filters": {
+                         *             "active": true,
+                         *             "attributes": [
+                         *               {
+                         *                 "key": "*",
+                         *                 "op": "contains",
+                         *                 "value": "18 pro max"
+                         *               }
+                         *             ]
+                         *           },
+                         *           "exclude_from_waiting": true,
+                         *           "position": 0,
+                         *           "created_by": "0b9e2f4a-8c1d-4f37-b6a2-5d3e7c9a1b20",
+                         *           "created_at": "2026-11-04T12:00:00.000Z",
+                         *           "updated_at": "2026-11-04T12:00:00.000Z",
+                         *           "editable": true,
+                         *           "count": 21,
+                         *           "waiting_count": 15
+                         *         }
+                         *       ]
+                         *     }
+                         */
                         "application/json": {
                             data?: unknown;
                             meta?: {
@@ -217499,6 +217538,34 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                         *         "name": "Piden 18 Pro Max",
+                         *         "scope": "workspace",
+                         *         "owner_user_id": null,
+                         *         "filters": {
+                         *           "active": true,
+                         *           "attributes": [
+                         *             {
+                         *               "key": "*",
+                         *               "op": "contains",
+                         *               "value": "18 pro max"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "exclude_from_waiting": true,
+                         *         "position": 0,
+                         *         "created_by": "0b9e2f4a-8c1d-4f37-b6a2-5d3e7c9a1b20",
+                         *         "created_at": "2026-11-04T12:00:00.000Z",
+                         *         "updated_at": "2026-11-04T12:00:00.000Z",
+                         *         "editable": true,
+                         *         "count": 21,
+                         *         "waiting_count": 15
+                         *       }
+                         *     }
+                         */
                         "application/json": {
                             data?: unknown;
                             meta?: {
@@ -217660,6 +217727,12 @@ export interface paths {
             };
             requestBody?: {
                 content: {
+                    /**
+                     * @example {
+                     *       "name": "Piden 18 Pro Max (sin respuesta)",
+                     *       "exclude_from_waiting": false
+                     *     }
+                     */
                     "application/json": {
                         name?: string;
                         filters?: components["schemas"]["InboxViewFilters"];
@@ -217675,6 +217748,34 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6a1f0c7e-3b8d-4e52-9a51-0c2d7b1e9f44",
+                         *         "name": "Piden 18 Pro Max",
+                         *         "scope": "workspace",
+                         *         "owner_user_id": null,
+                         *         "filters": {
+                         *           "active": true,
+                         *           "attributes": [
+                         *             {
+                         *               "key": "*",
+                         *               "op": "contains",
+                         *               "value": "18 pro max"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "exclude_from_waiting": true,
+                         *         "position": 0,
+                         *         "created_by": "0b9e2f4a-8c1d-4f37-b6a2-5d3e7c9a1b20",
+                         *         "created_at": "2026-11-04T12:00:00.000Z",
+                         *         "updated_at": "2026-11-04T12:00:00.000Z",
+                         *         "editable": true,
+                         *         "count": 21,
+                         *         "waiting_count": 15
+                         *       }
+                         *     }
+                         */
                         "application/json": {
                             data?: unknown;
                             meta?: {
