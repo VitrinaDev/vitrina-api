@@ -90012,6 +90012,15 @@ export interface paths {
                                      */
                                     feed: "direct" | "email" | "statement" | "none";
                                 };
+                                /** @description The optional Mercado Pago row. `done` = a live connection; `problem` = its pull is failing or late; `todo` = not connected (connect it with POST /payment-settings/mercadopago/connect). */
+                                mercado_pago: {
+                                    /** @enum {string} */
+                                    state: "todo" | "done" | "problem";
+                                    /** @description The workspace keeps a Mercado Pago account (e.g. from a Chipax import) or has a Mercado Pago connection: only then is the optional «Mercado Pago» row shown and counted. Never part of `onboarding.mode` `done`. */
+                                    relevant: boolean;
+                                    nickname: string | null;
+                                    connected_at: string | null;
+                                };
                                 sii: {
                                     connection: {
                                         /** Format: uuid */
@@ -90771,6 +90780,15 @@ export interface paths {
                                      */
                                     feed: "direct" | "email" | "statement" | "none";
                                 };
+                                /** @description The optional Mercado Pago row. `done` = a live connection; `problem` = its pull is failing or late; `todo` = not connected (connect it with POST /payment-settings/mercadopago/connect). */
+                                mercado_pago: {
+                                    /** @enum {string} */
+                                    state: "todo" | "done" | "problem";
+                                    /** @description The workspace keeps a Mercado Pago account (e.g. from a Chipax import) or has a Mercado Pago connection: only then is the optional «Mercado Pago» row shown and counted. Never part of `onboarding.mode` `done`. */
+                                    relevant: boolean;
+                                    nickname: string | null;
+                                    connected_at: string | null;
+                                };
                                 sii: {
                                     connection: {
                                         /** Format: uuid */
@@ -91015,6 +91033,15 @@ export interface paths {
                                      * @enum {string}
                                      */
                                     feed: "direct" | "email" | "statement" | "none";
+                                };
+                                /** @description The optional Mercado Pago row. `done` = a live connection; `problem` = its pull is failing or late; `todo` = not connected (connect it with POST /payment-settings/mercadopago/connect). */
+                                mercado_pago: {
+                                    /** @enum {string} */
+                                    state: "todo" | "done" | "problem";
+                                    /** @description The workspace keeps a Mercado Pago account (e.g. from a Chipax import) or has a Mercado Pago connection: only then is the optional «Mercado Pago» row shown and counted. Never part of `onboarding.mode` `done`. */
+                                    relevant: boolean;
+                                    nickname: string | null;
+                                    connected_at: string | null;
                                 };
                                 sii: {
                                     connection: {
