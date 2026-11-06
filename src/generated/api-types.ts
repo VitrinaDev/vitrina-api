@@ -73182,6 +73182,112 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/connections/fintoc/link-intent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a bank link (Fintoc widget token)
+         * @description Opens one bank-link attempt: creates a Fintoc link intent (business holder, movements) and returns its `widget_token`, which opens Fintoc's widget (`Fintoc.create({ publicKey, widgetToken })`). Fintoc returns the token only once, so request a fresh one each time the widget opens. On success the widget hands back an `exchange_token`: send it to `POST /finanzas/connections/fintoc` (or `…/{id}/reconnect`). Reads no bank and costs nothing. Requires the `bank_feed_fintoc` add-on (`402 ENTITLEMENT_NOT_ACTIVE` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The link intent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "widget_token": "widget_token_ejemplo_123",
+                         *         "external_id": "li_ejemplo123"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasFintocLinkIntent"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finanzas/connections/fintoc": {
         parameters: {
             query?: never;
@@ -278688,6 +278794,10 @@ export interface components {
             };
             stale_after_hours: number;
             manual_sync_min_interval_minutes: number;
+        };
+        FinanzasFintocLinkIntent: {
+            widget_token: string;
+            external_id: string;
         };
         FinanzasFintocConnectBody: {
             exchange_token?: string;

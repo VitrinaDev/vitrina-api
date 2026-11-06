@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.11.1",
+    "version": "17.12.3",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8576,6 +8576,21 @@
           "fintoc",
           "stale_after_hours",
           "manual_sync_min_interval_minutes"
+        ]
+      },
+      "FinanzasFintocLinkIntent": {
+        "type": "object",
+        "properties": {
+          "widget_token": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "widget_token",
+          "external_id"
         ]
       },
       "FinanzasFintocConnectBody": {
@@ -161086,6 +161101,121 @@
           }
         },
         "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/connections/fintoc/link-intent": {
+      "post": {
+        "summary": "Start a bank link (Fintoc widget token)",
+        "description": "Opens one bank-link attempt: creates a Fintoc link intent (business holder, movements) and returns its `widget_token`, which opens Fintoc's widget (`Fintoc.create({ publicKey, widgetToken })`). Fintoc returns the token only once, so request a fresh one each time the widget opens. On success the widget hands back an `exchange_token`: send it to `POST /finanzas/connections/fintoc` (or `…/{id}/reconnect`). Reads no bank and costs nothing. Requires the `bank_feed_fintoc` add-on (`402 ENTITLEMENT_NOT_ACTIVE` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "201": {
+            "description": "The link intent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasFintocLinkIntent"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "widget_token": "widget_token_ejemplo_123",
+                    "external_id": "li_ejemplo123"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
       }
     },
     "/finanzas/connections/fintoc": {
