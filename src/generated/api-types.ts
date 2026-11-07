@@ -90244,6 +90244,10 @@ export interface paths {
                                     state: "todo" | "done" | "problem";
                                     /** @description The workspace keeps a Mercado Pago account (e.g. from a Chipax import) or has a Mercado Pago connection: only then is the optional «Mercado Pago» row shown and counted. Never part of `onboarding.mode` `done`. */
                                     relevant: boolean;
+                                    /** @description The workspace shows signs of using Mercado Pago: an account, a connection, or bank movements from any source naming it. With `state` `todo` and no `dismissed_at`, Resumen keeps a card with just this row. */
+                                    evidence: boolean;
+                                    /** @description When «Descartar» was pressed (`dismiss_mercado_pago`). Permanent per workspace; an unconnected, dismissed row is no longer `relevant`. */
+                                    dismissed_at: string | null;
                                     nickname: string | null;
                                     connected_at: string | null;
                                 };
@@ -91012,6 +91016,10 @@ export interface paths {
                                     state: "todo" | "done" | "problem";
                                     /** @description The workspace keeps a Mercado Pago account (e.g. from a Chipax import) or has a Mercado Pago connection: only then is the optional «Mercado Pago» row shown and counted. Never part of `onboarding.mode` `done`. */
                                     relevant: boolean;
+                                    /** @description The workspace shows signs of using Mercado Pago: an account, a connection, or bank movements from any source naming it. With `state` `todo` and no `dismissed_at`, Resumen keeps a card with just this row. */
+                                    evidence: boolean;
+                                    /** @description When «Descartar» was pressed (`dismiss_mercado_pago`). Permanent per workspace; an unconnected, dismissed row is no longer `relevant`. */
+                                    dismissed_at: string | null;
                                     nickname: string | null;
                                     connected_at: string | null;
                                 };
@@ -91149,7 +91157,7 @@ export interface paths {
         put?: never;
         /**
          * Onboarding state: start, defer, or «no recibe boletas de honorarios»
-         * @description Per workspace. `start` keeps the guided start while things get connected; `defer` («Lo hago después») collapses it to the checklist on Resumen; `no_honorarios` marks the honorarios step skipped (409 while honorarios documents are on record); `has_honorarios` undoes it. Answers the setup. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         * @description Per workspace. `start` keeps the guided start while things get connected; `defer` («Lo hago después») collapses it to the checklist on Resumen; `no_honorarios` marks the honorarios step skipped (409 while honorarios documents are on record); `has_honorarios` undoes it; `dismiss_mercado_pago` hides the optional Mercado Pago card for good (per workspace, every device). Answers the setup. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
          */
         post: {
             parameters: {
@@ -91170,7 +91178,7 @@ export interface paths {
                      */
                     "application/json": {
                         /** @enum {string} */
-                        action: "start" | "defer" | "no_honorarios" | "has_honorarios";
+                        action: "start" | "defer" | "no_honorarios" | "has_honorarios" | "dismiss_mercado_pago";
                     };
                 };
             };
@@ -91266,6 +91274,10 @@ export interface paths {
                                     state: "todo" | "done" | "problem";
                                     /** @description The workspace keeps a Mercado Pago account (e.g. from a Chipax import) or has a Mercado Pago connection: only then is the optional «Mercado Pago» row shown and counted. Never part of `onboarding.mode` `done`. */
                                     relevant: boolean;
+                                    /** @description The workspace shows signs of using Mercado Pago: an account, a connection, or bank movements from any source naming it. With `state` `todo` and no `dismissed_at`, Resumen keeps a card with just this row. */
+                                    evidence: boolean;
+                                    /** @description When «Descartar» was pressed (`dismiss_mercado_pago`). Permanent per workspace; an unconnected, dismissed row is no longer `relevant`. */
+                                    dismissed_at: string | null;
                                     nickname: string | null;
                                     connected_at: string | null;
                                 };
