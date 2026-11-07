@@ -10391,7 +10391,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "finanzas_patients:read" | "finanzas_payroll:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -74372,10 +74372,12 @@ export interface paths {
                          *           "source": "movement",
                          *           "contact": null,
                          *           "clinic_patient": null,
+                         *           "is_payroll": false,
                          *           "movement_count": 14,
                          *           "document_count": 6,
                          *           "merged_into_id": null,
                          *           "payment_terms_days": null,
+                         *           "payment_terms_source": null,
                          *           "created_at": "2026-10-01T14:03:00.000Z",
                          *           "updated_at": "2026-10-30T08:00:00.000Z"
                          *         }
@@ -74506,10 +74508,12 @@ export interface paths {
                          *         "source": "movement",
                          *         "contact": null,
                          *         "clinic_patient": null,
+                         *         "is_payroll": false,
                          *         "movement_count": 14,
                          *         "document_count": 6,
                          *         "merged_into_id": null,
                          *         "payment_terms_days": null,
+                         *         "payment_terms_source": null,
                          *         "created_at": "2026-10-01T14:03:00.000Z",
                          *         "updated_at": "2026-10-30T08:00:00.000Z"
                          *       }
@@ -74624,10 +74628,12 @@ export interface paths {
                          *         "source": "movement",
                          *         "contact": null,
                          *         "clinic_patient": null,
+                         *         "is_payroll": false,
                          *         "movement_count": 14,
                          *         "document_count": 6,
                          *         "merged_into_id": null,
                          *         "payment_terms_days": null,
+                         *         "payment_terms_source": null,
                          *         "created_at": "2026-10-01T14:03:00.000Z",
                          *         "updated_at": "2026-10-30T08:00:00.000Z"
                          *       }
@@ -74752,10 +74758,12 @@ export interface paths {
                          *           "source": "movement",
                          *           "contact": null,
                          *           "clinic_patient": null,
+                         *           "is_payroll": false,
                          *           "movement_count": 14,
                          *           "document_count": 6,
                          *           "merged_into_id": null,
                          *           "payment_terms_days": null,
+                         *           "payment_terms_source": null,
                          *           "created_at": "2026-10-01T14:03:00.000Z",
                          *           "updated_at": "2026-10-30T08:00:00.000Z"
                          *         },
@@ -74876,10 +74884,12 @@ export interface paths {
                          *           "source": "document",
                          *           "contact": null,
                          *           "clinic_patient": null,
+                         *           "is_payroll": false,
                          *           "movement_count": 9,
                          *           "document_count": 12,
                          *           "merged_into_id": null,
                          *           "payment_terms_days": 45,
+                         *           "payment_terms_source": "manual",
                          *           "created_at": "2026-09-02T14:03:00.000Z",
                          *           "updated_at": "2026-10-30T08:00:00.000Z"
                          *         },
@@ -74908,7 +74918,8 @@ export interface paths {
                          *               "class": "suppliers",
                          *               "label": "Proveedores",
                          *               "days": 45,
-                         *               "source": "contraparte"
+                         *               "source": "contraparte",
+                         *               "origin": "manual"
                          *             }
                          *           ]
                          *         },
@@ -75276,7 +75287,8 @@ export interface paths {
                          *               "class": "suppliers",
                          *               "label": "Proveedores",
                          *               "days": 45,
-                         *               "source": "contraparte"
+                         *               "source": "contraparte",
+                         *               "origin": "manual"
                          *             }
                          *           ]
                          *         },
@@ -75647,6 +75659,7 @@ export interface paths {
                          *           "label": "Proveedores",
                          *           "days": 30,
                          *           "customized": false,
+                         *           "source": "default",
                          *           "updated_at": null
                          *         },
                          *         {
@@ -75654,6 +75667,7 @@ export interface paths {
                          *           "label": "Clientes",
                          *           "days": 30,
                          *           "customized": false,
+                         *           "source": "default",
                          *           "updated_at": null
                          *         },
                          *         {
@@ -75661,6 +75675,7 @@ export interface paths {
                          *           "label": "Honorarios",
                          *           "days": 15,
                          *           "customized": true,
+                         *           "source": "chipax",
                          *           "updated_at": "2026-10-30T12:00:00.000Z"
                          *         },
                          *         {
@@ -75668,6 +75683,7 @@ export interface paths {
                          *           "label": "Gastos",
                          *           "days": 0,
                          *           "customized": false,
+                         *           "source": "default",
                          *           "updated_at": null
                          *         }
                          *       ]
@@ -75776,6 +75792,7 @@ export interface paths {
                          *             "label": "Proveedores",
                          *             "days": 30,
                          *             "customized": false,
+                         *             "source": "default",
                          *             "updated_at": null
                          *           },
                          *           {
@@ -75783,6 +75800,7 @@ export interface paths {
                          *             "label": "Clientes",
                          *             "days": 30,
                          *             "customized": false,
+                         *             "source": "default",
                          *             "updated_at": null
                          *           },
                          *           {
@@ -75790,6 +75808,7 @@ export interface paths {
                          *             "label": "Honorarios",
                          *             "days": 15,
                          *             "customized": true,
+                         *             "source": "chipax",
                          *             "updated_at": "2026-10-30T12:00:00.000Z"
                          *           },
                          *           {
@@ -75797,6 +75816,7 @@ export interface paths {
                          *             "label": "Gastos",
                          *             "days": 0,
                          *             "customized": false,
+                         *             "source": "default",
                          *             "updated_at": null
                          *           }
                          *         ],
@@ -75876,7 +75896,7 @@ export interface paths {
         };
         /**
          * List bank and card movements (Movimientos)
-         * @description One register of every bank and card movement of the workspace across all its accounts: incoming (`inbound`, abono) and outgoing (`outbound`, cargo), CLP and USD (a USD movement carries its original amount in cents and the CLP equivalent at that day's dólar observado). Each movement has its account, Contraparte, reconciliation `state` (`open` | `partial` | `reconciled`), the amount still to assign (`pending_clp`) and who resolved it. Filters: account, day range, direction, state, amount range (whole CLP), free text, Contraparte. Newest first; offset-paginated; `meta.totals` sums the in and out amounts of every match. A movement is cash, never income. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description One register of every bank and card movement of the workspace across all its accounts: incoming (`inbound`, abono) and outgoing (`outbound`, cargo), CLP and USD (a USD movement carries its original amount in cents and the CLP equivalent at that day's dólar observado). Each movement has its account, Contraparte, reconciliation `state` (`open` | `partial` | `reconciled`), the amount still to assign (`pending_clp`) and who resolved it. Filters: account, day range, direction, state, amount range (whole CLP), free text, Contraparte. Newest first; offset-paginated; `meta.totals` sums the in and out amounts of every match; `meta.cash_pending` is «efectivo por depositar», the same object the Flujo de caja returns. A movement is cash, never income. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -75951,6 +75971,11 @@ export interface paths {
                          *         "totals": {
                          *           "inbound_clp": 0,
                          *           "outbound_clp": 1190000
+                         *         },
+                         *         "cash_pending": {
+                         *           "amount_clp": 11648107,
+                         *           "window_days": 60,
+                         *           "expected_until": "2026-11-06"
                          *         }
                          *       }
                          *     }
@@ -75967,6 +75992,7 @@ export interface paths {
                                     inbound_clp: number;
                                     outbound_clp: number;
                                 };
+                                cash_pending: components["schemas"]["FinanzasCashPendingSummary"];
                             };
                         };
                     };
@@ -76952,7 +76978,7 @@ export interface paths {
                     from?: string;
                     to?: string;
                     contraparte_id?: string;
-                    payment_state?: "por_pagar" | "parcial" | "pagado";
+                    payment_state?: "por_pagar" | "parcial" | "pagado" | "vencido_heredado";
                     dte_type?: number;
                     q?: string;
                     limit?: number;
@@ -82744,7 +82770,12 @@ export interface paths {
                          *             }
                          *           }
                          *         ],
-                         *         "total_remaining_clp": 400000
+                         *         "total_remaining_clp": 400000,
+                         *         "pending": {
+                         *           "amount_clp": 400000,
+                         *           "window_days": 60,
+                         *           "expected_until": "2026-11-06"
+                         *         }
                          *       }
                          *     }
                          */
@@ -88191,7 +88222,7 @@ export interface paths {
         };
         /**
          * Flujo de caja: actual, projection, band and lowest point
-         * @description Per day (or ISO week): what came in and went out (actual, before today) and what is expected (projected, today on), with the closing balance of each period. The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (today) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones and overdue receivables stay out (`overdue`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. `lowest` is the lowest projected balance in the range (its `cause` = the biggest payment that day); `month_end` is the projected balance at the end of the current month («¿cuánto me queda a fin de mes?»), computed even when `to` is earlier. Range: up to a year back and a year ahead, at most 366 days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         * @description Per day (or ISO week): what came in and went out (actual, before today) and what is expected (projected, today on), with the closing balance of each period. The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones, the «vencido heredado» ones (`inherited_overdue`) and overdue receivables stay out (`overdue`). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. `lowest` is the lowest projected balance in the range (its `cause` = the biggest payment that day); `month_end` is the projected balance at the end of the current month («¿cuánto me queda a fin de mes?»), computed even when `to` is earlier. Range: up to a year back and a year ahead, at most 366 days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
          */
         get: {
             parameters: {
@@ -88294,6 +88325,7 @@ export interface paths {
                          *           "date": "2026-10-30",
                          *           "balance_clp": 4624419,
                          *           "negative": false,
+                         *           "is_today": false,
                          *           "cause": null
                          *         },
                          *         "month_end": {
@@ -88328,6 +88360,15 @@ export interface paths {
                          *           "stale_payables_count": 0,
                          *           "receivables_clp": 0,
                          *           "receivables_count": 0
+                         *         },
+                         *         "inherited_overdue": {
+                         *           "count": 468,
+                         *           "amount_clp": 59722052
+                         *         },
+                         *         "cash_pending": {
+                         *           "amount_clp": 11648107,
+                         *           "window_days": 60,
+                         *           "expected_until": "2026-11-06"
                          *         },
                          *         "typical_income": {
                          *           "basis": "history",
@@ -88474,7 +88515,7 @@ export interface paths {
         };
         /**
          * Payments calendar: what is due each day, balance after each
-         * @description The projected items from today, grouped by day, each with the expected balance right after it (money in first, then the biggest payments). The day's typical income lands after its items. `direction` keeps only money in or only payments (balances still count everything). The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (today) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones and overdue receivables stay out (`overdue`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         * @description The projected items from today, grouped by day, each with the expected balance right after it (money in first, then the biggest payments). The day's typical income lands after its items. `direction` keeps only money in or only payments (balances still count everything). The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones, the «vencido heredado» ones (`inherited_overdue`) and overdue receivables stay out (`overdue`). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
          */
         get: {
             parameters: {
@@ -88572,6 +88613,7 @@ export interface paths {
                          *           "date": "2026-11-26",
                          *           "balance_clp": -1840000,
                          *           "negative": true,
+                         *           "is_today": false,
                          *           "cause": {
                          *             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *             "source": "recurring",
@@ -88732,6 +88774,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": -1840000,
                          *               "negative": true,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -88764,6 +88807,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": 3260000,
                          *               "negative": false,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -88916,6 +88960,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": 3260000,
                          *               "negative": false,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -88948,6 +88993,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": -1840000,
                          *               "negative": true,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -89105,6 +89151,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": -1840000,
                          *               "negative": true,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -89137,6 +89184,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": 3260000,
                          *               "negative": false,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -89202,6 +89250,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": -1840000,
                          *               "negative": true,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -89234,6 +89283,7 @@ export interface paths {
                          *               "date": "2026-11-26",
                          *               "balance_clp": 3260000,
                          *               "negative": false,
+                         *               "is_today": false,
                          *               "cause": {
                          *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                          *                 "source": "recurring",
@@ -91634,6 +91684,12 @@ export interface paths {
                          *         },
                          *         "hora_sillon": {
                          *           "chairs": 6,
+                         *           "chairs_source": {
+                         *             "count": 6,
+                         *             "source": "resources",
+                         *             "source_label": "de tu agenda"
+                         *           },
+                         *           "lunch_break_minutes": 60,
                          *           "available_hours": [
                          *             1440,
                          *             1056
@@ -91797,6 +91853,8 @@ export interface paths {
                          *         "effective_professional_account_ids": [
                          *           "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101"
                          *         ],
+                         *         "chairs_override": null,
+                         *         "lunch_break_minutes": null,
                          *         "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6301",
                          *         "updated_at": "2026-10-31T12:00:00.000Z"
                          *       }
@@ -91870,7 +91928,7 @@ export interface paths {
         head?: never;
         /**
          * Change the dentist share accounts or the reference line
-         * @description Send only what changes. `professional_account_ids`: costo or gasto accounts of the plan de cuentas (null goes back to detection); `reference_share_enabled` toggles the line; `reference_share_bps` is its share of income (1–10000). 400 `VALIDATION_ERROR` with `details.reason` `account_not_found` or `account_not_cost`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         * @description Send only what changes. `professional_account_ids`: costo or gasto accounts of the plan de cuentas (null goes back to detection); `reference_share_enabled` toggles the line; `reference_share_bps` is its share of income (1–10000). `chairs_override` (1–200) sets the clinic’s chair count, shown as «elegido por ti»; null goes back to the clinic’s resources. `lunch_break_minutes` (0–240; null = 60) is the weekday break taken off the available hours. 400 `VALIDATION_ERROR` with `details.reason` `account_not_found` or `account_not_cost`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
          */
         patch: {
             parameters: {
@@ -91890,6 +91948,10 @@ export interface paths {
                         reference_share_enabled?: boolean;
                         reference_share_bps?: number;
                         professional_account_ids?: string[] | null;
+                        /** @description Set the number of chairs, or null to go back to the clinic’s resources. */
+                        chairs_override?: number | null;
+                        /** @description Weekday lunch break in minutes; null = default (60). */
+                        lunch_break_minutes?: number | null;
                     };
                 };
             };
@@ -91909,6 +91971,8 @@ export interface paths {
                          *         "effective_professional_account_ids": [
                          *           "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101"
                          *         ],
+                         *         "chairs_override": null,
+                         *         "lunch_break_minutes": null,
                          *         "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6301",
                          *         "updated_at": "2026-10-31T12:00:00.000Z"
                          *       }
@@ -92043,6 +92107,7 @@ export interface paths {
                          *             "date": "2026-11-06",
                          *             "balance_clp": -412000,
                          *             "negative": true,
+                         *             "is_today": false,
                          *             "cause": {
                          *               "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
                          *               "source": "payable",
@@ -92106,6 +92171,10 @@ export interface paths {
                          *             "stale_payables_count": 0,
                          *             "receivables_clp": 380000,
                          *             "receivables_count": 2
+                         *           },
+                         *           "inherited_overdue": {
+                         *             "count": 0,
+                         *             "amount_clp": 0
                          *           },
                          *           "points": [
                          *             {
@@ -92792,6 +92861,7 @@ export interface paths {
                          *                 "charges_synced_at": "2026-10-31T12:26:04.120Z",
                          *                 "charges_synced": 40,
                          *                 "charges_linked": 38,
+                         *                 "charges_unreconciled": 2,
                          *                 "spend_by_month": [
                          *                   {
                          *                     "month": "2026-10",
@@ -143907,7 +143977,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "finanzas_patients:read" | "finanzas_payroll:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
@@ -279115,12 +279185,19 @@ export interface components {
                 id: string;
                 name: string | null;
             } | null;
+            /** @description A person on payroll. Without `finanzas_payroll:read` («Ver remuneraciones») the name reads «Persona (remuneraciones)» and the RUT is null. */
+            is_payroll: boolean;
             movement_count: number;
             document_count: number;
             /** @description Non-null = merged away; use the survivor. */
             merged_into_id: string | null;
             /** @description Its own payment terms in days (0–365); null = the workspace default of each document class (Ajustes › Plazos de pago). */
             payment_terms_days: number | null;
+            /**
+             * @description Where `payment_terms_days` came from: chipax (the importer read it) or manual (a person set it); null when it has no terms of its own.
+             * @enum {string|null}
+             */
+            payment_terms_source: "chipax" | "manual" | null;
             created_at: string;
             updated_at: string;
         };
@@ -279159,6 +279236,11 @@ export interface components {
                 days: number;
                 /** @enum {string} */
                 source: "contraparte" | "workspace" | "default";
+                /**
+                 * @description Where the number comes from: chipax (read from the Chipax company by the importer), manual (set by a person in Ajustes or on the Contraparte), default (the built-in 30 / 30 / 0 / 0).
+                 * @enum {string}
+                 */
+                origin: "chipax" | "default" | "manual";
             }[];
         };
         FinanzasContraparteAlias: {
@@ -279352,10 +279434,10 @@ export interface components {
             };
             due_date: string | null;
             /**
-             * @description por_pagar (a sale: por cobrar) | parcial | pagado. Derived from reconciliation by later slices.
+             * @description por_pagar (a sale: por cobrar) | parcial | pagado | vencido_heredado. Derived from reconciliation; vencido_heredado = a payable imported more than 90 days overdue (Finanzas 39): out of the cash-flow projection, the Contraparte balances and «Le debemos» until someone marks it pagado or anulado.
              * @enum {string}
              */
-            payment_state: "por_pagar" | "parcial" | "pagado";
+            payment_state: "por_pagar" | "parcial" | "pagado" | "vencido_heredado";
             /** @description REGISTRO | PENDIENTE | NO_INCLUIR | RECLAMADO (purchases). */
             sii_estado_contable: string | null;
             /** @description The SII register no longer lists it; out of the libro. */
@@ -279493,6 +279575,11 @@ export interface components {
             label: string;
             days: number;
             customized: boolean;
+            /**
+             * @description Where the number comes from: chipax (read from the Chipax company by the importer), manual (set by a person in Ajustes or on the Contraparte), default (the built-in 30 / 30 / 0 / 0).
+             * @enum {string}
+             */
+            source: "chipax" | "default" | "manual";
             updated_at: string | null;
         };
         FinanzasPaymentTermsResult: {
@@ -279504,6 +279591,14 @@ export interface components {
             customers?: number;
             honorarios?: number;
             expenses?: number;
+        };
+        FinanzasCashPendingSummary: {
+            /** @description Whole CLP of cash still to deposit (the standing list of the last `window_days` days up to yesterday, minus what deposits already cover). */
+            amount_clp: number;
+            /** @description The window the amount is read over (60). */
+            window_days: number;
+            /** @description Last day the Flujo expects the deposits (5 business days from today); null when nothing is pending. */
+            expected_until: string | null;
         };
         FinanzasMovementComment: {
             id: string;
@@ -280344,7 +280439,7 @@ export interface components {
                 paid_clp: number;
                 outstanding_clp: number;
                 /** @enum {string} */
-                payment_state: "por_pagar" | "parcial" | "pagado";
+                payment_state: "por_pagar" | "parcial" | "pagado" | "vencido_heredado";
             };
             links: components["schemas"]["FinanzasLink"][];
             candidates: {
@@ -280391,6 +280486,7 @@ export interface components {
                 };
             }[];
             total_remaining_clp: number;
+            pending: components["schemas"]["FinanzasCashPendingSummary"] & unknown;
         };
         FinanzasCommissions: {
             items: {
@@ -281181,6 +281277,19 @@ export interface components {
                     rut: string;
                     days: number;
                     documents: number;
+                    /**
+                     * @description chipax = the supplier's own term in Chipax; inferred = from the due dates of its invoices.
+                     * @enum {string}
+                     */
+                    origin?: "chipax" | "inferred";
+                }[];
+                /** @description The company's default payment terms per class, as Chipax holds them. */
+                defaults?: {
+                    /** @enum {string} */
+                    class: "suppliers" | "customers" | "honorarios" | "expenses";
+                    days: number;
+                    /** @description False when Vitrina already holds that number, or a person set another one (never overwritten). */
+                    changed: boolean;
                 }[];
             };
             aliases: {
@@ -281543,7 +281652,7 @@ export interface components {
             /** @description Stable item key: document:<uuid>, recurring:<uuid>:<YYYY-MM-DD>, retention:<YYYY-MM>, rescue:<uuid>, cuotas:<day>, appointments:<day>, cash_pending. */
             key: string;
             /**
-             * @description payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar: only payments made in cash, still to deposit, today; card_settlement = card payments a processor has not paid out yet, on their payout day (2 business days, Chile holidays skipped); a transfer with no bank match is not projected (it is a Por resolver case); rescue = a planned «Rescatar fondo».
+             * @description payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar (the one shared amount, `cash_pending`), spread over its expected deposit days (the next 5 business days), never all on today; card_settlement = card payments a processor has not paid out yet, on their payout day (2 business days, Chile holidays skipped); a transfer with no bank match is not projected (it is a Por resolver case); rescue = a planned «Rescatar fondo».
              * @enum {string}
              */
             source: "payable" | "receivable" | "retention" | "recurring" | "cuotas" | "appointments" | "cash_pending" | "card_settlement" | "rescue";
@@ -281584,8 +281693,16 @@ export interface components {
             date: string;
             balance_clp: number;
             negative: boolean;
+            /** @description True when the lowest point is today (today's real balance, or a projected today lower than it): the screen says «Hoy es el punto más bajo». The balance is never above «Caja hoy». */
+            is_today: boolean;
             cause: components["schemas"]["FinanzasCashFlowItem"];
         } | null;
+        /** @description Payables imported more than 90 days overdue («Vencido heredado»): not in the projection nor in the balances; reviewed in bulk in Mes en paralelo. */
+        FinanzasInheritedOverdue: {
+            count: number;
+            /** @description What is still open on them (total − retención − links). */
+            amount_clp: number;
+        };
         FinanzasCashFlowRescue: {
             id: string;
             planned_on: string;
@@ -281664,6 +281781,8 @@ export interface components {
                 receivables_clp: number;
                 receivables_count: number;
             };
+            inherited_overdue: components["schemas"]["FinanzasInheritedOverdue"];
+            cash_pending: components["schemas"]["FinanzasCashPendingSummary"];
             /** @description What the typical weekday income stands on. `insufficient_history` = fewer than 4 weeks of bank history: no typical income is projected (every `typical_inflow_clp` is 0 and there is no band) and the page should say so. */
             typical_income: {
                 /** @enum {string} */
@@ -282089,7 +282208,21 @@ export interface components {
             } | null;
             /** @description Costo hora sillón (clinics only): fijos ÷ available chair-hours (chairs × opening hours), all costs ÷ attended hours, occupancy and production per attended hour, per branch and total. */
             hora_sillon: {
+                /** @description Total chairs counted (same as `chairs_source.count`). */
                 chairs: number;
+                /** @description Where the chair count comes from. */
+                chairs_source: {
+                    count: number;
+                    /**
+                     * @description `resources`: the clinic’s active boxes/sillones (native or mirrored from its previous system); `override`: the owner’s count; `none`: no chairs known (ask «¿Cuántos sillones tienes?»).
+                     * @enum {string}
+                     */
+                    source: "resources" | "override" | "none";
+                    /** @description User-facing origin: «de tu agenda», «de Dentalink», «de Medilink», «elegido por ti»; null when `source` is `none`. */
+                    source_label: string | null;
+                };
+                /** @description Weekday (Mon–Fri) lunch break already subtracted from `available_hours` on days open 6 h or more. */
+                lunch_break_minutes: number;
                 /** @description Hours per entry of `months`, one decimal. */
                 available_hours: number[];
                 /** @description Hours per entry of `months`, one decimal. */
@@ -282134,6 +282267,10 @@ export interface components {
             /** @description The accounts that are the treating dentist’s share (with everything under them); null = detected from the plan de cuentas. */
             professional_account_ids: string[] | null;
             effective_professional_account_ids: string[];
+            /** @description Chairs the owner says the clinic has (1–200); wins over the resources. Null = count the clinic’s resources. */
+            chairs_override: number | null;
+            /** @description Weekday lunch break in minutes taken off the available chair-hours; null = the default, 60. */
+            lunch_break_minutes: number | null;
             updated_by: string | null;
             updated_at: string | null;
         };
@@ -282181,6 +282318,7 @@ export interface components {
                 receivables_clp: number;
                 receivables_count: number;
             };
+            inherited_overdue: components["schemas"]["FinanzasInheritedOverdue"];
             /** @description The runway: one point per day, today … today + 30. */
             points: {
                 date: string;
@@ -282428,6 +282566,8 @@ export interface components {
                     charges_synced_at: string | null;
                     charges_synced: number;
                     charges_linked: number;
+                    /** @description Billing charges older than a week that no card line has been matched to («por conciliar»). */
+                    charges_unreconciled: number;
                     /** @description Spend per month over the last read (92 days), smallest unit of `currency`. */
                     spend_by_month: {
                         /** @example 2026-10 */

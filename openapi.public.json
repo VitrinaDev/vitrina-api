@@ -9066,6 +9066,10 @@
               "name"
             ]
           },
+          "is_payroll": {
+            "type": "boolean",
+            "description": "A person on payroll. Without `finanzas_payroll:read` («Ver remuneraciones») the name reads «Persona (remuneraciones)» and the RUT is null."
+          },
           "movement_count": {
             "type": "integer"
           },
@@ -9086,6 +9090,17 @@
             ],
             "description": "Its own payment terms in days (0–365); null = the workspace default of each document class (Ajustes › Plazos de pago)."
           },
+          "payment_terms_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "chipax",
+              "manual"
+            ],
+            "description": "Where `payment_terms_days` came from: chipax (the importer read it) or manual (a person set it); null when it has no terms of its own."
+          },
           "created_at": {
             "type": "string"
           },
@@ -9102,10 +9117,12 @@
           "source",
           "contact",
           "clinic_patient",
+          "is_payroll",
           "movement_count",
           "document_count",
           "merged_into_id",
           "payment_terms_days",
+          "payment_terms_source",
           "created_at",
           "updated_at"
         ]
@@ -9218,13 +9235,23 @@
                     "workspace",
                     "default"
                   ]
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "chipax",
+                    "default",
+                    "manual"
+                  ],
+                  "description": "Where the number comes from: chipax (read from the Chipax company by the importer), manual (set by a person in Ajustes or on the Contraparte), default (the built-in 30 / 30 / 0 / 0)."
                 }
               },
               "required": [
                 "class",
                 "label",
                 "days",
-                "source"
+                "source",
+                "origin"
               ]
             }
           }
@@ -9996,9 +10023,10 @@
             "enum": [
               "por_pagar",
               "parcial",
-              "pagado"
+              "pagado",
+              "vencido_heredado"
             ],
-            "description": "por_pagar (a sale: por cobrar) | parcial | pagado. Derived from reconciliation by later slices."
+            "description": "por_pagar (a sale: por cobrar) | parcial | pagado | vencido_heredado. Derived from reconciliation; vencido_heredado = a payable imported more than 90 days overdue (Finanzas 39): out of the cash-flow projection, the Contraparte balances and «Le debemos» until someone marks it pagado or anulado."
           },
           "sii_estado_contable": {
             "type": [
@@ -10548,6 +10576,15 @@
           "customized": {
             "type": "boolean"
           },
+          "source": {
+            "type": "string",
+            "enum": [
+              "chipax",
+              "default",
+              "manual"
+            ],
+            "description": "Where the number comes from: chipax (read from the Chipax company by the importer), manual (set by a person in Ajustes or on the Contraparte), default (the built-in 30 / 30 / 0 / 0)."
+          },
           "updated_at": {
             "type": [
               "string",
@@ -10560,6 +10597,7 @@
           "label",
           "days",
           "customized",
+          "source",
           "updated_at"
         ]
       },
@@ -10606,6 +10644,31 @@
           }
         },
         "additionalProperties": false
+      },
+      "FinanzasCashPendingSummary": {
+        "type": "object",
+        "properties": {
+          "amount_clp": {
+            "type": "integer",
+            "description": "Whole CLP of cash still to deposit (the standing list of the last `window_days` days up to yesterday, minus what deposits already cover)."
+          },
+          "window_days": {
+            "type": "integer",
+            "description": "The window the amount is read over (60)."
+          },
+          "expected_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Last day the Flujo expects the deposits (5 business days from today); null when nothing is pending."
+          }
+        },
+        "required": [
+          "amount_clp",
+          "window_days",
+          "expected_until"
+        ]
       },
       "FinanzasMovementComment": {
         "type": "object",
@@ -14046,7 +14109,8 @@
                 "enum": [
                   "por_pagar",
                   "parcial",
-                  "pagado"
+                  "pagado",
+                  "vencido_heredado"
                 ]
               }
             },
@@ -14250,11 +14314,22 @@
           },
           "total_remaining_clp": {
             "type": "integer"
+          },
+          "pending": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasCashPendingSummary"
+              },
+              {
+                "description": "The one «efectivo por depositar» (last 60 days up to yesterday), identical to the Flujo de caja and Movimientos. `items` is the standing list for the requested period (it feeds the Por resolver matcher)."
+              }
+            ]
           }
         },
         "required": [
           "items",
-          "total_remaining_clp"
+          "total_remaining_clp",
+          "pending"
         ]
       },
       "FinanzasCommissions": {
@@ -17302,6 +17377,14 @@
                     },
                     "documents": {
                       "type": "integer"
+                    },
+                    "origin": {
+                      "type": "string",
+                      "enum": [
+                        "chipax",
+                        "inferred"
+                      ],
+                      "description": "chipax = the supplier's own term in Chipax; inferred = from the due dates of its invoices."
                     }
                   },
                   "required": [
@@ -17310,6 +17393,36 @@
                     "documents"
                   ]
                 }
+              },
+              "defaults": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "class": {
+                      "type": "string",
+                      "enum": [
+                        "suppliers",
+                        "customers",
+                        "honorarios",
+                        "expenses"
+                      ]
+                    },
+                    "days": {
+                      "type": "integer"
+                    },
+                    "changed": {
+                      "type": "boolean",
+                      "description": "False when Vitrina already holds that number, or a person set another one (never overwritten)."
+                    }
+                  },
+                  "required": [
+                    "class",
+                    "days",
+                    "changed"
+                  ]
+                },
+                "description": "The company's default payment terms per class, as Chipax holds them."
               }
             },
             "required": [
@@ -18753,7 +18866,7 @@
               "card_settlement",
               "rescue"
             ],
-            "description": "payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar: only payments made in cash, still to deposit, today; card_settlement = card payments a processor has not paid out yet, on their payout day (2 business days, Chile holidays skipped); a transfer with no bank match is not projected (it is a Por resolver case); rescue = a planned «Rescatar fondo»."
+            "description": "payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar (the one shared amount, `cash_pending`), spread over its expected deposit days (the next 5 business days), never all on today; card_settlement = card payments a processor has not paid out yet, on their payout day (2 business days, Chile holidays skipped); a transfer with no bank match is not projected (it is a Por resolver case); rescue = a planned «Rescatar fondo»."
           },
           "direction": {
             "type": "string",
@@ -18913,6 +19026,10 @@
           "negative": {
             "type": "boolean"
           },
+          "is_today": {
+            "type": "boolean",
+            "description": "True when the lowest point is today (today's real balance, or a projected today lower than it): the screen says «Hoy es el punto más bajo». The balance is never above «Caja hoy»."
+          },
           "cause": {
             "$ref": "#/components/schemas/FinanzasCashFlowItem"
           }
@@ -18921,9 +19038,27 @@
           "date",
           "balance_clp",
           "negative",
+          "is_today",
           "cause"
         ],
         "description": "The lowest projected balance in the range."
+      },
+      "FinanzasInheritedOverdue": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "amount_clp": {
+            "type": "integer",
+            "description": "What is still open on them (total − retención − links)."
+          }
+        },
+        "required": [
+          "count",
+          "amount_clp"
+        ],
+        "description": "Payables imported more than 90 days overdue («Vencido heredado»): not in the projection nor in the balances; reviewed in bulk in Mes en paralelo."
       },
       "FinanzasCashFlowRescue": {
         "type": "object",
@@ -19224,6 +19359,12 @@
               "receivables_count"
             ]
           },
+          "inherited_overdue": {
+            "$ref": "#/components/schemas/FinanzasInheritedOverdue"
+          },
+          "cash_pending": {
+            "$ref": "#/components/schemas/FinanzasCashPendingSummary"
+          },
           "typical_income": {
             "type": "object",
             "properties": {
@@ -19315,6 +19456,8 @@
           "month_end",
           "totals",
           "overdue",
+          "inherited_overdue",
+          "cash_pending",
           "typical_income",
           "band_basis",
           "rescues",
@@ -20799,7 +20942,42 @@
             ],
             "properties": {
               "chairs": {
-                "type": "integer"
+                "type": "integer",
+                "description": "Total chairs counted (same as `chairs_source.count`)."
+              },
+              "chairs_source": {
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "integer"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "resources",
+                      "override",
+                      "none"
+                    ],
+                    "description": "`resources`: the clinic’s active boxes/sillones (native or mirrored from its previous system); `override`: the owner’s count; `none`: no chairs known (ask «¿Cuántos sillones tienes?»)."
+                  },
+                  "source_label": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "User-facing origin: «de tu agenda», «de Dentalink», «de Medilink», «elegido por ti»; null when `source` is `none`."
+                  }
+                },
+                "required": [
+                  "count",
+                  "source",
+                  "source_label"
+                ],
+                "description": "Where the chair count comes from."
+              },
+              "lunch_break_minutes": {
+                "type": "integer",
+                "description": "Weekday (Mon–Fri) lunch break already subtracted from `available_hours` on days open 6 h or more."
               },
               "available_hours": {
                 "type": "array",
@@ -20967,6 +21145,8 @@
             },
             "required": [
               "chairs",
+              "chairs_source",
+              "lunch_break_minutes",
               "available_hours",
               "attended_hours",
               "available_hours_total",
@@ -21031,6 +21211,20 @@
               "format": "uuid"
             }
           },
+          "chairs_override": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Chairs the owner says the clinic has (1–200); wins over the resources. Null = count the clinic’s resources."
+          },
+          "lunch_break_minutes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Weekday lunch break in minutes taken off the available chair-hours; null = the default, 60."
+          },
           "updated_by": {
             "type": [
               "string",
@@ -21049,6 +21243,8 @@
           "reference_share_bps",
           "professional_account_ids",
           "effective_professional_account_ids",
+          "chairs_override",
+          "lunch_break_minutes",
           "updated_by",
           "updated_at"
         ]
@@ -21155,7 +21351,7 @@
                 "$ref": "#/components/schemas/FinanzasCashFlowLowest"
               },
               {
-                "description": "Lowest projected balance over today … today + 30."
+                "description": "Lowest balance over today … today + 30, today included: never above `today_clp`; `is_today` when today is the lowest."
               }
             ]
           },
@@ -21219,6 +21415,9 @@
               "receivables_count"
             ]
           },
+          "inherited_overdue": {
+            "$ref": "#/components/schemas/FinanzasInheritedOverdue"
+          },
           "points": {
             "type": "array",
             "items": {
@@ -21269,6 +21468,7 @@
           "lowest",
           "runs_out",
           "overdue",
+          "inherited_overdue",
           "points"
         ]
       },
@@ -22189,6 +22389,10 @@
                       "charges_linked": {
                         "type": "integer"
                       },
+                      "charges_unreconciled": {
+                        "type": "integer",
+                        "description": "Billing charges older than a week that no card line has been matched to («por conciliar»)."
+                      },
                       "spend_by_month": {
                         "type": "array",
                         "items": {
@@ -22231,6 +22435,7 @@
                       "charges_synced_at",
                       "charges_synced",
                       "charges_linked",
+                      "charges_unreconciled",
                       "spend_by_month"
                     ]
                   }
@@ -82394,6 +82599,8 @@
                         "finanzas_reports:read",
                         "finanzas:export",
                         "finanzas_admin:write",
+                        "finanzas_patients:read",
+                        "finanzas_payroll:read",
                         "sandbox:read",
                         "sandbox:write",
                         "ads:read",
@@ -82496,7 +82703,7 @@
                       ]
                     },
                     "minItems": 1,
-                    "maxItems": 195
+                    "maxItems": 197
                   },
                   "expires_at": {
                     "type": "string",
@@ -162692,10 +162899,12 @@
                       "source": "movement",
                       "contact": null,
                       "clinic_patient": null,
+                      "is_payroll": false,
                       "movement_count": 14,
                       "document_count": 6,
                       "merged_into_id": null,
                       "payment_terms_days": null,
+                      "payment_terms_source": null,
                       "created_at": "2026-10-01T14:03:00.000Z",
                       "updated_at": "2026-10-30T08:00:00.000Z"
                     }
@@ -162826,10 +163035,12 @@
                     "source": "movement",
                     "contact": null,
                     "clinic_patient": null,
+                    "is_payroll": false,
                     "movement_count": 14,
                     "document_count": 6,
                     "merged_into_id": null,
                     "payment_terms_days": null,
+                    "payment_terms_source": null,
                     "created_at": "2026-10-01T14:03:00.000Z",
                     "updated_at": "2026-10-30T08:00:00.000Z"
                   }
@@ -162962,10 +163173,12 @@
                     "source": "movement",
                     "contact": null,
                     "clinic_patient": null,
+                    "is_payroll": false,
                     "movement_count": 14,
                     "document_count": 6,
                     "merged_into_id": null,
                     "payment_terms_days": null,
+                    "payment_terms_source": null,
                     "created_at": "2026-10-01T14:03:00.000Z",
                     "updated_at": "2026-10-30T08:00:00.000Z"
                   }
@@ -163113,10 +163326,12 @@
                       "source": "movement",
                       "contact": null,
                       "clinic_patient": null,
+                      "is_payroll": false,
                       "movement_count": 14,
                       "document_count": 6,
                       "merged_into_id": null,
                       "payment_terms_days": null,
+                      "payment_terms_source": null,
                       "created_at": "2026-10-01T14:03:00.000Z",
                       "updated_at": "2026-10-30T08:00:00.000Z"
                     },
@@ -163246,10 +163461,12 @@
                       "source": "document",
                       "contact": null,
                       "clinic_patient": null,
+                      "is_payroll": false,
                       "movement_count": 9,
                       "document_count": 12,
                       "merged_into_id": null,
                       "payment_terms_days": 45,
+                      "payment_terms_source": "manual",
                       "created_at": "2026-09-02T14:03:00.000Z",
                       "updated_at": "2026-10-30T08:00:00.000Z"
                     },
@@ -163278,7 +163495,8 @@
                           "class": "suppliers",
                           "label": "Proveedores",
                           "days": 45,
-                          "source": "contraparte"
+                          "source": "contraparte",
+                          "origin": "manual"
                         }
                       ]
                     },
@@ -163717,7 +163935,8 @@
                           "class": "suppliers",
                           "label": "Proveedores",
                           "days": 45,
-                          "source": "contraparte"
+                          "source": "contraparte",
+                          "origin": "manual"
                         }
                       ]
                     },
@@ -164124,6 +164343,7 @@
                       "label": "Proveedores",
                       "days": 30,
                       "customized": false,
+                      "source": "default",
                       "updated_at": null
                     },
                     {
@@ -164131,6 +164351,7 @@
                       "label": "Clientes",
                       "days": 30,
                       "customized": false,
+                      "source": "default",
                       "updated_at": null
                     },
                     {
@@ -164138,6 +164359,7 @@
                       "label": "Honorarios",
                       "days": 15,
                       "customized": true,
+                      "source": "chipax",
                       "updated_at": "2026-10-30T12:00:00.000Z"
                     },
                     {
@@ -164145,6 +164367,7 @@
                       "label": "Gastos",
                       "days": 0,
                       "customized": false,
+                      "source": "default",
                       "updated_at": null
                     }
                   ]
@@ -164262,6 +164485,7 @@
                         "label": "Proveedores",
                         "days": 30,
                         "customized": false,
+                        "source": "default",
                         "updated_at": null
                       },
                       {
@@ -164269,6 +164493,7 @@
                         "label": "Clientes",
                         "days": 30,
                         "customized": false,
+                        "source": "default",
                         "updated_at": null
                       },
                       {
@@ -164276,6 +164501,7 @@
                         "label": "Honorarios",
                         "days": 15,
                         "customized": true,
+                        "source": "chipax",
                         "updated_at": "2026-10-30T12:00:00.000Z"
                       },
                       {
@@ -164283,6 +164509,7 @@
                         "label": "Gastos",
                         "days": 0,
                         "customized": false,
+                        "source": "default",
                         "updated_at": null
                       }
                     ],
@@ -164359,7 +164586,7 @@
     "/finanzas/movements": {
       "get": {
         "summary": "List bank and card movements (Movimientos)",
-        "description": "One register of every bank and card movement of the workspace across all its accounts: incoming (`inbound`, abono) and outgoing (`outbound`, cargo), CLP and USD (a USD movement carries its original amount in cents and the CLP equivalent at that day's dólar observado). Each movement has its account, Contraparte, reconciliation `state` (`open` | `partial` | `reconciled`), the amount still to assign (`pending_clp`) and who resolved it. Filters: account, day range, direction, state, amount range (whole CLP), free text, Contraparte. Newest first; offset-paginated; `meta.totals` sums the in and out amounts of every match. A movement is cash, never income. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "description": "One register of every bank and card movement of the workspace across all its accounts: incoming (`inbound`, abono) and outgoing (`outbound`, cargo), CLP and USD (a USD movement carries its original amount in cents and the CLP equivalent at that day's dólar observado). Each movement has its account, Contraparte, reconciliation `state` (`open` | `partial` | `reconciled`), the amount still to assign (`pending_clp`) and who resolved it. Filters: account, day range, direction, state, amount range (whole CLP), free text, Contraparte. Newest first; offset-paginated; `meta.totals` sums the in and out amounts of every match; `meta.cash_pending` is «efectivo por depositar», the same object the Flujo de caja returns. A movement is cash, never income. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
         "security": [
           {
             "BearerAuth": []
@@ -164546,11 +164773,15 @@
                             "inbound_clp",
                             "outbound_clp"
                           ]
+                        },
+                        "cash_pending": {
+                          "$ref": "#/components/schemas/FinanzasCashPendingSummary"
                         }
                       },
                       "required": [
                         "pagination",
-                        "totals"
+                        "totals",
+                        "cash_pending"
                       ]
                     }
                   },
@@ -164604,6 +164835,11 @@
                     "totals": {
                       "inbound_clp": 0,
                       "outbound_clp": 1190000
+                    },
+                    "cash_pending": {
+                      "amount_clp": 11648107,
+                      "window_days": 60,
+                      "expected_until": "2026-11-06"
                     }
                   }
                 }
@@ -165764,7 +166000,8 @@
               "enum": [
                 "por_pagar",
                 "parcial",
-                "pagado"
+                "pagado",
+                "vencido_heredado"
               ]
             },
             "required": false,
@@ -172821,7 +173058,12 @@
                         }
                       }
                     ],
-                    "total_remaining_clp": 400000
+                    "total_remaining_clp": 400000,
+                    "pending": {
+                      "amount_clp": 400000,
+                      "window_days": 60,
+                      "expected_until": "2026-11-06"
+                    }
                   }
                 }
               }
@@ -180106,7 +180348,7 @@
     "/finanzas/cash-flow": {
       "get": {
         "summary": "Flujo de caja: actual, projection, band and lowest point",
-        "description": "Per day (or ISO week): what came in and went out (actual, before today) and what is expected (projected, today on), with the closing balance of each period. The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (today) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones and overdue receivables stay out (`overdue`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. `lowest` is the lowest projected balance in the range (its `cause` = the biggest payment that day); `month_end` is the projected balance at the end of the current month («¿cuánto me queda a fin de mes?»), computed even when `to` is earlier. Range: up to a year back and a year ahead, at most 366 days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_reports:read`.",
+        "description": "Per day (or ISO week): what came in and went out (actual, before today) and what is expected (projected, today on), with the closing balance of each period. The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones, the «vencido heredado» ones (`inherited_overdue`) and overdue receivables stay out (`overdue`). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. `lowest` is the lowest projected balance in the range (its `cause` = the biggest payment that day); `month_end` is the projected balance at the end of the current month («¿cuánto me queda a fin de mes?»), computed even when `to` is earlier. Range: up to a year back and a year ahead, at most 366 days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_reports:read`.",
         "security": [
           {
             "BearerAuth": []
@@ -180257,6 +180499,7 @@
                       "date": "2026-10-30",
                       "balance_clp": 4624419,
                       "negative": false,
+                      "is_today": false,
                       "cause": null
                     },
                     "month_end": {
@@ -180291,6 +180534,15 @@
                       "stale_payables_count": 0,
                       "receivables_clp": 0,
                       "receivables_count": 0
+                    },
+                    "inherited_overdue": {
+                      "count": 468,
+                      "amount_clp": 59722052
+                    },
+                    "cash_pending": {
+                      "amount_clp": 11648107,
+                      "window_days": 60,
+                      "expected_until": "2026-11-06"
                     },
                     "typical_income": {
                       "basis": "history",
@@ -180428,7 +180680,7 @@
     "/finanzas/cash-flow/calendar": {
       "get": {
         "summary": "Payments calendar: what is due each day, balance after each",
-        "description": "The projected items from today, grouped by day, each with the expected balance right after it (money in first, then the biggest payments). The day's typical income lands after its items. `direction` keeps only money in or only payments (balances still count everything). The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (today) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones and overdue receivables stay out (`overdue`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_reports:read`.",
+        "description": "The projected items from today, grouped by day, each with the expected balance right after it (money in first, then the biggest payments). The day's typical income lands after its items. `direction` keeps only money in or only payments (balances still count everything). The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones, the «vencido heredado» ones (`inherited_overdue`) and overdue receivables stay out (`overdue`). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_reports:read`.",
         "security": [
           {
             "BearerAuth": []
@@ -180564,6 +180816,7 @@
                       "date": "2026-11-26",
                       "balance_clp": -1840000,
                       "negative": true,
+                      "is_today": false,
                       "cause": {
                         "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                         "source": "recurring",
@@ -180755,6 +181008,7 @@
                           "date": "2026-11-26",
                           "balance_clp": -1840000,
                           "negative": true,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -180787,6 +181041,7 @@
                           "date": "2026-11-26",
                           "balance_clp": 3260000,
                           "negative": false,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -180954,6 +181209,7 @@
                           "date": "2026-11-26",
                           "balance_clp": 3260000,
                           "negative": false,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -180986,6 +181242,7 @@
                           "date": "2026-11-26",
                           "balance_clp": -1840000,
                           "negative": true,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -181177,6 +181434,7 @@
                           "date": "2026-11-26",
                           "balance_clp": -1840000,
                           "negative": true,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -181209,6 +181467,7 @@
                           "date": "2026-11-26",
                           "balance_clp": 3260000,
                           "negative": false,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -181279,6 +181538,7 @@
                           "date": "2026-11-26",
                           "balance_clp": -1840000,
                           "negative": true,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -181311,6 +181571,7 @@
                           "date": "2026-11-26",
                           "balance_clp": 3260000,
                           "negative": false,
+                          "is_today": false,
                           "cause": {
                             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
                             "source": "recurring",
@@ -184896,6 +185157,12 @@
                     },
                     "hora_sillon": {
                       "chairs": 6,
+                      "chairs_source": {
+                        "count": 6,
+                        "source": "resources",
+                        "source_label": "de tu agenda"
+                      },
+                      "lunch_break_minutes": 60,
                       "available_hours": [
                         1440,
                         1056
@@ -185057,6 +185324,8 @@
                     "effective_professional_account_ids": [
                       "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101"
                     ],
+                    "chairs_override": null,
+                    "lunch_break_minutes": null,
                     "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6301",
                     "updated_at": "2026-10-31T12:00:00.000Z"
                   }
@@ -185129,7 +185398,7 @@
       },
       "patch": {
         "summary": "Change the dentist share accounts or the reference line",
-        "description": "Send only what changes. `professional_account_ids`: costo or gasto accounts of the plan de cuentas (null goes back to detection); `reference_share_enabled` toggles the line; `reference_share_bps` is its share of income (1–10000). 400 `VALIDATION_ERROR` with `details.reason` `account_not_found` or `account_not_cost`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "description": "Send only what changes. `professional_account_ids`: costo or gasto accounts of the plan de cuentas (null goes back to detection); `reference_share_enabled` toggles the line; `reference_share_bps` is its share of income (1–10000). `chairs_override` (1–200) sets the clinic’s chair count, shown as «elegido por ti»; null goes back to the clinic’s resources. `lunch_break_minutes` (0–240; null = 60) is the weekday break taken off the available hours. 400 `VALIDATION_ERROR` with `details.reason` `account_not_found` or `account_not_cost`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
         "security": [
           {
             "BearerAuth": []
@@ -185162,6 +185431,24 @@
                       "format": "uuid"
                     },
                     "maxItems": 50
+                  },
+                  "chairs_override": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 200,
+                    "description": "Set the number of chairs, or null to go back to the clinic’s resources."
+                  },
+                  "lunch_break_minutes": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 240,
+                    "description": "Weekday lunch break in minutes; null = default (60)."
                   }
                 },
                 "additionalProperties": false
@@ -185196,6 +185483,8 @@
                     "effective_professional_account_ids": [
                       "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101"
                     ],
+                    "chairs_override": null,
+                    "lunch_break_minutes": null,
                     "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6301",
                     "updated_at": "2026-10-31T12:00:00.000Z"
                   }
@@ -185334,6 +185623,7 @@
                         "date": "2026-11-06",
                         "balance_clp": -412000,
                         "negative": true,
+                        "is_today": false,
                         "cause": {
                           "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
                           "source": "payable",
@@ -185397,6 +185687,10 @@
                         "stale_payables_count": 0,
                         "receivables_clp": 380000,
                         "receivables_count": 2
+                      },
+                      "inherited_overdue": {
+                        "count": 0,
+                        "amount_clp": 0
                       },
                       "points": [
                         {
@@ -186162,6 +186456,7 @@
                             "charges_synced_at": "2026-10-31T12:26:04.120Z",
                             "charges_synced": 40,
                             "charges_linked": 38,
+                            "charges_unreconciled": 2,
                             "spend_by_month": [
                               {
                                 "month": "2026-10",
@@ -249809,6 +250104,8 @@
                         "finanzas_reports:read",
                         "finanzas:export",
                         "finanzas_admin:write",
+                        "finanzas_patients:read",
+                        "finanzas_payroll:read",
                         "sandbox:read",
                         "sandbox:write",
                         "ads:read",
