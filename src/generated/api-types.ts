@@ -76446,7 +76446,16 @@ export interface paths {
                          *               "on": "2026-09-30"
                          *             },
                          *             "opening_balance_editable": true,
-                         *             "movement_count": 312
+                         *             "movement_count": 312,
+                         *             "agent_sharing": {
+                         *               "shared": true,
+                         *               "alias": "Banco de Chile ··4821",
+                         *               "holder_name": "Clínica Ejemplo SpA",
+                         *               "holder_rut": "76123456-7",
+                         *               "holder_email": null,
+                         *               "account_type": "corriente"
+                         *             },
+                         *             "can_share_with_agent": true
                          *           }
                          *         ],
                          *         "total_clp": 8450000,
@@ -76706,7 +76715,16 @@ export interface paths {
                          *           "on": "2026-09-30"
                          *         },
                          *         "opening_balance_editable": true,
-                         *         "movement_count": 312
+                         *         "movement_count": 312,
+                         *         "agent_sharing": {
+                         *           "shared": true,
+                         *           "alias": "Banco de Chile ··4821",
+                         *           "holder_name": "Clínica Ejemplo SpA",
+                         *           "holder_rut": "76123456-7",
+                         *           "holder_email": null,
+                         *           "account_type": "corriente"
+                         *         },
+                         *         "can_share_with_agent": true
                          *       }
                          *     }
                          */
@@ -76771,6 +76789,146 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/finanzas/bank-accounts/{id}/agent-sharing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Share a bank account with the AI agent (or stop)
+         * @description One bank-account registry (Finanzas 33): the Finanzas bank accounts are the workspace's accounts, and «el agente comparte esta cuenta» is a flag on one of them. `shared: true` makes the AI agent dictate this account for transfers and matches abonos into it (the same registry `GET /tenant-bank-accounts` lists); `false` stops it, keeping the row. The first share needs `holder_name` (400 `VALIDATION_ERROR`, `details.reason = agent_sharing_holder_required`); `holder_rut` defaults to the workspace's SII RUT. 409 `CONFLICT` with `details.reason = agent_sharing_not_supported` for a card, a credit line, a USD account or a number known only by its last digits. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "shared": true,
+                     *       "holder_name": "Clínica Ejemplo SpA"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasAgentSharingBody"];
+                };
+            };
+            responses: {
+                /** @description The account */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *         "name": "Cuenta corriente",
+                         *         "institution_name": "Banco de Chile",
+                         *         "number_masked": "****4821",
+                         *         "type": "cuenta_corriente",
+                         *         "currency": "CLP",
+                         *         "source": "manual",
+                         *         "has_feed": false,
+                         *         "balance_clp": 8450000,
+                         *         "balance_original": null,
+                         *         "balance_as_of": "2026-10-30T08:00:00.000Z",
+                         *         "balance_source": "computed",
+                         *         "opening_balance": {
+                         *           "amount_minor": 5000000,
+                         *           "on": "2026-09-30"
+                         *         },
+                         *         "opening_balance_editable": true,
+                         *         "movement_count": 312,
+                         *         "agent_sharing": {
+                         *           "shared": true,
+                         *           "alias": "Banco de Chile ··4821",
+                         *           "holder_name": "Clínica Ejemplo SpA",
+                         *           "holder_rut": "76123456-7",
+                         *           "holder_email": null,
+                         *           "account_type": "corriente"
+                         *         },
+                         *         "can_share_with_agent": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBankAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/finanzas/documents": {
@@ -82786,7 +82944,7 @@ export interface paths {
         };
         /**
          * The «Por resolver» inbox: open cases, biggest first
-         * @description A case is the open money of one Contraparte that Vitrina could not resolve on its own: bank movements nothing explains, cost documents with no account, and money out classified with no document («Falta documento»). Cases are recomputed after every bank, Mercado Pago and SII sync and before every read; only cases whose inputs changed are rewritten. Sorted by the money at stake (`order=needs_person`: the cases a person must answer first). `kind` and `period` (`recent` = this month and last month, `history` = older) filter; `total` and `amount_at_stake_clp` cover every open case of that filter, `counts` splits them (recent / history, needs_person / ready) and `waiting` lists the payments «esperando factura» (no case yet). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description A case is the open money of one Contraparte that Vitrina could not resolve on its own: bank movements nothing explains, cost documents with no account, and money out classified with no document («Falta documento»). Cases are recomputed after every bank, Mercado Pago and SII sync and before every read; only cases whose inputs changed are rewritten. Sorted by the money at stake (`order=needs_person`: the cases a person must answer first). `kind`, `month` (`YYYY-MM`: a case belongs to ONE month, its oldest item's) and `period` (deprecated: `recent` / `history`) filter; `total` and `amount_at_stake_clp` cover every open case of that filter, `counts_by_month` lists every month with open cases (the month filter's options; months «Cerrado en Chipax» hold none), `counts` splits them (needs_person / ready) and `waiting` lists the payments «esperando factura» (no case yet). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -82795,6 +82953,7 @@ export interface paths {
                     limit?: number;
                     offset?: number | null;
                     period?: "recent" | "history" | "all";
+                    month?: string;
                     order?: "amount" | "needs_person";
                 };
                 header?: never;
@@ -82851,6 +83010,13 @@ export interface paths {
                          *         "total": 2,
                          *         "amount_at_stake_clp": 855290,
                          *         "since": "2026-09-01",
+                         *         "counts_by_month": [
+                         *           {
+                         *             "month": "2026-10",
+                         *             "open": 2,
+                         *             "amount_clp": 855290
+                         *           }
+                         *         ],
                          *         "counts": {
                          *           "recent": 2,
                          *           "history": 0,
@@ -84298,7 +84464,7 @@ export interface paths {
         };
         /**
          * Cierre de mes: each month and its state
-         * @description The month selector, newest first: `open` (a «Por resolver» case touches the month, or it has not ended), `ready_to_close` (ended, nothing open) or `closed`. A case touches a month when one of its movements falls in it or a document it needs classified was issued in it. Default: the current month and the 11 before; at most 24. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description The month selector, newest first: `open` (a «Por resolver» case belongs to the month, or it has not ended), `ready_to_close` (ended, nothing open), `closed` (a person closed it) or `closed_imported` («Cerrado en Chipax»: the import closed it; it raises no cases and a change asks for a reason; `closed_source` `chipax`, `imported_at`). A case belongs to ONE month: the one of its oldest item (a movement, or a document to classify). Default: the current month and the 11 before; at most 24. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -84331,6 +84497,8 @@ export interface paths {
                          *             "open_cases": 7,
                          *             "closed_at": null,
                          *             "closed_by": null,
+                         *             "closed_source": null,
+                         *             "imported_at": null,
                          *             "adjustment_count": 0
                          *           },
                          *           {
@@ -84341,6 +84509,8 @@ export interface paths {
                          *             "open_cases": 0,
                          *             "closed_at": "2026-10-03T14:20:00.000Z",
                          *             "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *             "closed_source": "person",
+                         *             "imported_at": null,
                          *             "adjustment_count": 1
                          *           },
                          *           {
@@ -84351,6 +84521,8 @@ export interface paths {
                          *             "open_cases": 0,
                          *             "closed_at": null,
                          *             "closed_by": null,
+                         *             "closed_source": null,
+                         *             "imported_at": null,
                          *             "adjustment_count": 0
                          *           }
                          *         ]
@@ -84466,6 +84638,8 @@ export interface paths {
                          *         "open_cases": 0,
                          *         "closed_at": "2026-10-03T14:20:00.000Z",
                          *         "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *         "closed_source": "person",
+                         *         "imported_at": null,
                          *         "closed_by_name": "Ana Pérez",
                          *         "adjustment_count": 1,
                          *         "can_close": false,
@@ -84667,6 +84841,8 @@ export interface paths {
                          *         "open_cases": 0,
                          *         "closed_at": "2026-10-03T14:20:00.000Z",
                          *         "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *         "closed_source": "person",
+                         *         "imported_at": null,
                          *         "closed_by_name": "Ana Pérez",
                          *         "adjustment_count": 0,
                          *         "can_close": false,
@@ -90426,7 +90602,7 @@ export interface paths {
         put?: never;
         /**
          * Vitrina's mandato for the representante legal to sign (step 3)
-         * @description Renders Vitrina's mandato (`GET /legal/documents/sii_mandato`, version + SHA-256) for this razón social and opens it in Vitrina's signing service. Returns the representante legal's `signing_url` (also mailed to them unless `send_email: false`). A new request replaces an unsigned one; a signed mandato cannot be replaced. Once signed it is registered at the SII automatically (`sii.mandato.phase`: `connecting` → `connected`). Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         * @description Renders Vitrina's mandato (`GET /legal/documents/{key}` with key `sii_mandato`, version + SHA-256) for this razón social and opens it in Vitrina's signing service. Returns the representante legal's `signing_url` (also mailed to them unless `send_email: false`). A new request replaces an unsigned one; a signed mandato cannot be replaced. Once signed it is registered at the SII automatically (`sii.mandato.phase`: `connecting` → `connected`). Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
          */
         post: {
             parameters: {
@@ -278798,9 +278974,21 @@ export interface components {
             last_sync_at: string | null;
             last_successful_sync_at: string | null;
             last_sync_error: string | null;
-            /** @enum {string} */
-            status: "ok" | "pending" | "stale" | "error" | "login_required" | "disconnected";
+            /**
+             * @description `first_sync`: connected, first read not landed yet (a (re)connect resets it; an empty first read stays `first_sync` for 24 h before it counts as a confirmed empty window). Show «Primera lectura en curso», never «Al día». `pending` is the old name of `first_sync`: never sent any more, kept so existing clients still validate.
+             * @enum {string}
+             */
+            status: "ok" | "first_sync" | "pending" | "stale" | "error" | "login_required" | "disconnected";
             next_refresh_at: string | null;
+            /** @description SII only: the first successful read of documents; null otherwise. */
+            first_read_done_at: string | null;
+            /** @description SII only: every month of the first-sync window was read once; null otherwise. */
+            backfill_done_at: string | null;
+            /**
+             * @description SII only: the emission step, apart from reading. `in_certification` while the certificate / mandato step is pending; `not_needed` when no emission was set up; null for banks and Mercado Pago.
+             * @enum {string|null}
+             */
+            emission_status: "certified" | "in_certification" | "not_needed" | null;
             actions: {
                 sync_now: boolean;
                 reconnect: boolean;
@@ -278811,6 +278999,15 @@ export interface components {
         };
         FinanzasConnections: {
             connections: components["schemas"]["FinanzasConnection"][];
+            /** @description Sources with imported data but no live connection (ODM Mercado Pago): «Sin conexión · datos hasta el {día}». */
+            unconnected_sources: {
+                /** @enum {string} */
+                kind: "mercado_pago";
+                institution_name: string;
+                /** @description Santiago day (YYYY-MM-DD) of the newest imported movement. */
+                data_until: string;
+                movement_count: number;
+            }[];
             fintoc: {
                 configured: boolean;
                 entitled: boolean;
@@ -279353,6 +279550,19 @@ export interface components {
             } | null;
             opening_balance_editable: boolean;
             movement_count: number;
+            /** @description Finanzas 33: «el agente comparte esta cuenta», with the holder details the agent dictates. Null = never shared. */
+            agent_sharing: {
+                /** @description true = the AI agent dictates this account for transfers and abonos into it are matched; false = it stopped sharing it. */
+                shared: boolean;
+                alias: string;
+                holder_name: string;
+                holder_rut: string;
+                holder_email: string | null;
+                /** @enum {string} */
+                account_type: "corriente" | "vista" | "ahorro";
+            } | null;
+            /** @description Whether the agent can share it: a CLP corriente / vista / ahorro / Mercado Pago account with its full number (not a card, a credit line, a USD account or a last-4 number). */
+            can_share_with_agent: boolean;
         };
         FinanzasBankAccounts: {
             accounts: components["schemas"]["FinanzasBankAccount"][];
@@ -279364,6 +279574,23 @@ export interface components {
             /** @description Balance at the END of `on`, in the account currency smallest unit (CLP pesos, USD cents). null clears it. */
             amount_minor: number | null;
             on?: string;
+        };
+        FinanzasAgentSharingBody: {
+            /** @description true = the AI agent shares this account for transfers (and abonos into it are matched); false = stop sharing it (the row is kept, never deleted). */
+            shared: boolean;
+            /** @description The label the agent and Ajustes show. Default «‹banco› ··‹últimos 4›». */
+            alias?: string;
+            /** @description Account holder as the bank shows it. Required the first time the account is shared. */
+            holder_name?: string;
+            /** @description Holder RUT (any formatting, check digit validated). Default: the workspace's SII RUT. */
+            holder_rut?: string;
+            /** Format: email */
+            holder_email?: string | null;
+            /**
+             * @description What the agent dictates. Default from the account type (Mercado Pago = vista).
+             * @enum {string}
+             */
+            account_type?: "corriente" | "vista" | "ahorro";
         };
         FinanzasF29Overview: {
             from: string;
@@ -280210,6 +280437,13 @@ export interface components {
             amount_at_stake_clp: number;
             /** @description First day of last month: `period=recent` keeps the cases touching it or later; older ones are «Historial». */
             since: string;
+            /** @description Open cases per month, newest first, all kinds, ignoring `kind`/`month`/`period`: the month filter’s options (the sum is the open total every surface shows). Months «Cerrado en Chipax» are never listed: they hold no case. */
+            counts_by_month: {
+                /** @description `YYYY-MM`. */
+                month: string;
+                open: number;
+                amount_clp: number;
+            }[];
             /** @description Open cases by period (every period) and, within the `period` asked, how many need a person vs are ready to confirm. */
             counts: {
                 recent: number;
@@ -280257,7 +280491,7 @@ export interface components {
             /** @enum {string} */
             status: "open" | "resolved";
             /** @enum {string|null} */
-            resolution: "confirmed" | "cleared" | null;
+            resolution: "confirmed" | "cleared" | "closed_imported" | null;
             resolved_at: string | null;
             contraparte: {
                 id: string;
@@ -280579,14 +280813,21 @@ export interface components {
             /** @description «septiembre 2026». */
             label: string;
             /**
-             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado.
+             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado por una persona; closed_imported = «Cerrado en Chipax» (the import closed it: it raises no cases, a change asks for a reason, there is nothing to close).
              * @enum {string}
              */
-            state: "open" | "ready_to_close" | "closed";
+            state: "open" | "ready_to_close" | "closed" | "closed_imported";
             ended: boolean;
             open_cases: number;
             closed_at: string | null;
             closed_by: string | null;
+            /**
+             * @description Who closed the month: `person` («Cerrar mes») or `chipax` (the import: «Cerrado en Chipax»). Null while open.
+             * @enum {string|null}
+             */
+            closed_source: "person" | "chipax" | null;
+            /** @description When the import closed it. Null unless `closed_source` is `chipax`. */
+            imported_at: string | null;
             /** @description Ajustes posteriores al cierre logged so far. */
             adjustment_count: number;
         };
@@ -280599,14 +280840,21 @@ export interface components {
             /** @description «septiembre 2026». */
             label: string;
             /**
-             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado.
+             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado por una persona; closed_imported = «Cerrado en Chipax» (the import closed it: it raises no cases, a change asks for a reason, there is nothing to close).
              * @enum {string}
              */
-            state: "open" | "ready_to_close" | "closed";
+            state: "open" | "ready_to_close" | "closed" | "closed_imported";
             ended: boolean;
             open_cases: number;
             closed_at: string | null;
             closed_by: string | null;
+            /**
+             * @description Who closed the month: `person` («Cerrar mes») or `chipax` (the import: «Cerrado en Chipax»). Null while open.
+             * @enum {string|null}
+             */
+            closed_source: "person" | "chipax" | null;
+            /** @description When the import closed it. Null unless `closed_source` is `chipax`. */
+            imported_at: string | null;
             /** @description Ajustes posteriores al cierre logged so far. */
             adjustment_count: number;
             from: string;
@@ -280803,7 +281051,11 @@ export interface components {
                         id: string;
                         path: string;
                     }[];
+                    /** @description true = an owner-withdrawals account (name «Retiros…»): imported as non-operating onto the system «Retiros» account, shown below the resultado, never as a gasto. Absent on runs before 2026-11-08. */
+                    retiros?: boolean;
                 }[];
+                /** @description Chipax accounts named «Retiros…» filed below the resultado as non-operating (not a gasto). Absent on runs before 2026-11-08. */
+                retiros?: number;
             };
             contrapartes: {
                 /** @description New in Vitrina (dry run: would be created). */
@@ -281989,7 +282241,7 @@ export interface components {
                 connection_id: string;
                 institution_name: string | null;
                 /** @enum {string} */
-                status: "ok" | "pending" | "stale" | "error" | "login_required" | "disconnected";
+                status: "ok" | "first_sync" | "pending" | "stale" | "error" | "login_required" | "disconnected";
             } | null;
             cash: components["schemas"]["FinanzasResumenCash"];
             result: components["schemas"]["FinanzasResumenResult"];
@@ -281999,7 +282251,7 @@ export interface components {
                     month: string;
                     label: string;
                     /** @enum {string} */
-                    state: "open" | "ready_to_close" | "closed";
+                    state: "open" | "ready_to_close" | "closed" | "closed_imported";
                     open_cases: number;
                 } | null;
             };
