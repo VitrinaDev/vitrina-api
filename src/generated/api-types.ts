@@ -74343,6 +74343,7 @@ export interface paths {
                 query?: {
                     q?: string;
                     role?: "supplier" | "customer" | "both";
+                    sort?: "name" | "activity";
                     limit?: number;
                     offset?: number | null;
                 };
@@ -74377,6 +74378,7 @@ export interface paths {
                          *           "document_count": 6,
                          *           "merged_into_id": null,
                          *           "payment_terms_days": null,
+                         *           "needs_name": false,
                          *           "payment_terms_source": null,
                          *           "created_at": "2026-10-01T14:03:00.000Z",
                          *           "updated_at": "2026-10-30T08:00:00.000Z"
@@ -74513,6 +74515,7 @@ export interface paths {
                          *         "document_count": 6,
                          *         "merged_into_id": null,
                          *         "payment_terms_days": null,
+                         *         "needs_name": false,
                          *         "payment_terms_source": null,
                          *         "created_at": "2026-10-01T14:03:00.000Z",
                          *         "updated_at": "2026-10-30T08:00:00.000Z"
@@ -74633,6 +74636,7 @@ export interface paths {
                          *         "document_count": 6,
                          *         "merged_into_id": null,
                          *         "payment_terms_days": null,
+                         *         "needs_name": false,
                          *         "payment_terms_source": null,
                          *         "created_at": "2026-10-01T14:03:00.000Z",
                          *         "updated_at": "2026-10-30T08:00:00.000Z"
@@ -74713,7 +74717,7 @@ export interface paths {
         put?: never;
         /**
          * Merge a duplicate Contraparte into this one
-         * @description Merges `merge_id` into `{id}`: every movement, document and link moves to the survivor, which keeps its name and links and takes the other's links only where it has none; roles combine. When only `merge_id` has a RUT, that one is kept instead (`survivor.id` says which). Two different RUTs answer 409. Not undoable; audited. The merged one stays as a tombstone so the next sync resolves to the survivor and never recreates it. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         * @description Merges `merge_id` into `{id}`: every movement, document and link moves to the survivor, which keeps its name and links and takes the other's links only where it has none; roles combine. When only `merge_id` has a RUT, that one is kept instead (`survivor.id` says which). Two different RUTs answer 409. Undoable: `merge_id` goes to `POST /finanzas/contrapartes/merges/{mergeId}/undo`; audited. The merged one stays as a tombstone so the next sync resolves to the survivor and never recreates it. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
          */
         post: {
             parameters: {
@@ -74763,11 +74767,13 @@ export interface paths {
                          *           "document_count": 6,
                          *           "merged_into_id": null,
                          *           "payment_terms_days": null,
+                         *           "needs_name": false,
                          *           "payment_terms_source": null,
                          *           "created_at": "2026-10-01T14:03:00.000Z",
                          *           "updated_at": "2026-10-30T08:00:00.000Z"
                          *         },
                          *         "merged_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e",
+                         *         "merge_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4aaa",
                          *         "moved": {
                          *           "movements": 3,
                          *           "documents": 2
@@ -74777,6 +74783,673 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["FinanzasContraparteMergeResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/duplicates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Proposed Contraparte duplicates («Unir duplicados»)
+         * @description Pairs that look like one business or person: similar names where at least one has no RUT (same normalised name with a known RUT is merged automatically and appears in Hecho por Vitrina instead). `keep` is the one that stays (the one with a RUT, else the more active), `merge` is merged into it, `moves` says how many movements and documents move. Pairs already rejected (`dismiss`) or undone are not proposed. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The proposals */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "total": 1,
+                         *         "items": [
+                         *           {
+                         *             "keep": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *               "name": "ADOLFO CERDA ALVAREZ",
+                         *               "rut": "14432869-8",
+                         *               "rut_formatted": "14.432.869-8",
+                         *               "movement_count": 1,
+                         *               "document_count": 13
+                         *             },
+                         *             "merge": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e",
+                         *               "name": "Adolfo Cerda A",
+                         *               "rut": null,
+                         *               "rut_formatted": null,
+                         *               "movement_count": 1,
+                         *               "document_count": 0
+                         *             },
+                         *             "score": 0.9,
+                         *             "moves": {
+                         *               "movements": 1,
+                         *               "documents": 0
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteDuplicates"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/duplicates/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept a proposed duplicate: merge it (undoable)
+         * @description Same as `POST /finanzas/contrapartes/{id}/merge` (`keep_id` = the path id) but recorded as a review merge. Reversible: it shows in Hecho por Vitrina with «Deshacer» and `merge_id` can be passed to `POST /finanzas/contrapartes/merges/{mergeId}/undo`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "keep_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                     *       "merge_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasContraparteDuplicateMergeBody"];
+                };
+            };
+            responses: {
+                /** @description The merge */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "survivor": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *           "name": "Insumos Médicos Ejemplo SpA",
+                         *           "rut": "76123456-7",
+                         *           "rut_formatted": "76.123.456-7",
+                         *           "roles": [
+                         *             "supplier"
+                         *           ],
+                         *           "source": "movement",
+                         *           "contact": null,
+                         *           "clinic_patient": null,
+                         *           "is_payroll": false,
+                         *           "movement_count": 14,
+                         *           "document_count": 6,
+                         *           "merged_into_id": null,
+                         *           "payment_terms_days": null,
+                         *           "needs_name": false,
+                         *           "payment_terms_source": null,
+                         *           "created_at": "2026-10-01T14:03:00.000Z",
+                         *           "updated_at": "2026-10-30T08:00:00.000Z"
+                         *         },
+                         *         "merged_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e",
+                         *         "merge_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4aaa",
+                         *         "moved": {
+                         *           "movements": 1,
+                         *           "documents": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteMergeResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/duplicates/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject a proposed duplicate («No son la misma»)
+         * @description The two are different: the pair is never proposed again and never merged automatically. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "a_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                     *       "b_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasContraparteDuplicateDismissBody"];
+                };
+            };
+            responses: {
+                /** @description Dismissed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "a_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *         "b_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e",
+                         *         "dismissed": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                a_id: string;
+                                b_id: string;
+                                dismissed: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/merges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Contrapartes merged in a month («Contrapartes unidas»)
+         * @description Every merge of the month (Santiago), automatic or by a person, newest first, with `undoable` and `undone_at`. The same list rides on `GET /finanzas/automatic-actions` as `contraparte_merges`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    month: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The merges */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4aaa",
+                         *           "origin": "same_name",
+                         *           "actor": "system",
+                         *           "label": "Alldental → ALLDENTAL SPA",
+                         *           "survivor": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *             "name": "ALLDENTAL SPA"
+                         *           },
+                         *           "merged": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e",
+                         *             "name": "Alldental"
+                         *           },
+                         *           "moved": {
+                         *             "movements": 0,
+                         *             "documents": 1
+                         *           },
+                         *           "reason": "Mismo nombre y un RUT conocido",
+                         *           "created_at": "2026-11-07T14:03:00.000Z",
+                         *           "undone_at": null,
+                         *           "undoable": true
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteMergeView"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/merges/{mergeId}/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Undo a Contraparte merge («Deshacer»)
+         * @description Puts back on the original Contraparte exactly the movements, documents, rules and aliases the merge moved (not what a person moved since), restores its links, and makes it live again. The pair is not merged automatically again. 409 when already undone or when the survivor was merged away since (undo that one first). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    mergeId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The undo */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "merge_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4aaa",
+                         *         "survivor": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *           "name": "Insumos Médicos Ejemplo SpA",
+                         *           "rut": "76123456-7",
+                         *           "rut_formatted": "76.123.456-7",
+                         *           "roles": [
+                         *             "supplier"
+                         *           ],
+                         *           "source": "movement",
+                         *           "contact": null,
+                         *           "clinic_patient": null,
+                         *           "is_payroll": false,
+                         *           "movement_count": 14,
+                         *           "document_count": 6,
+                         *           "merged_into_id": null,
+                         *           "payment_terms_days": null,
+                         *           "needs_name": false,
+                         *           "payment_terms_source": null,
+                         *           "created_at": "2026-10-01T14:03:00.000Z",
+                         *           "updated_at": "2026-10-30T08:00:00.000Z"
+                         *         },
+                         *         "restored": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *           "name": "Alldental",
+                         *           "rut": "76123456-7",
+                         *           "rut_formatted": "76.123.456-7",
+                         *           "roles": [
+                         *             "supplier"
+                         *           ],
+                         *           "source": "movement",
+                         *           "contact": null,
+                         *           "clinic_patient": null,
+                         *           "is_payroll": false,
+                         *           "movement_count": 14,
+                         *           "document_count": 6,
+                         *           "merged_into_id": null,
+                         *           "payment_terms_days": null,
+                         *           "needs_name": false,
+                         *           "payment_terms_source": null,
+                         *           "created_at": "2026-10-01T14:03:00.000Z",
+                         *           "updated_at": "2026-10-30T08:00:00.000Z"
+                         *         },
+                         *         "moved_back": {
+                         *           "movements": 0,
+                         *           "documents": 1
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteUndoMergeResult"];
                         };
                     };
                 };
@@ -82975,7 +83648,7 @@ export interface paths {
         };
         /**
          * The «Por resolver» inbox: open cases, biggest first
-         * @description A case is the open money of one Contraparte that Vitrina could not resolve on its own: bank movements nothing explains, cost documents with no account, and money out classified with no document («Falta documento»). Cases are recomputed after every bank, Mercado Pago and SII sync and before every read; only cases whose inputs changed are rewritten. Sorted by the money at stake (`order=needs_person`: the cases a person must answer first). `kind`, `month` (`YYYY-MM`: a case belongs to ONE month, its oldest item's) and `period` (deprecated: `recent` / `history`) filter; `total` and `amount_at_stake_clp` cover every open case of that filter, `counts_by_month` lists every month with open cases (the month filter's options; months «Cerrado en Chipax» hold none), `counts` splits them (needs_person / ready) and `waiting` lists the payments «esperando factura» (no case yet). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description A case is the open money of one Contraparte that Vitrina could not resolve on its own: bank movements nothing explains, cost documents with no account, and money out classified with no document («Falta documento»). Cases are recomputed after every bank, Mercado Pago and SII sync and before every read; only cases whose inputs changed are rewritten. Sorted by the money at stake (`order=needs_person`: the cases a person must answer first). `kind`, `month` (`YYYY-MM`: a case belongs to ONE month, its oldest item's) and `period` (deprecated: `recent` / `history`) filter; `total` and `amount_at_stake_clp` cover every open case of that filter, `counts_by_month` lists every month with open cases (the month filter's options; months «Cerrado antes de Vitrina» hold none), `counts` splits them (needs_person / ready) and `waiting` lists the payments «esperando factura» (no case yet). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -84495,7 +85168,7 @@ export interface paths {
         };
         /**
          * Cierre de mes: each month and its state
-         * @description The month selector, newest first: `open` (a «Por resolver» case belongs to the month, or it has not ended), `ready_to_close` (ended, nothing open), `closed` (a person closed it) or `closed_imported` («Cerrado en Chipax»: the import closed it; it raises no cases and a change asks for a reason; `closed_source` `chipax`, `imported_at`). A case belongs to ONE month: the one of its oldest item (a movement, or a document to classify). Default: the current month and the 11 before; at most 24. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description The month selector, newest first: `open` (a «Por resolver» case belongs to the month, or it has not ended), `ready_to_close` (ended, nothing open), `closed` (a person closed it) or `closed_imported` («Cerrado antes de Vitrina»: the import closed it; it raises no cases and a change asks for a reason; `closed_source` `chipax`, `imported_at`). A case belongs to ONE month: the one of its oldest item (a movement, or a document to classify). Default: the current month and the 11 before; at most 24. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -279205,6 +279878,8 @@ export interface components {
             merged_into_id: string | null;
             /** @description Its own payment terms in days (0–365); null = the workspace default of each document class (Ajustes › Plazos de pago). */
             payment_terms_days: number | null;
+            /** @description True while the name is only the RUT (no document has told us the razón social yet): show «Sin nombre aún» + the RUT, never the RUT as a title. */
+            needs_name: boolean;
             /**
              * @description Where `payment_terms_days` came from: chipax (the importer read it) or manual (a person set it); null when it has no terms of its own.
              * @enum {string|null}
@@ -279223,6 +279898,8 @@ export interface components {
         FinanzasContraparteMergeResult: {
             survivor: components["schemas"]["FinanzasContraparte"];
             merged_id: string;
+            /** @description The merge ledger id: `POST /finanzas/contrapartes/merges/{mergeId}/undo` undoes it. */
+            merge_id: string;
             moved: {
                 movements: number;
                 documents: number;
@@ -279234,6 +279911,89 @@ export interface components {
              * @description The duplicate that is merged into `{id}`.
              */
             merge_id: string;
+        };
+        FinanzasContraparteDuplicatePair: {
+            /** @description The one that stays. */
+            keep: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                rut: string | null;
+                rut_formatted: string | null;
+                movement_count: number;
+                document_count: number;
+            };
+            /** @description The one that is merged into `keep`. */
+            merge: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                rut: string | null;
+                rut_formatted: string | null;
+                movement_count: number;
+                document_count: number;
+            };
+            score: number;
+            /** @description What moves to `keep`. */
+            moves: {
+                movements: number;
+                documents: number;
+            };
+        };
+        FinanzasContraparteDuplicates: {
+            /** @description Every proposed pair; `items` holds the first 200. */
+            total: number;
+            items: components["schemas"]["FinanzasContraparteDuplicatePair"][];
+        };
+        FinanzasContraparteDuplicateMergeBody: {
+            /** Format: uuid */
+            keep_id: string;
+            /** Format: uuid */
+            merge_id: string;
+        };
+        FinanzasContraparteDuplicateDismissBody: {
+            /** Format: uuid */
+            a_id: string;
+            /** Format: uuid */
+            b_id: string;
+        };
+        FinanzasContraparteMergeView: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            origin: "same_rut" | "same_name" | "review" | "manual";
+            /** @enum {string} */
+            actor: "system" | "person";
+            /** @example Adolfo Cerda A → ADOLFO CERDA ALVAREZ */
+            label: string;
+            survivor: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            merged: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            moved: {
+                movements: number;
+                documents: number;
+            };
+            reason: string | null;
+            created_at: string;
+            undone_at: string | null;
+            undoable: boolean;
+        };
+        FinanzasContraparteUndoMergeResult: {
+            /** Format: uuid */
+            merge_id: string;
+            survivor: components["schemas"]["FinanzasContraparte"];
+            restored: components["schemas"]["FinanzasContraparte"];
+            moved_back: {
+                movements: number;
+                documents: number;
+            };
         };
         FinanzasContraparteTerms: {
             /** @description Its own terms; null = the workspace default per class. */
@@ -280545,7 +281305,7 @@ export interface components {
             amount_at_stake_clp: number;
             /** @description First day of last month: `period=recent` keeps the cases touching it or later; older ones are «Historial». */
             since: string;
-            /** @description Open cases per month, newest first, all kinds, ignoring `kind`/`month`/`period`: the month filter’s options (the sum is the open total every surface shows). Months «Cerrado en Chipax» are never listed: they hold no case. */
+            /** @description Open cases per month, newest first, all kinds, ignoring `kind`/`month`/`period`: the month filter’s options (the sum is the open total every surface shows). Months «Cerrado antes de Vitrina» are never listed: they hold no case. */
             counts_by_month: {
                 /** @description `YYYY-MM`. */
                 month: string;
@@ -280857,6 +281617,8 @@ export interface components {
                 match: number;
                 ai: number;
             };
+            /** @description Contrapartes Vitrina (or a person) merged this month, newest first: «Contrapartes unidas» with «Deshacer» (`undoable`) in Hecho por Vitrina. */
+            contraparte_merges: components["schemas"]["FinanzasContraparteMergeView"][];
             rules_created: {
                 /** Format: uuid */
                 id: string;
@@ -280921,7 +281683,7 @@ export interface components {
             /** @description «septiembre 2026». */
             label: string;
             /**
-             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado por una persona; closed_imported = «Cerrado en Chipax» (the import closed it: it raises no cases, a change asks for a reason, there is nothing to close).
+             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado por una persona; closed_imported = «Cerrado antes de Vitrina» (the import closed it: it raises no cases, a change asks for a reason, there is nothing to close).
              * @enum {string}
              */
             state: "open" | "ready_to_close" | "closed" | "closed_imported";
@@ -280930,7 +281692,7 @@ export interface components {
             closed_at: string | null;
             closed_by: string | null;
             /**
-             * @description Who closed the month: `person` («Cerrar mes») or `chipax` (the import: «Cerrado en Chipax»). Null while open.
+             * @description Who closed the month: `person` («Cerrar mes») or `chipax` (the import: «Cerrado antes de Vitrina»). Null while open.
              * @enum {string|null}
              */
             closed_source: "person" | "chipax" | null;
@@ -280948,7 +281710,7 @@ export interface components {
             /** @description «septiembre 2026». */
             label: string;
             /**
-             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado por una persona; closed_imported = «Cerrado en Chipax» (the import closed it: it raises no cases, a change asks for a reason, there is nothing to close).
+             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado por una persona; closed_imported = «Cerrado antes de Vitrina» (the import closed it: it raises no cases, a change asks for a reason, there is nothing to close).
              * @enum {string}
              */
             state: "open" | "ready_to_close" | "closed" | "closed_imported";
@@ -280957,7 +281719,7 @@ export interface components {
             closed_at: string | null;
             closed_by: string | null;
             /**
-             * @description Who closed the month: `person` («Cerrar mes») or `chipax` (the import: «Cerrado en Chipax»). Null while open.
+             * @description Who closed the month: `person` («Cerrar mes») or `chipax` (the import: «Cerrado antes de Vitrina»). Null while open.
              * @enum {string|null}
              */
             closed_source: "person" | "chipax" | null;
