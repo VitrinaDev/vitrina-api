@@ -75787,6 +75787,8 @@ export interface paths {
                          *             "payer": null,
                          *             "comment_count": 0,
                          *             "ads_document_id": null,
+                         *             "card_processor": null,
+                         *             "generic_label": null,
                          *             "created_at": "2026-10-28T09:00:00.000Z"
                          *           }
                          *         },
@@ -76638,6 +76640,8 @@ export interface paths {
                          *           "payer": null,
                          *           "comment_count": 1,
                          *           "ads_document_id": null,
+                         *           "card_processor": null,
+                         *           "generic_label": null,
                          *           "created_at": "2026-10-30T08:00:00.000Z"
                          *         }
                          *       ],
@@ -76801,6 +76805,8 @@ export interface paths {
                          *         "payer": null,
                          *         "comment_count": 1,
                          *         "ads_document_id": null,
+                         *         "card_processor": null,
+                         *         "generic_label": null,
                          *         "created_at": "2026-10-30T08:00:00.000Z",
                          *         "comments": [
                          *           {
@@ -82517,6 +82523,8 @@ export interface paths {
                          *           "payer": null,
                          *           "comment_count": 0,
                          *           "ads_document_id": null,
+                         *           "card_processor": null,
+                         *           "generic_label": null,
                          *           "created_at": "2026-10-30T08:00:00.000Z"
                          *         },
                          *         "money_mirrored": false,
@@ -82548,6 +82556,7 @@ export interface paths {
                          *             "paired_movement": null,
                          *             "cash_day": null,
                          *             "contraparte": null,
+                         *             "payout": null,
                          *             "undoable": true
                          *           }
                          *         ],
@@ -82831,6 +82840,7 @@ export interface paths {
                          *             "paired_movement": null,
                          *             "cash_day": null,
                          *             "contraparte": null,
+                         *             "payout": null,
                          *             "undoable": true
                          *           }
                          *         ],
@@ -83053,6 +83063,8 @@ export interface paths {
                          *           "payer": null,
                          *           "comment_count": 0,
                          *           "ads_document_id": null,
+                         *           "card_processor": null,
+                         *           "generic_label": null,
                          *           "created_at": "2026-10-30T08:00:00.000Z"
                          *         },
                          *         "money_mirrored": false,
@@ -83084,6 +83096,7 @@ export interface paths {
                          *             "paired_movement": null,
                          *             "cash_day": null,
                          *             "contraparte": null,
+                         *             "payout": null,
                          *             "undoable": true
                          *           }
                          *         ],
@@ -280515,6 +280528,18 @@ export interface components {
              * @description Finanzas 30: the ad document (`GET /finanzas/documents/{id}`, `origin = ads`) of this movement when it is an ad charge or refund; null otherwise.
              */
             ads_document_id: string | null;
+            /** @description Finanzas 36: set when this is a known card processor's payout («Cobro con tarjeta»: PNOL / PAGOS Y SERVICIOS, Transbank, Getnet, Mercado Pago). It settles the month's boleta summary and never adds income. Null for any other movement and for money out. */
+            card_processor: {
+                /** @enum {string} */
+                key: "pagos_y_servicios" | "transbank" | "getnet" | "mercado_pago";
+                name: string;
+                rut_formatted: string | null;
+            } | null;
+            /**
+             * @description Finanzas 36: set when the bank text names nobody and the movement has no Contraparte: show it as the title with the sub-line «Sin contraparte».
+             * @enum {string|null}
+             */
+            generic_label: "Depósito en efectivo" | "Pago recibido" | "Depósito con cheque" | null;
             created_at: string;
         };
         FinanzasDocument: {
@@ -281461,6 +281486,13 @@ export interface components {
             contraparte: {
                 id: string;
                 name: string;
+            } | null;
+            /** @description Finanzas 36: set on a link with reason `payout_deduction`: the commission factura (`document`) was paid by deduction from this card payout (the processor kept it). Show «Pagada con descuento» and «Descontada del abono de {processor_name} del {day}», linking to `movement_id`. Such a link takes nothing from the payout's cash. Null otherwise. */
+            payout: {
+                movement_id: string;
+                day: string;
+                amount_clp: number;
+                processor_name: string | null;
             } | null;
             own_transfer: components["schemas"]["FinanzasOwnTransfer"];
             undoable: boolean;

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.18.1",
+    "version": "17.20.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -10175,6 +10175,50 @@
             "format": "uuid",
             "description": "Finanzas 30: the ad document (`GET /finanzas/documents/{id}`, `origin = ads`) of this movement when it is an ad charge or refund; null otherwise."
           },
+          "card_processor": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "enum": [
+                  "pagos_y_servicios",
+                  "transbank",
+                  "getnet",
+                  "mercado_pago"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "rut_formatted": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "key",
+              "name",
+              "rut_formatted"
+            ],
+            "description": "Finanzas 36: set when this is a known card processor's payout («Cobro con tarjeta»: PNOL / PAGOS Y SERVICIOS, Transbank, Getnet, Mercado Pago). It settles the month's boleta summary and never adds income. Null for any other movement and for money out."
+          },
+          "generic_label": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "Depósito en efectivo",
+              "Pago recibido",
+              "Depósito con cheque"
+            ],
+            "description": "Finanzas 36: set when the bank text names nobody and the movement has no Contraparte: show it as the title with the sub-line «Sin contraparte»."
+          },
           "created_at": {
             "type": "string"
           }
@@ -10200,6 +10244,8 @@
           "payer",
           "comment_count",
           "ads_document_id",
+          "card_processor",
+          "generic_label",
           "created_at"
         ]
       },
@@ -13971,6 +14017,36 @@
               "name"
             ]
           },
+          "payout": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "movement_id": {
+                "type": "string"
+              },
+              "day": {
+                "type": "string"
+              },
+              "amount_clp": {
+                "type": "integer"
+              },
+              "processor_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "movement_id",
+              "day",
+              "amount_clp",
+              "processor_name"
+            ],
+            "description": "Finanzas 36: set on a link with reason `payout_deduction`: the commission factura (`document`) was paid by deduction from this card payout (the processor kept it). Show «Pagada con descuento» and «Descontada del abono de {processor_name} del {day}», linking to `movement_id`. Such a link takes nothing from the payout's cash. Null otherwise."
+          },
           "own_transfer": {
             "$ref": "#/components/schemas/FinanzasOwnTransfer"
           },
@@ -13995,6 +14071,7 @@
           "paired_movement",
           "cash_day",
           "contraparte",
+          "payout",
           "own_transfer",
           "undoable"
         ]
@@ -165185,6 +165262,8 @@
                         "payer": null,
                         "comment_count": 0,
                         "ads_document_id": null,
+                        "card_processor": null,
+                        "generic_label": null,
                         "created_at": "2026-10-28T09:00:00.000Z"
                       }
                     },
@@ -166254,6 +166333,8 @@
                       "payer": null,
                       "comment_count": 1,
                       "ads_document_id": null,
+                      "card_processor": null,
+                      "generic_label": null,
                       "created_at": "2026-10-30T08:00:00.000Z"
                     }
                   ],
@@ -166412,6 +166493,8 @@
                     "payer": null,
                     "comment_count": 1,
                     "ads_document_id": null,
+                    "card_processor": null,
+                    "generic_label": null,
                     "created_at": "2026-10-30T08:00:00.000Z",
                     "comments": [
                       {
@@ -173311,6 +173394,8 @@
                       "payer": null,
                       "comment_count": 0,
                       "ads_document_id": null,
+                      "card_processor": null,
+                      "generic_label": null,
                       "created_at": "2026-10-30T08:00:00.000Z"
                     },
                     "money_mirrored": false,
@@ -173342,6 +173427,7 @@
                         "paired_movement": null,
                         "cash_day": null,
                         "contraparte": null,
+                        "payout": null,
                         "undoable": true
                       }
                     ],
@@ -173655,6 +173741,7 @@
                         "paired_movement": null,
                         "cash_day": null,
                         "contraparte": null,
+                        "payout": null,
                         "undoable": true
                       }
                     ],
@@ -174003,6 +174090,8 @@
                       "payer": null,
                       "comment_count": 0,
                       "ads_document_id": null,
+                      "card_processor": null,
+                      "generic_label": null,
                       "created_at": "2026-10-30T08:00:00.000Z"
                     },
                     "money_mirrored": false,
@@ -174034,6 +174123,7 @@
                         "paired_movement": null,
                         "cash_day": null,
                         "contraparte": null,
+                        "payout": null,
                         "undoable": true
                       }
                     ],
