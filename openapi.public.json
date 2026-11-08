@@ -178336,7 +178336,7 @@
     "/finanzas/chipax/shadow/{month}": {
       "get": {
         "summary": "Mes en paralelo: the diff against Chipax for a month",
-        "description": "Balances (per bank account, at month end), payables (per Contraparte, open at month end) and costs (per costo / gasto account, NET as the Resultado counts) must match to the peso. Income is a bridge: Chipax counts it when cashed, Vitrina the documents issued in the month, so the gap is explained line by line. Vitrina's side is computed live; Chipax's side is the newest finished read. `clean` = all three match and the bridge is explained (the exit criterion). Each row's `key` drills down to its items. Before a finished read: `status` not_read / reading / failed and null dimensions. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).",
+        "description": "Balances (per bank account, at month end), payables (per Contraparte, open at month end) and costs (per costo / gasto account, NET as the Resultado counts) must match to the peso. Income is a bridge: Chipax counts it when cashed, Vitrina the documents issued in the month, so the gap is explained line by line. Vitrina's side is computed live; Chipax's side is the newest finished read. `clean` = all three match and the bridge is explained (the exit criterion). Each row's `key` drills down to its items. Rows list the differences first; `difference_count` of each section counts its rows that are not «Cuadra», and the headline `difference_count` is the sum of the sections with `in_headline` (the two reviews, `inherited_overdue` and `possible_duplicates`, are listed beside them and never counted in it). Before a finished read: `status` not_read / reading / failed and null dimensions. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).",
         "security": [
           {
             "BearerAuth": []
@@ -178546,6 +178546,42 @@
                             "type": "string"
                           }
                         },
+                        "difference_count": {
+                          "type": "integer",
+                          "description": "The headline «{n} diferencias en {month}»: the sum of `difference_count` of the `sections` with `in_headline`. 0 until Chipax has been read."
+                        },
+                        "sections": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string",
+                                "enum": [
+                                  "balances",
+                                  "payables",
+                                  "costs",
+                                  "income",
+                                  "inherited_overdue",
+                                  "possible_duplicates"
+                                ]
+                              },
+                              "difference_count": {
+                                "type": "integer"
+                              },
+                              "in_headline": {
+                                "type": "boolean",
+                                "description": "true for the four comparisons of Chipax against Vitrina; false for the two reviews (`inherited_overdue`: payables to resolve, see GET /finanzas/inherited-overdue; `possible_duplicates`: groups of repeated bank lines, see GET /finanzas/possible-duplicates), which are a to-do list."
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "difference_count",
+                              "in_headline"
+                            ]
+                          },
+                          "description": "Every section in screen order. The two reviews are present even before Chipax is read."
+                        },
                         "balances": {
                           "type": [
                             "object",
@@ -178556,7 +178592,23 @@
                               "type": "boolean"
                             },
                             "difference_count": {
+                              "type": "integer",
+                              "description": "The section's «N diferencias»: its rows that are not «Cuadra» (Finanzas 40). Income counts its bridge lines that hold items."
+                            },
+                            "row_count": {
+                              "type": "integer",
+                              "description": "Rows the section lists (income: bridge lines)."
+                            },
+                            "matching_count": {
+                              "type": "integer",
+                              "description": "Rows that match, for «{n} cuentas cuadran · Ver». `rows` lists the differences first."
+                            },
+                            "item_difference_count": {
                               "type": "integer"
+                            },
+                            "without_balance_count": {
+                              "type": "integer",
+                              "description": "Rows with no balance on one side (compared on the month movements): the «un lado no tiene saldo» footnote, once per section."
                             },
                             "rows": {
                               "type": "array",
@@ -178732,6 +178784,10 @@
                           "required": [
                             "matches",
                             "difference_count",
+                            "row_count",
+                            "matching_count",
+                            "item_difference_count",
+                            "without_balance_count",
                             "rows"
                           ]
                         },
@@ -178757,7 +178813,20 @@
                               "description": "Whole CLP."
                             },
                             "difference_count": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "The section's «N diferencias»: its rows that are not «Cuadra» (Finanzas 40). Income counts its bridge lines that hold items."
+                            },
+                            "row_count": {
+                              "type": "integer",
+                              "description": "Rows the section lists (income: bridge lines)."
+                            },
+                            "matching_count": {
+                              "type": "integer",
+                              "description": "Rows that match, for «{n} cuentas cuadran · Ver». `rows` lists the differences first."
+                            },
+                            "item_difference_count": {
+                              "type": "integer",
+                              "description": "Items (lines, documents) behind the rows that do not pair."
                             },
                             "rows": {
                               "type": "array",
@@ -178833,6 +178902,9 @@
                             "vitrina_clp",
                             "difference_clp",
                             "difference_count",
+                            "row_count",
+                            "matching_count",
+                            "item_difference_count",
                             "rows"
                           ]
                         },
@@ -178858,7 +178930,20 @@
                               "description": "Whole CLP."
                             },
                             "difference_count": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "The section's «N diferencias»: its rows that are not «Cuadra» (Finanzas 40). Income counts its bridge lines that hold items."
+                            },
+                            "row_count": {
+                              "type": "integer",
+                              "description": "Rows the section lists (income: bridge lines)."
+                            },
+                            "matching_count": {
+                              "type": "integer",
+                              "description": "Rows that match, for «{n} cuentas cuadran · Ver». `rows` lists the differences first."
+                            },
+                            "item_difference_count": {
+                              "type": "integer",
+                              "description": "Items (lines, documents) behind the rows that do not pair."
                             },
                             "rows": {
                               "type": "array",
@@ -178970,6 +179055,9 @@
                             "vitrina_clp",
                             "difference_clp",
                             "difference_count",
+                            "row_count",
+                            "matching_count",
+                            "item_difference_count",
                             "rows"
                           ]
                         },
@@ -178979,6 +179067,18 @@
                             "null"
                           ],
                           "properties": {
+                            "difference_count": {
+                              "type": "integer",
+                              "description": "The section's «N diferencias»: its rows that are not «Cuadra» (Finanzas 40). Income counts its bridge lines that hold items."
+                            },
+                            "row_count": {
+                              "type": "integer",
+                              "description": "Rows the section lists (income: bridge lines)."
+                            },
+                            "matching_count": {
+                              "type": "integer",
+                              "description": "Rows that match, for «{n} cuentas cuadran · Ver». `rows` lists the differences first."
+                            },
                             "bridge": {
                               "type": "object",
                               "properties": {
@@ -179191,6 +179291,9 @@
                             }
                           },
                           "required": [
+                            "difference_count",
+                            "row_count",
+                            "matching_count",
                             "bridge",
                             "rows",
                             "production"
@@ -179207,6 +179310,8 @@
                         "history_from",
                         "clean",
                         "warnings",
+                        "difference_count",
+                        "sections",
                         "balances",
                         "payables",
                         "costs",
@@ -179239,9 +179344,46 @@
                     "history_from": "2025-01-01",
                     "clean": false,
                     "warnings": [],
+                    "difference_count": 1,
+                    "sections": [
+                      {
+                        "key": "balances",
+                        "difference_count": 0,
+                        "in_headline": true
+                      },
+                      {
+                        "key": "payables",
+                        "difference_count": 1,
+                        "in_headline": true
+                      },
+                      {
+                        "key": "costs",
+                        "difference_count": 0,
+                        "in_headline": true
+                      },
+                      {
+                        "key": "income",
+                        "difference_count": 2,
+                        "in_headline": true
+                      },
+                      {
+                        "key": "inherited_overdue",
+                        "difference_count": 1135,
+                        "in_headline": false
+                      },
+                      {
+                        "key": "possible_duplicates",
+                        "difference_count": 2,
+                        "in_headline": false
+                      }
+                    ],
                     "balances": {
                       "matches": true,
                       "difference_count": 0,
+                      "row_count": 1,
+                      "matching_count": 1,
+                      "item_difference_count": 0,
+                      "without_balance_count": 0,
                       "rows": [
                         {
                           "key": "bank:01930000-0000-7000-8000-0000000000b1",
@@ -179280,6 +179422,9 @@
                       "vitrina_clp": 3800000,
                       "difference_clp": 410000,
                       "difference_count": 1,
+                      "row_count": 1,
+                      "matching_count": 0,
+                      "item_difference_count": 1,
                       "rows": [
                         {
                           "key": "p_0000000000000001",
@@ -179301,9 +179446,15 @@
                       "vitrina_clp": 9340000,
                       "difference_clp": 0,
                       "difference_count": 0,
+                      "row_count": 0,
+                      "matching_count": 0,
+                      "item_difference_count": 0,
                       "rows": []
                     },
                     "income": {
+                      "difference_count": 2,
+                      "row_count": 6,
+                      "matching_count": 4,
                       "bridge": {
                         "vitrina_clp": 31500000,
                         "chipax_clp": 30100000,
@@ -179900,6 +180051,1306 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/inherited-overdue": {
+      "get": {
+        "summary": "Vencido heredado: the payables to review",
+        "description": "The payables that arrived already more than 90 days overdue (`payment_state = vencido_heredado`): they are out of the cash-flow projection and the balances until someone marks them pagado or anulado. Each carries the open bank payment that most likely settled it (`suggested_match`: exact amount, a payment is suggested to one document only; `signal` says why). `summary` counts the whole filter, `items` is one page. Filter by Contraparte with `contraparte`. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» and no glosa on money in. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Only the inherited payables of this Contraparte (`GET /finanzas/contrapartes` id). The Mes en paralelo tab reads it from `?contraparte=<id>`."
+            },
+            "required": false,
+            "name": "contraparte",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "due_date",
+                "amount"
+              ],
+              "description": "due_date (default): the oldest due date first. amount: the largest open amount first."
+            },
+            "required": false,
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "required": false,
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "summary": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer"
+                            },
+                            "amount_clp": {
+                              "type": "integer",
+                              "description": "What is still open on them (total − retención − links)."
+                            }
+                          },
+                          "required": [
+                            "count",
+                            "amount_clp"
+                          ],
+                          "description": "The whole filter, not only this page."
+                        },
+                        "filter": {
+                          "type": "object",
+                          "properties": {
+                            "contraparte_id": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "contraparte_id"
+                          ]
+                        },
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "purchase",
+                                  "honorario",
+                                  "manual_expense",
+                                  "sale",
+                                  "tax"
+                                ]
+                              },
+                              "dte_type": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "label": {
+                                "type": "string",
+                                "description": "«Factura electrónica N° 451»."
+                              },
+                              "folio": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "contraparte": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name"
+                                ]
+                              },
+                              "counterparty_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "issue_date": {
+                                "type": "string"
+                              },
+                              "due_date": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "arrived_on": {
+                                "type": "string",
+                                "description": "The day Vitrina first recorded it."
+                              },
+                              "days_overdue": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "total_clp": {
+                                "type": "integer",
+                                "description": "Whole CLP."
+                              },
+                              "outstanding_clp": {
+                                "type": "integer",
+                                "description": "Whole CLP."
+                              },
+                              "suggested_match": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "movement_id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "day": {
+                                    "type": "string"
+                                  },
+                                  "amount_clp": {
+                                    "type": "integer",
+                                    "description": "Whole CLP."
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "counterparty_name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "bank_account_id": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "bank_account_name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "institution_name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The bank, for its logo («BCI»)."
+                                  },
+                                  "number_masked": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "signal": {
+                                    "type": "string",
+                                    "enum": [
+                                      "folio",
+                                      "contraparte",
+                                      "amount"
+                                    ],
+                                    "description": "What ties the payment to the document: its folio in the glosa, the same Contraparte, or only the exact amount."
+                                  }
+                                },
+                                "required": [
+                                  "movement_id",
+                                  "day",
+                                  "amount_clp",
+                                  "description",
+                                  "counterparty_name",
+                                  "bank_account_id",
+                                  "bank_account_name",
+                                  "institution_name",
+                                  "number_masked",
+                                  "signal"
+                                ],
+                                "description": "The open outbound bank line that most likely paid it (exact amount; one payment is suggested to one document). `null` when none fits."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "dte_type",
+                              "label",
+                              "folio",
+                              "contraparte",
+                              "counterparty_name",
+                              "issue_date",
+                              "due_date",
+                              "arrived_on",
+                              "days_overdue",
+                              "total_clp",
+                              "outstanding_clp",
+                              "suggested_match"
+                            ]
+                          }
+                        },
+                        "total": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "offset": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "summary",
+                        "filter",
+                        "items",
+                        "total",
+                        "limit",
+                        "offset"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "summary": {
+                      "count": 1135,
+                      "amount_clp": 437600000
+                    },
+                    "filter": {
+                      "contraparte_id": null
+                    },
+                    "items": [
+                      {
+                        "id": "01930000-0000-7000-8000-0000000000d1",
+                        "kind": "purchase",
+                        "dte_type": 33,
+                        "label": "Factura electrónica N° 451",
+                        "folio": "451",
+                        "contraparte": {
+                          "id": "01930000-0000-7000-8000-0000000000c1",
+                          "name": "Laboratorio Dental Andes Ltda"
+                        },
+                        "counterparty_name": "Laboratorio Dental Andes Ltda",
+                        "issue_date": "2025-06-10",
+                        "due_date": "2025-07-10",
+                        "arrived_on": "2025-11-02",
+                        "days_overdue": 120,
+                        "total_clp": 302852,
+                        "outstanding_clp": 302852,
+                        "suggested_match": {
+                          "movement_id": "01930000-0000-7000-8000-0000000000a1",
+                          "day": "2025-09-12",
+                          "amount_clp": 302852,
+                          "description": "Transferencia a Laboratorio Dental Andes",
+                          "counterparty_name": "Laboratorio Dental Andes Ltda",
+                          "bank_account_id": "01930000-0000-7000-8000-0000000000b1",
+                          "bank_account_name": "Cuenta corriente",
+                          "institution_name": "BCI",
+                          "number_masked": "•••• 9819",
+                          "signal": "contraparte"
+                        }
+                      }
+                    ],
+                    "total": 1135,
+                    "limit": 50,
+                    "offset": 0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/inherited-overdue/resolve": {
+      "post": {
+        "summary": "Vencido heredado: mark pagado or anulado in bulk",
+        "description": "Resolves up to 500 inherited payables at once. `pagado`: it was settled; the document leaves the review as paid (no bank link is invented). `anulado`: it never has to be paid; the document is voided, so no report counts it. A document that is no longer inherited is skipped (`not_inherited`), never overwritten. One batch, one `batch_id`: it lands in the audit log (`finanzas.inherited_overdue.pagado` / `.anulado`) and `POST /finanzas/inherited-overdue/batches/{batchId}/undo` puts it back. «anulado» in a closed month needs `?adjustment_reason=` (409 `FINANZAS_PERIOD_CLOSED` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "document_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 500,
+                    "description": "The inherited payables to resolve (1 to 500)."
+                  },
+                  "resolution": {
+                    "type": "string",
+                    "enum": [
+                      "pagado",
+                      "anulado"
+                    ],
+                    "description": "pagado: it was settled (no bank link is invented; the document leaves the review as paid). anulado: it never has to be paid (it is voided, so no report counts it)."
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "document_ids",
+                  "resolution"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "document_ids": [
+                  "01930000-0000-7000-8000-0000000000d1"
+                ],
+                "resolution": "pagado"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The batch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "batch_id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Pass it to the undo route («Deshacer»)."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "pagado",
+                            "anulado"
+                          ]
+                        },
+                        "resolved": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "skipped": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "reason": {
+                                "type": "string",
+                                "enum": [
+                                  "not_found",
+                                  "not_inherited"
+                                ],
+                                "description": "not_inherited: someone already resolved it, or a payment was linked to it."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "reason"
+                            ]
+                          }
+                        },
+                        "amount_clp": {
+                          "type": "integer",
+                          "description": "What was open on the documents resolved."
+                        },
+                        "remaining": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer"
+                            },
+                            "amount_clp": {
+                              "type": "integer",
+                              "description": "What is still open on them (total − retención − links)."
+                            }
+                          },
+                          "required": [
+                            "count",
+                            "amount_clp"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "batch_id",
+                        "resolution",
+                        "resolved",
+                        "skipped",
+                        "amount_clp",
+                        "remaining"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "batch_id": "01930000-0000-7000-8000-0000000000b9",
+                    "resolution": "pagado",
+                    "resolved": [
+                      "01930000-0000-7000-8000-0000000000d1"
+                    ],
+                    "skipped": [],
+                    "amount_clp": 302852,
+                    "remaining": {
+                      "count": 1134,
+                      "amount_clp": 437297148
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/finanzas/inherited-overdue/batches/{batchId}/undo": {
+      "post": {
+        "summary": "Vencido heredado: undo a batch («Deshacer»)",
+        "description": "Puts the documents of a batch back to «vencido heredado» (a payment linked in the meantime wins and the state follows it). Pass `document_ids` to undo only some. Idempotent: what was already undone comes back in `skipped`. Audited as `finanzas.inherited_overdue.undo`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "batchId",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "document_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 500,
+                    "description": "Undo only these documents of the batch (default: the whole batch)."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The undo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "batch_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "resolution": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "pagado",
+                            "anulado"
+                          ]
+                        },
+                        "undone": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "skipped": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "remaining": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer"
+                            },
+                            "amount_clp": {
+                              "type": "integer",
+                              "description": "What is still open on them (total − retención − links)."
+                            }
+                          },
+                          "required": [
+                            "count",
+                            "amount_clp"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "batch_id",
+                        "resolution",
+                        "undone",
+                        "skipped",
+                        "remaining"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "batch_id": "01930000-0000-7000-8000-0000000000b9",
+                    "resolution": "pagado",
+                    "undone": [
+                      "01930000-0000-7000-8000-0000000000d1"
+                    ],
+                    "skipped": [],
+                    "remaining": {
+                      "count": 1135,
+                      "amount_clp": 437600000
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/inherited-overdue/batches": {
+      "get": {
+        "summary": "Vencido heredado: the batches already resolved",
+        "description": "Each bulk action, newest first, with how many of its documents are still resolved (`live_count`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Batches",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "batch_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "resolution": {
+                            "type": "string",
+                            "enum": [
+                              "pagado",
+                              "anulado"
+                            ]
+                          },
+                          "resolved_at": {
+                            "type": "string",
+                            "description": "ISO 8601 timestamp."
+                          },
+                          "resolved_by": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "document_count": {
+                            "type": "integer"
+                          },
+                          "live_count": {
+                            "type": "integer",
+                            "description": "Documents of the batch not undone."
+                          },
+                          "amount_clp": {
+                            "type": "integer",
+                            "description": "Whole CLP."
+                          }
+                        },
+                        "required": [
+                          "batch_id",
+                          "resolution",
+                          "resolved_at",
+                          "resolved_by",
+                          "document_count",
+                          "live_count",
+                          "amount_clp"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "batch_id": "01930000-0000-7000-8000-0000000000b9",
+                      "resolution": "pagado",
+                      "resolved_at": "2026-11-08T14:00:00.000Z",
+                      "resolved_by": "00000000-0000-4000-8000-000000000001",
+                      "document_count": 3,
+                      "live_count": 3,
+                      "amount_clp": 908556
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/possible-duplicates": {
+      "get": {
+        "summary": "Posibles duplicados: bank lines that repeat",
+        "description": "Bank lines that repeat under one bank-issued operation id on the same account, day, direction and amount, at least `min_repeats` times (default 3). An id derived from the date (ending in six zeros) is not a bank reference and never counts. READ-ONLY: Vitrina deletes nothing here; someone reviews the list before any change. The Chipax import skips a repeated line of this kind on its next run. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» and no glosa on money in. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 10,
+              "description": "A line counts when it repeats at least this many times (default 3)."
+            },
+            "required": false,
+            "name": "min_repeats",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "min_repeats": {
+                          "type": "integer"
+                        },
+                        "group_count": {
+                          "type": "integer"
+                        },
+                        "line_count": {
+                          "type": "integer"
+                        },
+                        "groups": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "day": {
+                                "type": "string"
+                              },
+                              "amount_clp": {
+                                "type": "integer",
+                                "description": "Whole CLP."
+                              },
+                              "direction": {
+                                "type": "string",
+                                "enum": [
+                                  "inbound",
+                                  "outbound"
+                                ]
+                              },
+                              "bank_operation": {
+                                "type": "string",
+                                "description": "The bank's own reference for the operation."
+                              },
+                              "description": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "repeats": {
+                                "type": "integer"
+                              },
+                              "total_clp": {
+                                "type": "integer",
+                                "description": "amount × repeats."
+                              },
+                              "bank_account": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "institution_name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "number_masked": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "institution_name",
+                                  "number_masked"
+                                ]
+                              },
+                              "lines": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "source": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "source",
+                                    "description"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "day",
+                              "amount_clp",
+                              "direction",
+                              "bank_operation",
+                              "description",
+                              "repeats",
+                              "total_clp",
+                              "bank_account",
+                              "lines"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "min_repeats",
+                        "group_count",
+                        "line_count",
+                        "groups"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "min_repeats": 3,
+                    "group_count": 1,
+                    "line_count": 3,
+                    "groups": [
+                      {
+                        "key": "acct|2025121010599320|2527239|outbound|2025-12-10",
+                        "day": "2025-12-10",
+                        "amount_clp": 2527239,
+                        "direction": "outbound",
+                        "bank_operation": "2025121010599320",
+                        "description": "Pk smart4d tasa int. 2,09%",
+                        "repeats": 3,
+                        "total_clp": 7581717,
+                        "bank_account": {
+                          "id": "01930000-0000-7000-8000-0000000000b2",
+                          "name": "Itaú tarjeta de crédito",
+                          "institution_name": "Itaú",
+                          "number_masked": "•••• 5402"
+                        },
+                        "lines": [
+                          {
+                            "id": "01930000-0000-7000-8000-0000000000a1",
+                            "source": "chipax",
+                            "description": "Pk smart4d tasa int. 2,09%"
+                          }
+                        ]
+                      }
+                    ]
+                  }
                 }
               }
             }
