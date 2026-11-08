@@ -92476,7 +92476,7 @@ export interface paths {
                          *             }
                          *           },
                          *           "lines": [
-                         *             "Noviembre va en $6.100.000 de ingresos, de $9.800.000 para cubrir costos. Por ahora el mes pierde $1.200.000.",
+                         *             "Noviembre va en $6.100.000 de ingresos, de $9.800.000 para cubrir costos.",
                          *             "3 casos te necesitan en Por resolver, por $840.000."
                          *           ],
                          *           "primary": {
@@ -283297,6 +283297,15 @@ export interface components {
                 month: string;
                 label: string;
                 proforma: boolean;
+                /** @description «Mes incompleto»: a closed month whose dentist cost is $0 or that misses a large recurring cost. It never counts for `equilibrio`. Null otherwise; a proforma month is never tagged. */
+                incompleto: {
+                    /** @enum {string} */
+                    reason: "dentist_cost_missing" | "recurring_cost_missing";
+                    /** @description Spanish, ready for the tooltip. */
+                    message: string;
+                    /** @description The missing recurring account (`recurring_cost_missing`), else null. */
+                    account_name: string | null;
+                } | null;
                 /** @description The Resultado’s «Ingresos» (net). */
                 ingresos_clp: number;
                 /** @description Costs on accounts flagged variable (documented or not) + «Egresos sin clasificar». */
@@ -283320,6 +283329,18 @@ export interface components {
                 /** @description ingresos − variables − fijos = the Resultado operacional. */
                 resultado_clp: number;
             }[];
+            /** @description The bar the current month is judged against; independent of the range asked for. Null when no complete month has a break-even. */
+            equilibrio: {
+                /** @description The average break-even of the last 3 complete months, «Mes incompleto» skipped. */
+                equilibrio_clp: number;
+                from: string;
+                to: string;
+                months: {
+                    month: string;
+                    label: string;
+                    equilibrio_clp: number;
+                }[];
+            } | null;
             /** @description Monthly averages over the range; equilibrio = average fijos ÷ the range’s margin %. */
             period: {
                 /** @description The Resultado’s «Ingresos» (net). */
@@ -283517,17 +283538,41 @@ export interface components {
             sin_clasificar_clp: number;
             /** @description The month’s Resultado operacional. */
             resultado_clp: number;
-            /** @description The break-even line: Costos y equilibrio’s punto de equilibrio of the last closed month (its headline). */
+            /** @description Clinics with production data: the month’s producción (performed work in the clinic system). Null for the others. */
+            produccion_clp: number | null;
+            /**
+             * @description What `basis_clp`, `cobertura_pct` and `brecha_clp` measure against the break-even: `produccion` mid-month for a clinic with production data (booked income reads near zero until the month’s summary boleta arrives), `ingresos` otherwise and once booked income covers 80 % of the month’s producción.
+             * @enum {string}
+             */
+            basis: "produccion" | "ingresos";
+            /** @description The amount on `basis`. */
+            basis_clp: number;
+            /** @description The break-even bar the month is judged against. Null when no complete month has a break-even yet. */
             equilibrio: {
+                /** @description The newest month used. */
                 month: string;
                 label: string;
+                /** @description The bar: the average break-even of the last 3 complete months, «Mes incompleto» skipped. Never null today (the whole `equilibrio` is null instead); kept nullable for compatibility. */
                 equilibrio_clp: number | null;
-                /** @enum {string|null} */
+                /**
+                 * @description Always null: only months with a break-even are averaged.
+                 * @enum {string|null}
+                 */
                 sin_calculo: "sin_ingresos" | "margen_no_positivo" | null;
+                /** @description First month of the average, `YYYY-MM`. */
+                from: string;
+                /** @description Last month of the average, `YYYY-MM`. */
+                to: string;
+                /** @description The trailing complete months used, oldest first (at most 3). */
+                months: {
+                    month: string;
+                    label: string;
+                    equilibrio_clp: number;
+                }[];
             } | null;
-            /** @description Percent, one decimal. */
+            /** @description `basis_clp` ÷ equilibrio, one decimal. */
             cobertura_pct: number | null;
-            /** @description ingresos − equilibrio (negative: still short of it). */
+            /** @description `basis_clp` − equilibrio (negative: still short of it). */
             brecha_clp: number | null;
         } | null;
         FinanzasResumen: {
