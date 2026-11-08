@@ -94290,7 +94290,7 @@ export interface paths {
         };
         /**
          * Producción, cobrado y boleteado (clinics)
-         * @description The clinic’s bridge per month and for the range: **producción** (treatments performed), **cobrado** (patient payments received) and **boleteado** (boletas DTE 39/41 issued, at totals, minus notas de crédito on boletas), with **por cobrar** (produced, not paid) and **anticipos** (paid, not produced) per patient, so that producción − por cobrar + anticipos = cobrado; the range column nets per patient. Clinic money authority: a clinic mirrored from Dentalink/Medilink reads producción and cobrado only from the mirror (`source: clinic_mirror`), otherwise from Vitrina’s registers; bank movements are never income. Boletas are checked against payments both ways (`payments_without_boleta`, `boletas_without_payment`): first the link the clinic system holds, then a boleta to the payment’s own patient, then a monthly summary boleta (to the generic receiver 66.666.666-6 or to nobody, named by no payment) covers its month’s remaining payments (`monthly_boletas`). `ingresos_resultado_clp` is the Resultado’s income for the same months, to read next to it. A caller without the patient roster sees «Paciente A. P.» and no RUT. Other verticals answer `is_clinic: false` with empty figures. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         * @description The clinic’s bridge per month and for the range: **producción** (treatments performed), **cobrado** (patient payments received) and **boleteado** (boletas DTE 39/41 issued, at totals, minus notas de crédito on boletas), with **por cobrar** (produced, not paid) and **anticipos** (paid, not produced) per patient, so that producción − por cobrar + anticipos = cobrado; the range column nets per patient. Clinic money authority: a clinic mirrored from Dentalink/Medilink reads producción and cobrado only from the mirror (`source: clinic_mirror`), otherwise from Vitrina’s registers; bank movements are never income. Boletas are checked against payments both ways (`payments_without_boleta`, `boletas_without_payment`): first the link the clinic system holds, then a boleta to the payment’s own patient, then a monthly summary boleta (to the generic receiver 66.666.666-6 or to nobody, named by no payment) covers its month’s remaining payments (`monthly_boletas`); a month’s leftover is then covered by what the NEXT month’s summary has left (month-end cash is billed in the next summary), shown as the signed `boleteado_otro_mes_clp`, and a leftover whose next summary is not issued yet is `resumen_pendiente`, not a gap. `payments_without_boleta` is also grouped `by_month` (`per_month` items each); `sin_boleta_month` lists one month completely. `ingresos_resultado_clp` is the Resultado’s income for the same months, to read next to it. A caller without the patient roster sees «Paciente A. P.» and no RUT. Other verticals answer `is_clinic: false` with empty figures. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
          */
         get: {
             parameters: {
@@ -94298,6 +94298,8 @@ export interface paths {
                     from?: string;
                     to?: string;
                     limit?: number;
+                    per_month?: number;
+                    sin_boleta_month?: string;
                 };
                 header?: never;
                 path?: never;
@@ -94333,7 +94335,11 @@ export interface paths {
                          *             "anticipos_clp": 1820000,
                          *             "cobrado_sin_boleta_clp": 478076,
                          *             "boletas_sin_pago_clp": 0,
-                         *             "ingresos_resultado_clp": 57726146
+                         *             "ingresos_resultado_clp": 57726146,
+                         *             "pagos_sin_boleta": 3,
+                         *             "pendiente_resumen_clp": 0,
+                         *             "pagos_pendiente_resumen": 0,
+                         *             "boleteado_otro_mes_clp": 0
                          *           }
                          *         ],
                          *         "total": {
@@ -94344,7 +94350,11 @@ export interface paths {
                          *           "anticipos_clp": 1820000,
                          *           "cobrado_sin_boleta_clp": 478076,
                          *           "boletas_sin_pago_clp": 0,
-                         *           "ingresos_resultado_clp": 57726146
+                         *           "ingresos_resultado_clp": 57726146,
+                         *           "pagos_sin_boleta": 3,
+                         *           "pendiente_resumen_clp": 0,
+                         *           "pagos_pendiente_resumen": 0,
+                         *           "boleteado_otro_mes_clp": 0
                          *         },
                          *         "payments_without_boleta": {
                          *           "count": 3,
@@ -94363,6 +94373,29 @@ export interface paths {
                          *                 "name": "Paciente A. P.",
                          *                 "rut": null
                          *               }
+                         *             }
+                         *           ],
+                         *           "by_month": [
+                         *             {
+                         *               "month": "2026-10",
+                         *               "count": 3,
+                         *               "total_clp": 478076,
+                         *               "items": [
+                         *                 {
+                         *                   "payment_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7101",
+                         *                   "source": "clinic_mirror",
+                         *                   "day": "2026-10-31",
+                         *                   "amount_clp": 250000,
+                         *                   "without_boleta_clp": 250000,
+                         *                   "reason": "sin_boleta",
+                         *                   "folios": [],
+                         *                   "patient": {
+                         *                     "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7301",
+                         *                     "name": "Paciente A. P.",
+                         *                     "rut": null
+                         *                   }
+                         *                 }
+                         *               ]
                          *             }
                          *           ]
                          *         },
@@ -284595,6 +284628,14 @@ export interface components {
                 boletas_sin_pago_clp: number;
                 /** @description The Resultado’s «Ingresos» (issued documents, net) for the same months. */
                 ingresos_resultado_clp: number;
+                /** @description Payments (or payment parts) without a boleta: the count behind `cobrado_sin_boleta_clp`. */
+                pagos_sin_boleta: number;
+                /** @description Part of `cobrado_sin_boleta_clp` waiting for next month’s summary boleta, which is not issued yet (reason `resumen_pendiente`). Included in `cobrado_sin_boleta_clp`. */
+                pendiente_resumen_clp: number;
+                /** @description Count behind `pendiente_resumen_clp`; included in `pagos_sin_boleta`. */
+                pagos_pendiente_resumen: number;
+                /** @description Signed: payments of the previous month covered by THIS month’s summary boleta (+), minus payments of this month covered by the NEXT month’s summary (−). cobrado − cobrado_sin_boleta + boletas_sin_pago + boleteado_otro_mes = boleteado, apart from notas de crédito that name no boleta (they lower `boleteado_clp` but not a boleta’s capacity). */
+                boleteado_otro_mes_clp: number;
             }[];
             /** @description The range, netted per patient. */
             total: {
@@ -284612,6 +284653,14 @@ export interface components {
                 boletas_sin_pago_clp: number;
                 /** @description The Resultado’s «Ingresos» (issued documents, net) for the same months. */
                 ingresos_resultado_clp: number;
+                /** @description Payments (or payment parts) without a boleta: the count behind `cobrado_sin_boleta_clp`. */
+                pagos_sin_boleta: number;
+                /** @description Part of `cobrado_sin_boleta_clp` waiting for next month’s summary boleta, which is not issued yet (reason `resumen_pendiente`). Included in `cobrado_sin_boleta_clp`. */
+                pendiente_resumen_clp: number;
+                /** @description Count behind `pendiente_resumen_clp`; included in `pagos_sin_boleta`. */
+                pagos_pendiente_resumen: number;
+                /** @description Signed: payments of the previous month covered by THIS month’s summary boleta (+), minus payments of this month covered by the NEXT month’s summary (−). cobrado − cobrado_sin_boleta + boletas_sin_pago + boleteado_otro_mes = boleteado, apart from notas de crédito that name no boleta (they lower `boleteado_clp` but not a boleta’s capacity). */
+                boleteado_otro_mes_clp: number;
             };
             payments_without_boleta: {
                 count: number;
@@ -284625,7 +284674,7 @@ export interface components {
                     amount_clp: number;
                     without_boleta_clp: number;
                     /** @enum {string} */
-                    reason: "sin_boleta" | "boleta_no_encontrada";
+                    reason: "sin_boleta" | "boleta_no_encontrada" | "resumen_pendiente";
                     folios: string[];
                     patient: {
                         /** Format: uuid */
@@ -284634,6 +284683,31 @@ export interface components {
                         name: string;
                         rut: string | null;
                     } | null;
+                }[];
+                /** @description Months with a gap, ascending, each with its `per_month` largest items (patients redacted like `items`). */
+                by_month: {
+                    month: string;
+                    count: number;
+                    total_clp: number;
+                    items: {
+                        /** Format: uuid */
+                        payment_id: string;
+                        /** @enum {string} */
+                        source: "clinic_mirror" | "vitrina";
+                        day: string;
+                        amount_clp: number;
+                        without_boleta_clp: number;
+                        /** @enum {string} */
+                        reason: "sin_boleta" | "boleta_no_encontrada" | "resumen_pendiente";
+                        folios: string[];
+                        patient: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @description Full name; «Paciente A. P.» for a caller without the patient roster. */
+                            name: string;
+                            rut: string | null;
+                        } | null;
+                    }[];
                 }[];
             };
             boletas_without_payment: {
