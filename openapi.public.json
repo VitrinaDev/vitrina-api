@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.20.0",
+    "version": "17.22.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -21265,6 +21265,35 @@
                   ],
                   "description": "«Mes incompleto»: a closed month whose dentist cost is $0 or that misses a large recurring cost. It never counts for `equilibrio`. Null otherwise; a proforma month is never tagged."
                 },
+                "fijos_faltantes_clp": {
+                  "type": "integer",
+                  "description": "Recurring fixed costs not booked yet in this closed month, at their usual amount (the sum of `fijos_faltantes`). Already inside `equilibrio_clp`; never inside `fijos_clp` or `resultado_clp`. 0 on a proforma month."
+                },
+                "fijos_faltantes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "account_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "account_name": {
+                        "type": "string"
+                      },
+                      "usual_clp": {
+                        "type": "integer",
+                        "description": "Median of the account’s last 3 non-zero months before the gap."
+                      }
+                    },
+                    "required": [
+                      "account_id",
+                      "account_name",
+                      "usual_clp"
+                    ]
+                  },
+                  "description": "The accounts behind `fijos_faltantes_clp`, usual amount descending."
+                },
                 "ingresos_clp": {
                   "type": "integer",
                   "description": "The Resultado’s «Ingresos» (net)."
@@ -21297,7 +21326,7 @@
                     "integer",
                     "null"
                   ],
-                  "description": "Punto de equilibrio: fijos ÷ margen de contribución %, the monthly income at which the result is zero. Null when it cannot be reached (see `equilibrio_sin_calculo`)."
+                  "description": "Punto de equilibrio: (fijos + fijos faltantes) ÷ margen de contribución %, the monthly income at which the result is zero. `fijos_clp` stays the books; the recurring fixed costs not booked yet enter here at their usual amount (month rows: `fijos_faltantes_clp`). Null when it cannot be reached (see `equilibrio_sin_calculo`)."
                 },
                 "equilibrio_sin_calculo": {
                   "type": [
@@ -21333,6 +21362,8 @@
                 "label",
                 "proforma",
                 "incompleto",
+                "fijos_faltantes_clp",
+                "fijos_faltantes",
                 "ingresos_clp",
                 "variables_clp",
                 "sin_clasificar_clp",
@@ -21384,13 +21415,26 @@
                     "equilibrio_clp"
                   ]
                 }
+              },
+              "fijos_faltantes_clp": {
+                "type": "integer",
+                "description": "Mean of the bar months’ `fijos_faltantes_clp`; already inside `equilibrio_clp`."
+              },
+              "fijos_faltantes_accounts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Distinct names of the accounts missing in any bar month, usual amount descending."
               }
             },
             "required": [
               "equilibrio_clp",
               "from",
               "to",
-              "months"
+              "months",
+              "fijos_faltantes_clp",
+              "fijos_faltantes_accounts"
             ],
             "description": "The bar the current month is judged against; independent of the range asked for. Null when no complete month has a break-even."
           },
@@ -21429,7 +21473,7 @@
                   "integer",
                   "null"
                 ],
-                "description": "Punto de equilibrio: fijos ÷ margen de contribución %, the monthly income at which the result is zero. Null when it cannot be reached (see `equilibrio_sin_calculo`)."
+                "description": "Punto de equilibrio: (fijos + fijos faltantes) ÷ margen de contribución %, the monthly income at which the result is zero. `fijos_clp` stays the books; the recurring fixed costs not booked yet enter here at their usual amount (month rows: `fijos_faltantes_clp`). Null when it cannot be reached (see `equilibrio_sin_calculo`)."
               },
               "equilibrio_sin_calculo": {
                 "type": [
@@ -21511,6 +21555,24 @@
                 "behavior_inherited": {
                   "type": "boolean"
                 },
+                "usual_monthly_clp": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Fijo accounts: median of the last 3 non-zero closed months within 12 months before the current one. Null for variable accounts or when never seen."
+                },
+                "recurring": {
+                  "type": "boolean",
+                  "description": "The recurring (non-zero in 3 of the 6 months up to its last booking) and stable (last amount within 25 % of the usual) test holds."
+                },
+                "missing_since": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "`YYYY-MM`: the account is missing in the last closed month; the first month of that run of zeros. Null otherwise."
+                },
                 "values": {
                   "type": "array",
                   "items": {
@@ -21529,6 +21591,9 @@
                 "kind",
                 "behavior",
                 "behavior_inherited",
+                "usual_monthly_clp",
+                "recurring",
+                "missing_since",
                 "values",
                 "total_clp"
               ]

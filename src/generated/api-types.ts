@@ -284208,6 +284208,16 @@ export interface components {
                     /** @description The missing recurring account (`recurring_cost_missing`), else null. */
                     account_name: string | null;
                 } | null;
+                /** @description Recurring fixed costs not booked yet in this closed month, at their usual amount (the sum of `fijos_faltantes`). Already inside `equilibrio_clp`; never inside `fijos_clp` or `resultado_clp`. 0 on a proforma month. */
+                fijos_faltantes_clp: number;
+                /** @description The accounts behind `fijos_faltantes_clp`, usual amount descending. */
+                fijos_faltantes: {
+                    /** Format: uuid */
+                    account_id: string;
+                    account_name: string;
+                    /** @description Median of the account’s last 3 non-zero months before the gap. */
+                    usual_clp: number;
+                }[];
                 /** @description The Resultado’s «Ingresos» (net). */
                 ingresos_clp: number;
                 /** @description Costs on accounts flagged variable (documented or not) + «Egresos sin clasificar». */
@@ -284220,7 +284230,7 @@ export interface components {
                 contribucion_clp: number;
                 /** @description Percent, one decimal. */
                 contribucion_pct: number | null;
-                /** @description Punto de equilibrio: fijos ÷ margen de contribución %, the monthly income at which the result is zero. Null when it cannot be reached (see `equilibrio_sin_calculo`). */
+                /** @description Punto de equilibrio: (fijos + fijos faltantes) ÷ margen de contribución %, the monthly income at which the result is zero. `fijos_clp` stays the books; the recurring fixed costs not booked yet enter here at their usual amount (month rows: `fijos_faltantes_clp`). Null when it cannot be reached (see `equilibrio_sin_calculo`). */
                 equilibrio_clp: number | null;
                 /** @enum {string|null} */
                 equilibrio_sin_calculo: "sin_ingresos" | "margen_no_positivo" | null;
@@ -284242,6 +284252,10 @@ export interface components {
                     label: string;
                     equilibrio_clp: number;
                 }[];
+                /** @description Mean of the bar months’ `fijos_faltantes_clp`; already inside `equilibrio_clp`. */
+                fijos_faltantes_clp: number;
+                /** @description Distinct names of the accounts missing in any bar month, usual amount descending. */
+                fijos_faltantes_accounts: string[];
             } | null;
             /** @description Monthly averages over the range; equilibrio = average fijos ÷ the range’s margin %. */
             period: {
@@ -284257,7 +284271,7 @@ export interface components {
                 contribucion_clp: number;
                 /** @description Percent, one decimal. */
                 contribucion_pct: number | null;
-                /** @description Punto de equilibrio: fijos ÷ margen de contribución %, the monthly income at which the result is zero. Null when it cannot be reached (see `equilibrio_sin_calculo`). */
+                /** @description Punto de equilibrio: (fijos + fijos faltantes) ÷ margen de contribución %, the monthly income at which the result is zero. `fijos_clp` stays the books; the recurring fixed costs not booked yet enter here at their usual amount (month rows: `fijos_faltantes_clp`). Null when it cannot be reached (see `equilibrio_sin_calculo`). */
                 equilibrio_clp: number | null;
                 /** @enum {string|null} */
                 equilibrio_sin_calculo: "sin_ingresos" | "margen_no_positivo" | null;
@@ -284279,6 +284293,12 @@ export interface components {
                 /** @enum {string} */
                 behavior: "fijo" | "variable";
                 behavior_inherited: boolean;
+                /** @description Fijo accounts: median of the last 3 non-zero closed months within 12 months before the current one. Null for variable accounts or when never seen. */
+                usual_monthly_clp: number | null;
+                /** @description The recurring (non-zero in 3 of the 6 months up to its last booking) and stable (last amount within 25 % of the usual) test holds. */
+                recurring: boolean;
+                /** @description `YYYY-MM`: the account is missing in the last closed month; the first month of that run of zeros. Null otherwise. */
+                missing_since: string | null;
                 /** @description One value per entry of `months`, same order. Whole CLP. */
                 values: number[];
                 total_clp: number;
