@@ -72358,12 +72358,13 @@ export interface paths {
         };
         /**
          * Plan de cuentas: the account tree
-         * @description Every account of the workspace as a flat list in tree order (parents before children, siblings in screen order), each with `depth` and `path`. The first read of a workspace that holds the add-on creates the starter chart for its vertical (clinic, automotora or generic). Archived accounts are left out unless `include_archived=true`. The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description Every account of the workspace as a flat list in tree order (parents before children, siblings in screen order), each with `depth` and `path`. The first read of a workspace that holds the add-on creates the starter chart for its vertical (clinic, automotora or generic). Archived accounts are left out unless `include_archived=true`. With `usage_month=YYYY-MM` every account gains `usage` (that month’s net total, document count, last month used and whether it was used in the last 6 months), the same arithmetic as the Resultado; parents roll up their children. `usage_month` must be a month of the workspace (not after the current one) or the answer is `422 FINANZAS_ACCOUNT_INVALID` with `details.reason = "usage_month"`, and it also requires `finanzas_reports:read` (`403` with `details.reason = "usage_requires_reports"` otherwise). The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
                 query?: {
                     include_archived?: "true" | "false";
+                    usage_month?: string;
                 };
                 header?: never;
                 path?: never;
@@ -72537,6 +72538,267 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["FinanzasAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/accounts/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Plan de cuentas: the monthly review
+         * @description Is the plan in order? How much of the month’s outflow has an account (`classified_pct`), the documents nobody classified (the Resultado’s «Egresos sin clasificar»), and up to three findings in priority order: `unclassified`, `duplicate_import` (accounts an import brought that repeat a template account) and `unused` (leaf accounts with no money in 6 months). Default `month`: the latest closed month, else the previous month, else the current one (`in_progress`). A `month` outside the workspace answers `422 FINANZAS_ACCOUNT_INVALID` (`details.reason = "month"`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    month?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The review */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-10",
+                         *         "in_progress": false,
+                         *         "classified_pct": 95.7,
+                         *         "outflow_total_clp": 37000000,
+                         *         "unclassified": {
+                         *           "count": 7,
+                         *           "total_clp": 1590984,
+                         *           "by_kind": [
+                         *             {
+                         *               "kind": "purchase",
+                         *               "count": 7,
+                         *               "total_clp": 1590984
+                         *             }
+                         *           ],
+                         *           "with_proposal": 4
+                         *         },
+                         *         "unclassified_income": {
+                         *           "count": 0,
+                         *           "total_clp": 0
+                         *         },
+                         *         "findings": [
+                         *           {
+                         *             "key": "unclassified",
+                         *             "count": 7,
+                         *             "total_clp": 1590984
+                         *           },
+                         *           {
+                         *             "key": "duplicate_import",
+                         *             "count": 1,
+                         *             "pairs": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d03",
+                         *                 "name": "Ret. Boletas de Honorarios (auto)",
+                         *                 "duplicates_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d04",
+                         *                 "duplicates_name": "Retención de boletas de honorarios",
+                         *                 "used_6m": true
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAccountReview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/accounts/review/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Plan de cuentas: «No son la misma»
+         * @description Stops a `duplicate_import` pair from appearing in the review again. Idempotent. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "key": "duplicate_import",
+                     *       "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d03"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasAccountReviewDismissBody"];
+                };
+            };
+            responses: {
+                /** @description Dismissed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dismissed": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                dismissed: true;
+                            };
                         };
                     };
                 };
@@ -73200,6 +73462,8 @@ export interface paths {
         /**
          * Start a bank link (Fintoc widget token)
          * @description Opens one bank-link attempt: creates a Fintoc link intent (business holder, movements) and returns its `widget_token`, which opens Fintoc's widget (`Fintoc.create({ publicKey, widgetToken })`). Fintoc returns the token only once, so request a fresh one each time the widget opens. On success the widget hands back an `exchange_token`: send it to `POST /finanzas/connections/fintoc` (or `…/{id}/reconnect`). Reads no bank and costs nothing. Requires the `bank_feed_fintoc` add-on (`402 ENTITLEMENT_NOT_ACTIVE` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -73306,6 +73570,8 @@ export interface paths {
         /**
          * Connect a bank account
          * @description Send the `exchange_token` Fintoc's widget returns (or a `link_token`). The link token is stored encrypted and the first sync is queued. Each bank is billed at Fintoc's cost through the `bank_feed_fintoc` add-on; without it the answer is `402 ENTITLEMENT_NOT_ACTIVE` (`required: ["bank_feed_fintoc"]`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -73552,6 +73818,8 @@ export interface paths {
         /**
          * Reconnect a bank account
          * @description For a bank link whose login must be redone (`login_required`). Send the `exchange_token` from Fintoc's widget opened again for that bank. The link returns to `active`; if Fintoc answers with a different link, it replaces this one, which is disconnected. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -73692,6 +73960,8 @@ export interface paths {
         /**
          * Disconnect a bank account
          * @description Reversible: the link stays (disabled), its movements stay in the ledger, it stops syncing and stops counting as a billed bank. Bank links only. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -77513,6 +77783,8 @@ export interface paths {
         /**
          * Share a bank account with the AI agent (or stop)
          * @description One bank-account registry (Finanzas 33): the Finanzas bank accounts are the workspace's accounts, and «el agente comparte esta cuenta» is a flag on one of them. `shared: true` makes the AI agent dictate this account for transfers and matches abonos into it (the same registry `GET /tenant-bank-accounts` lists); `false` stops it, keeping the row. The first share needs `holder_name` (400 `VALIDATION_ERROR`, `details.reason = agent_sharing_holder_required`); `holder_rut` defaults to the workspace's SII RUT. 409 `CONFLICT` with `details.reason = agent_sharing_not_supported` for a card, a credit line, a USD account or a number known only by its last digits. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         put: {
             parameters: {
@@ -79575,6 +79847,8 @@ export interface paths {
         /**
          * Replace the forwarding address
          * @description A new address; the old one stops working at once (mail to it is dropped). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -85858,6 +86132,8 @@ export interface paths {
         /**
          * Close a month (Cerrar mes)
          * @description Closes an ended month with nothing open in «Por resolver». Send the `checklist.unreviewed_count` the person confirmed. Records who, when, the checklist and a snapshot of the figures. Soft: nothing is locked; from now on a change that touches the month needs `?adjustment_reason=` and is listed as an «ajuste posterior al cierre». 409 `FINANZAS_MONTH_NOT_CLOSABLE` with `details.reason` `open_cases` (+ `open_cases`, the count), `not_ended`, `already_closed` or `unreviewed_changed` (+ `unreviewed_count`, the count now). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -92411,6 +92687,8 @@ export interface paths {
         /**
          * Connect a razón social to the SII (step 1)
          * @description Records the razón social when the workspace has none (`legal_entity`, the Datos legales body) or takes an existing one (`legal_entity_id`), then creates its SII connection. Idempotent per sociedad: an already connected one answers its connection. `resolucion` keeps an existing electronic-emission authorisation. Boleta emission stays OFF. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -92558,6 +92836,8 @@ export interface paths {
         /**
          * Vitrina's mandato for the representante legal to sign (step 3)
          * @description Renders Vitrina's mandato (`GET /legal/documents/{key}` with key `sii_mandato`, version + SHA-256) for this razón social and opens it in Vitrina's signing service. Returns the representante legal's `signing_url` (also mailed to them unless `send_email: false`). A new request replaces an unsigned one; a signed mandato cannot be replaced. Once signed it is registered at the SII automatically (`sii.mandato.phase`: `connecting` → `connected`). Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -92811,6 +93091,8 @@ export interface paths {
         /**
          * Revoke the mandato (cláusula 7.1)
          * @description Revokes the signed mandato at the SII and here, with immediate effect: the SII connection stops acting for the empresa until a new mandato is signed. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -93059,6 +93341,8 @@ export interface paths {
         /**
          * Onboarding state: start, defer, or «no recibe boletas de honorarios»
          * @description Per workspace. `start` keeps the guided start while things get connected; `defer` («Lo hago después») collapses it to the checklist on Resumen; `no_honorarios` marks the honorarios step skipped (409 while honorarios documents are on record); `has_honorarios` undoes it; `dismiss_mercado_pago` hides the optional Mercado Pago card for good (per workspace, every device). Answers the setup. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -280933,6 +281217,19 @@ export interface components {
         FinanzasAccountKind: "ingreso" | "costo" | "gasto" | "no_operacional";
         /** @enum {string|null} */
         FinanzasAccountBehavior: "fijo" | "variable" | null;
+        /** @description Present only when the list was asked with `usage_month`. */
+        FinanzasAccountUsage: {
+            /** @example 2026-10 */
+            month: string;
+            /** @description Whole CLP, NET, signed as the Resultado counts the account in that month (parents roll up their children). A costo / gasto line with no legal document sits in the Resultado’s «Egresos sin documento», not here. */
+            total_clp: number;
+            /** @description Distinct documents and movements behind `total_clp` (the Resultado drill-down of this account). */
+            count: number;
+            /** @description Latest `YYYY-MM` with any line on this account or a descendant, up to `month`. */
+            last_used_month: string | null;
+            /** @description Any line in the 6 months ending at `month`, inclusive. */
+            used_6m: boolean;
+        };
         FinanzasAccount: {
             /** Format: uuid */
             id: string;
@@ -280952,9 +281249,65 @@ export interface components {
             archived_at: string | null;
             created_at: string;
             updated_at: string;
+            usage?: components["schemas"]["FinanzasAccountUsage"];
         };
         FinanzasAccounts: {
             accounts: components["schemas"]["FinanzasAccount"][];
+        };
+        FinanzasAccountReview: {
+            month: string;
+            /** @description The month is the current (proforma) one. */
+            in_progress: boolean;
+            /** @description Share of the month’s costo + gasto outflow that has an account, floored to one decimal (99.96 reads 99.9). 100 only when nothing is unclassified. Null when nothing went out. */
+            classified_pct: number | null;
+            outflow_total_clp: number;
+            unclassified: {
+                count: number;
+                /** @description Equals the Resultado’s «Egresos sin clasificar» for the month. */
+                total_clp: number;
+                by_kind: {
+                    /** @enum {string} */
+                    kind: "purchase" | "honorario" | "manual_expense" | "movement";
+                    count: number;
+                    total_clp: number;
+                }[];
+                /** @description How many of them sit in an open, ready `classify` case: Vitrina already proposes an account. */
+                with_proposal: number;
+            };
+            unclassified_income: {
+                count: number;
+                total_clp: number;
+            };
+            findings: ({
+                /** @enum {string} */
+                key: "unclassified";
+                count: number;
+                total_clp: number;
+            } | {
+                /** @enum {string} */
+                key: "duplicate_import";
+                count: number;
+                pairs: {
+                    /** Format: uuid */
+                    account_id: string;
+                    name: string;
+                    /** Format: uuid */
+                    duplicates_id: string;
+                    duplicates_name: string;
+                    used_6m: boolean;
+                }[];
+            } | {
+                /** @enum {string} */
+                key: "unused";
+                count: number;
+                account_ids: string[];
+            })[];
+        };
+        FinanzasAccountReviewDismissBody: {
+            /** @enum {string} */
+            key: "duplicate_import";
+            /** Format: uuid */
+            account_id: string;
         };
         FinanzasAccountCreateBody: {
             name: string;

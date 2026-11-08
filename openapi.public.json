@@ -8198,6 +8198,43 @@
           "variable"
         ]
       },
+      "FinanzasAccountUsage": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "example": "2026-10"
+          },
+          "total_clp": {
+            "type": "integer",
+            "description": "Whole CLP, NET, signed as the Resultado counts the account in that month (parents roll up their children). A costo / gasto line with no legal document sits in the Resultado’s «Egresos sin documento», not here."
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Distinct documents and movements behind `total_clp` (the Resultado drill-down of this account)."
+          },
+          "last_used_month": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Latest `YYYY-MM` with any line on this account or a descendant, up to `month`."
+          },
+          "used_6m": {
+            "type": "boolean",
+            "description": "Any line in the 6 months ending at `month`, inclusive."
+          }
+        },
+        "required": [
+          "month",
+          "total_clp",
+          "count",
+          "last_used_month",
+          "used_6m"
+        ],
+        "description": "Present only when the list was asked with `usage_month`."
+      },
       "FinanzasAccount": {
         "type": "object",
         "properties": {
@@ -8258,6 +8295,9 @@
           },
           "updated_at": {
             "type": "string"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/FinanzasAccountUsage"
           }
         },
         "required": [
@@ -8291,6 +8331,230 @@
         "required": [
           "accounts"
         ]
+      },
+      "FinanzasAccountReview": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "in_progress": {
+            "type": "boolean",
+            "description": "The month is the current (proforma) one."
+          },
+          "classified_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Share of the month’s costo + gasto outflow that has an account, floored to one decimal (99.96 reads 99.9). 100 only when nothing is unclassified. Null when nothing went out."
+          },
+          "outflow_total_clp": {
+            "type": "integer"
+          },
+          "unclassified": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "total_clp": {
+                "type": "integer",
+                "description": "Equals the Resultado’s «Egresos sin clasificar» for the month."
+              },
+              "by_kind": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "purchase",
+                        "honorario",
+                        "manual_expense",
+                        "movement"
+                      ]
+                    },
+                    "count": {
+                      "type": "integer"
+                    },
+                    "total_clp": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "count",
+                    "total_clp"
+                  ]
+                }
+              },
+              "with_proposal": {
+                "type": "integer",
+                "description": "How many of them sit in an open, ready `classify` case: Vitrina already proposes an account."
+              }
+            },
+            "required": [
+              "count",
+              "total_clp",
+              "by_kind",
+              "with_proposal"
+            ]
+          },
+          "unclassified_income": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "total_clp": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "count",
+              "total_clp"
+            ]
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "enum": [
+                        "unclassified"
+                      ]
+                    },
+                    "count": {
+                      "type": "integer"
+                    },
+                    "total_clp": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "count",
+                    "total_clp"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "enum": [
+                        "duplicate_import"
+                      ]
+                    },
+                    "count": {
+                      "type": "integer"
+                    },
+                    "pairs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "account_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "duplicates_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "duplicates_name": {
+                            "type": "string"
+                          },
+                          "used_6m": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "account_id",
+                          "name",
+                          "duplicates_id",
+                          "duplicates_name",
+                          "used_6m"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "count",
+                    "pairs"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "enum": [
+                        "unused"
+                      ]
+                    },
+                    "count": {
+                      "type": "integer"
+                    },
+                    "account_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "count",
+                    "account_ids"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "month",
+          "in_progress",
+          "classified_pct",
+          "outflow_total_clp",
+          "unclassified",
+          "unclassified_income",
+          "findings"
+        ]
+      },
+      "FinanzasAccountReviewDismissBody": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": [
+              "duplicate_import"
+            ]
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "key",
+          "account_id"
+        ],
+        "additionalProperties": false
       },
       "FinanzasAccountCreateBody": {
         "type": "object",
@@ -161599,7 +161863,7 @@
     "/finanzas/accounts": {
       "get": {
         "summary": "Plan de cuentas: the account tree",
-        "description": "Every account of the workspace as a flat list in tree order (parents before children, siblings in screen order), each with `depth` and `path`. The first read of a workspace that holds the add-on creates the starter chart for its vertical (clinic, automotora or generic). Archived accounts are left out unless `include_archived=true`. The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "description": "Every account of the workspace as a flat list in tree order (parents before children, siblings in screen order), each with `depth` and `path`. The first read of a workspace that holds the add-on creates the starter chart for its vertical (clinic, automotora or generic). Archived accounts are left out unless `include_archived=true`. With `usage_month=YYYY-MM` every account gains `usage` (that month’s net total, document count, last month used and whether it was used in the last 6 months), the same arithmetic as the Resultado; parents roll up their children. `usage_month` must be a month of the workspace (not after the current one) or the answer is `422 FINANZAS_ACCOUNT_INVALID` with `details.reason = \"usage_month\"`, and it also requires `finanzas_reports:read` (`403` with `details.reason = \"usage_requires_reports\"` otherwise). The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
         "security": [
           {
             "BearerAuth": []
@@ -161619,6 +161883,15 @@
             },
             "required": false,
             "name": "include_archived",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+            },
+            "required": false,
+            "name": "usage_month",
             "in": "query"
           }
         ],
@@ -161802,6 +162075,294 @@
                     "archived_at": null,
                     "created_at": "2026-10-30T15:20:00.000Z",
                     "updated_at": "2026-10-30T15:20:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/finanzas/accounts/review": {
+      "get": {
+        "summary": "Plan de cuentas: the monthly review",
+        "description": "Is the plan in order? How much of the month’s outflow has an account (`classified_pct`), the documents nobody classified (the Resultado’s «Egresos sin clasificar»), and up to three findings in priority order: `unclassified`, `duplicate_import` (accounts an import brought that repeat a template account) and `unused` (leaf accounts with no money in 6 months). Default `month`: the latest closed month, else the previous month, else the current one (`in_progress`). A `month` outside the workspace answers `422 FINANZAS_ACCOUNT_INVALID` (`details.reason = \"month\"`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read` and `finanzas_reports:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+            },
+            "required": false,
+            "name": "month",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasAccountReview"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "month": "2026-10",
+                    "in_progress": false,
+                    "classified_pct": 95.7,
+                    "outflow_total_clp": 37000000,
+                    "unclassified": {
+                      "count": 7,
+                      "total_clp": 1590984,
+                      "by_kind": [
+                        {
+                          "kind": "purchase",
+                          "count": 7,
+                          "total_clp": 1590984
+                        }
+                      ],
+                      "with_proposal": 4
+                    },
+                    "unclassified_income": {
+                      "count": 0,
+                      "total_clp": 0
+                    },
+                    "findings": [
+                      {
+                        "key": "unclassified",
+                        "count": 7,
+                        "total_clp": 1590984
+                      },
+                      {
+                        "key": "duplicate_import",
+                        "count": 1,
+                        "pairs": [
+                          {
+                            "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d03",
+                            "name": "Ret. Boletas de Honorarios (auto)",
+                            "duplicates_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d04",
+                            "duplicates_name": "Retención de boletas de honorarios",
+                            "used_6m": true
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/accounts/review/dismiss": {
+      "post": {
+        "summary": "Plan de cuentas: «No son la misma»",
+        "description": "Stops a `duplicate_import` pair from appearing in the review again. Idempotent. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanzasAccountReviewDismissBody"
+              },
+              "example": {
+                "key": "duplicate_import",
+                "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d03"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dismissed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "dismissed": {
+                          "type": "boolean",
+                          "enum": [
+                            true
+                          ]
+                        }
+                      },
+                      "required": [
+                        "dismissed"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "dismissed": true
                   }
                 }
               }
@@ -162526,7 +163087,7 @@
     "/finanzas/connections/fintoc/link-intent": {
       "post": {
         "summary": "Start a bank link (Fintoc widget token)",
-        "description": "Opens one bank-link attempt: creates a Fintoc link intent (business holder, movements) and returns its `widget_token`, which opens Fintoc's widget (`Fintoc.create({ publicKey, widgetToken })`). Fintoc returns the token only once, so request a fresh one each time the widget opens. On success the widget hands back an `exchange_token`: send it to `POST /finanzas/connections/fintoc` (or `…/{id}/reconnect`). Reads no bank and costs nothing. Requires the `bank_feed_fintoc` add-on (`402 ENTITLEMENT_NOT_ACTIVE` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "description": "Opens one bank-link attempt: creates a Fintoc link intent (business holder, movements) and returns its `widget_token`, which opens Fintoc's widget (`Fintoc.create({ publicKey, widgetToken })`). Fintoc returns the token only once, so request a fresh one each time the widget opens. On success the widget hands back an `exchange_token`: send it to `POST /finanzas/connections/fintoc` (or `…/{id}/reconnect`). Reads no bank and costs nothing. Requires the `bank_feed_fintoc` add-on (`402 ENTITLEMENT_NOT_ACTIVE` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -162622,6 +163183,7 @@
           }
         },
         "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true,
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -162641,7 +163203,7 @@
     "/finanzas/connections/fintoc": {
       "post": {
         "summary": "Connect a bank account",
-        "description": "Send the `exchange_token` Fintoc's widget returns (or a `link_token`). The link token is stored encrypted and the first sync is queued. Each bank is billed at Fintoc's cost through the `bank_feed_fintoc` add-on; without it the answer is `402 ENTITLEMENT_NOT_ACTIVE` (`required: [\"bank_feed_fintoc\"]`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "description": "Send the `exchange_token` Fintoc's widget returns (or a `link_token`). The link token is stored encrypted and the first sync is queued. Each bank is billed at Fintoc's cost through the `bank_feed_fintoc` add-on; without it the answer is `402 ENTITLEMENT_NOT_ACTIVE` (`required: [\"bank_feed_fintoc\"]`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -162772,6 +163334,7 @@
           }
         },
         "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true,
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -162915,7 +163478,7 @@
     "/finanzas/connections/{id}/reconnect": {
       "post": {
         "summary": "Reconnect a bank account",
-        "description": "For a bank link whose login must be redone (`login_required`). Send the `exchange_token` from Fintoc's widget opened again for that bank. The link returns to `active`; if Fintoc answers with a different link, it replaces this one, which is disconnected. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "description": "For a bank link whose login must be redone (`login_required`). Send the `exchange_token` from Fintoc's widget opened again for that bank. The link returns to `active`; if Fintoc answers with a different link, it replaces this one, which is disconnected. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -163068,13 +163631,14 @@
             }
           }
         },
-        "x-vitrina-tier": "beta"
+        "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true
       }
     },
     "/finanzas/connections/{id}/disconnect": {
       "post": {
         "summary": "Disconnect a bank account",
-        "description": "Reversible: the link stays (disabled), its movements stay in the ledger, it stops syncing and stops counting as a billed bank. Bank links only. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "description": "Reversible: the link stays (disabled), its movements stay in the ledger, it stops syncing and stops counting as a billed bank. Bank links only. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -163171,7 +163735,9 @@
             }
           }
         },
-        "x-vitrina-tier": "beta"
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true,
+        "x-vitrina-connector-excluded": true
       }
     },
     "/finanzas/howto-videos": {
@@ -167481,7 +168047,7 @@
     "/finanzas/bank-accounts/{id}/agent-sharing": {
       "put": {
         "summary": "Share a bank account with the AI agent (or stop)",
-        "description": "One bank-account registry (Finanzas 33): the Finanzas bank accounts are the workspace's accounts, and «el agente comparte esta cuenta» is a flag on one of them. `shared: true` makes the AI agent dictate this account for transfers and matches abonos into it (the same registry `GET /tenant-bank-accounts` lists); `false` stops it, keeping the row. The first share needs `holder_name` (400 `VALIDATION_ERROR`, `details.reason = agent_sharing_holder_required`); `holder_rut` defaults to the workspace's SII RUT. 409 `CONFLICT` with `details.reason = agent_sharing_not_supported` for a card, a credit line, a USD account or a number known only by its last digits. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "description": "One bank-account registry (Finanzas 33): the Finanzas bank accounts are the workspace's accounts, and «el agente comparte esta cuenta» is a flag on one of them. `shared: true` makes the AI agent dictate this account for transfers and matches abonos into it (the same registry `GET /tenant-bank-accounts` lists); `false` stops it, keeping the row. The first share needs `holder_name` (400 `VALIDATION_ERROR`, `details.reason = agent_sharing_holder_required`); `holder_rut` defaults to the workspace's SII RUT. 409 `CONFLICT` with `details.reason = agent_sharing_not_supported` for a card, a credit line, a USD account or a number known only by its last digits. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -167625,7 +168191,8 @@
             }
           }
         },
-        "x-vitrina-tier": "beta"
+        "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true
       }
     },
     "/finanzas/documents": {
@@ -170110,7 +170677,7 @@
     "/finanzas/inbox/rotate": {
       "post": {
         "summary": "Replace the forwarding address",
-        "description": "A new address; the old one stops working at once (mail to it is dropped). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "description": "A new address; the old one stops working at once (mail to it is dropped). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -170220,6 +170787,7 @@
           }
         },
         "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true,
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -177726,7 +178294,7 @@
     "/finanzas/months/{month}/close": {
       "post": {
         "summary": "Close a month (Cerrar mes)",
-        "description": "Closes an ended month with nothing open in «Por resolver». Send the `checklist.unreviewed_count` the person confirmed. Records who, when, the checklist and a snapshot of the figures. Soft: nothing is locked; from now on a change that touches the month needs `?adjustment_reason=` and is listed as an «ajuste posterior al cierre». 409 `FINANZAS_MONTH_NOT_CLOSABLE` with `details.reason` `open_cases` (+ `open_cases`, the count), `not_ended`, `already_closed` or `unreviewed_changed` (+ `unreviewed_count`, the count now). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:write`.",
+        "description": "Closes an ended month with nothing open in «Por resolver». Send the `checklist.unreviewed_count` the person confirmed. Records who, when, the checklist and a snapshot of the figures. Soft: nothing is locked; from now on a change that touches the month needs `?adjustment_reason=` and is listed as an «ajuste posterior al cierre». 409 `FINANZAS_MONTH_NOT_CLOSABLE` with `details.reason` `open_cases` (+ `open_cases`, the count), `not_ended`, `already_closed` or `unreviewed_changed` (+ `unreviewed_count`, the count now). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -177949,7 +178517,9 @@
             }
           }
         },
-        "x-vitrina-tier": "beta"
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true,
+        "x-vitrina-connector-excluded": true
       }
     },
     "/finanzas/months/{month}/adjustments": {
@@ -186765,7 +187335,7 @@
     "/finanzas/connect-setup/sii": {
       "post": {
         "summary": "Connect a razón social to the SII (step 1)",
-        "description": "Records the razón social when the workspace has none (`legal_entity`, the Datos legales body) or takes an existing one (`legal_entity_id`), then creates its SII connection. Idempotent per sociedad: an already connected one answers its connection. `resolucion` keeps an existing electronic-emission authorisation. Boleta emission stays OFF. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.",
+        "description": "Records the razón social when the workspace has none (`legal_entity`, the Datos legales body) or takes an existing one (`legal_entity_id`), then creates its SII connection. Idempotent per sociedad: an already connected one answers its connection. `resolucion` keeps an existing electronic-emission authorisation. Boleta emission stays OFF. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -187019,6 +187589,7 @@
           }
         },
         "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true,
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -187038,7 +187609,7 @@
     "/finanzas/connect-setup/sii/{id}/mandato": {
       "post": {
         "summary": "Vitrina's mandato for the representante legal to sign (step 3)",
-        "description": "Renders Vitrina's mandato (`GET /legal/documents/{key}` with key `sii_mandato`, version + SHA-256) for this razón social and opens it in Vitrina's signing service. Returns the representante legal's `signing_url` (also mailed to them unless `send_email: false`). A new request replaces an unsigned one; a signed mandato cannot be replaced. Once signed it is registered at the SII automatically (`sii.mandato.phase`: `connecting` → `connected`). Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.",
+        "description": "Renders Vitrina's mandato (`GET /legal/documents/{key}` with key `sii_mandato`, version + SHA-256) for this razón social and opens it in Vitrina's signing service. Returns the representante legal's `signing_url` (also mailed to them unless `send_email: false`). A new request replaces an unsigned one; a signed mandato cannot be replaced. Once signed it is registered at the SII automatically (`sii.mandato.phase`: `connecting` → `connected`). Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -187252,7 +187823,8 @@
             }
           }
         },
-        "x-vitrina-tier": "beta"
+        "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true
       }
     },
     "/finanzas/connect-setup/sii/{id}/mandato/document": {
@@ -187369,7 +187941,7 @@
     "/finanzas/connect-setup/sii/{id}/mandato/revoke": {
       "post": {
         "summary": "Revoke the mandato (cláusula 7.1)",
-        "description": "Revokes the signed mandato at the SII and here, with immediate effect: the SII connection stops acting for the empresa until a new mandato is signed. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.",
+        "description": "Revokes the signed mandato at the SII and here, with immediate effect: the SII connection stops acting for the empresa until a new mandato is signed. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -187898,13 +188470,14 @@
           }
         },
         "x-vitrina-tier": "beta",
-        "x-vitrina-destructive": true
+        "x-vitrina-destructive": true,
+        "x-vitrina-connector-excluded": true
       }
     },
     "/finanzas/connect-setup/onboarding": {
       "post": {
         "summary": "Onboarding state: start, defer, or «no recibe boletas de honorarios»",
-        "description": "Per workspace. `start` keeps the guided start while things get connected; `defer` («Lo hago después») collapses it to the checklist on Resumen; `no_honorarios` marks the honorarios step skipped (409 while honorarios documents are on record); `has_honorarios` undoes it; `dismiss_mercado_pago` hides the optional Mercado Pago card for good (per workspace, every device). Answers the setup. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.",
+        "description": "Per workspace. `start` keeps the guided start while things get connected; `defer` («Lo hago después») collapses it to the checklist on Resumen; `no_honorarios` marks the honorarios step skipped (409 while honorarios documents are on record); `has_honorarios` undoes it; `dismiss_mercado_pago` hides the optional Mercado Pago card for good (per workspace, every device). Answers the setup. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -188437,6 +189010,7 @@
           }
         },
         "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true,
         "parameters": [
           {
             "name": "Idempotency-Key",
