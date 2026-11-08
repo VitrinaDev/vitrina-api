@@ -72388,6 +72388,7 @@ export interface paths {
                          *             "description": null,
                          *             "kind": "gasto",
                          *             "behavior": "fijo",
+                         *             "no_document": false,
                          *             "position": 2,
                          *             "depth": 1,
                          *             "path": "Gastos de administración",
@@ -72404,6 +72405,7 @@ export interface paths {
                          *             "description": "Arriendo mensual de la oficina central.",
                          *             "kind": "gasto",
                          *             "behavior": "fijo",
+                         *             "no_document": false,
                          *             "position": 0,
                          *             "depth": 2,
                          *             "path": "Gastos de administración > Arriendo de oficina",
@@ -72521,6 +72523,7 @@ export interface paths {
                          *         "description": "Arriendo mensual de la oficina central.",
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
+                         *         "no_document": false,
                          *         "position": 0,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -72691,7 +72694,7 @@ export interface paths {
         head?: never;
         /**
          * Rename, move or retag an account
-         * @description Change `name`, `description`, `behavior` (costo and gasto only), `position` (order among siblings) or move the account with `parent_id` (`null` = top level). A move keeps the account’s id, so every classification follows it; it is refused under itself or its sub-accounts (`cycle`), under another kind (`kind_mismatch`) or beyond 5 levels (`too_deep`). The kind itself never changes. An archived account cannot be edited. The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         * @description Change `name`, `description`, `behavior` (costo and gasto only), `no_document` («No lleva documento»: the account opens no «Falta documento» case and its money out is not counted in «Egresos sin documento»), `position` (order among siblings) or move the account with `parent_id` (`null` = top level). A move keeps the account’s id, so every classification follows it; it is refused under itself or its sub-accounts (`cycle`), under another kind (`kind_mismatch`) or beyond 5 levels (`too_deep`). The kind itself never changes. An archived account cannot be edited. The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
          */
         patch: {
             parameters: {
@@ -72729,6 +72732,7 @@ export interface paths {
                          *         "description": "Arriendo mensual de la oficina central.",
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
+                         *         "no_document": false,
                          *         "position": 1,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -72845,6 +72849,7 @@ export interface paths {
                          *         "description": "Arriendo mensual de la oficina central.",
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
+                         *         "no_document": false,
                          *         "position": 0,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -72965,6 +72970,7 @@ export interface paths {
                          *         "description": "Arriendo mensual de la oficina central.",
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
+                         *         "no_document": false,
                          *         "position": 0,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -279681,6 +279687,8 @@ export interface components {
             description: string | null;
             kind: components["schemas"]["FinanzasAccountKind"];
             behavior: components["schemas"]["FinanzasAccountBehavior"];
+            /** @description «No lleva documento»: money out classified here never has a legal document. It opens no «Falta documento» case and is not counted in «Egresos sin documento». */
+            no_document: boolean;
             position: number;
             depth: number;
             path: string;
@@ -279699,12 +279707,14 @@ export interface components {
             parent_id?: string | null;
             kind?: components["schemas"]["FinanzasAccountKind"];
             behavior?: components["schemas"]["FinanzasAccountBehavior"];
+            no_document?: boolean;
             description?: string | null;
         };
         FinanzasAccountUpdateBody: {
             name?: string;
             description?: string | null;
             behavior?: components["schemas"]["FinanzasAccountBehavior"] & string;
+            no_document?: boolean;
             /** Format: uuid */
             parent_id?: string | null;
             position?: number;
