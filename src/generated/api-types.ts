@@ -82990,9 +82990,9 @@ export interface paths {
                             target: "transfer";
                             /**
                              * Format: uuid
-                             * @description «Traspaso entre cuentas propias»: the opposite movement on another own account, same amount.
+                             * @description «Traspaso entre cuentas propias»: the opposite movement on another own account, same amount. Omit it when the other half is not in Vitrina (an own account that is not connected or registered yet): allowed only when the bank names the tenant's own RUT or one of its own accounts as the other side (400 `VALIDATION_ERROR` otherwise); the whole movement is the traspaso.
                              */
-                            paired_movement_id: string;
+                            paired_movement_id?: string | null;
                         } | {
                             /** @enum {string} */
                             target: "third_party";
@@ -84461,9 +84461,9 @@ export interface paths {
                                 target: "transfer";
                                 /**
                                  * Format: uuid
-                                 * @description «Traspaso entre cuentas propias»: the opposite movement on another own account, same amount.
+                                 * @description «Traspaso entre cuentas propias»: the opposite movement on another own account, same amount. Omit it when the other half is not in Vitrina (an own account that is not connected or registered yet): allowed only when the bank names the tenant's own RUT or one of its own accounts as the other side (400 `VALIDATION_ERROR` otherwise); the whole movement is the traspaso.
                                  */
-                                paired_movement_id: string;
+                                paired_movement_id?: string | null;
                             } | {
                                 /** @enum {string} */
                                 target: "third_party";
@@ -84802,6 +84802,7 @@ export interface paths {
                          *                 "reasons": [
                          *                   "folio_and_amount"
                          *                 ],
+                         *                 "own_transfer": null,
                          *                 "account": null,
                          *                 "split": false,
                          *                 "rule": null,
@@ -84828,6 +84829,7 @@ export interface paths {
                          *                 },
                          *                 "target": null,
                          *                 "reasons": [],
+                         *                 "own_transfer": null,
                          *                 "account": {
                          *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
                          *                   "name": "Laboratorio",
@@ -85100,6 +85102,343 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["FinanzasAutomaticActionUndo"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/own-account-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Own-account cards: «Agregar ··XXXX como cuenta propia»
+         * @description D5: money that goes to the workspace's own RUT or between two of its accounts is a «Traspaso entre cuentas propias» that Vitrina applies by itself (in Hecho por Vitrina, undoable), never income, never a cost and never a case. When the destination account is not registered yet, one card offers to add it. Lists the destination accounts that live traspasos went to and that are neither registered nor dismissed, biggest first, with the masked number, the total and the count. An account disappears once registered (accept), dismissed («Ahora no») or when all its traspasos were undone. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cards */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "suggestions": [
+                         *           {
+                         *             "key": "4521",
+                         *             "last4": "4521",
+                         *             "number_masked": "•••• 4521",
+                         *             "bank_name": null,
+                         *             "total_clp": 9950000,
+                         *             "count": 3,
+                         *             "first_day": "2026-10-13",
+                         *             "last_day": "2026-11-05",
+                         *             "title": "Agregar ··4521 como cuenta propia",
+                         *             "body": "Le transferiste $9.950.000 a tu propio RUT. Si la cuenta es tuya, esos traspasos no cuentan como gasto."
+                         *           }
+                         *         ],
+                         *         "count": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnAccountSuggestions"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/own-account-suggestions/{key}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add the suggested account as an own account
+         * @description D5: money that goes to the workspace's own RUT or between two of its accounts is a «Traspaso entre cuentas propias» that Vitrina applies by itself (in Hecho por Vitrina, undoable), never income, never a cost and never a case. When the destination account is not registered yet, one card offers to add it. Adds the account to the registry as a Finanzas bank account (Cuentas; the same registry the agent shares from); its traspasos stay traspasos. Idempotent: an account already registered under that number is returned as it is. 404 `NOT_FOUND` when no traspaso went to that number. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": components["schemas"]["FinanzasOwnAccountAcceptBody"];
+                };
+            };
+            responses: {
+                /** @description The registered account */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4b01",
+                         *         "name": "Cuenta ··4521"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBankAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/own-account-suggestions/{key}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hide the own-account card for that account («Ahora no»)
+         * @description D5: money that goes to the workspace's own RUT or between two of its accounts is a «Traspaso entre cuentas propias» that Vitrina applies by itself (in Hecho por Vitrina, undoable), never income, never a cost and never a case. When the destination account is not registered yet, one card offers to add it. The card never comes back for that account; its traspasos stay traspasos. Idempotent. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Dismissed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "key": "4521",
+                         *         "dismissed": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnAccountDismiss"];
                         };
                     };
                 };
@@ -281055,6 +281394,22 @@ export interface components {
             rule_id: string;
             applied: number;
         };
+        /** @description The side the money left; null = an own account Vitrina does not hold. */
+        FinanzasTransferAccount: {
+            /** @description The Finanzas bank account; null for an own account Vitrina does not hold (not connected or not registered yet). */
+            bank_account_id: string | null;
+            institution_name: string | null;
+            last4: string | null;
+            /** @description Ready to show: «BCI ··9819», «Cuenta ··4521» without a bank. */
+            label: string;
+        } | null;
+        /** @description Only on `target = transfer`: «Traspaso entre tus cuentas», both sides ready to show. */
+        FinanzasOwnTransfer: {
+            from: components["schemas"]["FinanzasTransferAccount"];
+            to: components["schemas"]["FinanzasTransferAccount"] & unknown;
+            /** @description The movement on the other side, when Vitrina holds it (link to it). */
+            paired_movement_id: string | null;
+        } | null;
         FinanzasLink: {
             id: string;
             /** @enum {string} */
@@ -281107,6 +281462,7 @@ export interface components {
                 id: string;
                 name: string;
             } | null;
+            own_transfer: components["schemas"]["FinanzasOwnTransfer"];
             undoable: boolean;
         };
         FinanzasLegacyLink: {
@@ -281600,6 +281956,7 @@ export interface components {
             reasons: string[];
             /** @description Links Vitrina made from ad data (Finanzas 30, reasons include `ads_charge`): the evidence in one Spanish line, e.g. «Meta Ads cobró $4.211 el 22 oct a las 09:14 (cuenta …)» or «Gasto del 22 al 24 oct: $47.824 en la cuenta … de Google Ads; el cargo lo cubre». A matcher link of a known supplier within rounding (reason `rounding`) or paid before its document was issued (`paid_before_issue`) says so here, e.g. «El pago fue $1 menor que el documento; la diferencia quedó como redondeo y el documento se cerró.». Null otherwise. */
             evidence: string | null;
+            own_transfer: components["schemas"]["FinanzasOwnTransfer"] & unknown;
             account: {
                 /** Format: uuid */
                 id: string;
@@ -281687,6 +282044,39 @@ export interface components {
             /** Format: uuid */
             document_id: string | null;
             teaching_signal: boolean;
+        };
+        FinanzasOwnAccountSuggestion: {
+            /** @description The account number as digits without leading zeros: the id for accept and dismiss. */
+            key: string;
+            last4: string;
+            /** @description «•••• 4521». */
+            number_masked: string;
+            /** @description The destination bank. The bank feeds do not report it for a recipient, so today it is null: show «Cuenta ··4521». */
+            bank_name: string | null;
+            /** @description Σ of the traspasos that went to this account (live ones only). */
+            total_clp: number;
+            count: number;
+            first_day: string;
+            last_day: string;
+            /** @description «Agregar ··4521 como cuenta propia». */
+            title: string;
+            /** @description «Le transferiste $9.950.000 a tu propio RUT. Si la cuenta es tuya, esos traspasos no cuentan como gasto.» */
+            body: string;
+        };
+        FinanzasOwnAccountSuggestions: {
+            suggestions: components["schemas"]["FinanzasOwnAccountSuggestion"][];
+            count: number;
+        };
+        FinanzasOwnAccountAcceptBody: {
+            /** @description The bank, when the person knows it. Optional: one click is enough. */
+            institution_name?: string | null;
+            /** @description Default «Cuenta ··‹últimos 4›». */
+            name?: string | null;
+        };
+        FinanzasOwnAccountDismiss: {
+            key: string;
+            /** @enum {boolean} */
+            dismissed: true;
         };
         FinanzasMonthSummary: {
             month: string;
