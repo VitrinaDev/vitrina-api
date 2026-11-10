@@ -18198,7 +18198,7 @@ export interface paths {
          *
          *     SIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the pile still on the floor — active, not vendido, no acquisition; the SAME predicate as the `sin_costo` count on `GET /vehicles/stats` and the `stock_without_cost` dealer alert. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.
          *
-         *     MANDATO SIN FIRMAR (ADR 0114 §5). `view=mandato_sin_firmar` lists the cars whose consignación (activa or vendida) has an emitted mandato and no signed copy filed in the expediente — the SAME predicate as the `mandato_sin_firmar` count on `GET /vehicles/stats` and the `mandate_unsigned` dealer alert. Never a gate.
+         *     MANDATO SIN FIRMAR (ADR 0114 §5). `view=mandato_sin_firmar` lists the cars whose consignación (activa or vendida) has an emitted mandato and no signed copy filed in the expediente — the SAME predicate as the `mandato_sin_firmar` count on `GET /vehicles/stats`. Never a gate, and no longer a dealer alert (retired 2026-11-10: it is a filter you open, not a to-do).
          */
         get: {
             parameters: {
@@ -38224,6 +38224,8 @@ export interface paths {
          *
          *     **`receivable_obligation_id`** is the open ledger receivable this note settles — pass it as `obligation_id` to `POST /payments` to apply a payment to this note. `null` once the note is voided (the void releases its money) or when it has no receivable.
          *
+         *     **`print_missing_fields`** is what `GET /sale-notes/{id}/pdf` would refuse with right now — the SAME `{ variable, label, fix, contact_id? }` list as its 409 `details.missing_fields` — so a screen can ask for the buyer’s domicilio while the buyer is still at the counter. `[]` when the note prints, and always `[]` on a voided note.
+         *
          *     **`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn.
          *
          *     **`credit` is the LIVE brokered credit, or `null`** (ERP S9-7) — the `institution` that is lending (BR-464 makes the financiera the credit’s identity on the document), the `amount_clp`, and its OWN `state`: `committed` (the bank has promised) or `disbursed` (the money has arrived, with `disbursed_at` / `disbursed_by` beside it). ⚠ **Both count the same in `funding`** (BR-463), so never read `funded` as "the cash is in" — read `credit.state` for that. The committed-vs-collected gap is exactly this pair of fields read side by side. ⚠ **The credit’s state is INDEPENDENT of the document’s `status`**: a voided nota de venta keeps its credit row untouched, and a disbursed credit does not make the document anything. Credits that were REPLACED or REMOVED are tombstoned and are deliberately not served here — they are history, not funding, and listing them beside the live one would invite a client to add them up.
@@ -38274,6 +38276,14 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -38488,6 +38498,14 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
