@@ -73720,6 +73720,227 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/connections/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Freshness of the bank movements
+         * @description When each bank link was last pulled, and whether a pull is queued. A read: it queues nothing. Poll it after `POST /finanzas/connections/sync` until `queued` is false, then reload. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The freshness */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "queued": true,
+                         *         "enqueued": 0,
+                         *         "links": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *             "institution_name": "Banco de Chile",
+                         *             "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "queued": true,
+                         *             "next_refresh_at": "2026-10-30T09:15:00.000Z",
+                         *             "skipped": null
+                         *           }
+                         *         ],
+                         *         "min_interval_minutes": 15
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBankPull"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Sync every bank link
+         * @description Sync on entry to Finanzas and «Sincronizar ahora» for every bank link. Idempotent, never throttled: each active link not pulled nor requested in the last `min_interval_minutes` (15) gets one pull, the others answer with their last pull (`enqueued` counts the pulls this call queued). A `login_required` or disconnected link is skipped and reported in `links[].skipped`. Movements land within a minute or two; poll `GET /finanzas/connections/sync` until `queued` is false. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The freshness after the request */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "queued": true,
+                         *         "enqueued": 1,
+                         *         "links": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *             "institution_name": "Banco de Chile",
+                         *             "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "queued": true,
+                         *             "next_refresh_at": "2026-10-30T09:15:00.000Z",
+                         *             "skipped": null
+                         *           }
+                         *         ],
+                         *         "min_interval_minutes": 15
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBankPull"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finanzas/connections/{id}/sync": {
         parameters: {
             query?: never;
@@ -94953,7 +95174,8 @@ export interface paths {
                          *             "label": "septiembre 2026",
                          *             "equilibrio_clp": 44600000,
                          *             "sin_calculo": null,
-                         *             "produccion": null
+                         *             "produccion": null,
+                         *             "skipped_incompleto": null
                          *           },
                          *           "target_clp": 44600000,
                          *           "cobertura_pct": 92.4,
@@ -281946,6 +282168,25 @@ export interface components {
             exchange_token?: string;
             link_token?: string;
         };
+        FinanzasBankPullLink: {
+            /** Format: uuid */
+            id: string;
+            institution_name: string | null;
+            last_sync_at: string | null;
+            last_successful_sync_at: string | null;
+            queued: boolean;
+            next_refresh_at: string | null;
+            /** @enum {string|null} */
+            skipped: "login_required" | "disconnected" | null;
+        };
+        FinanzasBankPull: {
+            last_sync_at: string | null;
+            last_successful_sync_at: string | null;
+            queued: boolean;
+            enqueued: number;
+            links: components["schemas"]["FinanzasBankPullLink"][];
+            min_interval_minutes: number;
+        };
         FinanzasSyncResult: {
             /** @enum {boolean} */
             enqueued: true;
@@ -282341,7 +282582,7 @@ export interface components {
              * @description Finanzas 36: set when the bank text names nobody and the movement has no Contraparte: show it as the title with the sub-line «Sin contraparte».
              * @enum {string|null}
              */
-            generic_label: "Depósito en efectivo" | "Pago recibido" | "Depósito con cheque" | null;
+            generic_label: "Depósito en efectivo" | "Pago recibido" | "Depósito con cheque" | "Pago de tarjeta de crédito" | null;
             created_at: string;
         };
         FinanzasDocument: {
@@ -285618,6 +285859,13 @@ export interface components {
                     equilibrio_clp: number;
                 }[];
                 produccion: components["schemas"]["FinanzasEquilibrioProduccion"];
+                /** @description The newest «Mes incompleto» the bar skipped, so the card can flag it like Resultado and Costos do. Null when no month was skipped. */
+                skipped_incompleto: {
+                    month: string;
+                    label: string;
+                    /** @description Spanish, ready for the tooltip. */
+                    message: string;
+                } | null;
             } | null;
             /** @description The break-even on the same terms as `basis`: `equilibrio.produccion.equilibrio_clp` when `basis` is `produccion` and a ratio exists, else `equilibrio.equilibrio_clp`. Null without a break-even. */
             target_clp: number | null;

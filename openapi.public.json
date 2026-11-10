@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.27.1",
+    "version": "17.27.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8946,6 +8946,101 @@
           }
         }
       },
+      "FinanzasBankPullLink": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "institution_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_sync_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_successful_sync_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "queued": {
+            "type": "boolean"
+          },
+          "next_refresh_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "skipped": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "login_required",
+              "disconnected"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "institution_name",
+          "last_sync_at",
+          "last_successful_sync_at",
+          "queued",
+          "next_refresh_at",
+          "skipped"
+        ]
+      },
+      "FinanzasBankPull": {
+        "type": "object",
+        "properties": {
+          "last_sync_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_successful_sync_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "queued": {
+            "type": "boolean"
+          },
+          "enqueued": {
+            "type": "integer"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FinanzasBankPullLink"
+            }
+          },
+          "min_interval_minutes": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "last_sync_at",
+          "last_successful_sync_at",
+          "queued",
+          "enqueued",
+          "links",
+          "min_interval_minutes"
+        ]
+      },
       "FinanzasSyncResult": {
         "type": "object",
         "properties": {
@@ -10480,7 +10575,8 @@
             "enum": [
               "Depósito en efectivo",
               "Pago recibido",
-              "Depósito con cheque"
+              "Depósito con cheque",
+              "Pago de tarjeta de crédito"
             ],
             "description": "Finanzas 36: set when the bank text names nobody and the movement has no Contraparte: show it as the title with the sub-line «Sin contraparte»."
           },
@@ -23228,6 +23324,30 @@
               },
               "produccion": {
                 "$ref": "#/components/schemas/FinanzasEquilibrioProduccion"
+              },
+              "skipped_incompleto": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "month": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Spanish, ready for the tooltip."
+                  }
+                },
+                "required": [
+                  "month",
+                  "label",
+                  "message"
+                ],
+                "description": "The newest «Mes incompleto» the bar skipped, so the card can flag it like Resultado and Costos do. Null when no month was skipped."
               }
             },
             "required": [
@@ -23238,7 +23358,8 @@
               "from",
               "to",
               "months",
-              "produccion"
+              "produccion",
+              "skipped_incompleto"
             ],
             "description": "The break-even bar the month is judged against. Null when no complete month has a break-even yet."
           },
@@ -164016,6 +164137,248 @@
         ]
       }
     },
+    "/finanzas/connections/sync": {
+      "get": {
+        "summary": "Freshness of the bank movements",
+        "description": "When each bank link was last pulled, and whether a pull is queued. A read: it queues nothing. Poll it after `POST /finanzas/connections/sync` until `queued` is false, then reload. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "200": {
+            "description": "The freshness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasBankPull"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "last_sync_at": "2026-10-30T08:00:00.000Z",
+                    "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                    "queued": true,
+                    "enqueued": 0,
+                    "links": [
+                      {
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                        "institution_name": "Banco de Chile",
+                        "last_sync_at": "2026-10-30T08:00:00.000Z",
+                        "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                        "queued": true,
+                        "next_refresh_at": "2026-10-30T09:15:00.000Z",
+                        "skipped": null
+                      }
+                    ],
+                    "min_interval_minutes": 15
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Sync every bank link",
+        "description": "Sync on entry to Finanzas and «Sincronizar ahora» for every bank link. Idempotent, never throttled: each active link not pulled nor requested in the last `min_interval_minutes` (15) gets one pull, the others answer with their last pull (`enqueued` counts the pulls this call queued). A `login_required` or disconnected link is skipped and reported in `links[].skipped`. Movements land within a minute or two; poll `GET /finanzas/connections/sync` until `queued` is false. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "200": {
+            "description": "The freshness after the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasBankPull"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "last_sync_at": "2026-10-30T08:00:00.000Z",
+                    "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                    "queued": true,
+                    "enqueued": 1,
+                    "links": [
+                      {
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                        "institution_name": "Banco de Chile",
+                        "last_sync_at": "2026-10-30T08:00:00.000Z",
+                        "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                        "queued": true,
+                        "next_refresh_at": "2026-10-30T09:15:00.000Z",
+                        "skipped": null
+                      }
+                    ],
+                    "min_interval_minutes": 15
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
     "/finanzas/connections/{id}/sync": {
       "post": {
         "summary": "Sync a connection now",
@@ -191179,7 +191542,8 @@
                         "label": "septiembre 2026",
                         "equilibrio_clp": 44600000,
                         "sin_calculo": null,
-                        "produccion": null
+                        "produccion": null,
+                        "skipped_incompleto": null
                       },
                       "target_clp": 44600000,
                       "cobertura_pct": 92.4,
