@@ -38047,7 +38047,7 @@ export interface paths {
                         buyer_contact_id?: string | null;
                         lead_id?: string | null;
                         /** @enum {string} */
-                        seller_of_record: "consignante" | "retoma" | "automotora";
+                        seller_of_record?: "consignante" | "retoma" | "automotora";
                         /** Format: uuid */
                         salesperson_id?: string | null;
                         participations?: {
@@ -38222,6 +38222,8 @@ export interface paths {
          *
          *     **`timeline` says who did what, by name** (ADR 0114 §4): one entry per step that happened, in the order the document lives them — `emitted` (`issued_at`, `emitted_by`), `approved`, `printed` (the compraventa in force) and `voided` — each with its instant and its `actor` (`{ id, name, kind }`, `kind` = `member` or `api_key`). `actor` is `null` when the document does not record who did it (a note emitted before `emitted_by` existed); `actor.name` is `null` when that person has no name on file. Show either in words — never as an anonymous teammate. Approval is a separate step under `sale_notes:write`, so the emitter and the approver are often different people.
          *
+         *     **`receivable_obligation_id`** is the open ledger receivable this note settles — pass it as `obligation_id` to `POST /payments` to apply a payment to this note. `null` once the note is voided (the void releases its money) or when it has no receivable.
+         *
          *     **`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn.
          *
          *     **`credit` is the LIVE brokered credit, or `null`** (ERP S9-7) — the `institution` that is lending (BR-464 makes the financiera the credit’s identity on the document), the `amount_clp`, and its OWN `state`: `committed` (the bank has promised) or `disbursed` (the money has arrived, with `disbursed_at` / `disbursed_by` beside it). ⚠ **Both count the same in `funding`** (BR-463), so never read `funded` as "the cash is in" — read `credit.state` for that. The committed-vs-collected gap is exactly this pair of fields read side by side. ⚠ **The credit’s state is INDEPENDENT of the document’s `status`**: a voided nota de venta keeps its credit row untouched, and a disbursed credit does not make the document anything. Credits that were REPLACED or REMOVED are tombstoned and are deliberately not served here — they are history, not funding, and listing them beside the live one would invite a client to add them up.
@@ -38271,6 +38273,7 @@ export interface paths {
                          *         "voided_by": null,
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -38484,6 +38487,7 @@ export interface paths {
                          *         "voided_by": null,
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -45614,7 +45618,7 @@ export interface paths {
                      */
                     "application/json": {
                         /** @enum {string} */
-                        seller_of_record: "consignante" | "retoma" | "automotora";
+                        seller_of_record?: "consignante" | "retoma" | "automotora";
                         /** @enum {string} */
                         tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
                         tax_clp?: number | null;
@@ -77434,7 +77438,8 @@ export interface paths {
                          *               "holder_name": "Clínica Ejemplo SpA",
                          *               "holder_rut": "76123456-7",
                          *               "holder_email": null,
-                         *               "account_type": "corriente"
+                         *               "account_type": "corriente",
+                         *               "holder_not_company": false
                          *             },
                          *             "can_share_with_agent": true
                          *           }
@@ -77703,7 +77708,8 @@ export interface paths {
                          *           "holder_name": "Clínica Ejemplo SpA",
                          *           "holder_rut": "76123456-7",
                          *           "holder_email": null,
-                         *           "account_type": "corriente"
+                         *           "account_type": "corriente",
+                         *           "holder_not_company": false
                          *         },
                          *         "can_share_with_agent": true
                          *       }
@@ -77782,7 +77788,7 @@ export interface paths {
         get?: never;
         /**
          * Share a bank account with the AI agent (or stop)
-         * @description One bank-account registry (Finanzas 33): the Finanzas bank accounts are the workspace's accounts, and «el agente comparte esta cuenta» is a flag on one of them. `shared: true` makes the AI agent dictate this account for transfers and matches abonos into it (the same registry `GET /tenant-bank-accounts` lists); `false` stops it, keeping the row. The first share needs `holder_name` (400 `VALIDATION_ERROR`, `details.reason = agent_sharing_holder_required`); `holder_rut` defaults to the workspace's SII RUT. 409 `CONFLICT` with `details.reason = agent_sharing_not_supported` for a card, a credit line, a USD account or a number known only by its last digits. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         * @description One bank-account registry (Finanzas 33): the Finanzas bank accounts are the workspace's accounts, and «el agente comparte esta cuenta» is a flag on one of them. `shared: true` makes the AI agent dictate this account for transfers and matches abonos into it (the same registry `GET /tenant-bank-accounts` lists); `false` stops it, keeping the row. The first share needs `holder_name` (400 `VALIDATION_ERROR`, `details.reason = agent_sharing_holder_required`); `holder_rut` defaults to the workspace's SII RUT. 409 `CONFLICT` with `details.reason = agent_sharing_not_supported` for a card, a credit line, a USD account or a number known only by its last digits. Turning sharing on for a holder whose RUT is not the company's needs `confirm_holder_not_company: true` (409 `CONFLICT`, `details.reason = agent_sharing_holder_not_company`, naming the holder); only send the flag after the human has explicitly agreed to share an account held by someone other than the company, and never retry the call with it on your own; an account already shared is never blocked or unshared. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
          *
          *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
@@ -77840,7 +77846,8 @@ export interface paths {
                          *           "holder_name": "Clínica Ejemplo SpA",
                          *           "holder_rut": "76123456-7",
                          *           "holder_email": null,
-                         *           "account_type": "corriente"
+                         *           "account_type": "corriente",
+                         *           "holder_not_company": false
                          *         },
                          *         "can_share_with_agent": true
                          *       }
@@ -77923,7 +77930,7 @@ export interface paths {
         };
         /**
          * List documents (compras, ventas, honorarios, gastos, F29)
-         * @description The Documentos register: every document the workspace has money on, one list filtered by `kind` — `purchase` (Compras, from the SII registro de compras), `sale` (Ventas: the SII registro de ventas and what was emitted through Vitrina), `honorario`, `manual_expense`, `tax` (F29). Each carries its Contraparte, DTE type, folio, issue date, net / IVA / exempt / total in whole CLP, due date and payment state; a nota de crédito or débito carries the document it adjusts. Filter by `period` (`YYYY-MM`) or `from`/`to`, Contraparte, payment state, DTE type, source, or `q` (a folio, a name or a RUT). Newest first, offset-paginated; `meta.counts_by_kind` counts the same filters per kind. The SII documents sync daily in the background. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description The Documentos register: every document the workspace has money on, one list filtered by `kind` — `purchase` (Compras, from the SII registro de compras), `sale` (Ventas: the SII registro de ventas and what was emitted through Vitrina), `honorario`, `manual_expense`, `tax` (F29). Each carries its Contraparte, DTE type, folio, issue date, net / IVA / exempt / total in whole CLP, due date and payment state; a nota de crédito or débito carries the document it adjusts. Filter by `period` (`YYYY-MM`) or `from`/`to`, Contraparte, payment state, DTE type, source, or `q` (a folio, a name or a RUT); `paid_before_vitrina=true` is the «Heredado» filter (Finanzas 50). Newest first, offset-paginated; `meta.counts_by_kind` counts the same filters per kind. The SII documents sync daily in the background. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -77936,6 +77943,7 @@ export interface paths {
                     to?: string;
                     contraparte_id?: string;
                     payment_state?: "por_pagar" | "parcial" | "pagado" | "vencido_heredado";
+                    paid_before_vitrina?: "true" | "false";
                     dte_type?: number;
                     q?: string;
                     limit?: number;
@@ -77984,6 +77992,7 @@ export interface paths {
                          *           },
                          *           "due_date": null,
                          *           "payment_state": "por_pagar",
+                         *           "settlement": null,
                          *           "sii_estado_contable": "REGISTRO",
                          *           "missing_at_sii": false,
                          *           "voided": false,
@@ -78157,6 +78166,7 @@ export interface paths {
                          *             },
                          *             "due_date": "2026-10-20",
                          *             "payment_state": "por_pagar",
+                         *             "settlement": null,
                          *             "sii_estado_contable": null,
                          *             "missing_at_sii": false,
                          *             "voided": false,
@@ -78690,6 +78700,7 @@ export interface paths {
                          *         },
                          *         "due_date": null,
                          *         "payment_state": "por_pagar",
+                         *         "settlement": null,
                          *         "sii_estado_contable": "REGISTRO",
                          *         "missing_at_sii": false,
                          *         "voided": false,
@@ -78848,6 +78859,7 @@ export interface paths {
                          *         },
                          *         "due_date": null,
                          *         "payment_state": "por_pagar",
+                         *         "settlement": null,
                          *         "sii_estado_contable": null,
                          *         "missing_at_sii": false,
                          *         "voided": false,
@@ -79583,6 +79595,7 @@ export interface paths {
                          *           },
                          *           "due_date": null,
                          *           "payment_state": "por_pagar",
+                         *           "settlement": null,
                          *           "sii_estado_contable": null,
                          *           "missing_at_sii": false,
                          *           "voided": false,
@@ -79665,6 +79678,154 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["FinanzasDocumentFileConfirmResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reopen a settled document («Reabrir»)
+         * @description Undoes what settled a document without a bank link (`settlement`): «Pagado antes de Vitrina» (a document from a period closed before Vitrina, still open there) or a person's «Marcar pagada». From then on it is an open document like any other: its state follows its reconciliation links, it enters the cash projection or «Vencidas sin pago visto», and the import never settles it again. Resultado and the Contador do not move (they never read the payment state). Idempotent: an open document answers `reopened: false`. Reopening a document a person marked anulado in a closed month needs `?adjustment_reason=` (else 409 `FINANZAS_PERIOD_CLOSED`). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reopened (or already open) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reopened": true,
+                         *         "document": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *           "kind": "purchase",
+                         *           "source": "sii",
+                         *           "dte_type": 33,
+                         *           "dte_type_label": "Factura electrónica",
+                         *           "is_credit_note": false,
+                         *           "folio": "45",
+                         *           "issue_date": "2026-10-10",
+                         *           "period": "2026-10",
+                         *           "received_on": "2026-10-11",
+                         *           "issuer_rut_formatted": "76.086.428-5",
+                         *           "receiver_rut_formatted": "76.543.219-4",
+                         *           "counterparty_name": "Laboratorio Andes SpA",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-6a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "name": "Laboratorio Andes SpA",
+                         *             "rut_formatted": "76.086.428-5"
+                         *           },
+                         *           "amounts": {
+                         *             "net": 10000,
+                         *             "exempt": 0,
+                         *             "iva": 1900,
+                         *             "other_taxes": 0,
+                         *             "total": 11900
+                         *           },
+                         *           "due_date": null,
+                         *           "payment_state": "por_pagar",
+                         *           "settlement": null,
+                         *           "sii_estado_contable": "REGISTRO",
+                         *           "missing_at_sii": false,
+                         *           "voided": false,
+                         *           "adjusts": null,
+                         *           "f29": null,
+                         *           "honorario": null,
+                         *           "created_at": "2026-10-30T05:31:12.000Z",
+                         *           "updated_at": "2026-10-30T05:31:12.000Z",
+                         *           "adjusted_by": []
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentReopenResult"];
                         };
                     };
                 };
@@ -83946,7 +84107,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    kind?: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge";
+                    kind?: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge" | "merge";
                     limit?: number;
                     offset?: number | null;
                     period?: "recent" | "history" | "all";
@@ -84106,11 +84267,13 @@ export interface paths {
         };
         /**
          * «Te necesita»: how many cases are open
-         * @description The Resumen’s third answer: open cases, the money at stake and the count per kind. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description The one count of open work (Finanzas 47): open cases, the money at stake and the count per kind. Resumen, Por resolver, Movimientos, Cierre de mes and the weekly digest show this same number for the same scope. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    month?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -84281,6 +84444,7 @@ export interface paths {
                          *             "issue_date": "2026-09-12",
                          *             "due_date": "2026-10-12",
                          *             "total_clp": 412690,
+                         *             "gross_clp": 412690,
                          *             "outstanding_clp": 412690,
                          *             "counterparty_name": "Laboratorio Dental Andes Ltda",
                          *             "role": "candidate",
@@ -84294,6 +84458,7 @@ export interface paths {
                          *             "issue_date": "2026-09-26",
                          *             "due_date": "2026-10-26",
                          *             "total_clp": 362600,
+                         *             "gross_clp": 362600,
                          *             "outstanding_clp": 362600,
                          *             "counterparty_name": "Laboratorio Dental Andes Ltda",
                          *             "role": "candidate",
@@ -84816,6 +84981,116 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["FinanzasCaseConfirmResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases/{id}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dismiss a «unir» case («No son la misma»)
+         * @description Finanzas 58, `merge` cases only (422 `not_a_merge_case` otherwise): the two Contrapartes are not the same. The pair is never proposed or merged again and the case closes. To merge them instead, use the confirm route. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Dismissed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *         "next_case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCaseDismissResult"];
                         };
                     };
                 };
@@ -85831,6 +86106,7 @@ export interface paths {
                          *             "state": "open",
                          *             "ended": false,
                          *             "open_cases": 7,
+                         *             "open_cases_amount_clp": 2418300,
                          *             "closed_at": null,
                          *             "closed_by": null,
                          *             "closed_source": null,
@@ -85843,6 +86119,7 @@ export interface paths {
                          *             "state": "closed",
                          *             "ended": true,
                          *             "open_cases": 0,
+                         *             "open_cases_amount_clp": 0,
                          *             "closed_at": "2026-10-03T14:20:00.000Z",
                          *             "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
                          *             "closed_source": "person",
@@ -85855,6 +86132,7 @@ export interface paths {
                          *             "state": "ready_to_close",
                          *             "ended": true,
                          *             "open_cases": 0,
+                         *             "open_cases_amount_clp": 0,
                          *             "closed_at": null,
                          *             "closed_by": null,
                          *             "closed_source": null,
@@ -85972,6 +86250,7 @@ export interface paths {
                          *         "state": "closed",
                          *         "ended": true,
                          *         "open_cases": 0,
+                         *         "open_cases_amount_clp": 0,
                          *         "closed_at": "2026-10-03T14:20:00.000Z",
                          *         "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
                          *         "closed_source": "person",
@@ -85982,6 +86261,9 @@ export interface paths {
                          *         "blocking_reason": "already_closed",
                          *         "checklist": {
                          *           "open_cases": 0,
+                         *           "open_cases_amount_clp": 0,
+                         *           "open_case_movements_count": 0,
+                         *           "open_case_documents_count": 0,
                          *           "unreviewed_count": 4,
                          *           "unclassified_count": 0,
                          *           "unmatched_count": 0,
@@ -86177,6 +86459,7 @@ export interface paths {
                          *         "state": "closed",
                          *         "ended": true,
                          *         "open_cases": 0,
+                         *         "open_cases_amount_clp": 0,
                          *         "closed_at": "2026-10-03T14:20:00.000Z",
                          *         "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
                          *         "closed_source": "person",
@@ -86187,6 +86470,9 @@ export interface paths {
                          *         "blocking_reason": "already_closed",
                          *         "checklist": {
                          *           "open_cases": 0,
+                         *           "open_cases_amount_clp": 0,
+                         *           "open_case_movements_count": 0,
+                         *           "open_case_documents_count": 0,
                          *           "unreviewed_count": 4,
                          *           "unclassified_count": 0,
                          *           "unmatched_count": 0,
@@ -86756,7 +87042,7 @@ export interface paths {
         };
         /**
          * Mes en paralelo: the diff against Chipax for a month
-         * @description Balances (per bank account, at month end), payables (per Contraparte, open at month end) and costs (per costo / gasto account, NET as the Resultado counts) must match to the peso. Income is a bridge: Chipax counts it when cashed, Vitrina the documents issued in the month, so the gap is explained line by line. Vitrina's side is computed live; Chipax's side is the newest finished read. `clean` = all three match and the bridge is explained (the exit criterion). Each row's `key` drills down to its items. Rows list the differences first; `difference_count` of each section counts its rows that are not «Cuadra», and the headline `difference_count` is the sum of the sections with `in_headline` (the two reviews, `inherited_overdue` and `possible_duplicates`, are listed beside them and never counted in it). Before a finished read: `status` not_read / reading / failed and null dimensions. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).
+         * @description Balances (per bank account, at month end), payables (per Contraparte, open at month end) and costs (per costo / gasto account, NET as the Resultado counts) must match to the peso. Income is a bridge: Chipax counts it when cashed, Vitrina the documents issued in the month, so the gap is explained line by line. Vitrina's side is computed live; Chipax's side is the newest finished read. `clean` = all three match and the bridge is explained (the exit criterion). Each row's `key` drills down to its items. Rows list the differences first; `difference_count` of each section counts its rows that are not «Cuadra», and the headline `difference_count` is the sum of the sections with `in_headline` (the review `possible_duplicates` is listed beside them and never counted in it; `inherited_overdue` is retired, Finanzas 50, and no longer listed). Before a finished read: `status` not_read / reading / failed and null dimensions. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).
          */
         get: {
             parameters: {
@@ -86818,11 +87104,6 @@ export interface paths {
                          *             "key": "income",
                          *             "difference_count": 2,
                          *             "in_headline": true
-                         *           },
-                         *           {
-                         *             "key": "inherited_overdue",
-                         *             "difference_count": 1135,
-                         *             "in_headline": false
                          *           },
                          *           {
                          *             "key": "possible_duplicates",
@@ -86986,7 +87267,7 @@ export interface paths {
                                     /** @enum {string} */
                                     key: "balances" | "payables" | "costs" | "income" | "inherited_overdue" | "possible_duplicates";
                                     difference_count: number;
-                                    /** @description true for the four comparisons of Chipax against Vitrina; false for the two reviews (`inherited_overdue`: payables to resolve, see GET /finanzas/inherited-overdue; `possible_duplicates`: groups of repeated bank lines, see GET /finanzas/possible-duplicates), which are a to-do list. */
+                                    /** @description true for the four comparisons of Chipax against Vitrina; false for the review `possible_duplicates` (groups of repeated bank lines, see GET /finanzas/possible-duplicates), which is a to-do list. `inherited_overdue` is retired (Finanzas 50: those payables are «Pagado antes de Vitrina») and never listed. */
                                     in_headline: boolean;
                                 }[];
                                 balances: {
@@ -87563,8 +87844,9 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Vencido heredado: the payables to review
-         * @description The payables that arrived already more than 90 days overdue (`payment_state = vencido_heredado`): they are out of the cash-flow projection and the balances until someone marks them pagado or anulado. Each carries the open bank payment that most likely settled it (`suggested_match`: exact amount, a payment is suggested to one document only; `signal` says why). `summary` counts the whole filter, `items` is one page. Filter by Contraparte with `contraparte`. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» and no glosa on money in. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * Vencido heredado (retired): the payables to review
+         * @deprecated
+         * @description Retired (Finanzas 50): nothing writes «vencido heredado» any more; the payables it held are «Pagado antes de Vitrina» (GET /finanzas/documents?paid_before_vitrina=true), and only rows written before it in a workspace outside that backfill still show here. It listed the payables that arrived already more than 90 days overdue (`payment_state = vencido_heredado`): they are out of the cash-flow projection and the balances until someone marks them pagado or anulado. Each carries the open bank payment that most likely settled it (`suggested_match`: exact amount, a payment is suggested to one document only; `signal` says why). `summary` counts the whole filter, `items` is one page. Filter by Contraparte with `contraparte`. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» and no glosa on money in. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -87770,8 +88052,9 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Vencido heredado: mark pagado or anulado in bulk
-         * @description Resolves up to 500 inherited payables at once. `pagado`: it was settled; the document leaves the review as paid (no bank link is invented). `anulado`: it never has to be paid; the document is voided, so no report counts it. A document that is no longer inherited is skipped (`not_inherited`), never overwritten. One batch, one `batch_id`: it lands in the audit log (`finanzas.inherited_overdue.pagado` / `.anulado`) and `POST /finanzas/inherited-overdue/batches/{batchId}/undo` puts it back. «anulado» in a closed month needs `?adjustment_reason=` (409 `FINANZAS_PERIOD_CLOSED` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         * Vencido heredado (retired): mark pagado or anulado in bulk
+         * @deprecated
+         * @description Retired (Finanzas 50): only rows still «vencido heredado» (written before it, outside the Finanzas 50 backfill) can be resolved; anything else comes back skipped (`not_inherited`). It resolved up to 500 inherited payables at once. `pagado`: it was settled; the document leaves the review as paid (no bank link is invented). `anulado`: it never has to be paid; the document is voided, so no report counts it. A document that is no longer inherited is skipped (`not_inherited`), never overwritten. One batch, one `batch_id`: it lands in the audit log (`finanzas.inherited_overdue.pagado` / `.anulado`) and `POST /finanzas/inherited-overdue/batches/{batchId}/undo` puts it back. «anulado» in a closed month needs `?adjustment_reason=` (409 `FINANZAS_PERIOD_CLOSED` otherwise). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
          */
         post: {
             parameters: {
@@ -87930,8 +88213,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Vencido heredado: undo a batch («Deshacer»)
-         * @description Puts the documents of a batch back to «vencido heredado» (a payment linked in the meantime wins and the state follows it). Pass `document_ids` to undo only some. Idempotent: what was already undone comes back in `skipped`. Audited as `finanzas.inherited_overdue.undo`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         * Undo a settle batch («Deshacer»)
+         * @description Puts the documents of a settle batch (a person's «Marcar pagada», or a Mes en paralelo review) back as they were (a payment linked in the meantime wins and the state follows it). To reopen one document, POST /finanzas/documents/{id}/reopen. Pass `document_ids` to undo only some. Idempotent: what was already undone comes back in `skipped`. Audited as `finanzas.inherited_overdue.undo`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
          */
         post: {
             parameters: {
@@ -88064,8 +88347,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Vencido heredado: the batches already resolved
-         * @description Each bulk action, newest first, with how many of its documents are still resolved (`live_count`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * Settle batches a person made
+         * @description Each bulk action a person made («Marcar pagada», Mes en paralelo), newest first; «Pagado antes de Vitrina» is the import's, never listed here, with how many of its documents are still resolved (`live_count`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -90399,7 +90682,7 @@ export interface paths {
         };
         /**
          * Flujo de caja: actual, projection, band and lowest point
-         * @description Per day (or ISO week): what came in and went out (actual, before today) and what is expected (projected, today on), with the closing balance of each period. The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones, the «vencido heredado» ones (`inherited_overdue`) and overdue receivables stay out (`overdue`). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. `lowest` is the lowest projected balance in the range (its `cause` = the biggest payment that day); `month_end` is the projected balance at the end of the current month («¿cuánto me queda a fin de mes?»), computed even when `to` is earlier. Range: up to a year back and a year ahead, at most 366 days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         * @description Per day (or ISO week): what came in and went out (actual, before today) and what is expected (projected, today on), with the closing balance of each period. The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. That is the CONFIRMED balance (`closing_balance_clp`), the one every headline reads. A payable past its due date with no matching payment in the data is a «Vencida sin pago visto»: it stays out (`overdue_no_payment_seen`, the list at GET /finanzas/cash-flow/overdue-no-payment-seen) unless it was given a date with «Mover pagos»; overdue receivables stay out too (`overdue`). A document «Pagado antes de Vitrina» is settled and never projected (`inherited_overdue` is retired, always zero). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). `expected_balance_clp` («con cobros esperados», the dashed line) adds, from tomorrow, each day's typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income. `band` is retired and always null. Past days are actual bank movements; transfers between operating accounts are neither in nor out. `lowest` is the lowest confirmed balance in the range (its `cause` = the payment at which the confirmed balance first goes below zero, else the biggest payment of that day); `month_end` is the projected balance at the end of the current month («¿cuánto me queda a fin de mes?»), computed even when `to` is earlier. Range: up to a year back and a year ahead, at most 366 days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
          */
         get: {
             parameters: {
@@ -90452,6 +90735,7 @@ export interface paths {
                          *             "typical_inflow_clp": 0,
                          *             "outflow_clp": 698400,
                          *             "closing_balance_clp": 4617109,
+                         *             "expected_balance_clp": 4617109,
                          *             "band": null,
                          *             "items_count": 0
                          *           },
@@ -90463,10 +90747,8 @@ export interface paths {
                          *             "typical_inflow_clp": 0,
                          *             "outflow_clp": 412690,
                          *             "closing_balance_clp": 4624419,
-                         *             "band": {
-                         *               "low_clp": 4624419,
-                         *               "high_clp": 4624419
-                         *             },
+                         *             "expected_balance_clp": 4624419,
+                         *             "band": null,
                          *             "items_count": 2
                          *           },
                          *           {
@@ -90476,11 +90758,9 @@ export interface paths {
                          *             "inflow_clp": 0,
                          *             "typical_inflow_clp": 1150000,
                          *             "outflow_clp": 0,
-                         *             "closing_balance_clp": 5774419,
-                         *             "band": {
-                         *               "low_clp": 5294419,
-                         *               "high_clp": 6104419
-                         *             },
+                         *             "closing_balance_clp": 4624419,
+                         *             "expected_balance_clp": 5774419,
+                         *             "band": null,
                          *             "items_count": 0
                          *           },
                          *           {
@@ -90490,11 +90770,9 @@ export interface paths {
                          *             "inflow_clp": 0,
                          *             "typical_inflow_clp": 0,
                          *             "outflow_clp": 0,
-                         *             "closing_balance_clp": 5774419,
-                         *             "band": {
-                         *               "low_clp": 5294419,
-                         *               "high_clp": 6104419
-                         *             },
+                         *             "closing_balance_clp": 4624419,
+                         *             "expected_balance_clp": 5774419,
+                         *             "band": null,
                          *             "items_count": 0
                          *           }
                          *         ],
@@ -90503,15 +90781,14 @@ export interface paths {
                          *           "balance_clp": 4624419,
                          *           "negative": false,
                          *           "is_today": false,
-                         *           "cause": null
+                         *           "cause": null,
+                         *           "cause_balance_after_clp": null
                          *         },
                          *         "month_end": {
                          *           "date": "2026-11-30",
                          *           "balance_clp": 2310000,
-                         *           "band": {
-                         *             "low_clp": 640000,
-                         *             "high_clp": 4020000
-                         *           }
+                         *           "expected_balance_clp": 9410000,
+                         *           "band": null
                          *         },
                          *         "totals": {
                          *           "actual_inflow_clp": 2412000,
@@ -90538,9 +90815,13 @@ export interface paths {
                          *           "receivables_clp": 0,
                          *           "receivables_count": 0
                          *         },
+                         *         "overdue_no_payment_seen": {
+                         *           "count": 1,
+                         *           "amount_clp": 412690
+                         *         },
                          *         "inherited_overdue": {
-                         *           "count": 468,
-                         *           "amount_clp": 59722052
+                         *           "count": 0,
+                         *           "amount_clp": 0
                          *         },
                          *         "cash_pending": {
                          *           "amount_clp": 11648107,
@@ -90692,7 +90973,7 @@ export interface paths {
         };
         /**
          * Payments calendar: what is due each day, balance after each
-         * @description The projected items from today, grouped by day, each with the expected balance right after it (money in first, then the biggest payments). The day's typical income lands after its items. `direction` keeps only money in or only payments (balances still count everything). The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones, the «vencido heredado» ones (`inherited_overdue`) and overdue receivables stay out (`overdue`). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         * @description The projected items from today, grouped by day, each with the expected balance right after it (money in first, then the biggest payments). The day's typical income lands after its items. `direction` keeps only money in or only payments (balances still count everything). The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (`cash_pending`, spread over its expected deposit days) and planned rescues. That is the CONFIRMED balance (`closing_balance_clp`), the one every headline reads. A payable past its due date with no matching payment in the data is a «Vencida sin pago visto»: it stays out (`overdue_no_payment_seen`, the list at GET /finanzas/cash-flow/overdue-no-payment-seen) unless it was given a date with «Mover pagos»; overdue receivables stay out too (`overdue`). A document «Pagado antes de Vitrina» is settled and never projected (`inherited_overdue` is retired, always zero). The lowest point (`lowest`) includes today's balance and is never above it (`lowest.is_today`). `expected_balance_clp` («con cobros esperados», the dashed line) adds, from tomorrow, each day's typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income. `band` is retired and always null. Past days are actual bank movements; transfers between operating accounts are neither in nor out. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
          */
         get: {
             parameters: {
@@ -90807,7 +91088,8 @@ export interface paths {
                          *             "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *             "rescue_id": null,
                          *             "count": null
-                         *           }
+                         *           },
+                         *           "cause_balance_after_clp": -1840000
                          *         }
                          *       }
                          *     }
@@ -90968,15 +91250,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 2310000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "after": {
@@ -91001,15 +91282,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 7410000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "horizon": {
@@ -91154,15 +91434,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 7410000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "after": {
@@ -91187,15 +91466,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 2310000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "horizon": {
@@ -91345,15 +91623,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 2310000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "after": {
@@ -91378,15 +91655,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 7410000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "horizon": {
@@ -91444,15 +91720,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 2310000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "after": {
@@ -91477,15 +91752,14 @@ export interface paths {
                          *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
                          *                 "rescue_id": null,
                          *                 "count": null
-                         *               }
+                         *               },
+                         *               "cause_balance_after_clp": -1840000
                          *             },
                          *             "month_end": {
                          *               "date": "2026-11-30",
                          *               "balance_clp": 7410000,
-                         *               "band": {
-                         *                 "low_clp": 640000,
-                         *                 "high_clp": 4020000
-                         *               }
+                         *               "expected_balance_clp": 9410000,
+                         *               "band": null
                          *             }
                          *           },
                          *           "horizon": {
@@ -92122,6 +92396,260 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["FinanzasRecurringItem"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/overdue-no-payment-seen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Vencidas sin pago visto»: overdue payables kept out of the plan
+         * @description Payables past their due date with no matching payment in the data Vitrina has (it does not claim they are unpaid: a card whose data stops earlier may have paid them), and no date given with «Mover pagos». They stay out of the projection and every headline. Each can be matched to a payment (Conciliación), marked paid (POST /finanzas/cash-flow/overdue-no-payment-seen/resolve) or given a date (POST /finanzas/cash-flow/moves with its `key`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "as_of": "2026-11-09",
+                         *         "count": 1,
+                         *         "amount_clp": 405369,
+                         *         "items": [
+                         *           {
+                         *             "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                         *             "source": "payable",
+                         *             "direction": "outflow",
+                         *             "label": "Factura 21619609 · Empresa Nacional de Telecomunicaciones S.A.",
+                         *             "amount_clp": 405369,
+                         *             "date": "2026-08-31",
+                         *             "due_date": "2026-08-31",
+                         *             "overdue": true,
+                         *             "movable": true,
+                         *             "move": null,
+                         *             "document": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                         *               "kind": "purchase",
+                         *               "dte_type": 33,
+                         *               "folio": "21619609"
+                         *             },
+                         *             "contraparte": null,
+                         *             "recurring_item_id": null,
+                         *             "rescue_id": null,
+                         *             "count": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowOverdueNoPaymentSeenList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/overdue-no-payment-seen/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark «Vencidas sin pago visto» as paid
+         * @description The person knows these were paid (by card, cash, outside the banks Vitrina reads): each document leaves the list as paid. No bank link is invented. A document that is no longer an overdue open payable is skipped (`not_eligible`), never overwritten. One batch, one `batch_id`, audited as `finanzas.overdue_no_payment_seen.pagado`; POST /finanzas/inherited-overdue/batches/{batchId}/undo puts the batch back; POST /finanzas/documents/{id}/reopen reopens one. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "document_ids": [
+                     *         "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01"
+                     *       ],
+                     *       "note": "Pagada con la tarjeta Itaú"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasCashFlowOverdueResolveBody"];
+                };
+            };
+            responses: {
+                /** @description Marked paid */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "batch_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7e01",
+                         *         "resolved": [
+                         *           "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01"
+                         *         ],
+                         *         "skipped": [],
+                         *         "amount_clp": 405369,
+                         *         "remaining": {
+                         *           "count": 0,
+                         *           "amount_clp": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowOverdueResolveResult"];
                         };
                     };
                 };
@@ -94406,8 +94934,10 @@ export interface paths {
                          *             "month": "2026-09",
                          *             "label": "septiembre 2026",
                          *             "equilibrio_clp": 44600000,
-                         *             "sin_calculo": null
+                         *             "sin_calculo": null,
+                         *             "produccion": null
                          *           },
+                         *           "target_clp": 44600000,
                          *           "cobertura_pct": 92.4,
                          *           "brecha_clp": -3400000
                          *         },
@@ -94465,7 +94995,10 @@ export interface paths {
                          *               "rule": null,
                          *               "reviewed_at": null,
                          *               "reviewed_by": null,
-                         *               "group_name": "Laboratorio Andes SpA"
+                         *               "group_name": "Laboratorio Andes SpA",
+                         *               "group_key": "contraparte:3f6c1d2e-5b7a-4c1e-9d0f-2a8b6c4e1f70",
+                         *               "group_count": 1,
+                         *               "group_total_clp": 1240000
                          *             }
                          *           ]
                          *         },
@@ -141694,9 +142227,7 @@ export interface paths {
                          *         },
                          *         {
                          *           "instrument": "transferencia",
-                         *           "required_fields": [
-                         *             "bank"
-                         *           ]
+                         *           "required_fields": []
                          *         },
                          *         {
                          *           "instrument": "cheque",
@@ -141708,10 +142239,7 @@ export interface paths {
                          *         },
                          *         {
                          *           "instrument": "vale_vista",
-                         *           "required_fields": [
-                         *             "bank",
-                         *             "document_number"
-                         *           ]
+                         *           "required_fields": []
                          *         },
                          *         {
                          *           "instrument": "tarjeta",
@@ -281787,7 +282315,7 @@ export interface components {
             /** @description Finanzas 36: set when this is a known card processor's payout («Cobro con tarjeta»: PNOL / PAGOS Y SERVICIOS, Transbank, Getnet, Mercado Pago). It settles the month's boleta summary and never adds income. Null for any other movement and for money out. */
             card_processor: {
                 /** @enum {string} */
-                key: "pagos_y_servicios" | "transbank" | "getnet" | "mercado_pago";
+                key: "pagos_y_servicios" | "transbank" | "getnet" | "mercado_pago" | "healthatom";
                 name: string;
                 rut_formatted: string | null;
             } | null;
@@ -281836,10 +282364,22 @@ export interface components {
             };
             due_date: string | null;
             /**
-             * @description por_pagar (a sale: por cobrar) | parcial | pagado | vencido_heredado. Derived from reconciliation; vencido_heredado = a payable imported more than 90 days overdue (Finanzas 39): out of the cash-flow projection, the Contraparte balances and «Le debemos» until someone marks it pagado or anulado.
+             * @description por_pagar (a sale: por cobrar) | parcial | pagado. Derived from reconciliation; a document settled without a bank link (`settlement`) is pagado. `vencido_heredado` is retired (Finanzas 50): nothing writes it; only rows written before it, outside that backfill, still carry it, and they count like a paid document.
              * @enum {string}
              */
             payment_state: "por_pagar" | "parcial" | "pagado" | "vencido_heredado";
+            /** @description Settled without a bank link (Finanzas 50); null when the state comes from reconciliation alone. POST /finanzas/documents/{id}/reopen undoes it. */
+            settlement: {
+                /**
+                 * @description paid_before_vitrina = «Pagado antes de Vitrina»: from a period closed before Vitrina, still open there, so treated as settled (out of the cash projection and the balances). person = someone marked it pagado («Marcar pagada»).
+                 * @enum {string}
+                 */
+                reason: "person" | "paid_before_vitrina";
+                /** Format: uuid */
+                batch_id: string;
+                /** Format: date-time */
+                settled_at: string;
+            } | null;
             /** @description REGISTRO | PENDIENTE | NO_INCLUIR | RECLAMADO (purchases). */
             sii_estado_contable: string | null;
             /** @description The SII register no longer lists it; out of the libro. */
@@ -282047,6 +282587,10 @@ export interface components {
             } | null;
             opening_balance_editable: boolean;
             movement_count: number;
+            /** @description Date of the account's newest movement (YYYY-MM-DD). */
+            data_through: string | null;
+            /** @description true = no connection feeds the account and its newest movement is older than 37 days: its cartola is late (warning, never sent as an email or WhatsApp). */
+            stale: boolean;
             /** @description Finanzas 33: «el agente comparte esta cuenta», with the holder details the agent dictates. Null = never shared. */
             agent_sharing: {
                 /** @description true = the AI agent dictates this account for transfers and abonos into it are matched; false = it stopped sharing it. */
@@ -282057,6 +282601,8 @@ export interface components {
                 holder_email: string | null;
                 /** @enum {string} */
                 account_type: "corriente" | "vista" | "ahorro";
+                /** @description true = the holder RUT differs from the company RUT (the workspace's SII RUTs): the account card shows «El titular no es la empresa». Always false when the company RUT is not known. */
+                holder_not_company: boolean;
             } | null;
             /** @description Whether the agent can share it: a CLP corriente / vista / ahorro / Mercado Pago account with its full number (not a card, a credit line, a USD account or a last-4 number). */
             can_share_with_agent: boolean;
@@ -282075,6 +282621,8 @@ export interface components {
         FinanzasAgentSharingBody: {
             /** @description true = the AI agent shares this account for transfers (and abonos into it are matched); false = stop sharing it (the row is kept, never deleted). */
             shared: boolean;
+            /** @description Required (true) to turn sharing on when the holder RUT is not the company's; without it the call answers 409 `agent_sharing_holder_not_company` naming the holder. Never needed to keep an already-shared account or to stop sharing. Set it only after the human has explicitly agreed; an agent must not add it by itself to get past the 409. */
+            confirm_holder_not_company?: boolean;
             /** @description The label the agent and Ajustes show. Default «‹banco› ··‹últimos 4›». */
             alias?: string;
             /** @description Account holder as the bank shows it. Required the first time the account is shared. */
@@ -282245,6 +282793,11 @@ export interface components {
                     confirmed?: unknown;
                 };
             };
+        };
+        FinanzasDocumentReopenResult: {
+            /** @description false when nothing settled the document (already open): idempotent. */
+            reopened: boolean;
+            document: components["schemas"]["FinanzasDocumentDetail"];
         };
         FinanzasInbox: {
             /** @example finanzas+k7m2q9xw4pha@vitrinadev.com */
@@ -282864,7 +283417,10 @@ export interface components {
                 total_clp: number;
                 paid_clp: number;
                 outstanding_clp: number;
-                /** @enum {string} */
+                /**
+                 * @description `vencido_heredado` is retired (Finanzas 50): only rows written before it, outside that backfill, still carry it.
+                 * @enum {string}
+                 */
                 payment_state: "por_pagar" | "parcial" | "pagado" | "vencido_heredado";
             };
             links: components["schemas"]["FinanzasLink"][];
@@ -282933,10 +283489,10 @@ export interface components {
             items: {
                 id: string;
                 /**
-                 * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document.
+                 * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document; merge = a «unir» Caso (Finanzas 58): two Contrapartes with similar names and no shared RUT, proposed to be merged (`merge` holds the pair; it has no movements or documents and moves no money).
                  * @enum {string}
                  */
-                kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge";
+                kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge" | "merge";
                 title: string;
                 summary: string;
                 contraparte: {
@@ -283000,16 +283556,17 @@ export interface components {
                 missing_document: number;
                 unknown: number;
                 ads_charge: number;
+                merge: number;
             };
         };
         FinanzasCase: {
             id: string;
             key: string;
             /**
-             * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document.
+             * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document; merge = a «unir» Caso (Finanzas 58): two Contrapartes with similar names and no shared RUT, proposed to be merged (`merge` holds the pair; it has no movements or documents and moves no money).
              * @enum {string}
              */
-            kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge";
+            kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge" | "merge";
             /** @enum {string} */
             status: "open" | "resolved";
             /** @enum {string|null} */
@@ -283058,7 +283615,10 @@ export interface components {
                 folio: string | null;
                 issue_date: string;
                 due_date: string | null;
+                /** @description What is paid: the líquido on a boleta de honorarios, the total otherwise. */
                 total_clp: number;
+                /** @description What the document costs: the gross total. Differs from total_clp only on a boleta de honorarios. */
+                gross_clp: number;
                 outstanding_clp: number;
                 counterparty_name: string | null;
                 /** @enum {string} */
@@ -283153,6 +283713,30 @@ export interface components {
                     candidate_accounts: string[];
                 }[];
             } | null;
+            /** @description Finanzas 58, `merge` («unir») cases only: the pair. `keep` stays, `merge` is merged into it; `moves` is what passes to `keep`. Resolve with the confirm route (merge, undoable in «Hecho por Vitrina») or the dismiss route («No son la misma»). */
+            merge?: {
+                keep: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    rut: string | null;
+                    movement_count: number;
+                    document_count: number;
+                };
+                merge: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    rut: string | null;
+                    movement_count: number;
+                    document_count: number;
+                };
+                score: number;
+                moves: {
+                    movements: number;
+                    documents: number;
+                };
+            } | null;
             opened_at: string;
             computed_at: string;
         };
@@ -283189,6 +283773,12 @@ export interface components {
             };
             remaining_case: components["schemas"]["FinanzasCase"] & (Record<string, never> | null);
             next_case_id: string | null;
+            /** @description Finanzas 58, `merge` («unir») cases only: the merge the confirm made. `merge_id` is the «Deshacer» id in «Hecho por Vitrina». */
+            merged?: {
+                merge_id: string;
+                survivor_id: string;
+                merged_id: string;
+            };
             /** @description Card / automatic-debit descriptors this confirm tied to a Contraparte (`learned`: a movement that named no RUT or account was confirmed against documents of one Contraparte; from now on the engine knows the supplier, shown once as «Desde ahora reconocemos “MERPAGO*MERCADOL” como …»), or untied (`forgotten`: confirmed for a second Contraparte, so it names neither). Listed and removable as the Contraparte's aliases (kind `descriptor`). */
             descriptors: {
                 descriptor: string;
@@ -283196,6 +283786,10 @@ export interface components {
                 /** @enum {string} */
                 status: "learned" | "forgotten";
             }[];
+        };
+        FinanzasCaseDismissResult: {
+            case_id: string;
+            next_case_id: string | null;
         };
         FinanzasNoDocumentUndo: {
             movement_id: string;
@@ -283376,7 +283970,10 @@ export interface components {
              */
             state: "open" | "ready_to_close" | "closed" | "closed_imported";
             ended: boolean;
+            /** @description Open «Por resolver» cases of the month (the month of each case’s oldest item): the one count of open work. */
             open_cases: number;
+            /** @description The money at stake in those cases, whole CLP: the same amount as «Por resolver» with `month`. */
+            open_cases_amount_clp: number;
             closed_at: string | null;
             closed_by: string | null;
             /**
@@ -283403,7 +284000,10 @@ export interface components {
              */
             state: "open" | "ready_to_close" | "closed" | "closed_imported";
             ended: boolean;
+            /** @description Open «Por resolver» cases of the month (the month of each case’s oldest item): the one count of open work. */
             open_cases: number;
+            /** @description The money at stake in those cases, whole CLP: the same amount as «Por resolver» with `month`. */
+            open_cases_amount_clp: number;
             closed_at: string | null;
             closed_by: string | null;
             /**
@@ -283422,11 +284022,18 @@ export interface components {
             /** @enum {string|null} */
             blocking_reason: "open_cases" | "not_ended" | "already_closed" | null;
             checklist: {
+                /** @description The headline of «Antes de cerrar» (Finanzas 47): the month’s open Casos. Movements and documents are their detail, never a separate count. */
                 open_cases: number;
+                /** @description The money at stake in those cases, whole CLP (= «Por resolver» `?mes=`). */
+                open_cases_amount_clp: number;
+                /** @description Movements behind the month’s open cases. */
+                open_case_movements_count: number;
+                /** @description Documents to classify behind the month’s open cases. */
+                open_case_documents_count: number;
                 /** @description Automatic actions of the month nobody reviewed in «Hecho por Vitrina». The close confirms this number. */
                 unreviewed_count: number;
                 unclassified_count: number;
-                /** @description Still to reconcile in the month: bank movements not fully matched plus income documents (boletas, facturas) issued in the month still «Por conciliar» (the same definition as Resultado). */
+                /** @description Still to reconcile in the month: bank movements not fully matched plus income documents (boletas, facturas) issued in the month still «Por conciliar» (the same definition as Resultado). Detail, not a headline: what counts as open work is `open_cases`. */
                 unmatched_count: number;
                 /** @description Bank movements of the month not fully matched. */
                 unmatched_movements_count: number;
@@ -284035,6 +284642,15 @@ export interface components {
                 proforma: boolean;
                 closed: boolean;
                 post_close: components["schemas"]["FinanzasResultadoPostClose"];
+                /** @description «Mes incompleto»: a closed month whose dentist cost is $0 or that misses a large recurring cost. It never counts for an average, the `equilibrio` or the `hora_sillon.base`; Resultado and Costos flag the same months. Null otherwise; a proforma month is never tagged. */
+                incompleto: {
+                    /** @enum {string} */
+                    reason: "dentist_cost_missing" | "recurring_cost_missing";
+                    /** @description Spanish, ready for the tooltip. */
+                    message: string;
+                    /** @description The missing recurring account (`recurring_cost_missing`), else null. */
+                    account_name: string | null;
+                } | null;
             }[];
             rows: components["schemas"]["FinanzasResultadoRow"][];
             summary: {
@@ -284109,7 +284725,7 @@ export interface components {
                 } | null;
             }[];
         };
-        /** @description The biggest payment that day. */
+        /** @description What «deja el saldo en …» names: the payment at which the confirmed balance first goes below zero; when it never does (or already starts below zero), the biggest payment of the lowest day. */
         FinanzasCashFlowItem: {
             /** @description Stable item key: document:<uuid>, recurring:<uuid>:<YYYY-MM-DD>, retention:<YYYY-MM>, rescue:<uuid>, cuotas:<day>, appointments:<day>, cash_pending. */
             key: string;
@@ -284126,7 +284742,7 @@ export interface components {
             date: string;
             /** @description Where its source puts it (due date, occurrence). */
             due_date: string;
-            /** @description An overdue payable, placed today unless moved. */
+            /** @description An overdue payable. In the plan only when moved to a date; otherwise it is a «Vencida sin pago visto» (GET /finanzas/cash-flow/overdue-no-payment-seen). */
             overdue: boolean;
             /** @description «Mover pagos» applies (documents, recurring items, retención). */
             movable: boolean;
@@ -284158,11 +284774,22 @@ export interface components {
             /** @description True when the lowest point is today (today's real balance, or a projected today lower than it): the screen says «Hoy es el punto más bajo». The balance is never above «Caja hoy». */
             is_today: boolean;
             cause: components["schemas"]["FinanzasCashFlowItem"];
+            /** @description The confirmed balance right after `cause` (null without a cause). */
+            cause_balance_after_clp: number | null;
         } | null;
-        /** @description Payables imported more than 90 days overdue («Vencido heredado»): not in the projection nor in the balances; reviewed in bulk in Mes en paralelo. */
-        FinanzasInheritedOverdue: {
+        /** @description «Vencidas sin pago visto»: payables past their due date with no matching payment in the data and no date given with «Mover pagos». Vitrina does not claim they are unpaid, so they stay out of the projection and every headline. Review them with GET /finanzas/cash-flow/overdue-no-payment-seen. */
+        FinanzasCashFlowOverdueNoPaymentSeen: {
             count: number;
             /** @description What is still open on them (total − retención − links). */
+            amount_clp: number;
+        };
+        /**
+         * @deprecated
+         * @description Retired (Finanzas 50): always zero. The payables it counted («Vencido heredado») are «Pagado antes de Vitrina» now, settled; list them with GET /finanzas/documents?paid_before_vitrina=true.
+         */
+        FinanzasInheritedOverdue: {
+            count: number;
+            /** @description Retired (Finanzas 50): always zero. */
             amount_clp: number;
         };
         FinanzasCashFlowRescue: {
@@ -284206,8 +284833,11 @@ export interface components {
                 /** @description Projected: typical weekday income above the known income. */
                 typical_inflow_clp: number;
                 outflow_clp: number;
+                /** @description The confirmed balance: bank balances plus known items only. */
                 closing_balance_clp: number;
-                /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                /** @description «Con cobros esperados»: the confirmed balance plus the typical weekday income (median of the last 90 days) of every projected day so far: the dashed line. Never a headline. Actual days: the real balance. */
+                expected_balance_clp: number;
+                /** @description Retired with the uncertainty band (#6993): always null. The dashed line is `expected_balance_clp`. */
                 band: {
                     low_clp: number;
                     high_clp: number;
@@ -284218,8 +284848,11 @@ export interface components {
             /** @description The projected balance at the end of the current month. */
             month_end: {
                 date: string;
+                /** @description The confirmed balance. */
                 balance_clp: number;
-                /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                /** @description «Con cobros esperados»: the confirmed balance plus the typical weekday income (median of the last 90 days) of every projected day so far: the dashed line. Never a headline. Actual days: the real balance. */
+                expected_balance_clp: number;
+                /** @description Retired with the uncertainty band (#6993): always null. The dashed line is `expected_balance_clp`. */
                 band: {
                     low_clp: number;
                     high_clp: number;
@@ -284236,6 +284869,7 @@ export interface components {
                 };
             };
             overdue: {
+                /** @description Payables overdue up to 90 days with no payment seen: out of the projection (part of `overdue_no_payment_seen`). */
                 payables_clp: number;
                 payables_count: number;
                 stale_payables_clp: number;
@@ -284243,6 +284877,7 @@ export interface components {
                 receivables_clp: number;
                 receivables_count: number;
             };
+            overdue_no_payment_seen: components["schemas"]["FinanzasCashFlowOverdueNoPaymentSeen"];
             inherited_overdue: components["schemas"]["FinanzasInheritedOverdue"];
             cash_pending: components["schemas"]["FinanzasCashPendingSummary"];
             /** @description What the typical weekday income stands on. `insufficient_history` = fewer than 4 weeks of bank history: no typical income is projected (every `typical_inflow_clp` is 0 and there is no band) and the page should say so. */
@@ -284298,8 +284933,11 @@ export interface components {
                 lowest: components["schemas"]["FinanzasCashFlowLowest"];
                 month_end: {
                     date: string;
+                    /** @description The confirmed balance. */
                     balance_clp: number;
-                    /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                    /** @description «Con cobros esperados»: the confirmed balance plus the typical weekday income (median of the last 90 days) of every projected day so far: the dashed line. Never a headline. Actual days: the real balance. */
+                    expected_balance_clp: number;
+                    /** @description Retired with the uncertainty band (#6993): always null. The dashed line is `expected_balance_clp`. */
                     band: {
                         low_clp: number;
                         high_clp: number;
@@ -284310,8 +284948,11 @@ export interface components {
                 lowest: components["schemas"]["FinanzasCashFlowLowest"];
                 month_end: {
                     date: string;
+                    /** @description The confirmed balance. */
                     balance_clp: number;
-                    /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                    /** @description «Con cobros esperados»: the confirmed balance plus the typical weekday income (median of the last 90 days) of every projected day so far: the dashed line. Never a headline. Actual days: the real balance. */
+                    expected_balance_clp: number;
+                    /** @description Retired with the uncertainty band (#6993): always null. The dashed line is `expected_balance_clp`. */
                     band: {
                         low_clp: number;
                         high_clp: number;
@@ -284453,6 +285094,36 @@ export interface components {
             /** @description The last day an occurrence may fall on. Default: today (the day before it starts, if it has not started). */
             ends_on?: string | null;
         };
+        FinanzasCashFlowOverdueNoPaymentSeenList: {
+            as_of: string;
+            count: number;
+            amount_clp: number;
+            /** @description Newest due date first. `date` = `due_date`; each is movable («Mover pagos» puts it back in the plan on that day). */
+            items: (components["schemas"]["FinanzasCashFlowItem"] & Record<string, never>)[];
+        };
+        FinanzasCashFlowOverdueResolveResult: {
+            /**
+             * Format: uuid
+             * @description Pass it to POST /finanzas/inherited-overdue/batches/{batchId}/undo («Deshacer»).
+             */
+            batch_id: string;
+            resolved: string[];
+            skipped: {
+                id: string;
+                /**
+                 * @description not_eligible: not an overdue open payable any more (paid, linked, voided, or someone got there first).
+                 * @enum {string}
+                 */
+                reason: "not_found" | "not_eligible";
+            }[];
+            /** @description What was open on the documents marked paid. */
+            amount_clp: number;
+            remaining: components["schemas"]["FinanzasCashFlowOverdueNoPaymentSeen"] & unknown;
+        };
+        FinanzasCashFlowOverdueResolveBody: {
+            document_ids: string[];
+            note?: string | null;
+        };
         FinanzasAlert: {
             /** Format: uuid */
             id: string;
@@ -284545,6 +285216,15 @@ export interface components {
                 } | null;
                 /** @description The rest: the month against the punto de equilibrio, the open cases, what Vitrina ordered. */
                 lines: string[];
+                /** @description «$X en facturas vencidas sin pago visto» with a link to review them; they are not in the cash forecast. Null when there are none or the caller cannot read reports. */
+                overdue_unpaid: {
+                    text: string;
+                    link: {
+                        label: string;
+                        /** @description Workspace-relative screen (prefix `/w/<workspace>`). */
+                        path: string;
+                    };
+                } | null;
                 primary: {
                     label: string;
                     /** @description Workspace-relative screen (prefix `/w/<workspace>`). */
@@ -284571,6 +285251,19 @@ export interface components {
                 open_cases: number;
             };
         };
+        FinanzasEquilibrioProduccion: {
+            /** @description The average break-even converted to production terms: `equilibrio.equilibrio_clp` × `ratio`. */
+            equilibrio_clp: number;
+            /** @description Producción ÷ ventas netas over `months` (sums, not a mean of ratios), three decimals. */
+            ratio: number;
+            /** @description The bar months that have both figures, oldest first (at most 3). */
+            months: {
+                month: string;
+                label: string;
+                ingresos_clp: number;
+                produccion_clp: number;
+            }[];
+        } | null;
         FinanzasCostos: {
             from: string;
             to: string;
@@ -284585,7 +285278,7 @@ export interface components {
                 month: string;
                 label: string;
                 proforma: boolean;
-                /** @description «Mes incompleto»: a closed month whose dentist cost is $0 or that misses a large recurring cost. It never counts for `equilibrio`. Null otherwise; a proforma month is never tagged. */
+                /** @description «Mes incompleto»: a closed month whose dentist cost is $0 or that misses a large recurring cost. It never counts for an average, the `equilibrio` or the `hora_sillon.base`; Resultado and Costos flag the same months. Null otherwise; a proforma month is never tagged. */
                 incompleto: {
                     /** @enum {string} */
                     reason: "dentist_cost_missing" | "recurring_cost_missing";
@@ -284643,6 +285336,7 @@ export interface components {
                 /** @description Distinct names of the accounts missing in any bar month, usual amount descending. */
                 fijos_faltantes_accounts: string[];
             } | null;
+            equilibrio_produccion: components["schemas"]["FinanzasEquilibrioProduccion"];
             /** @description Monthly averages over the range; equilibrio = average fijos ÷ the range’s margin %. */
             period: {
                 /** @description The Resultado’s «Ingresos» (net). */
@@ -284711,6 +285405,21 @@ export interface components {
             } | null;
             /** @description Costo hora sillón (clinics only): fijos ÷ available chair-hours (chairs × opening hours), all costs ÷ attended hours, occupancy and production per attended hour, per branch and total. */
             hora_sillon: {
+                /** @description Base of the headline cost per hour (D12). Null when there is no complete month. */
+                base: {
+                    /** @description The months behind the headline cost per hour, oldest first: the same last 3 complete months as `equilibrio`. */
+                    months: string[];
+                    /** @description Mean fijos of those months. */
+                    fijos_clp: number;
+                    /** @description Mean «fijos que aún no aparecen» of those months (also inside `equilibrio`). */
+                    fijos_faltantes_clp: number;
+                    /** @description Mean available chair-hours of those months. */
+                    available_hours: number;
+                    /** @description (fijos + fijos faltantes) ÷ available hours: the headline «Costo hora sillón». Null with no hours. */
+                    costo_hora_clp: number | null;
+                    /** @description The last complete month of the range: occupancy and attended hours are read from it. Null when the range has none. */
+                    occupancy_month: string | null;
+                } | null;
                 /** @description Total chairs counted (same as `chairs_source.count`). */
                 chairs: number;
                 /** @description Where the chair count comes from. */
@@ -284788,7 +285497,11 @@ export interface components {
             /** @description Projected balance at the end of the month. */
             month_end: {
                 date: string;
+                /** @description The confirmed balance: bank balances plus known items only (no typical income, no «Vencidas sin pago visto»). */
                 balance_clp: number;
+                /** @description «Con cobros esperados»: the confirmed balance plus the typical weekday income of the last 90 days (the dashed line). Never a headline. */
+                expected_balance_clp: number;
+                /** @description Retired with the uncertainty band (#6993): always null. Read `expected_balance_clp`. */
                 band: {
                     low_clp: number;
                     high_clp: number;
@@ -284797,14 +285510,18 @@ export interface components {
             /** @description Projected balance 30 days from today. */
             in_30_days: {
                 date: string;
+                /** @description The confirmed balance: bank balances plus known items only (no typical income, no «Vencidas sin pago visto»). */
                 balance_clp: number;
+                /** @description «Con cobros esperados»: the confirmed balance plus the typical weekday income of the last 90 days (the dashed line). Never a headline. */
+                expected_balance_clp: number;
+                /** @description Retired with the uncertainty band (#6993): always null. Read `expected_balance_clp`. */
                 band: {
                     low_clp: number;
                     high_clp: number;
                 } | null;
             };
             lowest: components["schemas"]["FinanzasCashFlowLowest"] & unknown;
-            /** @description Null when cash stays ≥ 0 for 30 days. */
+            /** @description Null when the confirmed balance stays ≥ 0 for 30 days. `cause` is the payment that takes it below zero (that day’s biggest payment when it already starts below zero). */
             runs_out: {
                 /** @description The first projected day under zero. */
                 date: string;
@@ -284821,11 +285538,16 @@ export interface components {
                 receivables_clp: number;
                 receivables_count: number;
             };
+            overdue_no_payment_seen: components["schemas"]["FinanzasCashFlowOverdueNoPaymentSeen"];
             inherited_overdue: components["schemas"]["FinanzasInheritedOverdue"];
             /** @description The runway: one point per day, today … today + 30. */
             points: {
                 date: string;
+                /** @description The confirmed balance: bank balances plus known items only (no typical income, no «Vencidas sin pago visto»). */
                 balance_clp: number;
+                /** @description «Con cobros esperados»: the confirmed balance plus the typical weekday income of the last 90 days (the dashed line). Never a headline. */
+                expected_balance_clp: number;
+                /** @description Retired with the uncertainty band (#6993): always null. Read `expected_balance_clp`. */
                 band: {
                     low_clp: number;
                     high_clp: number;
@@ -284877,10 +285599,13 @@ export interface components {
                     label: string;
                     equilibrio_clp: number;
                 }[];
+                produccion: components["schemas"]["FinanzasEquilibrioProduccion"];
             } | null;
-            /** @description `basis_clp` ÷ equilibrio, one decimal. */
+            /** @description The break-even on the same terms as `basis`: `equilibrio.produccion.equilibrio_clp` when `basis` is `produccion` and a ratio exists, else `equilibrio.equilibrio_clp`. Null without a break-even. */
+            target_clp: number | null;
+            /** @description `basis_clp` ÷ `target_clp`, one decimal. */
             cobertura_pct: number | null;
-            /** @description `basis_clp` − equilibrio (negative: still short of it). */
+            /** @description `basis_clp` − `target_clp` (negative: still short of it). */
             brecha_clp: number | null;
         } | null;
         FinanzasResumen: {
@@ -284930,9 +285655,14 @@ export interface components {
                     match: number;
                     ai: number;
                 };
-                /** @description The newest 3 automatic actions of the month; undo through POST /finanzas/automatic-actions/{kind}/{id}/undo. */
+                /** @description The newest 3 groups of automatic actions of the month, one row each: the group's newest action plus the group's count and total. Undo an action through POST /finanzas/automatic-actions/{kind}/{id}/undo. */
                 recent: (components["schemas"]["FinanzasAutomaticAction"] & {
                     group_name: string;
+                    /** @description The Hecho por Vitrina group of the action: `own_transfers`, `cash_deposits`, `clinic_payments`, `contraparte:<id>` or, for the unassigned ones, `none:<accountId>`. */
+                    group_key: string;
+                    /** @description Actions in the whole group this month. */
+                    group_count: number;
+                    group_total_clp: number;
                 })[];
             };
             accounts: {
@@ -284945,6 +285675,9 @@ export interface components {
                 currency: "CLP" | "USD";
                 balance_clp: number | null;
                 balance_as_of: string | null;
+                data_through: string | null;
+                /** @description true = no connection feeds the account and its newest movement is older than 37 days (D9): show «Datos hasta el …» as a warning with the cartola upload. */
+                stale: boolean;
                 /** @description False for savings accounts (not in «Caja hoy»). */
                 in_cash: boolean;
             }[];
