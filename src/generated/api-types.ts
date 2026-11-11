@@ -148027,7 +148027,9 @@ export interface paths {
          * Sell the car and settle with the owner
          * @description One atomic action doing two things: moves the contract to `vendido`, and produces the **Liquidación** — sale price minus commission equals the amount owed to the owner, minus every retained cost line the owner bears (derived from the car's cost ledger, never sent; a 409 if they exceed the payout), plus the payment record. Requires `amount_venta_clp`; `paid_at` records when the owner was actually paid.
          *
-         *     **The payout is described in full or refused (400)**: `payout_method` (transferencia, vale_vista or cheque), `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace). All of them print on the liquidación with the payment and registration dates.
+         *     **Only the medio de pago is required**: `payout_method` (transferencia, vale_vista or cheque). `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace; defaults to whoever registers it) are optional. What was recorded prints on the liquidación with the payment and registration dates.
+         *
+         *     **The commission can be set for this sale**: `comision_amount_clp` (net of IVA) replaces what the contract’s terms would compute — a minimum commission, a figure renegotiated at closing. The liquidación then records a fixed commission of that amount; the contract keeps its terms. To charge the owner an additional cost, record it on the car’s cost ledger with a `dueno` share before settling.
          *
          *     Legal only from `activo`; anything else is a 409. Answers 201 with the contract and the Liquidación.
          *
@@ -148062,22 +148064,24 @@ export interface paths {
                         amount_venta_clp: number;
                         /** Format: date-time */
                         paid_at?: string;
+                        /** @description Comisión acordada para ESTA venta, neta de IVA, en pesos. Opcional: si se omite, se calcula con los términos del contrato. Cuando se envía, la liquidación la registra como comisión fija (el contrato no cambia) y el «+ IVA» sigue siendo el del contrato. No puede superar `amount_venta_clp`. */
+                        comision_amount_clp?: number;
                         /**
-                         * @description Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`.
+                         * @description Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`. Es el único dato del pago que se exige.
                          * @enum {string}
                          */
                         payout_method: "transferencia" | "vale_vista" | "cheque";
-                        /** @description Banco por el que se pagó. */
-                        payout_bank: string;
-                        /** @description Cuenta de destino. Solo se guardan sus últimos 4 dígitos (`payout_account_last4`), que es lo que muestran la app y la liquidación. */
-                        payout_account: string;
-                        /** @description Número de operación del pago. */
-                        payout_operation_number: string;
+                        /** @description Banco por el que se pagó. Opcional. */
+                        payout_bank?: string;
+                        /** @description Cuenta de destino. Opcional. Solo se guardan sus últimos 4 dígitos (`payout_account_last4`), que es lo que muestran la app y la liquidación; si se envía, necesita al menos 4 dígitos. */
+                        payout_account?: string;
+                        /** @description Número de operación del pago. Opcional. */
+                        payout_operation_number?: string;
                         /**
                          * Format: uuid
-                         * @description «Pagado por»: id de usuario de un miembro activo del equipo.
+                         * @description «Pagado por»: id de usuario de un miembro activo del equipo. Opcional: si se omite, queda quien registra la liquidación.
                          */
-                        payout_paid_by: string;
+                        payout_paid_by?: string;
                     };
                 };
             };
@@ -148217,7 +148221,7 @@ export interface paths {
          * Fetch the settlement record
          * @description The persisted Liquidación for a contract. It only exists once the contract has been sold — this is a read of a record, not a projection computed on demand, so the figures are what was agreed at settlement even if the terms changed afterwards.
          *
-         *     It carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields were required they are all `null`: nothing reconstructs them, and the app shows them as not registered.
+         *     It carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields existed they are all `null`; since then `payout_method` is always set and each of the others is `null` when it was not recorded.
          *
          *     `deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.
          */

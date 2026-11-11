@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.28.1",
+    "version": "17.30.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -257502,7 +257502,7 @@
     "/consignments/{id}/sell": {
       "post": {
         "summary": "Sell the car and settle with the owner",
-        "description": "One atomic action doing two things: moves the contract to `vendido`, and produces the **Liquidación** — sale price minus commission equals the amount owed to the owner, minus every retained cost line the owner bears (derived from the car's cost ledger, never sent; a 409 if they exceed the payout), plus the payment record. Requires `amount_venta_clp`; `paid_at` records when the owner was actually paid.\n\n**The payout is described in full or refused (400)**: `payout_method` (transferencia, vale_vista or cheque), `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace). All of them print on the liquidación with the payment and registration dates.\n\nLegal only from `activo`; anything else is a 409. Answers 201 with the contract and the Liquidación.\n\nIt does NOT close the vehicle’s side — the estadía close belongs to the vehicle lifecycle, so mark the vehicle sold separately.",
+        "description": "One atomic action doing two things: moves the contract to `vendido`, and produces the **Liquidación** — sale price minus commission equals the amount owed to the owner, minus every retained cost line the owner bears (derived from the car's cost ledger, never sent; a 409 if they exceed the payout), plus the payment record. Requires `amount_venta_clp`; `paid_at` records when the owner was actually paid.\n\n**Only the medio de pago is required**: `payout_method` (transferencia, vale_vista or cheque). `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace; defaults to whoever registers it) are optional. What was recorded prints on the liquidación with the payment and registration dates.\n\n**The commission can be set for this sale**: `comision_amount_clp` (net of IVA) replaces what the contract’s terms would compute — a minimum commission, a figure renegotiated at closing. The liquidación then records a fixed commission of that amount; the contract keeps its terms. To charge the owner an additional cost, record it on the car’s cost ledger with a `dueno` share before settling.\n\nLegal only from `activo`; anything else is a 409. Answers 201 with the contract and the Liquidación.\n\nIt does NOT close the vehicle’s side — the estadía close belongs to the vehicle lifecycle, so mark the vehicle sold separately.",
         "security": [
           {
             "BearerAuth": []
@@ -257548,6 +257548,11 @@
                     "type": "string",
                     "format": "date-time"
                   },
+                  "comision_amount_clp": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Comisión acordada para ESTA venta, neta de IVA, en pesos. Opcional: si se omite, se calcula con los términos del contrato. Cuando se envía, la liquidación la registra como comisión fija (el contrato no cambia) y el «+ IVA» sigue siendo el del contrato. No puede superar `amount_venta_clp`."
+                  },
                   "payout_method": {
                     "type": "string",
                     "enum": [
@@ -257555,39 +257560,32 @@
                       "vale_vista",
                       "cheque"
                     ],
-                    "description": "Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`."
+                    "description": "Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`. Es el único dato del pago que se exige."
                   },
                   "payout_bank": {
                     "type": "string",
-                    "minLength": 1,
                     "maxLength": 120,
-                    "description": "Banco por el que se pagó."
+                    "description": "Banco por el que se pagó. Opcional."
                   },
                   "payout_account": {
                     "type": "string",
                     "maxLength": 40,
-                    "pattern": "(?:\\D*\\d){4}",
-                    "description": "Cuenta de destino. Solo se guardan sus últimos 4 dígitos (`payout_account_last4`), que es lo que muestran la app y la liquidación."
+                    "description": "Cuenta de destino. Opcional. Solo se guardan sus últimos 4 dígitos (`payout_account_last4`), que es lo que muestran la app y la liquidación; si se envía, necesita al menos 4 dígitos."
                   },
                   "payout_operation_number": {
                     "type": "string",
-                    "minLength": 1,
                     "maxLength": 60,
-                    "description": "Número de operación del pago."
+                    "description": "Número de operación del pago. Opcional."
                   },
                   "payout_paid_by": {
                     "type": "string",
                     "format": "uuid",
-                    "description": "«Pagado por»: id de usuario de un miembro activo del equipo."
+                    "description": "«Pagado por»: id de usuario de un miembro activo del equipo. Opcional: si se omite, queda quien registra la liquidación."
                   }
                 },
                 "required": [
                   "amount_venta_clp",
-                  "payout_method",
-                  "payout_bank",
-                  "payout_account",
-                  "payout_operation_number",
-                  "payout_paid_by"
+                  "payout_method"
                 ]
               },
               "example": {
@@ -257732,7 +257730,7 @@
     "/consignments/{id}/liquidacion": {
       "get": {
         "summary": "Fetch the settlement record",
-        "description": "The persisted Liquidación for a contract. It only exists once the contract has been sold — this is a read of a record, not a projection computed on demand, so the figures are what was agreed at settlement even if the terms changed afterwards.\n\nIt carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields were required they are all `null`: nothing reconstructs them, and the app shows them as not registered.\n\n`deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.",
+        "description": "The persisted Liquidación for a contract. It only exists once the contract has been sold — this is a read of a record, not a projection computed on demand, so the figures are what was agreed at settlement even if the terms changed afterwards.\n\nIt carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields existed they are all `null`; since then `payout_method` is always set and each of the others is `null` when it was not recorded.\n\n`deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.",
         "security": [
           {
             "BearerAuth": []
