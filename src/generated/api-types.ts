@@ -37610,6 +37610,10 @@ export interface paths {
         /**
          * «Ya pagué por transferencia»: pause automatic charging of a cobro
          * @description The owner says this cobro was already paid by bank transfer (for example without its reference, which the reconciliation cannot match). While the claim is pending nothing charges the cobro automatically — not the scheduled charge, not a retry — and it does not advance in collections; the Vitrina team verifies the transfer and either records the payment or resumes the charge with a fresh heads-up. Idempotent (`created: false` when already pending). 409 when the cobro is no longer open (paid, voided, or a charge is in flight). Requires `billing:write`.
+         *
+         *     **Optional comprobante** (#7094): send the proof of the transfer with the claim as a multipart `file` part (or the JSON file variant below). A PDF, JPG or PNG of at most 10 MB, type read from the bytes; a refused file (400 `comprobante_empty`, 413 `comprobante_too_large`, 415 `comprobante_type`) refuses the whole request and nothing is claimed. It is a claim, not proof: it changes nothing on the cobro. `comprobante` in the answer is the file THIS call attached (null without one). If the claim was made but the file could not be stored, the answer is still 200 with `comprobante: null` and `comprobante_error` {reason `comprobante_not_stored`, retryable true}: retry only the file. Add or replace it later with `POST …/transfer-claim/comprobante`.
+         *
+         *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
          */
         post: {
             parameters: {
@@ -37623,7 +37627,38 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary part)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        file?: unknown;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "comprobante.pdf",
+                     *       "content": "JVBERi0xLjQK…",
+                     *       "content_encoding": "base64"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                    };
+                };
+            };
             responses: {
                 /** @description The claim */
                 200: {
@@ -258597,6 +258632,273 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/billing/invoices/{id}/transfer-claim/comprobante": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach or replace the comprobante of a pending «Ya pagué»
+         * @description Adds the proof of the transfer to the cobro’s pending «Ya pagué por transferencia» claim, or replaces the one already there (the old file is deleted). A PDF, JPG or PNG of at most 10 MB; the type is read from the bytes, never from the request (415 `comprobante_type`; 413 `comprobante_too_large`; 400 `comprobante_empty` / `comprobante_missing`). It is a claim, not proof: it changes nothing on the cobro, its collection or its automatic charge; the Vitrina team checks the transfer. 409 `no_pending_claim` when the cobro has no pending claim (claim first, or attach the file to the claim itself); 409 `comprobante_frozen` when the claim’s file already went with a recorded payment; 404 for a cobro of another workspace. Requires `billing:write` (owners).
+         *
+         *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary part)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        file?: unknown;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "comprobante.pdf",
+                     *       "content": "JVBERi0xLjQK…",
+                     *       "content_encoding": "base64"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The file now on the pending claim */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "comprobante": {
+                         *           "id": "5b0e6c1a-9a7d-4c3e-8f21-0c4d2e1f7a90",
+                         *           "invoice_id": "9a1bd325-3ab8-47e8-afe1-7b87c550b139",
+                         *           "claimed_at": "2026-11-05T13:31:00.000Z",
+                         *           "filename": "comprobante_transferencia.pdf",
+                         *           "mime": "application/pdf",
+                         *           "size_bytes": 48211,
+                         *           "uploaded_at": "2026-11-05T13:31:02.000Z",
+                         *           "state": "pending",
+                         *           "rejected_at": null,
+                         *           "received_payment_id": null
+                         *         },
+                         *         "replaced": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClaimComprobanteUpload"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/invoices/{id}/transfer-claim/comprobantes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The comprobantes attached to a cobro’s «Ya pagué» claims
+         * @description Every file the workspace attached to a «Ya pagué» on this cobro, the newest claim first, with what became of each claim (`state`). A rejected claim’s file stays here as history. Descriptors only; download one with `GET …/comprobantes/{comprobanteId}`. 404 for a cobro of another workspace. Requires `billing:read` (owners and admins).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The claim files */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "5b0e6c1a-9a7d-4c3e-8f21-0c4d2e1f7a90",
+                         *           "invoice_id": "9a1bd325-3ab8-47e8-afe1-7b87c550b139",
+                         *           "claimed_at": "2026-11-05T13:31:00.000Z",
+                         *           "filename": "comprobante_transferencia.pdf",
+                         *           "mime": "application/pdf",
+                         *           "size_bytes": 48211,
+                         *           "uploaded_at": "2026-11-05T13:31:02.000Z",
+                         *           "state": "pending",
+                         *           "rejected_at": null,
+                         *           "received_payment_id": null
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: (components["schemas"]["ClaimComprobante"] & Record<string, never>)[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sandbox/clinic": {
         parameters: {
             query?: never;
@@ -280950,6 +281252,35 @@ export interface components {
             }[];
             next_cursor: string | null;
         };
+        /** @description #7094: the file attached to this claim («comprobante adjunto»), or null. */
+        ClaimComprobante: {
+            /** Format: uuid */
+            id: string;
+            /**
+             * Format: uuid
+             * @description The Cobro the claim is on.
+             */
+            invoice_id: string;
+            /** @description ISO instant of the «Ya pagué» this file belongs to. */
+            claimed_at: string;
+            /** @description Display name (sanitised: spaces and accents become `_`). */
+            filename: string;
+            /** @enum {string} */
+            mime: "application/pdf" | "image/jpeg" | "image/png";
+            size_bytes: number;
+            uploaded_at: string;
+            /**
+             * @description `pending`: the claim waits for Vitrina (the file can still be replaced). `confirmed`: Vitrina confirmed the payment; the file stays with it. `rejected`: Vitrina did not find the transfer; kept as history. `closed`: the cobro was paid another way while the claim waited.
+             * @enum {string}
+             */
+            state: "pending" | "confirmed" | "rejected" | "closed";
+            rejected_at: string | null;
+            /**
+             * Format: uuid
+             * @description The «Pago recibido» a confirmed claim became (it carries this file).
+             */
+            received_payment_id: string | null;
+        } | null;
         BillingHistoryRow: {
             /** @description Stable, unique row key (list key / cursor anchor): the invoice id, or `manual:YYYY-MM`. Not a resource id — use `invoice_id`. */
             row_key: string;
@@ -281506,6 +281837,14 @@ export interface components {
             created: boolean;
             claimedAt: string;
             number: string;
+            comprobante: components["schemas"]["ClaimComprobante"] & unknown;
+            /** @description #7094: set only when a file was sent and NOT stored. The claim was still made (and is being verified): offer «reintentar adjuntar» through `POST …/transfer-claim/comprobante` when `retryable`, never a second claim. */
+            comprobante_error: {
+                /** @enum {string} */
+                reason: "comprobante_not_stored" | "no_pending_claim";
+                message: string;
+                retryable: boolean;
+            } | null;
         };
         /** @example 2026-01 */
         OverheadPeriod: string;
@@ -297085,6 +297424,11 @@ export interface components {
                 region_code: string;
                 region: string | null;
             }[];
+        };
+        ClaimComprobanteUpload: {
+            comprobante: components["schemas"]["ClaimComprobante"] & Record<string, never>;
+            /** @description True when it replaced the claim’s previous file. */
+            replaced: boolean;
         };
         WhatsappTemplateAnalytics: {
             template: {
