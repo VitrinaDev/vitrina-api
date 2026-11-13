@@ -280559,6 +280559,9 @@ export interface components {
                     template_language?: string;
                     change_template_name?: string;
                 };
+                visit_watchers_whatsapp?: {
+                    user_ids: string[];
+                };
                 finanzas_whatsapp?: {
                     enabled?: boolean;
                     /** Format: uuid */
@@ -280905,6 +280908,9 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     change_template_name?: string;
+                };
+                visit_watchers_whatsapp?: {
+                    user_ids: string[];
                 };
                 finanzas_whatsapp?: {
                     enabled?: boolean;

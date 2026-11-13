@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.36.0",
+    "version": "17.37.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1151,6 +1151,22 @@
                   }
                 }
               },
+              "visit_watchers_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "user_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 5
+                  }
+                },
+                "required": [
+                  "user_ids"
+                ]
+              },
               "finanzas_whatsapp": {
                 "type": "object",
                 "properties": {
@@ -2279,6 +2295,22 @@
                     "pattern": "^[a-z0-9_]+$"
                   }
                 }
+              },
+              "visit_watchers_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "user_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 5
+                  }
+                },
+                "required": [
+                  "user_ids"
+                ]
               },
               "finanzas_whatsapp": {
                 "type": "object",
