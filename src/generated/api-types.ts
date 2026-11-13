@@ -38453,7 +38453,212 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Edit the price terms of an issued nota de venta
+         * @description Corrects `net_clp`, `tax_clp` (null = not recorded, 0 = no tax), `tax_treatment` and/or `issued_at` on a nota de venta that is ISSUED but not approved and not voided. All optional, at least one; unknown keys are a 400. In one transaction the edit re-derives what issuing at the new terms would have: the buyer’s receivable (the sale note’s open obligation, re-stated from price + IVA + charged add-ons) and the participations’ DEFAULTED commissions (the margin basis and, when the sale’s day moves, the scheme rate); `discount_clp` follows. Payments already recorded, add-on lines, trade-ins, the credit and `list_price_clp` are kept. Responds with the same read as `GET /sale-notes/{id}`; sending the values it already has is a no-op 200.
+         *
+         *     **409** with `details.blocked_reason` = `sale_note_approved` (an approved price binds the company) or `sale_note_voided`, and a Spanish message; the way out is void + re-issue. Requires `sale_notes:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "net_clp": 16386555,
+                     *       "tax_clp": 3113445
+                     *     }
+                     */
+                    "application/json": {
+                        net_clp?: number;
+                        tax_clp?: number | null;
+                        /** @enum {string} */
+                        tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        /** Format: date-time */
+                        issued_at?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The nota de venta, as GET /sale-notes/{id} reads it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/sale-notes/{id}/buyer": {
@@ -38975,7 +39180,7 @@ export interface paths {
         };
         /**
          * The Vendedor a new nota de venta would get
-         * @description Who `POST /sale-notes` credits as the **Vendedor** when its body names nobody (ADR 0114 §3), so a screen or an agent can propose that person up front: the assignee of the sale’s lead — the `lead_id` given, else the buyer’s lead on this car (`buyer_contact_id` + `vehicle_id`) — otherwise the car’s **Responsable del auto**. A member who left the workspace is skipped. `source` says which rung answered (`lead_owner` | `vehicle_responsible`) and `lead` (`id`, `display_id`) names the lead when it did. `data` is `null` when nobody can be proposed: the emit is then refused until a Vendedor is chosen. The inferred lead only proposes the Vendedor; it is never written as the nota de venta’s `lead_id`.
+         * @description Who `POST /sale-notes` credits as the **Vendedor** when its body names nobody (ADR 0114 §3), so a screen or an agent can propose that person up front: the assignee of the sale’s lead — the `lead_id` given, else the buyer’s lead on this car (`buyer_contact_id` + `vehicle_id`) — otherwise the car’s **Responsable del auto**, otherwise the **signed-in member** asking (never a Vitrina staff email, never an API key — for those the rung is skipped). A member who left the workspace is skipped. `source` says which rung answered (`lead_owner` | `vehicle_responsible` | `signed_in_user`) and `lead` (`id`, `display_id`) names the lead when it did. `data` is `null` when nobody can be proposed: the emit is then refused until a Vendedor is chosen. The inferred lead only proposes the Vendedor; it is never written as the nota de venta’s `lead_id`.
          */
         get: {
             parameters: {
@@ -44763,7 +44968,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a live reservation
-         * @description Changes what a LIVE hold may change after it was taken: the transfer cost (`transfer_cost_clp` alone = a manual amount and clears the breakdown), the term (`hold_expires_on`, never a past day — it also moves the seña’s deadline), the advertising decision (`keep_advertised`, through the existing cierre queue) and the salesperson. Never the price, the holder or the unit. **409** once the hold is not `activa`. Unknown keys are a 400. Answers the same shape as `GET /reservations/{id}`.
+         * @description Changes what a LIVE hold may change after it was taken: the transfer cost (`transfer_cost_clp` alone = a manual amount and clears the breakdown), the term (`hold_expires_on`, never a past day — it also moves the seña’s deadline), the advertising decision (`keep_advertised`, through the existing cierre queue), the salesperson, the holder (`holder_contact_id`, a contact of this workspace — 404 otherwise; the seña expectation and every payment applied to it move to the new holder) and the agreed price (`agreed_price_clp` > 0; 400 when below the money already paid or the expected seña; an estimated transfer cost — one stored with its breakdown — is re-estimated at the new price unless the request states one, a manual amount is kept). Never the unit. **409** once the hold is not `activa` (`details.reason = reservation_not_active`), or when a payment of the hold is also applied to another debt of the current holder (`details.reason = reservation_payment_shared`). Unknown keys are a 400. Answers the same shape as `GET /reservations/{id}`.
          */
         patch: {
             parameters: {
@@ -44778,6 +44983,7 @@ export interface paths {
                 content: {
                     /**
                      * @example {
+                     *       "agreed_price_clp": 19500000,
                      *       "transfer_cost_clp": 250000,
                      *       "transfer_cost_lines": null,
                      *       "hold_expires_on": "2026-09-30"
@@ -44796,6 +45002,9 @@ export interface paths {
                         keep_advertised?: boolean;
                         /** Format: uuid */
                         salesperson_id?: string | null;
+                        /** Format: uuid */
+                        holder_contact_id?: string;
+                        agreed_price_clp?: number;
                     };
                 };
             };
@@ -45645,7 +45854,7 @@ export interface paths {
         put?: never;
         /**
          * Convert a reservation into a nota de venta
-         * @description Produces a NEW sale-note document — 201, the same as `POST /sale-notes`. Scoped `sale_notes:write`, borrowed rather than a fifth reservations scope.
+         * @description Produces a NEW sale-note document — 201, the same as `POST /sale-notes`. Scoped `sale_notes:write`, borrowed rather than a fifth reservations scope. `net_clp` omitted = the sale inherits the hold’s `agreed_price_clp`; stated = the sale closes at that price. A hold with no agreed price needs `net_clp` (400 otherwise).
          */
         post: {
             parameters: {
@@ -45674,6 +45883,7 @@ export interface paths {
                         seller_of_record?: "consignante" | "retoma" | "automotora";
                         /** @enum {string} */
                         tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        net_clp?: number;
                         tax_clp?: number | null;
                         /** Format: date-time */
                         issued_at?: string | null;
