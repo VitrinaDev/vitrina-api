@@ -73643,6 +73643,11 @@ export interface paths {
                          *           "price_clp_per_bank_month": 15000,
                          *           "widget_public_key": "pk_test_ejemplo"
                          *         },
+                         *         "bank_aggregator": {
+                         *           "provider": "fintoc",
+                         *           "configured": true,
+                         *           "banks": []
+                         *         },
                          *         "stale_after_hours": 48,
                          *         "manual_sync_min_interval_minutes": 60
                          *       }
@@ -73900,6 +73905,259 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["FinanzasConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections/emisso/link-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a bank link (Emisso page)
+         * @description For a workspace whose `bank_aggregator.provider` is `emisso` (see `GET /finanzas/connections`). Returns a one-use page on `connect.emisso.ai` where the account holder enters the credentials of the chosen bank; they never reach Vitrina. Show the page with its full domain and say why it is asked. When the holder is done, call `POST /finanzas/connections/emisso/claim`. With `connection_id` the page renews the credential of that existing bank connection. Reads no bank. Requires the `bank_feed_fintoc` add-on (`402 ENTITLEMENT_NOT_ACTIVE` otherwise); `503 BANK_FEED_NOT_CONFIGURED` when this deployment has no Emisso key. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "bank": "bch_empresas"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasEmissoLinkSessionBody"];
+                };
+            };
+            responses: {
+                /** @description The bank-link page */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "url": "https://connect.emisso.ai/c/connect_cs_ejemplo",
+                         *         "expires_at": "2026-11-15T15:43:57.205Z",
+                         *         "bank": "bch_empresas"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasEmissoLinkSession"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections/emisso/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add the banks connected on the Emisso page
+         * @description Call it after the holder finishes the page from `…/emisso/link-session` (poll every few seconds while that page is open). Every bank connected for this workspace that Vitrina does not hold yet becomes a bank connection and its first read is queued; a renewed credential reactivates its connection. Idempotent: an empty `connections` means nothing new was ready. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description What was added */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connections": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *             "kind": "bank",
+                         *             "provider": "fintoc",
+                         *             "institution_name": "Banco de Chile",
+                         *             "holder_name": "Clínica Ejemplo SpA",
+                         *             "accounts": [
+                         *               {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *                 "number_masked": "****4821",
+                         *                 "type": "cuenta_corriente",
+                         *                 "currency": "CLP"
+                         *               }
+                         *             ],
+                         *             "movement_count": 1284,
+                         *             "connected_at": "2026-10-01T14:03:00.000Z",
+                         *             "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "last_sync_error": null,
+                         *             "status": "ok",
+                         *             "next_refresh_at": "2026-10-30T09:00:00.000Z",
+                         *             "actions": {
+                         *               "sync_now": true,
+                         *               "reconnect": false,
+                         *               "disconnect": true
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasEmissoClaim"];
                         };
                     };
                 };
@@ -283184,7 +283442,7 @@ export interface components {
         BankFeedConnection: {
             id: string;
             /** @enum {string} */
-            provider: "fintoc" | "bci_api_market";
+            provider: "fintoc" | "emisso" | "bci_api_market";
             institution_name: string | null;
             holder_name: string | null;
             accounts: {
@@ -283334,7 +283592,7 @@ export interface components {
             /** @enum {string} */
             kind: "bank" | "mercado_pago" | "sii";
             /** @enum {string} */
-            provider: "fintoc" | "bci_api_market" | "mercadopago" | "sii";
+            provider: "fintoc" | "emisso" | "bci_api_market" | "mercadopago" | "sii";
             institution_name: string | null;
             holder_name: string | null;
             accounts: {
@@ -283391,6 +283649,16 @@ export interface components {
                 price_clp_per_bank_month: number | null;
                 widget_public_key: string | null;
             };
+            /** @description Which provider a NEW direct bank link goes through. `fintoc`: open its widget (`…/fintoc/link-intent`). `emisso`: let the user pick one of `banks`, then open the page from `…/emisso/link-session`. */
+            bank_aggregator: {
+                /** @enum {string} */
+                provider: "fintoc" | "emisso";
+                configured: boolean;
+                banks: {
+                    code: string;
+                    name: string;
+                }[];
+            };
             stale_after_hours: number;
             manual_sync_min_interval_minutes: number;
         };
@@ -283401,6 +283669,19 @@ export interface components {
         FinanzasFintocConnectBody: {
             exchange_token?: string;
             link_token?: string;
+        };
+        FinanzasEmissoLinkSession: {
+            url: string;
+            expires_at: string;
+            bank: string;
+        };
+        FinanzasEmissoLinkSessionBody: {
+            bank?: string;
+            /** Format: uuid */
+            connection_id?: string;
+        };
+        FinanzasEmissoClaim: {
+            connections: components["schemas"]["FinanzasConnection"][];
         };
         FinanzasBankPullLink: {
             /** Format: uuid */
@@ -284059,7 +284340,7 @@ export interface components {
             /** @enum {string} */
             currency: "CLP" | "USD";
             /** @enum {string} */
-            source: "fintoc" | "mercado_pago" | "manual";
+            source: "fintoc" | "emisso" | "mercado_pago" | "manual";
             has_feed: boolean;
             balance_clp: number | null;
             balance_original: {
