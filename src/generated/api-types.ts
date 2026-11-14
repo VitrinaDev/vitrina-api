@@ -142073,7 +142073,7 @@ export interface paths {
         put?: never;
         /**
          * Create the Instagram dataset in Meta (idempotent)
-         * @description The Meta destinations of the workspace’s outcomes, each set up by its own explicit press, never as a side effect. Step 1 — the dataset linked to the WhatsApp Business Account — receives the outcomes carrying the click-to-WhatsApp ad click (`ctwa_clid`), as `business_messaging`; a click-to-WhatsApp ad set optimised on Purchase needs it. Step 2 — the website pixel — receives every other outcome, matched by the hashed phone and e-mail; without it those outcomes (most payments) are not sent at all. Step 3 — the dataset linked to the Instagram account — receives the outcomes of conversations an Instagram ad opened, as `business_messaging` with the customer’s Instagram-scoped id (measurement only: Meta offers no Purchase optimisation on Instagram); until it exists they reach the website pixel as before. Each sends from its press on (no history), and nothing flows until the stages are switched on in «Enviar a Meta». Meta cannot delete a dataset. The measurement engine asks Meta to create the dataset linked to the connected Instagram account, and creates its Instagram destination; an existing destination is never repointed. Needs the CURRENT `instagram.notice` (version + hash from the read): 409 `notice_required` otherwise. A retry answers `already_present`; a turned-off dataset is turned back on. 409 `details.reason`: `meta_ads_not_connected`, `instagram_not_connected`, `entitlement_required`, `duplicate_kind`, `dataset_unreadable`, `already_exists`, `engine_not_ready` (the engine cannot create it yet: «Pronto»), `meta_permission_missing` (Meta refused for a missing app permission — `instagram_manage_events`), `reconnect_required` (the Instagram connection expired), `instagram_facebook_login_required` (the Instagram account is connected with Instagram Login; Meta creates the dataset only from a Facebook Login for Business connection linked to a Page — the read-back already carries it as the step's `reason_code`, with no press offered); nothing is created on any refusal. 502 when Meta failed (nothing was created). The answer carries the engine’s read-back. Requires `ads:write`.
+         * @description The Meta destinations of the workspace’s outcomes, each set up by its own explicit press, never as a side effect. Step 1 — the dataset linked to the WhatsApp Business Account — receives the outcomes carrying the click-to-WhatsApp ad click (`ctwa_clid`), as `business_messaging`; a click-to-WhatsApp ad set optimised on Purchase needs it. Step 2 — the website pixel — receives every other outcome, matched by the hashed phone and e-mail; without it those outcomes (most payments) are not sent at all. Step 3 — the dataset linked to the Instagram account — receives the outcomes of conversations an Instagram ad opened, as `business_messaging` with the customer’s Instagram-scoped id (measurement only: Meta offers no Purchase optimisation on Instagram); until it exists they reach the website pixel as before. Each sends from its press on (no history), and nothing flows until the stages are switched on in «Enviar a Meta». Meta cannot delete a dataset. The measurement engine asks Meta to create the dataset linked to the connected Instagram account, and creates its Instagram destination; an existing destination is never repointed. Needs the CURRENT `instagram.notice` (version + hash from the read): 409 `notice_required` otherwise. A retry answers `already_present`; a turned-off dataset is turned back on. 409 `details.reason`: `meta_ads_not_connected`, `instagram_not_connected`, `entitlement_required`, `duplicate_kind`, `dataset_unreadable`, `already_exists`, `engine_not_ready` (the engine cannot create it yet: «Pronto»), `meta_permission_missing` (Meta refused for a missing app permission — `instagram_manage_events`), `reconnect_required` (the Meta Ads connection expired), `instagram_events_permission_required` (the Meta Ads connection has no `instagram_manage_events` yet: `POST …/instagram/enable-events` first; the read-back already carries it as the step's `reason_code`, with no press offered); nothing is created on any refusal. 502 when Meta failed (nothing was created). The answer carries the engine’s read-back. Requires `ads:write`.
          */
         post: {
             parameters: {
@@ -142217,6 +142217,171 @@ export interface paths {
                                 /** @enum {string} */
                                 outcome: "created" | "already_present";
                                 status: components["schemas"]["AdsMetaDatasetStatus"];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/conversion-sync/data-sources/instagram/enable-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start the Meta Ads reconnect that turns on Instagram events
+         * @description The Meta destinations of the workspace’s outcomes, each set up by its own explicit press, never as a side effect. Step 1 — the dataset linked to the WhatsApp Business Account — receives the outcomes carrying the click-to-WhatsApp ad click (`ctwa_clid`), as `business_messaging`; a click-to-WhatsApp ad set optimised on Purchase needs it. Step 2 — the website pixel — receives every other outcome, matched by the hashed phone and e-mail; without it those outcomes (most payments) are not sent at all. Step 3 — the dataset linked to the Instagram account — receives the outcomes of conversations an Instagram ad opened, as `business_messaging` with the customer’s Instagram-scoped id (measurement only: Meta offers no Purchase optimisation on Instagram); until it exists they reach the website pixel as before. Each sends from its press on (no history), and nothing flows until the stages are switched on in «Enviar a Meta». Meta cannot delete a dataset. The Instagram dataset, and every event sent to it, uses the workspace's Meta Ads connection, which needs Meta's `instagram_manage_events` permission first: Step 3 reads `reason_code: instagram_events_permission_required` until it has it. This returns the URL of ONE Meta Ads reconnect that asks for it; open it in a browser, accept, and come back to `return_to` (with `instagram_events=return`), then read the status again. The Meta Ads card and the Instagram connection do not change. Meta reports these events but does not optimize Instagram ads on them yet. 502 when the measurement engine could not mint the link. Requires `ads:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "return_to": "https://app.vitrinadev.com/anuncios/salud/envio"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uri
+                         * @description Where the owner comes back to after Meta’s consent: an absolute URL on the app’s own origin. `instagram_events=return` is appended.
+                         */
+                        return_to: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The reconnect URL. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "url": "https://connect.example.com/h/abc123",
+                         *         "expires_at": "2026-11-03T19:45:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /**
+                                 * Format: uri
+                                 * @description Open it in the browser: the Meta Ads consent that asks for Instagram events.
+                                 */
+                                url: string;
+                                /** @description When the link stops working (about 45 minutes). */
+                                expires_at: string | null;
                             };
                         };
                     };
@@ -289523,7 +289688,7 @@ export interface components {
                  */
                 state: "coming_soon" | "unknown" | "prerequisites_missing" | "ready" | "created" | "sending" | "off" | "error";
                 /** @enum {string|null} */
-                reason_code: "entitlement_required" | "duplicate_kind" | "access_missing" | "dataset_unreadable" | "already_exists" | "no_pixel" | "pixels_unavailable" | "pixel_already_attached" | "instagram_facebook_login_required" | "meta_refused" | "meta_unavailable" | "engine_error" | null;
+                reason_code: "entitlement_required" | "duplicate_kind" | "access_missing" | "dataset_unreadable" | "already_exists" | "no_pixel" | "pixels_unavailable" | "pixel_already_attached" | "instagram_facebook_login_required" | "instagram_events_permission_required" | "meta_refused" | "meta_unavailable" | "engine_error" | null;
                 /** @description What to do, in Spanish, when `reason_code` is set. */
                 message: string | null;
                 dataset: {
@@ -289557,7 +289722,7 @@ export interface components {
                  */
                 state: "coming_soon" | "unknown" | "prerequisites_missing" | "ready" | "created" | "sending" | "off" | "error";
                 /** @enum {string|null} */
-                reason_code: "entitlement_required" | "duplicate_kind" | "access_missing" | "dataset_unreadable" | "already_exists" | "no_pixel" | "pixels_unavailable" | "pixel_already_attached" | "instagram_facebook_login_required" | "meta_refused" | "meta_unavailable" | "engine_error" | null;
+                reason_code: "entitlement_required" | "duplicate_kind" | "access_missing" | "dataset_unreadable" | "already_exists" | "no_pixel" | "pixels_unavailable" | "pixel_already_attached" | "instagram_facebook_login_required" | "instagram_events_permission_required" | "meta_refused" | "meta_unavailable" | "engine_error" | null;
                 /** @description What to do, in Spanish, when `reason_code` is set. */
                 message: string | null;
                 dataset: {
@@ -289602,7 +289767,7 @@ export interface components {
                  */
                 state: "coming_soon" | "unknown" | "prerequisites_missing" | "ready" | "created" | "sending" | "off" | "error";
                 /** @enum {string|null} */
-                reason_code: "entitlement_required" | "duplicate_kind" | "access_missing" | "dataset_unreadable" | "already_exists" | "no_pixel" | "pixels_unavailable" | "pixel_already_attached" | "instagram_facebook_login_required" | "meta_refused" | "meta_unavailable" | "engine_error" | null;
+                reason_code: "entitlement_required" | "duplicate_kind" | "access_missing" | "dataset_unreadable" | "already_exists" | "no_pixel" | "pixels_unavailable" | "pixel_already_attached" | "instagram_facebook_login_required" | "instagram_events_permission_required" | "meta_refused" | "meta_unavailable" | "engine_error" | null;
                 /** @description What to do, in Spanish, when `reason_code` is set. */
                 message: string | null;
                 dataset: {
