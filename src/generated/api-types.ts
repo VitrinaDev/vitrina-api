@@ -140146,8 +140146,8 @@ export interface paths {
                          *             "stage": "appointment_booked",
                          *             "label": "Visita agendada",
                          *             "website_event": "Schedule",
-                         *             "messaging_default": "QualifiedLead",
-                         *             "messaging_event": "QualifiedLead",
+                         *             "messaging_default": "ViewContent",
+                         *             "messaging_event": "ViewContent",
                          *             "overridden": false
                          *           },
                          *           {
@@ -140194,8 +140194,8 @@ export interface paths {
                          *             "stage": "seller_visit_booked",
                          *             "label": "Vendedor con visita agendada",
                          *             "website_event": "SellerVisitScheduled",
-                         *             "messaging_default": null,
-                         *             "messaging_event": null,
+                         *             "messaging_default": "RatingProvided",
+                         *             "messaging_event": "RatingProvided",
                          *             "overridden": false
                          *           },
                          *           {
@@ -140385,8 +140385,8 @@ export interface paths {
                          *             "stage": "appointment_booked",
                          *             "label": "Visita agendada",
                          *             "website_event": "Schedule",
-                         *             "messaging_default": "QualifiedLead",
-                         *             "messaging_event": "QualifiedLead",
+                         *             "messaging_default": "ViewContent",
+                         *             "messaging_event": "ViewContent",
                          *             "overridden": false
                          *           },
                          *           {
@@ -140433,8 +140433,8 @@ export interface paths {
                          *             "stage": "seller_visit_booked",
                          *             "label": "Vendedor con visita agendada",
                          *             "website_event": "SellerVisitScheduled",
-                         *             "messaging_default": null,
-                         *             "messaging_event": null,
+                         *             "messaging_default": "RatingProvided",
+                         *             "messaging_event": "RatingProvided",
                          *             "overridden": false
                          *           },
                          *           {
@@ -140457,6 +140457,516 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["AdsMessagingEventNamesPatchResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/ads/conversion-sync/website-event-names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Each stage’s Meta event name on the website (pixel) lane
+         * @description Per stage the workspace sends: the matrix’s website-lane name (`website_default`) and the name in force (`website_event`: the workspace’s choice, else the default). `accepted_events` are Meta’s standard pixel events; `messaging_optimizable_events` (and each stage’s `messaging_optimizable`) mark the names Meta accepts as the optimisation event of a click-to-WhatsApp ad set that optimises on website conversions. Change them with `PATCH` on this path. `sample=1` (or a sandbox) answers the defaults. Requires `ads:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The stages and their website-lane names */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "overrides": {
+                         *           "appointment_booked": "CompleteRegistration"
+                         *         },
+                         *         "accepted_events": [
+                         *           "AddPaymentInfo",
+                         *           "AddToCart",
+                         *           "AddToWishlist",
+                         *           "CompleteRegistration",
+                         *           "Contact",
+                         *           "CustomizeProduct",
+                         *           "Donate",
+                         *           "FindLocation",
+                         *           "InitiateCheckout",
+                         *           "Lead",
+                         *           "Purchase",
+                         *           "Schedule",
+                         *           "Search",
+                         *           "StartTrial",
+                         *           "SubmitApplication",
+                         *           "Subscribe",
+                         *           "ViewContent"
+                         *         ],
+                         *         "messaging_optimizable_events": [
+                         *           "AddPaymentInfo",
+                         *           "AddToCart",
+                         *           "AddToWishlist",
+                         *           "CompleteRegistration",
+                         *           "InitiateCheckout",
+                         *           "Purchase",
+                         *           "Search",
+                         *           "StartTrial",
+                         *           "Subscribe",
+                         *           "ViewContent"
+                         *         ],
+                         *         "stages": [
+                         *           {
+                         *             "stage": "lead_created",
+                         *             "label": "Contacto nuevo",
+                         *             "website_default": "Lead",
+                         *             "website_event": "Lead",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "lead_qualified",
+                         *             "label": "Cotizó",
+                         *             "website_default": "QualifiedLead",
+                         *             "website_event": "QualifiedLead",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "appointment_booked",
+                         *             "label": "Visita agendada",
+                         *             "website_default": "Schedule",
+                         *             "website_event": "CompleteRegistration",
+                         *             "overridden": true,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "checkout_started",
+                         *             "label": "Abrió el link de pago",
+                         *             "website_default": "InitiateCheckout",
+                         *             "website_event": "InitiateCheckout",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "deposit_paid",
+                         *             "label": "Abono pagado",
+                         *             "website_default": "vitrina_step_8",
+                         *             "website_event": "vitrina_step_8",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "closed_won",
+                         *             "label": "Venta o compra",
+                         *             "website_default": "Purchase",
+                         *             "website_event": "Purchase",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "payment_received",
+                         *             "label": "Pago recibido",
+                         *             "website_default": "Purchase",
+                         *             "website_event": "Purchase",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "seller_qualified",
+                         *             "label": "Vendedor calificado",
+                         *             "website_default": "SellerQualified",
+                         *             "website_event": "SellerQualified",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_visit_booked",
+                         *             "label": "Vendedor con visita agendada",
+                         *             "website_default": "SellerVisitScheduled",
+                         *             "website_event": "SellerVisitScheduled",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_deal_closed",
+                         *             "label": "Compra cerrada a un vendedor",
+                         *             "website_default": "SellerDealClosed",
+                         *             "website_event": "SellerDealClosed",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsWebsiteEventNames"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Choose a stage’s Meta event name on the website (pixel) lane
+         * @description Merges onto the stored choices: `overrides` sets a stage’s name (one of `accepted_events`; `null` drops the choice), `reset` drops a choice (back to `website_default`). The WhatsApp lane never changes here. The RESULT is validated, and nothing is stored on a `422` (`field_errors.overrides.<stage>`, `details.problems.<stage>`): `unknown_stage` (the workspace does not send it), `stage_not_sent` (instalments), `name_not_accepted`, `purchase_needs_value` (Purchase only on a stage that carries a value), `seller_name_shared` (a seller-side stage never shares its name with a buyer stage), `name_taken` (another stage already reaches Meta under that name; a choice equal to the stage’s own default is always valid). Then the engine’s live rules are converged at once (`sync.state: converged`, `sync.updated` = the stages rewritten); `pending` = stored, the daily sweep retries the write. Requires `ads:write`. Errors: `402 ENTITLEMENT_NOT_ACTIVE` (`details.feature: vitrina_ads`, with `hint`) when the Vitrina Ads Add-on is not active — never retried; `409 ADS_KEY_NEEDS_REMINT` when the Add-on is on but the delegated key has not finished rotating, or still lacks `exports:write` after one automatic re-mint (the entitlement rail converges it; see `GET /ads/state`).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "overrides": {
+                     *         "appointment_booked": "CompleteRegistration"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsWebsiteEventNamesPatch"];
+                };
+            };
+            responses: {
+                /** @description The stored choices and the engine write */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "overrides": {
+                         *           "appointment_booked": "CompleteRegistration"
+                         *         },
+                         *         "accepted_events": [
+                         *           "AddPaymentInfo",
+                         *           "AddToCart",
+                         *           "AddToWishlist",
+                         *           "CompleteRegistration",
+                         *           "Contact",
+                         *           "CustomizeProduct",
+                         *           "Donate",
+                         *           "FindLocation",
+                         *           "InitiateCheckout",
+                         *           "Lead",
+                         *           "Purchase",
+                         *           "Schedule",
+                         *           "Search",
+                         *           "StartTrial",
+                         *           "SubmitApplication",
+                         *           "Subscribe",
+                         *           "ViewContent"
+                         *         ],
+                         *         "messaging_optimizable_events": [
+                         *           "AddPaymentInfo",
+                         *           "AddToCart",
+                         *           "AddToWishlist",
+                         *           "CompleteRegistration",
+                         *           "InitiateCheckout",
+                         *           "Purchase",
+                         *           "Search",
+                         *           "StartTrial",
+                         *           "Subscribe",
+                         *           "ViewContent"
+                         *         ],
+                         *         "stages": [
+                         *           {
+                         *             "stage": "lead_created",
+                         *             "label": "Contacto nuevo",
+                         *             "website_default": "Lead",
+                         *             "website_event": "Lead",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "lead_qualified",
+                         *             "label": "Cotizó",
+                         *             "website_default": "QualifiedLead",
+                         *             "website_event": "QualifiedLead",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "appointment_booked",
+                         *             "label": "Visita agendada",
+                         *             "website_default": "Schedule",
+                         *             "website_event": "CompleteRegistration",
+                         *             "overridden": true,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "checkout_started",
+                         *             "label": "Abrió el link de pago",
+                         *             "website_default": "InitiateCheckout",
+                         *             "website_event": "InitiateCheckout",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "deposit_paid",
+                         *             "label": "Abono pagado",
+                         *             "website_default": "vitrina_step_8",
+                         *             "website_event": "vitrina_step_8",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "closed_won",
+                         *             "label": "Venta o compra",
+                         *             "website_default": "Purchase",
+                         *             "website_event": "Purchase",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "payment_received",
+                         *             "label": "Pago recibido",
+                         *             "website_default": "Purchase",
+                         *             "website_event": "Purchase",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": true
+                         *           },
+                         *           {
+                         *             "stage": "seller_qualified",
+                         *             "label": "Vendedor calificado",
+                         *             "website_default": "SellerQualified",
+                         *             "website_event": "SellerQualified",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_visit_booked",
+                         *             "label": "Vendedor con visita agendada",
+                         *             "website_default": "SellerVisitScheduled",
+                         *             "website_event": "SellerVisitScheduled",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_deal_closed",
+                         *             "label": "Compra cerrada a un vendedor",
+                         *             "website_default": "SellerDealClosed",
+                         *             "website_event": "SellerDealClosed",
+                         *             "overridden": false,
+                         *             "messaging_optimizable": false
+                         *           }
+                         *         ],
+                         *         "sync": {
+                         *           "state": "converged",
+                         *           "updated": [
+                         *             "appointment_booked"
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsWebsiteEventNamesPatchResult"];
                         };
                     };
                 };
@@ -288875,7 +289385,7 @@ export interface components {
                 /** @enum {string} */
                 stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
                 label: string;
-                /** @description The website pixel lane’s name (not configurable here). */
+                /** @description The website pixel lane’s name in force (configured with `website-event-names`, not here). */
                 website_event: string;
                 /** @description The matrix’s own WhatsApp-lane name; `null` = not sent there. */
                 messaging_default: string | null;
@@ -288927,6 +289437,73 @@ export interface components {
                 seller_deal_closed?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
             };
             /** @description Stages whose choice is dropped: they go back to the matrix's name (`messaging_default`). Applied before `overrides`. */
+            reset?: ("lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed")[];
+        };
+        AdsWebsiteEventNames: {
+            /** @description The stored choices, `{ stage: name }`. */
+            overrides: {
+                [key: string]: string;
+            };
+            /** @description Meta’s standard pixel events: the names a stage may take. */
+            accepted_events: string[];
+            /** @description The subset Meta accepts as the optimisation event of a click-to-WhatsApp (messaging) ad set that optimises on website conversions. */
+            messaging_optimizable_events: string[];
+            stages: {
+                /** @enum {string} */
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
+                label: string;
+                /** @description The matrix’s own website-lane name. */
+                website_default: string;
+                /** @description The website-lane name in force: the workspace’s choice, else the default. */
+                website_event: string;
+                overridden: boolean;
+                /** @description Whether a click-to-WhatsApp ad set can optimise on `website_event`. */
+                messaging_optimizable: boolean;
+            }[];
+        };
+        AdsWebsiteEventNamesPatchResult: components["schemas"]["AdsWebsiteEventNames"] & {
+            sync: {
+                /**
+                 * @description `converged`: the engine’s live rules now hold the names in force. `pending`: stored, the engine write failed and the daily sweep retries it.
+                 * @enum {string}
+                 */
+                state: "converged" | "pending";
+                updated: ("lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed")[];
+            };
+        };
+        AdsWebsiteEventNamesPatch: {
+            /** @description Per stage, the name the website (pixel) dataset receives: one of `accepted_events`, or `null` = drop the choice (back to the matrix's name, `website_default`). Stages left out keep what they have. */
+            overrides?: {
+                /** @enum {string|null} */
+                lead_created?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                lead_qualified?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                appointment_booked?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                checkout_started?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                deposit_paid?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                appointment_attended?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                quote_presented?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                closed_won?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                first_payment?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                returning_first_payment?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                payment_received?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                seller_qualified?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                seller_visit_booked?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+                /** @enum {string|null} */
+                seller_deal_closed?: "AddPaymentInfo" | "AddToCart" | "AddToWishlist" | "CompleteRegistration" | "Contact" | "CustomizeProduct" | "Donate" | "FindLocation" | "InitiateCheckout" | "Lead" | "Purchase" | "Schedule" | "Search" | "StartTrial" | "SubmitApplication" | "Subscribe" | "ViewContent" | null;
+            };
+            /** @description Stages whose choice is dropped: they go back to the matrix's name (`website_default`). Applied before `overrides`. */
             reset?: ("lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed")[];
         };
         AdsMetaDatasetStatus: {
