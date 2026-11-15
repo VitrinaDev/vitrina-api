@@ -38269,11 +38269,11 @@ export interface paths {
          *
          *     **`print_missing_fields`** is what `GET /sale-notes/{id}/pdf` would refuse with right now — the SAME `{ variable, label, fix, contact_id? }` list as its 409 `details.missing_fields` — so a screen can ask for the buyer’s domicilio while the buyer is still at the counter. `[]` when the note prints, and always `[]` on a voided note.
          *
-         *     **`history`** lists every correction (app#7317), oldest first: `{ id, kind (terms | buyer | add_on | payment), changes: { field: { from, to } }, at, actor, on_approved_note, price_approval_id, authorised_by }`. **`compraventa_outdated`** is `true` when the compraventa in force was printed before a later price or buyer correction (reprint with `POST /sale-notes/{id}/compraventa`). **`pending_price_change`** is a below-floor correction waiting for a manager: `{ price_approval_id, requested_at, requested_by, requested_price_clp, proposed_terms }`, or `null`.
+         *     **`history`** lists every correction (app#7317), oldest first: `{ id, kind (terms | buyer | add_on | payment), changes: { field: { from, to } }, at, actor, on_approved_note, price_approval_id, authorised_by }`. A `payment` entry with `changes.payment.from: null` is money a staff member put on the note: `changes.payment.to.origin` is `recorded` (a new payment) or `applied` (an existing payment on the client’s account, applied to the note). **`compraventa_outdated`** is `true` when the compraventa in force was printed before a later price or buyer correction (reprint with `POST /sale-notes/{id}/compraventa`). **`pending_price_change`** is a below-floor correction waiting for a manager: `{ price_approval_id, requested_at, requested_by, requested_price_clp, proposed_terms }`, or `null`.
          *
-         *     **`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn.
+         *     **`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn. `delivered_by` (`{ contact_id, name }`) names who handed the car in when it is not the current buyer (after a buyer change the retoma stays the original person’s); `null` = the current buyer.
          *
-         *     **`credit` is the LIVE brokered credit, or `null`** (ERP S9-7) — the `institution` that is lending (BR-464 makes the financiera the credit’s identity on the document), the `amount_clp`, and its OWN `state`: `committed` (the bank has promised) or `disbursed` (the money has arrived, with `disbursed_at` / `disbursed_by` beside it). ⚠ **Both count the same in `funding`** (BR-463), so never read `funded` as "the cash is in" — read `credit.state` for that. The committed-vs-collected gap is exactly this pair of fields read side by side. ⚠ **The credit’s state is INDEPENDENT of the document’s `status`**: a voided nota de venta keeps its credit row untouched, and a disbursed credit does not make the document anything. Credits that were REPLACED or REMOVED are tombstoned and are deliberately not served here — they are history, not funding, and listing them beside the live one would invite a client to add them up.
+         *     **`credit` is the LIVE brokered credit, or `null`** (ERP S9-7) — the `institution` that is lending (BR-464 makes the financiera the credit’s identity on the document), the `amount_clp`, and its OWN `state`: `committed` (the bank has promised) or `disbursed` (the money has arrived, with `disbursed_at` / `disbursed_by` beside it). ⚠ **Both count the same in `funding`** (BR-463), so never read `funded` as "the cash is in" — read `credit.state` for that. The committed-vs-collected gap is exactly this pair of fields read side by side. ⚠ **The credit’s state is INDEPENDENT of the document’s `status`**: a voided nota de venta keeps its credit row untouched, and a disbursed credit does not make the document anything. Credits that were REPLACED or REMOVED are tombstoned and are deliberately not served here — they are history, not funding, and listing them beside the live one would invite a client to add them up. `credit.holder` (`{ contact_id, name }`) names whose name the credit is in when it is not the current buyer (after a buyer change it stays the original person’s); `null` = the current buyer.
          */
         get: {
             parameters: {
@@ -39028,9 +39028,9 @@ export interface paths {
         head?: never;
         /**
          * Assign or change the buyer of a nota de venta
-         * @description Sets `buyer_contact_id` on a live (issued or approved) nota de venta — the fix for a note issued without its comprador, without voiding it. Writes a `history` entry (`kind: buyer`, `buyer_contact_id` and `buyer_name` from → to). A printed compraventa does not block it: the note reads `compraventa_outdated: true` until it is reprinted. The open receivable and the payments applied to it move to the new buyer in the same transaction. The contact must belong to this workspace (404 otherwise, or when it was merged away). Responds with the same read as `GET /sale-notes/{id}`. Setting the buyer it already has is a no-op 200.
+         * @description Sets `buyer_contact_id` on a live (issued or approved) nota de venta — the fix for a note issued without its comprador, without voiding it. Writes a `history` entry (`kind: buyer`, `buyer_contact_id` and `buyer_name` from → to). A printed compraventa does not block it: the note reads `compraventa_outdated: true` until it is reprinted. The open receivable and the payments applied to it move to the new buyer in the same transaction. A retoma or a credit on the note does not block it, and neither moves: the retoma stays recorded as handed in by the ORIGINAL person (its acquisition’s counterparty is never re-pointed) and the credit stays on the note as money received in the original person’s name (nothing is sent to any financiera). The read names them: `trade_ins[].delivered_by` and `credit.holder` (`{ contact_id, name }`, `null` when it is the current buyer). The contact must belong to this workspace (404 otherwise, or when it was merged away). Responds with the same read as `GET /sale-notes/{id}`. Setting the buyer it already has is a no-op 200.
          *
-         *     **409** with `details.blocked_reason` and a Spanish message when the buyer is already written into something else: `sale_note_voided`, `trade_ins_recorded` (a retoma came from the current buyer), `payment_shared` (a payment on the note is also applied to another debt of the current buyer, e.g. the reserva) or `credit_attached` (the credit’s borrower is the current buyer). The way out for those is void + re-issue. Requires `sale_notes:write`.
+         *     **409** with `details.blocked_reason` and a Spanish message: `sale_note_voided`, or `payment_shared` (a payment on the note is also applied to another debt of the current buyer that is not this sale; release that application in Pagos first). Requires `sale_notes:write`.
          */
         patch: {
             parameters: {
@@ -39379,7 +39379,7 @@ export interface paths {
          *     * a payment the staff typed (`provenance: manual`) is **reversed**: the row is kept and marked reversed (actor, instant, reason, the same reversal as `POST /payments/{id}/reverse`) and every live allocation of it is released. It stops counting on the note and on the reserva it was carried from;
          *     * a payment the bank or a gateway proved (`provenance: verified`) is **released** from this note only: the money did arrive, so it stays as the buyer’s credit (Pagos, «por asignar») to apply elsewhere or refund.
          *
-         *     In the same transaction a `history` entry is written (`kind: payment`, `changes.payment: { from: { payment_id, instrument, amount_clp, on_note_clp, paid_on, provenance }, to: null }`, `changes.removal: { from: null, to: { effect, reason } }`); a compraventa printed before it reads `compraventa_outdated: true`. Adding a payment is `POST /document-payments` with `sale_note_id`; it writes the mirror entry (`changes.payment: { from: null, to: {…} }`). To change an amount, remove and add again. The receivable is not re-stated (what the buyer owes does not change); `totals`, saldo and `funding` follow.
+         *     In the same transaction a `history` entry is written (`kind: payment`, `changes.payment: { from: { payment_id, instrument, amount_clp, on_note_clp, paid_on, provenance }, to: null }`, `changes.removal: { from: null, to: { effect, reason } }`); a compraventa printed before it reads `compraventa_outdated: true`. Adding a payment is `POST /document-payments` with `sale_note_id`; it writes the mirror entry (`changes.payment: { from: null, to: { payment_id, instrument, amount_clp, on_note_clp, paid_on, provenance, origin } }`); `origin` is `recorded` for new money and `applied` when money already on the client’s account is put on the note (`POST /payments/{id}/allocations`). To change an amount, remove and add again. The receivable is not re-stated (what the buyer owes does not change); `totals`, saldo and `funding` follow.
          *
          *     Responds with the same read as `GET /sale-notes/{id}` plus `payment_removal: { payment_id, effect: reversed | released, amount_clp, on_note_clp, reason, reservation_deposit, change_id }`. `reservation_deposit` names the reserva a carried payment came from and what the removal did to its seña: `no_longer_counted` (reversed) or `still_counted` (released); `null` otherwise.
          *
@@ -49989,7 +49989,7 @@ export interface paths {
          *
          *     `net_clp` is NET of IVA (cifras del negocio, ADR 0114 §2.2). The price a buyer agrees to on an afecto sale includes IVA, like the published price: send `round(price / 1,19)`. Writes nothing. Requires `dealership_economics:read`; 404 for a unit outside the workspace.
          *
-         *     **`dealership_result` is the card’s one figure** («Queda en la automotora, sin IVA»), the SAME object on `POST /margin/preview` and `GET /margin/deals/{id}`: `result_clp` (= `margen_bruto_clp`) and the terms it is made of, all net of IVA — `price_net_clp`, `add_on_income_clp`, `cost_clp` (owned car; 0 on a consigned one), `owner_payout_clp` (consigned: payout incl. deducted costs) and `commission_iva_clp` (the IVA of a «+ IVA» comisión, taken out), with `result = price_net + add_on_income − cost − owner_payout − commission_iva` exact whenever `result_clp` is a number; `basis` is always `sin_iva`. `projected: true` while a consigned split is the contract’s projection (the form, and an issued note not settled yet, read the same projection); a liquidación replaces it. `null` `result_clp` = not computable (no cost recorded, no comisión).
+         *     **`dealership_result` is the card’s one figure** («Queda en la automotora, sin IVA»), the SAME object on `POST /margin/preview` and `GET /margin/deals/{id}`: `result_clp` (= `margen_bruto_clp − deductions.gastos_unidad_clp`) and the terms it is made of, all net of IVA — `price_net_clp`, `add_on_income_clp`, `cost_clp` (owned car; 0 on a consigned one), `owner_payout_clp` (consigned: payout incl. deducted costs), `commission_iva_clp` (the IVA of a «+ IVA» comisión, taken out) and `expenses_clp` (the unit’s expenses, «Gastos de la unidad»), with `result = price_net + add_on_income − cost − owner_payout − commission_iva − expenses` exact whenever `result_clp` is a number; seller commissions are not in it; `basis` is always `sin_iva`. `projected: true` while a consigned split is the contract’s projection (the form, and an issued note not settled yet, read the same projection); a liquidación replaces it. `null` `result_clp` = not computable (no cost recorded, no comisión).
          */
         post: {
             parameters: {
@@ -50073,12 +50073,13 @@ export interface paths {
                          *           "deducciones_clp": 0
                          *         },
                          *         "dealership_result": {
-                         *           "result_clp": 800000,
+                         *           "result_clp": 680000,
                          *           "price_net_clp": 10000000,
                          *           "add_on_income_clp": 0,
                          *           "cost_clp": 0,
                          *           "owner_payout_clp": 9200000,
                          *           "commission_iva_clp": 0,
+                         *           "expenses_clp": 120000,
                          *           "projected": false,
                          *           "basis": "sin_iva"
                          *         },
@@ -50490,12 +50491,13 @@ export interface paths {
                          *           "margen_neto_clp": 1490000,
                          *           "settlement": null,
                          *           "dealership_result": {
-                         *             "result_clp": 2200000,
+                         *             "result_clp": 1560000,
                          *             "price_net_clp": 11900000,
                          *             "add_on_income_clp": 100000,
                          *             "cost_clp": 9800000,
                          *             "owner_payout_clp": null,
                          *             "commission_iva_clp": 0,
+                         *             "expenses_clp": 640000,
                          *             "projected": false,
                          *             "basis": "sin_iva"
                          *           },
@@ -145293,6 +145295,8 @@ export interface paths {
          * @description `payments:write`. Writes one `payment_allocation` row per line, with `method: "staff"`. Passing `release` makes it a RE-allocation: the named rows are released FIRST, in the same transaction, because nothing is ever edited in place — a split is changed by releasing and writing anew, so the history stays readable.
          *
          *     409 `over_allocation` when the lines exceed what is left on the payment (`error.details.unallocated_clp` carries the figure, so the screen can say «solo quedan $5.000 sin asignar»), `obligation_not_open`, `contact_mismatch` (one person's money never settles another's debt — a row Postgres refuses, not a rule a service remembers), `payment_reversed`, `payer_unknown`. Re-sending an identical split is a no-op, not a double-allocation.
+         *
+         *     Money applied to an ISSUED, non-voided nota de venta’s receivable writes a `kind: payment` entry in that note’s `history` with `changes.payment.to.origin: applied` (app#7319).
          */
         post: {
             parameters: {
@@ -150710,7 +150714,7 @@ export interface paths {
          *
          *     `deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.
          *
-         *     `sends` is the log of `POST /consignments/{id}/liquidacion/send`, newest first (last 10): `channel`, `to`, `sent_at`, `by` (member or API key id) and `by_name`. `whatsapp_send_enabled` says whether the workspace may send it on WhatsApp (its staff-WhatsApp switch is on); when false, offer email only.
+         *     `sends` is the log of `POST /consignments/{id}/liquidacion/send`, newest first (last 10): `channel` (`email` | `whatsapp` | `whatsapp_link`), `status` (`sent`, or `opened` for `whatsapp_link`: «abierto en WhatsApp», nothing was delivered by us), `to`, `sent_at`, `by` (member or API key id) and `by_name`. `whatsapp_send_enabled` says whether the workspace may send it through the WhatsApp API (its staff-WhatsApp switch is on). `owner_whatsapp: { phone_digits, window_open }`: the owner’s phone in E.164 digits for `https://wa.me/<digits>` (`null` = no dialable phone: offer email only) and whether their 24 h window is open on this workspace’s WhatsApp. Send through the API when `whatsapp_send_enabled && owner_whatsapp.window_open`; otherwise offer «Abrir WhatsApp» (`channel: whatsapp_link`) when `phone_digits` is set.
          *
          *     `settlement_difference` (app#7320): `null` unless the sale’s price was corrected after this liquidación was paid (or adjustments exist). The record above is never rewritten; this says `paid_with_price_clp`, `current_price_clp`, `paid_to_owner_clp`, `due_to_owner_clp` (the owner’s share at the current price with this liquidación’s own terms and deductions), `adjusted_clp`, `difference_clp` (positive: the dealer owes the owner; negative: the owner owes the dealer), `status` and the `adjustments`. Close it with `POST /consignments/{id}/liquidacion/adjustments`.
          */
@@ -150762,12 +150766,17 @@ export interface paths {
                          *           {
                          *             "channel": "email",
                          *             "to": "dueno@example.com",
+                         *             "status": "sent",
                          *             "sent_at": "2026-11-14T15:20:00.000Z",
                          *             "by": "11111111-0000-4000-8000-000000000001",
                          *             "by_name": "Camila Rojas"
                          *           }
                          *         ],
-                         *         "whatsapp_send_enabled": false
+                         *         "whatsapp_send_enabled": false,
+                         *         "owner_whatsapp": {
+                         *           "phone_digits": "56912345678",
+                         *           "window_open": false
+                         *         }
                          *       }
                          *     }
                          */
@@ -284848,6 +284857,34 @@ export interface components {
             price_approval_id: string | null;
             authorised_by: components["schemas"]["DealActor"] | null;
         };
+        SaleNoteParty: {
+            /** Format: uuid */
+            contact_id: string;
+            name: string | null;
+        };
+        SaleNoteTradeInRead: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            vehicle_id: string;
+            precio_toma_clp: number;
+            /** Format: uuid */
+            acquisition_id: string | null;
+            delivered_by: components["schemas"]["SaleNoteParty"] | null;
+        } & {
+            [key: string]: unknown;
+        };
+        SaleNoteCreditRead: {
+            /** Format: uuid */
+            id: string;
+            institution: string;
+            amount_clp: number;
+            /** @enum {string} */
+            state: "committed" | "disbursed" | "detached";
+            holder: components["schemas"]["SaleNoteParty"] | null;
+        } & {
+            [key: string]: unknown;
+        };
         ProposedSaleNoteTerms: {
             net_clp?: number;
             tax_clp?: number | null;
@@ -284922,6 +284959,8 @@ export interface components {
             /** @enum {string} */
             tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
             history: components["schemas"]["SaleNoteHistoryEntry"][];
+            trade_ins: components["schemas"]["SaleNoteTradeInRead"][];
+            credit: components["schemas"]["SaleNoteCreditRead"] | null;
             compraventa_outdated: boolean;
             pending_price_change: components["schemas"]["SaleNotePendingPriceChange"] | null;
             transfer_tax: components["schemas"]["SaleNoteTransferTax"] | null;
