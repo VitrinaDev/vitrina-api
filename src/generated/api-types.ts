@@ -29305,6 +29305,8 @@ export interface paths {
          * @description Health and recent outcomes of the proactive first message for one lead source (`chileautos`, `yapo`, `mercadolibre`, `website`, …): which rail it uses, whether its account is usable, sends today, and the latest outcomes with the reason a lead was skipped.
          *
          *     `website` is ON by default for every workspace, and a portal (`chileautos`, `mercadolibre`, `yapo`) is ON by default once the workspace has an enabled marketplace account for it. With no block of its own such a source borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own templates — for a portal, the workspace's own first-contact templates first, then Vitrina's fallback ones (`platform_default`). An explicit block, `enabled: false` included, always wins. `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox. Each `recent` row carries its lead’s `contact_id` (one row per person on screen) and, on an `error` row, the classified `error_code` (`undeliverable` is Meta 131026; `provider_frequency_capped` and `recipient_experiment` are Meta holding marketing back), never the provider’s message.
+         *
+         *     `clinic_form` (the clinic form first contact, configured at `/clinic-form-source`) is OFF until the workspace turns it on; its `templates` are the first message’s ladder, and the answer adds `clinic_form`: whether the intake URL exists, `enabled_at`, the number of mapped forms, the second message’s ladder (`follow_up_templates`, each with its state on the number) and the newest submissions with what the intake decided for each.
          */
         get: {
             parameters: {
@@ -234175,6 +234177,416 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic-form-source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The clinic form first contact of the workspace
+         * @description Whether it is on, the sending number, the form → treatment map and whether an intake URL exists (`token_hint`). Requires `leads:read`. Healthcare workspaces only (any other answers 403 `VERTICAL_NOT_ENABLED`). Creating or rotating the intake URL is withheld from connected apps. A GoHighLevel workflow («form submitted», any form) posts its standard Webhook body to the intake URL; Vitrina answers the patient at once, at any hour, with two approved WhatsApp templates 30 s apart; outside the workspace’s opening hours (`business_hours`, none = always open) the second message is the out-of-hours copy, unless a live AI agent answers the number. A form the map does not know gets the generic second message. A person who got a first contact in the last 24 h, or has an open conversation, gets a private note instead of a new message. Status: `GET /lead-outreach/status?source=clinic_form`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The source */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enabled": true,
+                         *         "enabled_at": "2026-11-20T12:00:00.000Z",
+                         *         "messaging_account_id": null,
+                         *         "daily_cap": 200,
+                         *         "forms": [
+                         *           {
+                         *             "form_id": "Hk3QpZ8",
+                         *             "form_name": "Implantes landing",
+                         *             "treatment_label": "implantes dentales"
+                         *           }
+                         *         ],
+                         *         "token_hint": "a1b2",
+                         *         "intake_path": "/api/v1/integrations/gohighlevel-forms"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                enabled: boolean;
+                                enabled_at: string | null;
+                                messaging_account_id: string | null;
+                                daily_cap: number;
+                                forms: {
+                                    form_id: string;
+                                    form_name: string | null;
+                                    treatment_label: string;
+                                }[];
+                                token_hint: string | null;
+                                intake_path: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Turn the clinic form first contact on or off, or edit its form map
+         * @description Every field is optional. `forms` replaces the whole map (a repeated `form_id` is refused). Turning it on needs a healthcare workspace and an issued intake URL; it still sends nothing until the templates of the `clinic_form` pack are approved on the number. Requires `tenant:write`. Healthcare workspaces only (any other answers 403 `VERTICAL_NOT_ENABLED`). Creating or rotating the intake URL is withheld from connected apps. A GoHighLevel workflow («form submitted», any form) posts its standard Webhook body to the intake URL; Vitrina answers the patient at once, at any hour, with two approved WhatsApp templates 30 s apart; outside the workspace’s opening hours (`business_hours`, none = always open) the second message is the out-of-hours copy, unless a live AI agent answers the number. A form the map does not know gets the generic second message. A person who got a first contact in the last 24 h, or has an open conversation, gets a private note instead of a new message. Status: `GET /lead-outreach/status?source=clinic_form`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "enabled": true,
+                     *       "forms": [
+                     *         {
+                     *           "form_id": "Hk3QpZ8",
+                     *           "form_name": "Implantes landing",
+                     *           "treatment_label": "implantes dentales"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Turn the first contact on or off. Nothing is ever sent while it is off. Turning it on needs a healthcare workspace and an issued intake URL. */
+                        enabled?: boolean;
+                        /**
+                         * Format: uuid
+                         * @description The WhatsApp number to send from. Null = the workspace's partner WhatsApp number.
+                         */
+                        messaging_account_id?: string | null;
+                        /** @description First contacts this source may schedule per workspace day (default 200). Forms past it are recorded, not answered. */
+                        daily_cap?: number;
+                        /** @description The whole form → treatment map (replaces the stored one). */
+                        forms?: {
+                            /** @description The GoHighLevel form id the webhook body names. */
+                            form_id: string;
+                            /** @description The form’s name, for people. */
+                            form_name?: string | null;
+                            /** @description What the patient reads in the second message: «…en nuestro formulario de <treatment_label>». Control characters and repeated spaces are removed and it is cut at 60 characters. */
+                            treatment_label: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enabled": true,
+                         *         "enabled_at": "2026-11-20T12:00:00.000Z",
+                         *         "messaging_account_id": null,
+                         *         "daily_cap": 200,
+                         *         "forms": [
+                         *           {
+                         *             "form_id": "Hk3QpZ8",
+                         *             "form_name": "Implantes landing",
+                         *             "treatment_label": "implantes dentales"
+                         *           }
+                         *         ],
+                         *         "token_hint": "a1b2",
+                         *         "intake_path": "/api/v1/integrations/gohighlevel-forms"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                enabled: boolean;
+                                enabled_at: string | null;
+                                messaging_account_id: string | null;
+                                daily_cap: number;
+                                forms: {
+                                    form_id: string;
+                                    form_name: string | null;
+                                    treatment_label: string;
+                                }[];
+                                token_hint: string | null;
+                                intake_path: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic-form-source/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create or rotate the clinic form intake URL
+         * @description Creates the intake URL, or rotates its token (the previous URL stops working at once). The token is returned ONCE: only its hash is kept. Paste `path` (with the API host) as the URL of the GoHighLevel workflow's Webhook action; no headers or custom body are needed. Requires `tenant:write`. Healthcare workspaces only (any other answers 403 `VERTICAL_NOT_ENABLED`). Creating or rotating the intake URL is withheld from connected apps. A GoHighLevel workflow («form submitted», any form) posts its standard Webhook body to the intake URL; Vitrina answers the patient at once, at any hour, with two approved WhatsApp templates 30 s apart; outside the workspace’s opening hours (`business_hours`, none = always open) the second message is the out-of-hours copy, unless a live AI agent answers the number. A form the map does not know gets the generic second message. A person who got a first contact in the last 24 h, or has an open conversation, gets a private note instead of a new message. Status: `GET /lead-outreach/status?source=clinic_form`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Issued */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "source": {
+                         *           "enabled": true,
+                         *           "enabled_at": "2026-11-20T12:00:00.000Z",
+                         *           "messaging_account_id": null,
+                         *           "daily_cap": 200,
+                         *           "forms": [
+                         *             {
+                         *               "form_id": "Hk3QpZ8",
+                         *               "form_name": "Implantes landing",
+                         *               "treatment_label": "implantes dentales"
+                         *             }
+                         *           ],
+                         *           "token_hint": "a1b2",
+                         *           "intake_path": "/api/v1/integrations/gohighlevel-forms"
+                         *         },
+                         *         "token": "ghf_0f3c…a1b2",
+                         *         "path": "/api/v1/integrations/gohighlevel-forms/ghf_0f3c…a1b2"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                source: {
+                                    enabled: boolean;
+                                    enabled_at: string | null;
+                                    messaging_account_id: string | null;
+                                    daily_cap: number;
+                                    forms: {
+                                        form_id: string;
+                                        form_name: string | null;
+                                        treatment_label: string;
+                                    }[];
+                                    token_hint: string | null;
+                                    intake_path: string;
+                                };
+                                token: string;
+                                path: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;

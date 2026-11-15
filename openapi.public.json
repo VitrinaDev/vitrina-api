@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.40.0",
+    "version": "17.41.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -109853,7 +109853,7 @@
     "/lead-outreach/status": {
       "get": {
         "summary": "First-touch status for one lead source",
-        "description": "Health and recent outcomes of the proactive first message for one lead source (`chileautos`, `yapo`, `mercadolibre`, `website`, …): which rail it uses, whether its account is usable, sends today, and the latest outcomes with the reason a lead was skipped.\n\n`website` is ON by default for every workspace, and a portal (`chileautos`, `mercadolibre`, `yapo`) is ON by default once the workspace has an enabled marketplace account for it. With no block of its own such a source borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own templates — for a portal, the workspace's own first-contact templates first, then Vitrina's fallback ones (`platform_default`). An explicit block, `enabled: false` included, always wins. `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox. Each `recent` row carries its lead’s `contact_id` (one row per person on screen) and, on an `error` row, the classified `error_code` (`undeliverable` is Meta 131026; `provider_frequency_capped` and `recipient_experiment` are Meta holding marketing back), never the provider’s message.",
+        "description": "Health and recent outcomes of the proactive first message for one lead source (`chileautos`, `yapo`, `mercadolibre`, `website`, …): which rail it uses, whether its account is usable, sends today, and the latest outcomes with the reason a lead was skipped.\n\n`website` is ON by default for every workspace, and a portal (`chileautos`, `mercadolibre`, `yapo`) is ON by default once the workspace has an enabled marketplace account for it. With no block of its own such a source borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own templates — for a portal, the workspace's own first-contact templates first, then Vitrina's fallback ones (`platform_default`). An explicit block, `enabled: false` included, always wins. `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox. Each `recent` row carries its lead’s `contact_id` (one row per person on screen) and, on an `error` row, the classified `error_code` (`undeliverable` is Meta 131026; `provider_frequency_capped` and `recipient_experiment` are Meta holding marketing back), never the provider’s message.\n\n`clinic_form` (the clinic form first contact, configured at `/clinic-form-source`) is OFF until the workspace turns it on; its `templates` are the first message’s ladder, and the answer adds `clinic_form`: whether the intake URL exists, `enabled_at`, the number of mapped forms, the second message’s ladder (`follow_up_templates`, each with its state on the number) and the newest submissions with what the intake decided for each.",
         "security": [
           {
             "BearerAuth": []
@@ -366131,6 +366131,639 @@
           }
         },
         "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic-form-source": {
+      "get": {
+        "summary": "The clinic form first contact of the workspace",
+        "description": "Whether it is on, the sending number, the form → treatment map and whether an intake URL exists (`token_hint`). Requires `leads:read`. Healthcare workspaces only (any other answers 403 `VERTICAL_NOT_ENABLED`). Creating or rotating the intake URL is withheld from connected apps. A GoHighLevel workflow («form submitted», any form) posts its standard Webhook body to the intake URL; Vitrina answers the patient at once, at any hour, with two approved WhatsApp templates 30 s apart; outside the workspace’s opening hours (`business_hours`, none = always open) the second message is the out-of-hours copy, unless a live AI agent answers the number. A form the map does not know gets the generic second message. A person who got a first contact in the last 24 h, or has an open conversation, gets a private note instead of a new message. Status: `GET /lead-outreach/status?source=clinic_form`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Leads"
+        ],
+        "responses": {
+          "200": {
+            "description": "The source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "enabled_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "messaging_account_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "daily_cap": {
+                          "type": "integer"
+                        },
+                        "forms": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "form_id": {
+                                "type": "string"
+                              },
+                              "form_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "treatment_label": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "form_id",
+                              "form_name",
+                              "treatment_label"
+                            ]
+                          }
+                        },
+                        "token_hint": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "intake_path": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "enabled_at",
+                        "messaging_account_id",
+                        "daily_cap",
+                        "forms",
+                        "token_hint",
+                        "intake_path"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "enabled": true,
+                    "enabled_at": "2026-11-20T12:00:00.000Z",
+                    "messaging_account_id": null,
+                    "daily_cap": 200,
+                    "forms": [
+                      {
+                        "form_id": "Hk3QpZ8",
+                        "form_name": "Implantes landing",
+                        "treatment_label": "implantes dentales"
+                      }
+                    ],
+                    "token_hint": "a1b2",
+                    "intake_path": "/api/v1/integrations/gohighlevel-forms"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Turn the clinic form first contact on or off, or edit its form map",
+        "description": "Every field is optional. `forms` replaces the whole map (a repeated `form_id` is refused). Turning it on needs a healthcare workspace and an issued intake URL; it still sends nothing until the templates of the `clinic_form` pack are approved on the number. Requires `tenant:write`. Healthcare workspaces only (any other answers 403 `VERTICAL_NOT_ENABLED`). Creating or rotating the intake URL is withheld from connected apps. A GoHighLevel workflow («form submitted», any form) posts its standard Webhook body to the intake URL; Vitrina answers the patient at once, at any hour, with two approved WhatsApp templates 30 s apart; outside the workspace’s opening hours (`business_hours`, none = always open) the second message is the out-of-hours copy, unless a live AI agent answers the number. A form the map does not know gets the generic second message. A person who got a first contact in the last 24 h, or has an open conversation, gets a private note instead of a new message. Status: `GET /lead-outreach/status?source=clinic_form`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Leads"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Turn the first contact on or off. Nothing is ever sent while it is off. Turning it on needs a healthcare workspace and an issued intake URL."
+                  },
+                  "messaging_account_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid",
+                    "description": "The WhatsApp number to send from. Null = the workspace's partner WhatsApp number."
+                  },
+                  "daily_cap": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5000,
+                    "description": "First contacts this source may schedule per workspace day (default 200). Forms past it are recorded, not answered."
+                  },
+                  "forms": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "form_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200,
+                          "description": "The GoHighLevel form id the webhook body names."
+                        },
+                        "form_name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 200,
+                          "description": "The form’s name, for people."
+                        },
+                        "treatment_label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200,
+                          "description": "What the patient reads in the second message: «…en nuestro formulario de <treatment_label>». Control characters and repeated spaces are removed and it is cut at 60 characters."
+                        }
+                      },
+                      "required": [
+                        "form_id",
+                        "treatment_label"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 500,
+                    "description": "The whole form → treatment map (replaces the stored one)."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "enabled": true,
+                "forms": [
+                  {
+                    "form_id": "Hk3QpZ8",
+                    "form_name": "Implantes landing",
+                    "treatment_label": "implantes dentales"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "enabled_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "messaging_account_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "daily_cap": {
+                          "type": "integer"
+                        },
+                        "forms": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "form_id": {
+                                "type": "string"
+                              },
+                              "form_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "treatment_label": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "form_id",
+                              "form_name",
+                              "treatment_label"
+                            ]
+                          }
+                        },
+                        "token_hint": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "intake_path": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "enabled_at",
+                        "messaging_account_id",
+                        "daily_cap",
+                        "forms",
+                        "token_hint",
+                        "intake_path"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "enabled": true,
+                    "enabled_at": "2026-11-20T12:00:00.000Z",
+                    "messaging_account_id": null,
+                    "daily_cap": 200,
+                    "forms": [
+                      {
+                        "form_id": "Hk3QpZ8",
+                        "form_name": "Implantes landing",
+                        "treatment_label": "implantes dentales"
+                      }
+                    ],
+                    "token_hint": "a1b2",
+                    "intake_path": "/api/v1/integrations/gohighlevel-forms"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic-form-source/token": {
+      "post": {
+        "summary": "Create or rotate the clinic form intake URL",
+        "description": "Creates the intake URL, or rotates its token (the previous URL stops working at once). The token is returned ONCE: only its hash is kept. Paste `path` (with the API host) as the URL of the GoHighLevel workflow's Webhook action; no headers or custom body are needed. Requires `tenant:write`. Healthcare workspaces only (any other answers 403 `VERTICAL_NOT_ENABLED`). Creating or rotating the intake URL is withheld from connected apps. A GoHighLevel workflow («form submitted», any form) posts its standard Webhook body to the intake URL; Vitrina answers the patient at once, at any hour, with two approved WhatsApp templates 30 s apart; outside the workspace’s opening hours (`business_hours`, none = always open) the second message is the out-of-hours copy, unless a live AI agent answers the number. A form the map does not know gets the generic second message. A person who got a first contact in the last 24 h, or has an open conversation, gets a private note instead of a new message. Status: `GET /lead-outreach/status?source=clinic_form`.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Leads"
+        ],
+        "responses": {
+          "201": {
+            "description": "Issued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "enabled_at": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "messaging_account_id": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "daily_cap": {
+                              "type": "integer"
+                            },
+                            "forms": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "form_id": {
+                                    "type": "string"
+                                  },
+                                  "form_name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "treatment_label": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "form_id",
+                                  "form_name",
+                                  "treatment_label"
+                                ]
+                              }
+                            },
+                            "token_hint": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "intake_path": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "enabled",
+                            "enabled_at",
+                            "messaging_account_id",
+                            "daily_cap",
+                            "forms",
+                            "token_hint",
+                            "intake_path"
+                          ]
+                        },
+                        "token": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "token",
+                        "path"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "source": {
+                      "enabled": true,
+                      "enabled_at": "2026-11-20T12:00:00.000Z",
+                      "messaging_account_id": null,
+                      "daily_cap": 200,
+                      "forms": [
+                        {
+                          "form_id": "Hk3QpZ8",
+                          "form_name": "Implantes landing",
+                          "treatment_label": "implantes dentales"
+                        }
+                      ],
+                      "token_hint": "a1b2",
+                      "intake_path": "/api/v1/integrations/gohighlevel-forms"
+                    },
+                    "token": "ghf_0f3c…a1b2",
+                    "path": "/api/v1/integrations/gohighlevel-forms/ghf_0f3c…a1b2"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true,
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
       }
     },
     "/units": {
