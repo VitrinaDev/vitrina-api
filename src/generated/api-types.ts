@@ -39363,6 +39363,968 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sale-notes/{id}/payments/{paymentId}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Remove a payment from a nota de venta (issued or approved)
+         * @description Removes one payment applied to a nota de venta that is ISSUED or APPROVED and not voided (app#7319). `reason` is required (one line, ≤ 300). What happens depends on what the money is, so no money fact becomes false:
+         *
+         *     * a payment the staff typed (`provenance: manual`) is **reversed**: the row is kept and marked reversed (actor, instant, reason, the same reversal as `POST /payments/{id}/reverse`) and every live allocation of it is released. It stops counting on the note and on the reserva it was carried from;
+         *     * a payment the bank or a gateway proved (`provenance: verified`) is **released** from this note only: the money did arrive, so it stays as the buyer’s credit (Pagos, «por asignar») to apply elsewhere or refund.
+         *
+         *     In the same transaction a `history` entry is written (`kind: payment`, `changes.payment: { from: { payment_id, instrument, amount_clp, on_note_clp, paid_on, provenance }, to: null }`, `changes.removal: { from: null, to: { effect, reason } }`); a compraventa printed before it reads `compraventa_outdated: true`. Adding a payment is `POST /document-payments` with `sale_note_id`; it writes the mirror entry (`changes.payment: { from: null, to: {…} }`). To change an amount, remove and add again. The receivable is not re-stated (what the buyer owes does not change); `totals`, saldo and `funding` follow.
+         *
+         *     Responds with the same read as `GET /sale-notes/{id}` plus `payment_removal: { payment_id, effect: reversed | released, amount_clp, on_note_clp, reason, reservation_deposit, change_id }`. `reservation_deposit` names the reserva a carried payment came from and what the removal did to its seña: `no_longer_counted` (reversed) or `still_counted` (released); `null` otherwise.
+         *
+         *     **404** when the payment is not applied to this note. **409** `details.blocked_reason` = `sale_note_voided`; `payment_already_removed`; `payment_shared` (a typed payment also applied to another debt of the buyer that is not this sale or its reserva: release it from the note in Pagos instead, or take it off the other debt first; `details.obligation_ids`). Requires `document_payments:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "Se registró dos veces"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["RemoveSaleNotePaymentBody"];
+                };
+            };
+            responses: {
+                /** @description The nota de venta, as GET /sale-notes/{id} reads it, plus the removal */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "payment_removal": {
+                         *           "payment_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1b1",
+                         *           "effect": "reversed",
+                         *           "amount_clp": 500000,
+                         *           "on_note_clp": 500000,
+                         *           "reason": "Se registró dos veces",
+                         *           "reservation_deposit": null,
+                         *           "change_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1b2"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SaleNotePaymentRemoved"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sale-notes/{id}/add-ons/{lineId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove an add-on from an issued or approved nota de venta
+         * @description Removes one add-on line (app#7318) from a nota de venta that is ISSUED or APPROVED and not voided. Only an add-on line can be removed; the vehicle line cannot be reached. In one transaction the receivable is re-stated and a `history` entry is written (`kind: add_on`, `changes.add_on: { from: <the line>, to: null }`); a compraventa printed before it reads `compraventa_outdated: true`. Responds with the same read as `GET /sale-notes/{id}`.
+         *
+         *     **404** when `lineId` is not an add-on line of this note; **409** `details.blocked_reason` = `sale_note_voided`. Requires `sale_notes:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    lineId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The nota de venta, as GET /sale-notes/{id} reads it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "transfer_tax": {
+                         *           "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a7",
+                         *           "charge_clp": 120000,
+                         *           "source": "calculated",
+                         *           "at_current_price_clp": 135000,
+                         *           "gaps": [],
+                         *           "recalculation_offered": true
+                         *         },
+                         *         "history": [
+                         *           {
+                         *             "id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a8",
+                         *             "kind": "add_on",
+                         *             "changes": {
+                         *               "add_on": {
+                         *                 "from": {
+                         *                   "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a9",
+                         *                   "kind": "otro",
+                         *                   "description": "Garantía extendida",
+                         *                   "charge_clp": 119000,
+                         *                   "tax_treatment": "afecto"
+                         *                 },
+                         *                 "to": {
+                         *                   "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a9",
+                         *                   "kind": "otro",
+                         *                   "description": "Garantía extendida 24 meses",
+                         *                   "charge_clp": 150000,
+                         *                   "tax_treatment": "afecto"
+                         *                 }
+                         *               }
+                         *             },
+                         *             "at": "2026-11-15T13:20:00.000Z",
+                         *             "actor": null,
+                         *             "on_approved_note": true,
+                         *             "price_approval_id": null,
+                         *             "authorised_by": null
+                         *           }
+                         *         ],
+                         *         "compraventa_outdated": false,
+                         *         "pending_price_change": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SaleNoteRead"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Change an add-on on an issued or approved nota de venta
+         * @description Changes one add-on line (app#7318) on a nota de venta that is ISSUED or APPROVED and not voided: `description`, `charge_clp` (what the buyer pays for it, IVA included on an afecto «Otro») and, on an «Otro» line only, `tax_treatment` (`afecto` | `exento`). All optional, at least one; unknown keys are a 400. The line keeps its id, position, framing, beneficiary and fee citation; on a `reembolso_mandato` line the cost follows the amount. A statutory line’s treatment follows its framing: sending a different one is a **400** on `tax_treatment`. In one transaction the buyer’s receivable is re-stated (total a pagar, saldo and funding standing follow) and a `history` entry is written (`kind: add_on`, `changes.add_on: { from, to }`, each a snapshot `{ line_id, kind, description, charge_clp, tax_treatment }`); a compraventa printed before it reads `compraventa_outdated: true`. The vehicle’s price does not move, so no price approval is involved. Sending what the line already says is a no-op (no history). Responds with the same read as `GET /sale-notes/{id}`.
+         *
+         *     **404** when `lineId` is not an add-on line of this note; **409** `details.blocked_reason` = `sale_note_voided`. Requires `sale_notes:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    lineId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "description": "Garantía extendida 24 meses",
+                     *       "charge_clp": 150000
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ChangeSaleNoteAddOnBody"];
+                };
+            };
+            responses: {
+                /** @description The nota de venta, as GET /sale-notes/{id} reads it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "transfer_tax": {
+                         *           "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a7",
+                         *           "charge_clp": 120000,
+                         *           "source": "calculated",
+                         *           "at_current_price_clp": 135000,
+                         *           "gaps": [],
+                         *           "recalculation_offered": true
+                         *         },
+                         *         "history": [
+                         *           {
+                         *             "id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a8",
+                         *             "kind": "add_on",
+                         *             "changes": {
+                         *               "add_on": {
+                         *                 "from": {
+                         *                   "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a9",
+                         *                   "kind": "otro",
+                         *                   "description": "Garantía extendida",
+                         *                   "charge_clp": 119000,
+                         *                   "tax_treatment": "afecto"
+                         *                 },
+                         *                 "to": {
+                         *                   "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a9",
+                         *                   "kind": "otro",
+                         *                   "description": "Garantía extendida 24 meses",
+                         *                   "charge_clp": 150000,
+                         *                   "tax_treatment": "afecto"
+                         *                 }
+                         *               }
+                         *             },
+                         *             "at": "2026-11-15T13:20:00.000Z",
+                         *             "actor": null,
+                         *             "on_approved_note": true,
+                         *             "price_approval_id": null,
+                         *             "authorised_by": null
+                         *           }
+                         *         ],
+                         *         "compraventa_outdated": false,
+                         *         "pending_price_change": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SaleNoteRead"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/sale-notes/{id}/add-ons/{lineId}/recalculate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Recalculate the transfer tax at the note’s current price
+         * @description Rewrites a `transferencia_municipal` line (app#7318) with the transfer tax computed at the note’s CURRENT price (the same computation as `POST /transfer-tax/preview`, as of the note’s issue day, with permiso de circulación) and the citation of the rate row it used; a reembolso’s cost follows. Only ever on this explicit request: after a price correction `GET /sale-notes/{id}` reads `transfer_tax: { line_id, charge_clp, source: calculated | typed, at_current_price_clp, gaps, recalculation_offered }`, and `recalculation_offered` is `true` only for a CALCULATED line whose amount differs from the current price’s. A typed line is never offered one, but may still be recalculated on request. Re-states the receivable and writes a `history` entry (`kind: add_on`, the `to` snapshot carries `recalculated: true`); a no-op when the amount already matches. Responds with the same read as `GET /sale-notes/{id}`.
+         *
+         *     **400** when the line is not the transfer tax; **404** when `lineId` is not an add-on line of this note; **409** `details.blocked_reason` = `transfer_tax_incomplete` (with `details.gaps`) when it cannot be computed, or `sale_note_voided`. Requires `sale_notes:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    lineId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The nota de venta, as GET /sale-notes/{id} reads it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "transfer_tax": {
+                         *           "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a7",
+                         *           "charge_clp": 120000,
+                         *           "source": "calculated",
+                         *           "at_current_price_clp": 135000,
+                         *           "gaps": [],
+                         *           "recalculation_offered": true
+                         *         },
+                         *         "history": [
+                         *           {
+                         *             "id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a8",
+                         *             "kind": "add_on",
+                         *             "changes": {
+                         *               "add_on": {
+                         *                 "from": {
+                         *                   "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a9",
+                         *                   "kind": "otro",
+                         *                   "description": "Garantía extendida",
+                         *                   "charge_clp": 119000,
+                         *                   "tax_treatment": "afecto"
+                         *                 },
+                         *                 "to": {
+                         *                   "line_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd1a9",
+                         *                   "kind": "otro",
+                         *                   "description": "Garantía extendida 24 meses",
+                         *                   "charge_clp": 150000,
+                         *                   "tax_treatment": "afecto"
+                         *                 }
+                         *               }
+                         *             },
+                         *             "at": "2026-11-15T13:20:00.000Z",
+                         *             "actor": null,
+                         *             "on_approved_note": true,
+                         *             "price_approval_id": null,
+                         *             "authorised_by": null
+                         *           }
+                         *         ],
+                         *         "compraventa_outdated": false,
+                         *         "pending_price_change": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SaleNoteRead"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sale-notes/{id}/approve": {
         parameters: {
             query?: never;
@@ -149749,6 +150711,8 @@ export interface paths {
          *     `deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.
          *
          *     `sends` is the log of `POST /consignments/{id}/liquidacion/send`, newest first (last 10): `channel`, `to`, `sent_at`, `by` (member or API key id) and `by_name`. `whatsapp_send_enabled` says whether the workspace may send it on WhatsApp (its staff-WhatsApp switch is on); when false, offer email only.
+         *
+         *     `settlement_difference` (app#7320): `null` unless the sale’s price was corrected after this liquidación was paid (or adjustments exist). The record above is never rewritten; this says `paid_with_price_clp`, `current_price_clp`, `paid_to_owner_clp`, `due_to_owner_clp` (the owner’s share at the current price with this liquidación’s own terms and deductions), `adjusted_clp`, `difference_clp` (positive: the dealer owes the owner; negative: the owner owes the dealer), `status` and the `adjustments`. Close it with `POST /consignments/{id}/liquidacion/adjustments`.
          */
         get: {
             parameters: {
@@ -283886,6 +284850,51 @@ export interface components {
             requested_price_clp: number;
             proposed_terms: components["schemas"]["ProposedSaleNoteTerms"];
         };
+        SaleNoteTransferTax: {
+            /** Format: uuid */
+            line_id: string;
+            charge_clp: number;
+            /** @enum {string} */
+            source: "calculated" | "typed";
+            at_current_price_clp: number | null;
+            gaps: {
+                input: string;
+                detail: string;
+            }[];
+            recalculation_offered: boolean;
+        };
+        SettlementDifference: {
+            /** Format: uuid */
+            liquidacion_id: string;
+            /** Format: uuid */
+            consignment_contract_id: string;
+            /** Format: uuid */
+            sale_note_id: string;
+            liquidacion_paid_at: string;
+            paid_with_price_clp: number;
+            current_price_clp: number;
+            paid_to_owner_clp: number;
+            comision_at_current_price_clp: number | null;
+            due_to_owner_clp: number;
+            adjusted_clp: number;
+            difference_clp: number;
+            /** @enum {string} */
+            status: "dealer_owes_owner" | "owner_owes_dealer" | "settled";
+            adjustments: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                direction: "pago_complementario" | "reintegro";
+                amount_clp: number;
+                paid_at: string;
+                /** @enum {string|null} */
+                payout_method: "transferencia" | "vale_vista" | "cheque" | "efectivo" | null;
+                note: string | null;
+                /** Format: uuid */
+                recorded_by: string | null;
+                created_at: string;
+            }[];
+        };
         SaleNoteRead: {
             /** Format: uuid */
             id: string;
@@ -283902,6 +284911,8 @@ export interface components {
             history: components["schemas"]["SaleNoteHistoryEntry"][];
             compraventa_outdated: boolean;
             pending_price_change: components["schemas"]["SaleNotePendingPriceChange"] | null;
+            transfer_tax: components["schemas"]["SaleNoteTransferTax"] | null;
+            settlement_difference: components["schemas"]["SettlementDifference"] | null;
         } & {
             [key: string]: unknown;
         };
@@ -283918,6 +284929,38 @@ export interface components {
         } & {
             [key: string]: unknown;
         });
+        SaleNotePaymentRemoval: {
+            /** Format: uuid */
+            payment_id: string;
+            /** @enum {string} */
+            effect: "reversed" | "released";
+            amount_clp: number;
+            on_note_clp: number;
+            reason: string;
+            reservation_deposit: {
+                /** Format: uuid */
+                reservation_id: string;
+                reservation_folio: string | null;
+                /** @enum {string} */
+                effect: "no_longer_counted" | "still_counted";
+            } | null;
+            /** Format: uuid */
+            change_id: string | null;
+        };
+        SaleNotePaymentRemoved: components["schemas"]["SaleNoteRead"] & ({
+            payment_removal: components["schemas"]["SaleNotePaymentRemoval"];
+        } & {
+            [key: string]: unknown;
+        });
+        RemoveSaleNotePaymentBody: {
+            reason: string;
+        };
+        ChangeSaleNoteAddOnBody: {
+            description?: string;
+            charge_clp?: number;
+            /** @enum {string} */
+            tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+        };
         ReservationConverted: {
             reservation: {
                 /** Format: uuid */
