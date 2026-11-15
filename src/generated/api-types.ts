@@ -137538,7 +137538,9 @@ export interface paths {
                          *           "connections",
                          *           "attribution"
                          *         ],
-                         *         "last_error": null
+                         *         "last_error": null,
+                         *         "relation": "provisioned",
+                         *         "link_status": null
                          *       }
                          *     }
                          */
@@ -289853,10 +289855,23 @@ export interface components {
             entitlement: "off" | "pending_on" | "on" | "pending_off";
             /** @description True when the live key is the wrong kind for the entitlement: ON with a core key, or OFF with an Ads key. */
             needs_remint: boolean;
-            /** @enum {string} */
-            key_kind: "core" | "ads";
+            /**
+             * @description `linked`: the read-only guest key on an attribution-engine profile the workspace’s agency owns (linking S5). Never re-minted.
+             * @enum {string}
+             */
+            key_kind: "core" | "ads" | "linked";
             grant_scopes: string[];
             last_error: string | null;
+            /**
+             * @description `linked`: the attribution-engine profile belongs to the workspace’s agency and Vitrina is a read-only guest on it. Ads opens when Vitrina Ads is active for the workspace and the link is active (no declaration to the engine); campaign launches, pixels, datasets, Conversion Sync rules, audiences and stage mappings answer 403 `ATTRIBUTION_LINKED_READ_ONLY`. `provisioned` for every other workspace.
+             * @enum {string}
+             */
+            relation: "provisioned" | "linked";
+            /**
+             * @description The link to the agency’s profile; null when `relation` is `provisioned`. `revoked`: nothing is mirrored any more and nothing is re-provisioned automatically.
+             * @enum {string|null}
+             */
+            link_status: "active" | "revoked" | null;
         };
         AdsConversionSyncCatalog: Record<string, never>;
         AdsMetaPixel: {
@@ -292212,6 +292227,11 @@ export interface components {
             } | null;
             candidates: components["schemas"]["MetaAdsCandidate"][] | null;
             updated_at: string;
+            /**
+             * @description `linked_owner`: the ad account lives on the attribution-engine profile the workspace’s agency owns and linked to Vitrina; Vitrina only reads it (connect, finalize, disconnect and pages answer 403 `ATTRIBUTION_LINKED_READ_ONLY`). `vitrina` otherwise.
+             * @enum {string}
+             */
+            managed_by: "vitrina" | "linked_owner";
         } | null;
         MetaAdsConnectResult: {
             url: string;
@@ -292420,6 +292440,11 @@ export interface components {
             } | null;
             /** @description Whether the Vitrina Ads add-on is active. `false` only on a card that outlived a lapsed add-on (a connection or a consent in flight): it stays visible and can be disconnected, and any step that would start a new consent becomes `activate_addon`. */
             addon_active: boolean;
+            /**
+             * @description `linked_owner`: the connection lives on the attribution-engine profile the workspace’s agency owns and linked to Vitrina. Vitrina only reads it: no connect, reconnect, disconnect or stage mapping (those answer 403 `ATTRIBUTION_LINKED_READ_ONLY`); show «Gestionado por tu agencia». `vitrina` on every other card.
+             * @enum {string}
+             */
+            managed_by: "vitrina" | "linked_owner";
         };
         ProviderConnectResult: {
             /** @description Send the WHOLE page here: it goes straight to the provider’s consent screen. Single-use, 45 minutes. */

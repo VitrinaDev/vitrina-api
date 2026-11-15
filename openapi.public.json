@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.41.0",
+    "version": "17.42.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -31860,8 +31860,10 @@
             "type": "string",
             "enum": [
               "core",
-              "ads"
-            ]
+              "ads",
+              "linked"
+            ],
+            "description": "`linked`: the read-only guest key on an attribution-engine profile the workspace’s agency owns (linking S5). Never re-minted."
           },
           "grant_scopes": {
             "type": "array",
@@ -31874,6 +31876,25 @@
               "string",
               "null"
             ]
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "provisioned",
+              "linked"
+            ],
+            "description": "`linked`: the attribution-engine profile belongs to the workspace’s agency and Vitrina is a read-only guest on it. Ads opens when Vitrina Ads is active for the workspace and the link is active (no declaration to the engine); campaign launches, pixels, datasets, Conversion Sync rules, audiences and stage mappings answer 403 `ATTRIBUTION_LINKED_READ_ONLY`. `provisioned` for every other workspace."
+          },
+          "link_status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "active",
+              "revoked"
+            ],
+            "description": "The link to the agency’s profile; null when `relation` is `provisioned`. `revoked`: nothing is mirrored any more and nothing is re-provisioned automatically."
           }
         },
         "required": [
@@ -31881,7 +31902,9 @@
           "needs_remint",
           "key_kind",
           "grant_scopes",
-          "last_error"
+          "last_error",
+          "relation",
+          "link_status"
         ]
       },
       "AdsConversionSyncCatalog": {
@@ -42196,6 +42219,14 @@
           },
           "updated_at": {
             "type": "string"
+          },
+          "managed_by": {
+            "type": "string",
+            "enum": [
+              "vitrina",
+              "linked_owner"
+            ],
+            "description": "`linked_owner`: the ad account lives on the attribution-engine profile the workspace’s agency owns and linked to Vitrina; Vitrina only reads it (connect, finalize, disconnect and pages answer 403 `ATTRIBUTION_LINKED_READ_ONLY`). `vitrina` otherwise."
           }
         },
         "required": [
@@ -42209,7 +42240,8 @@
           "error",
           "handoff",
           "candidates",
-          "updated_at"
+          "updated_at",
+          "managed_by"
         ]
       },
       "MetaAdsConnectResult": {
@@ -43026,6 +43058,14 @@
           "addon_active": {
             "type": "boolean",
             "description": "Whether the Vitrina Ads add-on is active. `false` only on a card that outlived a lapsed add-on (a connection or a consent in flight): it stays visible and can be disconnected, and any step that would start a new consent becomes `activate_addon`."
+          },
+          "managed_by": {
+            "type": "string",
+            "enum": [
+              "vitrina",
+              "linked_owner"
+            ],
+            "description": "`linked_owner`: the connection lives on the attribution-engine profile the workspace’s agency owns and linked to Vitrina. Vitrina only reads it: no connect, reconnect, disconnect or stage mapping (those answer 403 `ATTRIBUTION_LINKED_READ_ONLY`); show «Gestionado por tu agencia». `vitrina` on every other card."
           }
         },
         "required": [
@@ -43048,7 +43088,8 @@
           "connect_input",
           "connect_notice",
           "catalog",
-          "addon_active"
+          "addon_active",
+          "managed_by"
         ]
       },
       "ProviderConnectResult": {
@@ -245826,7 +245867,9 @@
                       "connections",
                       "attribution"
                     ],
-                    "last_error": null
+                    "last_error": null,
+                    "relation": "provisioned",
+                    "link_status": null
                   }
                 }
               }
