@@ -38053,6 +38053,10 @@ export interface paths {
          *     **`credit` IS THE BROKERED FINANCING (ERP S9-7, BR-461–464)** — the financiera and the amount it is lending. ⚠ **It counts in the balance gate BEFORE the cash lands** (BR-463: *"the sale is funded even though the cash is not in"*), which is what makes a FINANCED deal balance at the counter. ⚠ **It is not a payment and has no `instrument`**: `credito` is deliberately absent from the `customer_payment` instrument vocabulary (BR-264/BR-450/BR-1010), so it is BR-418’s own term and never a payment row. `institution` is the credit’s identity on the document (BR-464) and is required; `application_number` is internal. There is no vehicle and no client field — BR-461’s pair is this note’s, already fixed.
          *
          *     Omitting `credit` is the **ordinary case even for a financed deal**: the dealership records financing as part of closing, after the fact (112 credits taken against 0 sent in the recovered system), through `PUT /sale-notes/{id}/credit`. The note reads `short` in between, with the gap stated.
+         *
+         *     **`approve: true` IS «EMITIR Y APROBAR» (app#7316)** — the note is issued and then approved in the same request, as the caller (car sold, deal won, post-sale obligations opened). At or above the floor it approves for anyone who can issue; below the floor only for a caller holding `price_approval:approve`. Otherwise the note STAYS ISSUED (never half-approved) and the 201 says why under `approval: { approved, reason, message, price_approval_id }` — `reason` = `price_approval_required` (a price approval was filed into the queue; `price_approval_id` names it) or `approval_refused` (any other approval rule: the car was sold by another note, the deal’s board, the mandato…; `message` is the Spanish reason). `approval` is present only when `approve` was sent. Omitted / `false` is «Solo emitir»: today’s behaviour. `approve` with `approved_by`/`approved_at` is a 400.
+         *
+         *     **`registered_owner: { name, tax_id }`** is «compra para tercero» (app#7321): the person the car is registered to when it is not the buyer. Typed, no contact record; omitted / `null` = the buyer. Correct it later with `PUT /sale-notes/{id}/registered-owner`.
          */
         post: {
             parameters: {
@@ -38132,6 +38136,8 @@ export interface paths {
                             credit_application_id?: string | null;
                         } | null;
                         carry_reservation_abono?: boolean;
+                        approve?: boolean;
+                        registered_owner?: components["schemas"]["SaleNoteRegisteredOwnerInput"];
                     };
                 };
             };
@@ -38174,7 +38180,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["SaleNoteIssued"];
                         };
                     };
                 };
@@ -38262,6 +38268,8 @@ export interface paths {
          *     **`receivable_obligation_id`** is the open ledger receivable this note settles — pass it as `obligation_id` to `POST /payments` to apply a payment to this note. `null` once the note is voided (the void releases its money) or when it has no receivable.
          *
          *     **`print_missing_fields`** is what `GET /sale-notes/{id}/pdf` would refuse with right now — the SAME `{ variable, label, fix, contact_id? }` list as its 409 `details.missing_fields` — so a screen can ask for the buyer’s domicilio while the buyer is still at the counter. `[]` when the note prints, and always `[]` on a voided note.
+         *
+         *     **`history`** lists every correction (app#7317), oldest first: `{ id, kind (terms | buyer | add_on | payment), changes: { field: { from, to } }, at, actor, on_approved_note, price_approval_id, authorised_by }`. **`compraventa_outdated`** is `true` when the compraventa in force was printed before a later price or buyer correction (reprint with `POST /sale-notes/{id}/compraventa`). **`pending_price_change`** is a below-floor correction waiting for a manager: `{ price_approval_id, requested_at, requested_by, requested_price_clp, proposed_terms }`, or `null`.
          *
          *     **`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn.
          *
@@ -38387,7 +38395,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["SaleNoteRead"];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -38456,10 +38464,12 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Edit the price terms of an issued nota de venta
-         * @description Corrects `net_clp`, `tax_clp` (null = not recorded, 0 = no tax), `tax_treatment` and/or `issued_at` on a nota de venta that is ISSUED but not approved and not voided. All optional, at least one; unknown keys are a 400. In one transaction the edit re-derives what issuing at the new terms would have: the buyer’s receivable (the sale note’s open obligation, re-stated from price + IVA + charged add-ons) and the participations’ DEFAULTED commissions (the margin basis and, when the sale’s day moves, the scheme rate); `discount_clp` follows. Payments already recorded, add-on lines, trade-ins, the credit and `list_price_clp` are kept. Responds with the same read as `GET /sale-notes/{id}`; sending the values it already has is a no-op 200.
+         * Correct the price terms of a nota de venta (issued or approved)
+         * @description Corrects `net_clp`, `tax_clp` (null = not recorded, 0 = no tax), `tax_treatment` and/or `issued_at` on a nota de venta that is ISSUED or APPROVED and not voided, with no cutoff. All optional, at least one; unknown keys are a 400. In one transaction the edit re-derives what issuing at the new terms would have: the buyer’s receivable (the sale note’s open obligation, re-stated from price + IVA + charged add-ons) and the participations’ DEFAULTED commissions (the margin basis and, when the sale’s day moves, the scheme rate); `discount_clp` follows. Payments already recorded, add-on lines, trade-ins, the credit and `list_price_clp` are kept; on an approved note the car stays sold and the deal stays won. Every correction writes a `history` entry (actor, instant, each field `{ from, to }`); a compraventa printed before it reads `compraventa_outdated: true` until it is reprinted. Responds with the same read as `GET /sale-notes/{id}` plus `correction: { outcome, price_approval_id, change_id }`, `outcome` = `applied` | `unchanged` (sending the values it already has is a no-op 200) | `pending_approval`.
          *
-         *     **409** with `details.blocked_reason` = `sale_note_approved` (an approved price binds the company) or `sale_note_voided`, and a Spanish message; the way out is void + re-issue. Requires `sale_notes:write`.
+         *     **202 `pending_approval`**: on an APPROVED note, a correction that lowers the price below the floor (the price-approval policy, tolerance included) by a caller WITHOUT `price_approval:approve` is not applied. It is filed as a price approval on the note carrying the proposed terms (`proposed_terms` on `GET /price-approvals`), shown as `pending_price_change` on the note; granting it (`POST /price-approvals/{id}/decision`) applies the correction in the same transaction, rejecting it leaves the note as it was. A caller holding `price_approval:approve`, a grant on this note that covers the price, a raise, or a pending (unapproved) note applies directly.
+         *
+         *     **409** with `details.blocked_reason` = `sale_note_voided`, or `sale_note_approved` only when a PENDING note was approved while the edit ran (nothing changed; retry, it now applies the approved-note rule), and a Spanish message. Requires `sale_notes:write`.
          */
         patch: {
             parameters: {
@@ -38598,7 +38608,123 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["SaleNoteCorrected"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Below the floor on an approved note: filed for approval, not applied */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SaleNoteCorrected"];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -38663,6 +38789,230 @@ export interface paths {
         };
         trace?: never;
     };
+    "/sale-notes/{id}/registered-owner": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set, correct or clear the «compra para tercero» of a nota de venta
+         * @description «Compra para tercero» (app#7321): the person who signs and pays can differ from the person the car is registered to (a father buying for his daughter). `registered_owner: { name, tax_id }` names that person — typed, nothing is created in Contactos; the RUT must checksum and is stored canonical (`12345678-K`). `registered_owner: null` clears it (the car goes in the buyer’s name again). The same field is accepted on `POST /sale-notes` and `POST /reservations/{id}/convert`.
+         *
+         *     A live note, issued or approved. The money does not move. Writes a `history` entry (`kind: registered_owner`, `registered_owner_name` and `registered_owner_tax_id` from → to); a compraventa printed before it reads `compraventa_outdated: true`. The printed nota de venta shows the third party beside the buyer, and templates get `{{PROPIETARIO_INSCRITO_NOMBRE}}` / `{{PROPIETARIO_INSCRITO_RUT}}` (the buyer’s when there is none) and `{{PROPIETARIO_INSCRITO_DETALLE}}` (the sentence, or nothing). Responds with the same read as `GET /sale-notes/{id}`; setting what it already has is a no-op 200.
+         *
+         *     **400** with a field error on `registered_owner.name` / `registered_owner.tax_id`; **409** `details.blocked_reason` = `sale_note_voided`. Requires `sale_notes:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "registered_owner": {
+                     *         "name": "Hija Ejemplo Pérez",
+                     *         "tax_id": "19.312.475-5"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        registered_owner: components["schemas"]["SaleNoteRegisteredOwnerInput"];
+                    };
+                };
+            };
+            responses: {
+                /** @description The nota de venta, as GET /sale-notes/{id} reads it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                         *         "print_missing_fields": [
+                         *           {
+                         *             "variable": "COMPRADOR_DOMICILIO",
+                         *             "label": "Domicilio del comprador",
+                         *             "fix": "buyer_contact",
+                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ]
+                         *       },
+                         *       "registered_owner": {
+                         *         "name": "Hija Ejemplo Pérez",
+                         *         "tax_id": "19312475-5"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SaleNoteRead"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sale-notes/{id}/buyer": {
         parameters: {
             query?: never;
@@ -38678,9 +39028,9 @@ export interface paths {
         head?: never;
         /**
          * Assign or change the buyer of a nota de venta
-         * @description Sets `buyer_contact_id` on a live (issued or approved) nota de venta — the fix for a note issued without its comprador, without voiding it. The contact must belong to this workspace (404 otherwise, or when it was merged away). Responds with the same read as `GET /sale-notes/{id}`. Setting the buyer it already has is a no-op 200.
+         * @description Sets `buyer_contact_id` on a live (issued or approved) nota de venta — the fix for a note issued without its comprador, without voiding it. Writes a `history` entry (`kind: buyer`, `buyer_contact_id` and `buyer_name` from → to). A printed compraventa does not block it: the note reads `compraventa_outdated: true` until it is reprinted. The open receivable and the payments applied to it move to the new buyer in the same transaction. The contact must belong to this workspace (404 otherwise, or when it was merged away). Responds with the same read as `GET /sale-notes/{id}`. Setting the buyer it already has is a no-op 200.
          *
-         *     **409** with `details.blocked_reason` and a Spanish message when the buyer is already written into something else: `sale_note_voided`, `compraventa_issued` (the contract names the buyer), `trade_ins_recorded` (a retoma came from the current buyer) or `credit_attached` (the credit’s borrower is the current buyer). The way out for those is void + re-issue. Requires `sale_notes:write`.
+         *     **409** with `details.blocked_reason` and a Spanish message when the buyer is already written into something else: `sale_note_voided`, `trade_ins_recorded` (a retoma came from the current buyer), `payment_shared` (a payment on the note is also applied to another debt of the current buyer, e.g. the reserva) or `credit_attached` (the credit’s borrower is the current buyer). The way out for those is void + re-issue. Requires `sale_notes:write`.
          */
         patch: {
             parameters: {
@@ -38814,7 +39164,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["SaleNoteRead"];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -45857,6 +46207,8 @@ export interface paths {
         /**
          * Convert a reservation into a nota de venta
          * @description Produces a NEW sale-note document — 201, the same as `POST /sale-notes`. Scoped `sale_notes:write`, borrowed rather than a fifth reservations scope. `net_clp` omitted = the sale inherits the hold’s `agreed_price_clp`; stated = the sale closes at that price. A hold with no agreed price needs `net_clp` (400 otherwise).
+         *
+         *     **`approve: true`** is «Emitir y aprobar» (app#7316): the new nota de venta is approved in the same request with the same rules and the same `approval` outcome as `POST /sale-notes`; `sale_note` is then the approved row. **`registered_owner: { name, tax_id }`** is «compra para tercero» (app#7321), as on `POST /sale-notes`.
          */
         post: {
             parameters: {
@@ -45891,6 +46243,8 @@ export interface paths {
                         issued_at?: string | null;
                         lead_id?: string | null;
                         carry_transfer_cost?: boolean;
+                        approve?: boolean;
+                        registered_owner?: components["schemas"]["SaleNoteRegisteredOwnerInput"];
                     };
                 };
             };
@@ -45994,7 +46348,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["ReservationConverted"];
                         };
                     };
                 };
@@ -46397,7 +46751,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["PriceApproval"][];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -46520,7 +46874,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["PriceApproval"];
                         };
                     };
                 };
@@ -46754,7 +47108,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["PriceApproval"];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -46894,7 +47248,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["PriceApproval"];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -283458,6 +283812,147 @@ export interface components {
                 message: string;
                 retryable: boolean;
             } | null;
+        };
+        SaleNoteRegisteredOwner: {
+            name: string;
+            tax_id: string;
+        };
+        SaleNoteApproveOnIssue: {
+            approved: boolean;
+            /** @enum {string|null} */
+            reason: "price_approval_required" | "approval_refused" | null;
+            message: string | null;
+            /** Format: uuid */
+            price_approval_id: string | null;
+        };
+        SaleNoteIssued: {
+            /** Format: uuid */
+            id: string;
+            display_id: string;
+            /** @enum {string} */
+            status: "issued" | "approved" | "voided";
+            /** Format: uuid */
+            buyer_contact_id: string | null;
+            registered_owner: components["schemas"]["SaleNoteRegisteredOwner"] | null;
+            net_clp: number;
+            tax_clp: number | null;
+            /** @enum {string} */
+            tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+            approval?: components["schemas"]["SaleNoteApproveOnIssue"];
+        } & {
+            [key: string]: unknown;
+        };
+        SaleNoteRegisteredOwnerInput: {
+            name: string;
+            tax_id: string;
+        } | null;
+        SaleNoteFieldChange: {
+            from?: unknown;
+            to?: unknown;
+        };
+        DealActor: {
+            id: string;
+            name: string | null;
+            /** @enum {string} */
+            kind: "member" | "api_key";
+        };
+        SaleNoteHistoryEntry: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "terms" | "buyer" | "add_on" | "payment" | "registered_owner";
+            changes: {
+                [key: string]: components["schemas"]["SaleNoteFieldChange"];
+            };
+            at: string;
+            actor: components["schemas"]["DealActor"] | null;
+            on_approved_note: boolean;
+            /** Format: uuid */
+            price_approval_id: string | null;
+            authorised_by: components["schemas"]["DealActor"] | null;
+        };
+        ProposedSaleNoteTerms: {
+            net_clp?: number;
+            tax_clp?: number | null;
+            /** @enum {string} */
+            tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+            issued_at?: string;
+        };
+        SaleNotePendingPriceChange: {
+            /** Format: uuid */
+            price_approval_id: string;
+            requested_at: string;
+            requested_by: components["schemas"]["DealActor"] | null;
+            requested_price_clp: number;
+            proposed_terms: components["schemas"]["ProposedSaleNoteTerms"];
+        };
+        SaleNoteRead: {
+            /** Format: uuid */
+            id: string;
+            display_id: string;
+            /** @enum {string} */
+            status: "issued" | "approved" | "voided";
+            /** Format: uuid */
+            buyer_contact_id: string | null;
+            registered_owner: components["schemas"]["SaleNoteRegisteredOwner"] | null;
+            net_clp: number;
+            tax_clp: number | null;
+            /** @enum {string} */
+            tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+            history: components["schemas"]["SaleNoteHistoryEntry"][];
+            compraventa_outdated: boolean;
+            pending_price_change: components["schemas"]["SaleNotePendingPriceChange"] | null;
+        } & {
+            [key: string]: unknown;
+        };
+        SaleNoteCorrection: {
+            /** @enum {string} */
+            outcome: "applied" | "pending_approval" | "unchanged";
+            /** Format: uuid */
+            price_approval_id: string | null;
+            /** Format: uuid */
+            change_id: string | null;
+        };
+        SaleNoteCorrected: components["schemas"]["SaleNoteRead"] & ({
+            correction: components["schemas"]["SaleNoteCorrection"];
+        } & {
+            [key: string]: unknown;
+        });
+        ReservationConverted: {
+            reservation: {
+                /** Format: uuid */
+                id: string;
+                display_id: string;
+            } & {
+                [key: string]: unknown;
+            };
+            sale_note: components["schemas"]["SaleNoteIssued"];
+            carried_payments: {
+                [key: string]: unknown;
+            }[];
+            approval?: components["schemas"]["SaleNoteApproveOnIssue"];
+        } & {
+            [key: string]: unknown;
+        };
+        PriceApproval: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            status: "pending" | "approved" | "rejected";
+            /** Format: uuid */
+            quote_id: string | null;
+            /** Format: uuid */
+            reservation_id: string | null;
+            /** Format: uuid */
+            sale_note_id: string | null;
+            requested_price_clp: number;
+            proposed_terms: components["schemas"]["ProposedSaleNoteTerms"] | null;
+            requester_user_id: string;
+            decider_user_id: string | null;
+            decided_at: string | null;
+            created_at: string;
+        } & {
+            [key: string]: unknown;
         };
         /** @example 2026-01 */
         OverheadPeriod: string;
