@@ -235593,6 +235593,7 @@ export interface paths {
                                     form_name: string | null;
                                     treatment_label: string;
                                 }[];
+                                notification_emails: string[];
                                 token_hint: string | null;
                                 intake_path: string;
                             };
@@ -235699,6 +235700,8 @@ export interface paths {
                             /** @description What the patient reads in the second message: «…en nuestro formulario de <treatment_label>». Control characters and repeated spaces are removed and it is cut at 60 characters. */
                             treatment_label: string;
                         }[];
+                        /** @description Addresses outside the workspace (the clinic’s own inbox) that always receive the «Llegó un paciente» email for every live form lead. Replaces the stored list; at most 10. */
+                        notification_emails?: string[];
                     };
                 };
             };
@@ -235739,6 +235742,7 @@ export interface paths {
                                     form_name: string | null;
                                     treatment_label: string;
                                 }[];
+                                notification_emails: string[];
                                 token_hint: string | null;
                                 intake_path: string;
                             };
@@ -235876,6 +235880,7 @@ export interface paths {
                                         form_name: string | null;
                                         treatment_label: string;
                                     }[];
+                                    notification_emails: string[];
                                     token_hint: string | null;
                                     intake_path: string;
                                 };
@@ -283486,6 +283491,10 @@ export interface components {
                     /** @description The weekly Finanzas digest template (resumen_finanzas_semanal_v1), wired on approval. */
                     digest_template_name?: string;
                 };
+                agency_staff?: {
+                    /** @description Members (user ids) who are agency staff: people of the agency or of Vitrina who run this workspace for the business. «Llegó un paciente» defaults off for them; the first-contact alarm goes to them only. */
+                    user_ids: string[];
+                };
                 stock_alert?: {
                     /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */
                     stage_ids: string[];
@@ -283841,6 +283850,10 @@ export interface components {
                     template_language?: string;
                     /** @description The weekly Finanzas digest template (resumen_finanzas_semanal_v1), wired on approval. */
                     digest_template_name?: string;
+                };
+                agency_staff?: {
+                    /** @description Members (user ids) who are agency staff: people of the agency or of Vitrina who run this workspace for the business. «Llegó un paciente» defaults off for them; the first-contact alarm goes to them only. */
+                    user_ids: string[];
                 };
                 stock_alert?: {
                     /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */

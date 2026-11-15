@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.47.0",
+    "version": "17.48.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1213,6 +1213,23 @@
                   }
                 }
               },
+              "agency_staff": {
+                "type": "object",
+                "properties": {
+                  "user_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 20,
+                    "description": "Members (user ids) who are agency staff: people of the agency or of Vitrina who run this workspace for the business. «Llegó un paciente» defaults off for them; the first-contact alarm goes to them only."
+                  }
+                },
+                "required": [
+                  "user_ids"
+                ]
+              },
               "stock_alert": {
                 "type": "object",
                 "properties": {
@@ -2375,6 +2392,23 @@
                     "description": "The weekly Finanzas digest template (resumen_finanzas_semanal_v1), wired on approval."
                   }
                 }
+              },
+              "agency_staff": {
+                "type": "object",
+                "properties": {
+                  "user_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 20,
+                    "description": "Members (user ids) who are agency staff: people of the agency or of Vitrina who run this workspace for the business. «Llegó un paciente» defaults off for them; the first-contact alarm goes to them only."
+                  }
+                },
+                "required": [
+                  "user_ids"
+                ]
               },
               "stock_alert": {
                 "type": "object",
@@ -368746,6 +368780,12 @@
                             ]
                           }
                         },
+                        "notification_emails": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
                         "token_hint": {
                           "type": [
                             "string",
@@ -368762,6 +368802,7 @@
                         "messaging_account_id",
                         "daily_cap",
                         "forms",
+                        "notification_emails",
                         "token_hint",
                         "intake_path"
                       ]
@@ -368923,6 +368964,16 @@
                     },
                     "maxItems": 500,
                     "description": "The whole form → treatment map (replaces the stored one)."
+                  },
+                  "notification_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 254,
+                      "format": "email"
+                    },
+                    "maxItems": 10,
+                    "description": "Addresses outside the workspace (the clinic’s own inbox) that always receive the «Llegó un paciente» email for every live form lead. Replaces the stored list; at most 10."
                   }
                 },
                 "additionalProperties": false
@@ -368994,6 +369045,12 @@
                             ]
                           }
                         },
+                        "notification_emails": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
                         "token_hint": {
                           "type": [
                             "string",
@@ -369010,6 +369067,7 @@
                         "messaging_account_id",
                         "daily_cap",
                         "forms",
+                        "notification_emails",
                         "token_hint",
                         "intake_path"
                       ]
@@ -369172,6 +369230,12 @@
                                 ]
                               }
                             },
+                            "notification_emails": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
                             "token_hint": {
                               "type": [
                                 "string",
@@ -369188,6 +369252,7 @@
                             "messaging_account_id",
                             "daily_cap",
                             "forms",
+                            "notification_emails",
                             "token_hint",
                             "intake_path"
                           ]
