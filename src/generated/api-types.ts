@@ -48672,6 +48672,8 @@ export interface paths {
          *     **A consigned unit is previewed on its contract’s economics**: the split is projected from the active contract’s comisión exactly as the liquidación will compute it (`settlement` carries the projection), so the dealership’s revenue is the comisión, never the whole price. A contract with no comisión on file has no split to project: its revenue is `null` with a `liquidacion` gap.
          *
          *     `net_clp` is NET of IVA (cifras del negocio, ADR 0114 §2.2). The price a buyer agrees to on an afecto sale includes IVA, like the published price: send `round(price / 1,19)`. Writes nothing. Requires `dealership_economics:read`; 404 for a unit outside the workspace.
+         *
+         *     **`dealership_result` is the card’s one figure** («Queda en la automotora, sin IVA»), the SAME object on `POST /margin/preview` and `GET /margin/deals/{id}`: `result_clp` (= `margen_bruto_clp`) and the terms it is made of, all net of IVA — `price_net_clp`, `add_on_income_clp`, `cost_clp` (owned car; 0 on a consigned one), `owner_payout_clp` (consigned: payout incl. deducted costs) and `commission_iva_clp` (the IVA of a «+ IVA» comisión, taken out), with `result = price_net + add_on_income − cost − owner_payout − commission_iva` exact whenever `result_clp` is a number; `basis` is always `sin_iva`. `projected: true` while a consigned split is the contract’s projection (the form, and an issued note not settled yet, read the same projection); a liquidación replaces it. `null` `result_clp` = not computable (no cost recorded, no comisión).
          */
         post: {
             parameters: {
@@ -48753,6 +48755,16 @@ export interface paths {
                          *           "amount_venta_clp": 10000000,
                          *           "monto_owner_clp": 9200000,
                          *           "deducciones_clp": 0
+                         *         },
+                         *         "dealership_result": {
+                         *           "result_clp": 800000,
+                         *           "price_net_clp": 10000000,
+                         *           "add_on_income_clp": 0,
+                         *           "cost_clp": 0,
+                         *           "owner_payout_clp": 9200000,
+                         *           "commission_iva_clp": 0,
+                         *           "projected": false,
+                         *           "basis": "sin_iva"
                          *         },
                          *         "cost_rollup": {
                          *           "acquisition_net_clp": 0,
@@ -49161,6 +49173,16 @@ export interface paths {
                          *           },
                          *           "margen_neto_clp": 1490000,
                          *           "settlement": null,
+                         *           "dealership_result": {
+                         *             "result_clp": 2200000,
+                         *             "price_net_clp": 11900000,
+                         *             "add_on_income_clp": 100000,
+                         *             "cost_clp": 9800000,
+                         *             "owner_payout_clp": null,
+                         *             "commission_iva_clp": 0,
+                         *             "projected": false,
+                         *             "basis": "sin_iva"
+                         *           },
                          *           "cost_rollup": {
                          *             "acquisition_net_clp": 9800000,
                          *             "expense_total_clp": 735000,
@@ -149371,6 +149393,8 @@ export interface paths {
          *     It carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields existed they are all `null`; since then `payout_method` is always set and each of the others is `null` when it was not recorded.
          *
          *     `deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.
+         *
+         *     `sends` is the log of `POST /consignments/{id}/liquidacion/send`, newest first (last 10): `channel`, `to`, `sent_at`, `by` (member or API key id) and `by_name`. `whatsapp_send_enabled` says whether the workspace may send it on WhatsApp (its staff-WhatsApp switch is on); when false, offer email only.
          */
         get: {
             parameters: {
@@ -149415,7 +149439,17 @@ export interface paths {
                          *         "payout_paid_by_name": "Ana Pérez",
                          *         "paid_at": "2026-09-18T15:00:00.000Z",
                          *         "created_at": "2026-09-18T15:00:05.000Z",
-                         *         "updated_at": "2026-09-18T15:00:05.000Z"
+                         *         "updated_at": "2026-09-18T15:00:05.000Z",
+                         *         "sends": [
+                         *           {
+                         *             "channel": "email",
+                         *             "to": "dueno@example.com",
+                         *             "sent_at": "2026-11-14T15:20:00.000Z",
+                         *             "by": "11111111-0000-4000-8000-000000000001",
+                         *             "by_name": "Camila Rojas"
+                         *           }
+                         *         ],
+                         *         "whatsapp_send_enabled": false
                          *       }
                          *     }
                          */
@@ -282115,6 +282149,12 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     change_template_name?: string;
+                    /** @description The template for a visit booked on the website (aviso_visita_web_v1, no button), wired on approval. */
+                    web_template_name?: string;
+                    /** @description The day's visits template (aviso_visitas_del_dia_v1), wired on approval. */
+                    digest_template_name?: string;
+                    /** @description The visit-about-to-start template (aviso_visita_pronto_v1), wired on approval. */
+                    reminder_template_name?: string;
                 };
                 visit_watchers_whatsapp?: {
                     user_ids: string[];
@@ -282465,6 +282505,12 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     change_template_name?: string;
+                    /** @description The template for a visit booked on the website (aviso_visita_web_v1, no button), wired on approval. */
+                    web_template_name?: string;
+                    /** @description The day's visits template (aviso_visitas_del_dia_v1), wired on approval. */
+                    digest_template_name?: string;
+                    /** @description The visit-about-to-start template (aviso_visita_pronto_v1), wired on approval. */
+                    reminder_template_name?: string;
                 };
                 visit_watchers_whatsapp?: {
                     user_ids: string[];
