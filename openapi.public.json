@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.49.3",
+    "version": "17.50.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -9205,6 +9205,12 @@
                   "null"
                 ]
               },
+              "price_uf_per_bank_month": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
               "connected_banks": {
                 "type": "number"
               }
@@ -9214,6 +9220,7 @@
               "entitled",
               "feature",
               "price_clp_per_bank_month",
+              "price_uf_per_bank_month",
               "connected_banks"
             ]
           },
@@ -10160,6 +10167,15 @@
                   "null"
                 ]
               },
+              "price_uf_per_bank_month": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "included_banks": {
+                "type": "integer"
+              },
               "widget_public_key": {
                 "type": [
                   "string",
@@ -10172,6 +10188,8 @@
               "entitled",
               "feature",
               "price_clp_per_bank_month",
+              "price_uf_per_bank_month",
+              "included_banks",
               "widget_public_key"
             ]
           },
@@ -94575,6 +94593,12 @@
                                   "null"
                                 ]
                               },
+                              "perUnitUfMonth": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
                               "billedUnit": {
                                 "type": "string"
                               },
@@ -165720,7 +165744,7 @@
     "/clinic/bank-feed/sources": {
       "get": {
         "summary": "Bank feed sources available to this clinic",
-        "description": "The e-mail rail (free, always on), Fintoc (optional add-on `bank_feed_fintoc`, billed per connected bank per month at the provider's list price — `price_clp_per_bank_month` is null until it is set) and BCI API Market (not configured until the partner approval lands). Requires `clinic_money:read`.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "The e-mail rail (free, always on), Fintoc (add-on `bank_feed_fintoc`, also granted by the Finanzas plan, billed per connected bank per month at `price_uf_per_bank_month`; the Finanzas plan includes the first bank) and BCI API Market (not configured until the partner approval lands). Requires `clinic_money:read`.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []
@@ -165756,6 +165780,7 @@
                       "entitled": true,
                       "feature": "bank_feed_fintoc",
                       "price_clp_per_bank_month": null,
+                      "price_uf_per_bank_month": 0.45,
                       "connected_banks": 1
                     },
                     "bci_api_market": {
@@ -167608,7 +167633,9 @@
                       "configured": true,
                       "entitled": true,
                       "feature": "bank_feed_fintoc",
-                      "price_clp_per_bank_month": 15000,
+                      "price_clp_per_bank_month": null,
+                      "price_uf_per_bank_month": 0.45,
+                      "included_banks": 1,
                       "widget_public_key": "pk_test_ejemplo"
                     },
                     "bank_aggregator": {

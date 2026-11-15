@@ -16968,6 +16968,7 @@ export interface paths {
                                     unitUf?: number;
                                     meter?: string;
                                     perUnitClpMonth?: number | null;
+                                    perUnitUfMonth?: number | null;
                                     billedUnit?: string;
                                     /** @description The business types (`tenant.vertical`) this add-on is sold to. Omitted = every vertical. Read `offers` for the per-workspace answer. */
                                     verticals?: string[];
@@ -73266,7 +73267,7 @@ export interface paths {
         };
         /**
          * Bank feed sources available to this clinic
-         * @description The e-mail rail (free, always on), Fintoc (optional add-on `bank_feed_fintoc`, billed per connected bank per month at the provider's list price — `price_clp_per_bank_month` is null until it is set) and BCI API Market (not configured until the partner approval lands). Requires `clinic_money:read`.
+         * @description The e-mail rail (free, always on), Fintoc (add-on `bank_feed_fintoc`, also granted by the Finanzas plan, billed per connected bank per month at `price_uf_per_bank_month`; the Finanzas plan includes the first bank) and BCI API Market (not configured until the partner approval lands). Requires `clinic_money:read`.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -73297,6 +73298,7 @@ export interface paths {
                          *           "entitled": true,
                          *           "feature": "bank_feed_fintoc",
                          *           "price_clp_per_bank_month": null,
+                         *           "price_uf_per_bank_month": 0.45,
                          *           "connected_banks": 1
                          *         },
                          *         "bci_api_market": {
@@ -74982,7 +74984,9 @@ export interface paths {
                          *           "configured": true,
                          *           "entitled": true,
                          *           "feature": "bank_feed_fintoc",
-                         *           "price_clp_per_bank_month": 15000,
+                         *           "price_clp_per_bank_month": null,
+                         *           "price_uf_per_bank_month": 0.45,
+                         *           "included_banks": 1,
                          *           "widget_public_key": "pk_test_ejemplo"
                          *         },
                          *         "bank_aggregator": {
@@ -285463,6 +285467,7 @@ export interface components {
                 /** @enum {string} */
                 feature: "bank_feed_fintoc";
                 price_clp_per_bank_month: number | null;
+                price_uf_per_bank_month: number | null;
                 connected_banks: number;
             };
             bci_api_market: {
@@ -285697,6 +285702,8 @@ export interface components {
                 /** @enum {string} */
                 feature: "bank_feed_fintoc";
                 price_clp_per_bank_month: number | null;
+                price_uf_per_bank_month: number | null;
+                included_banks: number;
                 widget_public_key: string | null;
             };
             /** @description Which provider a NEW direct bank link goes through. `fintoc`: open its widget (`…/fintoc/link-intent`). `emisso`: let the user pick one of `banks`, then open the page from `…/emisso/link-session`. */
