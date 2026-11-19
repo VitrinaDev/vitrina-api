@@ -4758,13 +4758,34 @@
                   "string",
                   "null"
                 ]
+              },
+              "kind": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "annual_purchase",
+                  "annual_renewal",
+                  "annual_difference"
+                ],
+                "description": "#7569: the kind of annual cobro (`annual_purchase`, `annual_renewal`, `annual_difference`); null for a monthly or usage cobro."
+              },
+              "clp_total": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "#7569: the cobro total in whole CLP, IVA included."
               }
             },
             "required": [
               "invoice_id",
               "number",
               "reference",
-              "due_at"
+              "due_at",
+              "kind",
+              "clp_total"
             ],
             "description": "The oldest cobro still owed (issued, being charged or past due), or null."
           },
@@ -125226,6 +125247,22 @@
                         "band_rule": {
                           "type": "string"
                         },
+                        "purchase_expires_on": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "annual_payment_ways": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "transfer",
+                              "card"
+                            ]
+                          }
+                        },
                         "billing_interval": {
                           "type": [
                             "string",
@@ -125310,6 +125347,19 @@
                                 "covers_until"
                               ]
                             },
+                            "annual_unavailable_reason": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                "quoted_price",
+                                "price_lock",
+                                "agency_agreement",
+                                "negotiated_contract",
+                                "price_check_failed"
+                              ]
+                            },
                             "uf_value": {
                               "type": [
                                 "number",
@@ -125326,6 +125376,7 @@
                           "required": [
                             "monthly",
                             "annual",
+                            "annual_unavailable_reason",
                             "uf_value",
                             "uf_value_date"
                           ]
@@ -125370,6 +125421,8 @@
                         "dunning_steps",
                         "pause_on_date",
                         "band_rule",
+                        "purchase_expires_on",
+                        "annual_payment_ways",
                         "billing_interval",
                         "paid_until",
                         "renews_on",
@@ -125426,6 +125479,7 @@
                         "clp_year_estimate": 1133000,
                         "covers_until": "2027-11-17"
                       },
+                      "annual_unavailable_reason": null,
                       "uf_value": 39350,
                       "uf_value_date": "2026-11-18"
                     }
@@ -454276,6 +454330,163 @@
                       "received_payment_id": null
                     }
                   ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/billing/invoices/{id}/pay-by-transfer": {
+      "post": {
+        "summary": "Pay an annual cobro by bank transfer instead of the card",
+        "description": "Annual plans are paid once, by card or by bank transfer, whatever the workspace has on file. This moves one open annual cobro (`issued` or `past_due`, carrying the annual discount or a band difference) to transfer: nothing charges it automatically from now on (the owner can still pay it with `POST …/pay`), and it falls due at the end of the transfer term (3 Chile business days) when that is later than its current due date. The cobro page and its emails then print the account and the reference. Repeating it answers the cobro with `changed: false`. 409 `details.reason`: `not_annual_cobro` (a monthly cobro follows the workspace switch), `charge_in_flight`, `cobro_not_open`, `collection_running`. Requires `billing:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The cobro, now paid by transfer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "invoice_id": {
+                          "type": "string"
+                        },
+                        "number": {
+                          "type": "string"
+                        },
+                        "pay_by_transfer_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "due_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "changed": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "invoice_id",
+                        "number",
+                        "pay_by_transfer_at",
+                        "due_at",
+                        "changed"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "invoice_id": "9a1bd325-3ab8-47e8-afe1-7b87c550b139",
+                    "number": "INV-0a1b2c3d-A202611",
+                    "pay_by_transfer_at": "2026-11-18T15:04:11.000Z",
+                    "due_at": "2026-11-24T12:00:00.000Z",
+                    "changed": true
+                  }
                 }
               }
             }

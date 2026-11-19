@@ -38278,6 +38278,7 @@ export interface paths {
                          *             "clp_year_estimate": 1133000,
                          *             "covers_until": "2027-11-17"
                          *           },
+                         *           "annual_unavailable_reason": null,
                          *           "uf_value": 39350,
                          *           "uf_value_date": "2026-11-18"
                          *         }
@@ -38318,6 +38319,8 @@ export interface paths {
                                 dunning_steps: string[];
                                 pause_on_date: string | null;
                                 band_rule: string;
+                                purchase_expires_on: string | null;
+                                annual_payment_ways: ("transfer" | "card")[];
                                 /** @enum {string|null} */
                                 billing_interval: "monthly" | "annual" | null;
                                 paid_until: string | null;
@@ -38336,6 +38339,8 @@ export interface paths {
                                         clp_year_estimate: number | null;
                                         covers_until: string;
                                     };
+                                    /** @enum {string|null} */
+                                    annual_unavailable_reason: "quoted_price" | "price_lock" | "agency_agreement" | "negotiated_contract" | "price_check_failed" | null;
                                     uf_value: number | null;
                                     uf_value_date: string | null;
                                 } | null;
@@ -295943,6 +295948,123 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/billing/invoices/{id}/pay-by-transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pay an annual cobro by bank transfer instead of the card
+         * @description Annual plans are paid once, by card or by bank transfer, whatever the workspace has on file. This moves one open annual cobro (`issued` or `past_due`, carrying the annual discount or a band difference) to transfer: nothing charges it automatically from now on (the owner can still pay it with `POST …/pay`), and it falls due at the end of the transfer term (3 Chile business days) when that is later than its current due date. The cobro page and its emails then print the account and the reference. Repeating it answers the cobro with `changed: false`. 409 `details.reason`: `not_annual_cobro` (a monthly cobro follows the workspace switch), `charge_in_flight`, `cobro_not_open`, `collection_running`. Requires `billing:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cobro, now paid by transfer */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "invoice_id": "9a1bd325-3ab8-47e8-afe1-7b87c550b139",
+                         *         "number": "INV-0a1b2c3d-A202611",
+                         *         "pay_by_transfer_at": "2026-11-18T15:04:11.000Z",
+                         *         "due_at": "2026-11-24T12:00:00.000Z",
+                         *         "changed": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                invoice_id: string;
+                                number: string;
+                                pay_by_transfer_at: string | null;
+                                due_at: string | null;
+                                changed: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sandbox/clinic": {
         parameters: {
             query?: never;
@@ -322042,6 +322164,13 @@ export interface components {
                 /** @description The reference to write in a transfer comment («VT-7K2QM9»). */
                 reference: string | null;
                 due_at: string | null;
+                /**
+                 * @description #7569: the kind of annual cobro (`annual_purchase`, `annual_renewal`, `annual_difference`); null for a monthly or usage cobro.
+                 * @enum {string|null}
+                 */
+                kind: "annual_purchase" | "annual_renewal" | "annual_difference" | null;
+                /** @description #7569: the cobro total in whole CLP, IVA included. */
+                clp_total: number | null;
             } | null;
             /** @description Set only when `pays_by` is `transfer`. */
             transfer: {
