@@ -25365,7 +25365,7 @@ export interface paths {
         };
         /**
          * Get a lead
-         * @description One opportunity, with its contact, stage and pipeline embedded. On a clinic workspace it also carries `origin`: the Origen of its contact, Meta (with the ad), Orgánico (a linked contact with no ad touch) or Sin dato (no contact) — the attribution Vitrina Ads reports. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
+         * @description One opportunity, with its contact, stage and pipeline embedded. On a clinic workspace it also carries `origin`: the Origen of its contact, Meta (with the ad), Orgánico (a linked contact with no ad touch) or Sin dato (no contact) — the attribution Vitrina Ads reports. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values. It also carries `form_submissions`: the patient's answers to a clinic landing form, one entry per submission (`source`, `form_id`, `form_name`, `title`, `fields` as ordered {label, value} pairs, `received_at`), newest first, at most 10; empty when the lead never sent a form with answers. Answers can be health data and follow the contact's privacy rule: only callers who also hold `contacts:read` receive the key (it is omitted otherwise, and when its read fails), and the list and kanban reads never carry it. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
          */
         get: {
             parameters: {
@@ -25480,7 +25480,26 @@ export interface paths {
                          *           "id": "44444444-0000-4000-8000-000000000001",
                          *           "kind": "sales",
                          *           "name": "Ventas"
-                         *         }
+                         *         },
+                         *         "form_submissions": [
+                         *           {
+                         *             "source": "clinic_form",
+                         *             "form_id": "frm_8f2k",
+                         *             "form_name": "Evaluación de ortodoncia",
+                         *             "title": "Evaluación de ortodoncia",
+                         *             "fields": [
+                         *               {
+                         *                 "label": "Presupuesto",
+                         *                 "value": "Entre 500 y 800 mil"
+                         *               },
+                         *               {
+                         *                 "label": "Urgencia",
+                         *                 "value": "Este mes"
+                         *               }
+                         *             ],
+                         *             "received_at": "2026-09-19T09:12:44.000Z"
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -29307,13 +29326,21 @@ export interface paths {
          *
          *     `website` is ON by default for every workspace, and a portal (`chileautos`, `mercadolibre`, `yapo`) is ON by default once the workspace has an enabled marketplace account for it. With no block of its own such a source borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own templates — for a portal, the workspace's own first-contact templates first, then Vitrina's fallback ones (`platform_default`). An explicit block, `enabled: false` included, always wins. `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox. Each `recent` row carries its lead’s `contact_id` (one row per person on screen) and, on an `error` row, the classified `error_code` (`undeliverable` is Meta 131026; `provider_frequency_capped` and `recipient_experiment` are Meta holding marketing back), never the provider’s message.
          *
-         *     `clinic_form` (the clinic form first contact, configured at `/clinic-form-source`) is OFF until the workspace turns it on; its `templates` are the first message’s ladder, and the answer adds `clinic_form`: whether the intake URL exists, `enabled_at`, the number of mapped forms, the second message’s ladder (`follow_up_templates`, each with its state on the number) and the newest submissions with what the intake decided for each.
+         *     `clinic_form` (the clinic form first contact, configured at `/clinic-form-source`) is OFF until the workspace turns it on; its `templates` are the first message’s ladder, and the answer adds `clinic_form`: whether the intake URL exists, `enabled_at`, the number of mapped forms, the second message’s ladder (`follow_up_templates`, each with its state on the number) and the newest submissions with what the intake decided for each (`recent_submissions`). For the last `days` days (1 to 30, default 7; form submissions are purged after 30 days) it also returns `period_days`, `outcome_counts` (submissions per intake outcome) and `unmapped_forms` (`[{ form_id, count, last_seen_at }]`, forms that arrived without a treatment mapping, most recent first).
+         *
+         *     `clinic_form.delivery` is what screens should show for «how many patients were contacted»: `outcome_counts.scheduled` only says a first contact was QUEUED. `delivery` (same period, counts only) puts every settled submission in exactly one bucket, so `sent + failed + pending + skipped + not_queued = total`: `sent` (the provider accepted the first message), `failed` (the send ended in error, `failed_by_code` by classified error code: `undeliverable`, `recipient_experiment`, `provider_frequency_capped`, `provider_rejected`, `provider_outcome_unknown`, ...), `pending` (`pending_by_reason`: `queued`, or waiting on a template review or a billing block and sent on their own), `skipped` (the first contact ran and decided not to send, `skipped_by_reason` by skip reason) and `not_queued` (the intake decided not to queue one, `not_queued_by_outcome` by intake outcome). Each `recent_submissions` row carries `delivery: { state, detail }` with the same states (`sent`, `failed`, `pending`, `skipped`, `not_queued`); `detail` is the error code, reason or outcome, null when sent. `outcome` keeps its intake meaning.
+         *
+         *     Intake outcomes (`recent_submissions[].outcome`, the keys of `outcome_counts`): `scheduled` (the two-template first contact was queued), `has_upcoming_cita` (nothing sent: the person already has a live future cita at the clinic; their lead got a staff note and the clinic an email), `repeat_noted` (a repeat inside 24 h: a note, nothing sent), `daily_cap`, `templates_not_approved`, `no_phone`, `consent_not_recorded`, `no_lead`, `no_identity` and `source_disabled`; `received` is a submission still being processed and is never counted.
+         *
+         *     `first_message_wait` (same `days` period): how long patients waited from the landing form to the first WhatsApp message. Only first contacts whose first message was SENT are measured. The clock starts at the time the form says it was submitted when the webhook body carried a credible one (`from_submitted_count` rows), else when Vitrina received it. `median_seconds` and `p90_seconds` cover every measured row, `in_hours` only the forms that arrived inside the clinic’s opening hours, `out_of_hours_count` counts the others. Values are null when nothing was measured.
          */
         get: {
             parameters: {
                 query: {
                     /** @description Lead source key: `chileautos`, `yapo`, `mercadolibre`, `website`, … */
                     source: string;
+                    /** @description `source=clinic_form` only: the period, in days, `clinic_form.outcome_counts`, `clinic_form.unmapped_forms` and `clinic_form.first_message_wait` cover (1 to 30, default 7). At most 30 because form submissions are purged after 30 days. */
+                    days?: number;
                 };
                 header?: never;
                 path?: never;
@@ -29386,7 +29413,41 @@ export interface paths {
                          *               "conversation_id": "e5e5e5e5-0000-4000-8000-000000000001"
                          *             }
                          *           }
-                         *         ]
+                         *         ],
+                         *         "clinic_form": {
+                         *           "delivery": {
+                         *             "total": 49,
+                         *             "sent": 37,
+                         *             "failed": 6,
+                         *             "failed_by_code": {
+                         *               "undeliverable": 3,
+                         *               "recipient_experiment": 2,
+                         *               "provider_frequency_capped": 1
+                         *             },
+                         *             "pending": 0,
+                         *             "pending_by_reason": {},
+                         *             "skipped": 0,
+                         *             "skipped_by_reason": {},
+                         *             "not_queued": 6,
+                         *             "not_queued_by_outcome": {
+                         *               "repeat_noted": 5,
+                         *               "has_upcoming_cita": 1
+                         *             }
+                         *           },
+                         *           "first_message_wait": {
+                         *             "since": "2026-09-18T12:00:00.000Z",
+                         *             "measured": 12,
+                         *             "median_seconds": 41,
+                         *             "p90_seconds": 190,
+                         *             "in_hours": {
+                         *               "measured": 9,
+                         *               "median_seconds": 35,
+                         *               "p90_seconds": 88
+                         *             },
+                         *             "out_of_hours_count": 3,
+                         *             "from_submitted_count": 4
+                         *           }
+                         *         }
                          *       }
                          *     }
                          */
@@ -36890,6 +36951,272 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/billing/agent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The AI agent as a product: state, price ladder, next step
+         * @description The AI agent is a separate product, billed per conversation it answers (an automatic send never bills). Whether it is on (an active agent with instructions that is the workspace default or assigned to a channel), the workspace's agents, what the owner does next, this month's billable conversations (the invoice's own meter), the graduated price ladder in UF and today's UF.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The agent product state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "activated": true,
+                         *         "reason": null,
+                         *         "agents": [
+                         *           {
+                         *             "id": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *             "name": "Vito",
+                         *             "reachable": true,
+                         *             "has_instructions": true
+                         *           }
+                         *         ],
+                         *         "next_step": null,
+                         *         "conversations_this_period": 312,
+                         *         "period_month": "2026-11-01",
+                         *         "price_ladder": [
+                         *           {
+                         *             "from": 1,
+                         *             "up_to": 500,
+                         *             "uf": 0.012
+                         *           },
+                         *           {
+                         *             "from": 501,
+                         *             "up_to": 1000,
+                         *             "uf": 0.01
+                         *           },
+                         *           {
+                         *             "from": 1001,
+                         *             "up_to": 3000,
+                         *             "uf": 0.007
+                         *           },
+                         *           {
+                         *             "from": 3001,
+                         *             "up_to": 8000,
+                         *             "uf": 0.005
+                         *           },
+                         *           {
+                         *             "from": 8001,
+                         *             "up_to": null,
+                         *             "uf": 0.003
+                         *           }
+                         *         ],
+                         *         "uf_value": 39200,
+                         *         "uf_date": "2026-11-18"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["BillingAgentProduct"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/agent/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Turn the AI agent on (billed per conversation it answers)
+         * @description Activates the agent product with the given agent: it becomes the workspace default when there is none and is assigned to every conversational channel with no agent. Needs billing:write. Idempotent (`already_active`). 404 when the agent is not one of the workspace's active agents; 422 AGENT_HAS_NO_INSTRUCTIONS when its instructions are empty; 409 AGENT_ACTIVATION_BLOCKED (`details.reason` `default_agent_not_active`) when every channel carries another agent and the workspace default is a paused agent with instructions, which is never replaced.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "ai_agent_id": "5e5e5e5e-0000-4000-8000-000000000001"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The agent that answers once the agent product is on: it becomes the workspace default when there is none and is assigned to every conversational channel that has no agent.
+                         */
+                        ai_agent_id: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Activation result */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "status": "activated",
+                         *         "ai_agent_id": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "pinned_channels": 2,
+                         *         "set_default": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["BillingAgentActivation"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/billing/payment-method": {
         parameters: {
             query?: never;
@@ -37882,6 +38209,204 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/billing/clinic-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The clinic banded plan: band, count, price, review, pause state
+         * @description Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Clinic plan state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "plan": "clinic_plan",
+                         *         "status": "active",
+                         *         "band": "M",
+                         *         "band_count": 6.3,
+                         *         "uf_month": 3,
+                         *         "estimated_clp_month": 118000,
+                         *         "next_band_review_at": null,
+                         *         "announced_band": null,
+                         *         "announced_for": null,
+                         *         "announced_uf_month": null,
+                         *         "current_period_start": "2026-11-18T03:00:00.000Z",
+                         *         "current_period_end": "2027-11-18T03:00:00.000Z",
+                         *         "plan_activated_at": "2026-11-18T14:20:00.000Z",
+                         *         "price_locked_until": null,
+                         *         "price_lock_active": false,
+                         *         "mandate_status": "active",
+                         *         "mandate_provider": "fintoc",
+                         *         "paused": false,
+                         *         "paused_at": null,
+                         *         "unpaid_invoice": null,
+                         *         "dunning_steps": [],
+                         *         "pause_on_date": null,
+                         *         "band_rule": "La banda sale del promedio de 3 meses de profesionales que atendieron pacientes.",
+                         *         "billing_interval": "annual",
+                         *         "paid_until": "2027-11-17",
+                         *         "renews_on": "2027-11-18",
+                         *         "price_options": {
+                         *           "monthly": {
+                         *             "uf_month": 3,
+                         *             "clp_month_estimate": 118000
+                         *           },
+                         *           "annual": {
+                         *             "uf_gross_year": 36,
+                         *             "discount_pct": 20,
+                         *             "uf_discount": 7.2,
+                         *             "uf_year": 28.8,
+                         *             "uf_month_equivalent": 2.4,
+                         *             "clp_year_estimate": 1133000,
+                         *             "covers_until": "2027-11-17"
+                         *           },
+                         *           "uf_value": 39350,
+                         *           "uf_value_date": "2026-11-18"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                plan: string | null;
+                                /** @enum {string} */
+                                status: "none" | "awaiting_payment" | "active" | "past_due";
+                                /** @enum {string|null} */
+                                band: "S" | "M" | "L" | "XL" | "quoted" | null;
+                                band_count: number | null;
+                                uf_month: number | null;
+                                estimated_clp_month: number | null;
+                                next_band_review_at: string | null;
+                                /** @enum {string|null} */
+                                announced_band: "S" | "M" | "L" | "XL" | "quoted" | null;
+                                announced_for: string | null;
+                                announced_uf_month: number | null;
+                                current_period_start: string | null;
+                                current_period_end: string | null;
+                                plan_activated_at: string | null;
+                                price_locked_until: string | null;
+                                price_lock_active: boolean;
+                                mandate_status: string | null;
+                                mandate_provider: string | null;
+                                paused: boolean;
+                                paused_at: string | null;
+                                unpaid_invoice: {
+                                    id: string;
+                                    number: string;
+                                    issued_at: string;
+                                    clp_total: number | null;
+                                    day_index: number;
+                                } | null;
+                                dunning_steps: string[];
+                                pause_on_date: string | null;
+                                band_rule: string;
+                                /** @enum {string|null} */
+                                billing_interval: "monthly" | "annual" | null;
+                                paid_until: string | null;
+                                renews_on: string | null;
+                                price_options: {
+                                    monthly: {
+                                        uf_month: number;
+                                        clp_month_estimate: number | null;
+                                    };
+                                    annual: {
+                                        uf_gross_year: number;
+                                        discount_pct: number;
+                                        uf_discount: number;
+                                        uf_year: number;
+                                        uf_month_equivalent: number;
+                                        clp_year_estimate: number | null;
+                                        covers_until: string;
+                                    };
+                                    uf_value: number | null;
+                                    uf_value_date: string | null;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sale-notes": {
         parameters: {
             query?: never;
@@ -37891,13 +38416,21 @@ export interface paths {
         };
         /**
          * List notas de venta
-         * @description The dealership’s sale documents, newest first by `issued_at`. **Voided documents are INCLUDED by default** — a voided nota de venta keeps its folio and stays listable so "where is nota de venta #47?" has an answer (ADR 0058 §10). Pass `exclude_voided=true` to see only live ones; only the literal string `true` opts in, so `exclude_voided=false` does not hide them.
+         * @description **Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.
+         *
+         *     **Every row carries `contact_ref`, the person it names** (the buyer of a nota de venta or cotización, the holder of a reserva, the owner of a consignación), read in ONE tenant-scoped batch for the page so a client never fetches the contacts one by one: `{ id, name, tax_id, tax_id_kind, archived }`. `name` is the display name; `archived: true` = archived or merged away (the name is kept). `tax_id` / `tax_id_kind` (the RUT) are `null` unless the caller also holds `contacts:read`. `null` only when the row names nobody or the contact row is gone.
+         *
+         *     **`price_approval` (app#7589).** Every nota de venta read (this list, `GET /sale-notes/{id}`, the create and approve answers) carries `price_approval: { id, status: pending|approved|rejected, is_correction, requested_at } | null`: the price approval the note waits on (a pending one wins), else its last one; `null` when it never needed one. Readable with `sale_notes:read` alone. An issued note with `status: pending` (and `is_correction: false`) is «Esperando aprobación del precio»; an issued note without is «Venta sin cerrar».
+         *
+         *     Filter with `price_approval=pending|none`.
+         *
+         *     The dealership’s sale documents, newest first by `issued_at`. **Voided documents are INCLUDED by default** — a voided nota de venta keeps its folio and stays listable so "where is nota de venta #47?" has an answer (ADR 0058 §10). Pass `exclude_voided=true` to see only live ones; only the literal string `true` opts in, so `exclude_voided=false` does not hide them.
          *
          *     **`lead_id` answers "which nota de venta closed this deal?"** (ERP S15-16) — a lead UUID or its folio (`L-89`); a foreign or unknown lead is a 404. It does NOT imply `exclude_voided`, deliberately: a voided document must stay reachable from the deal it closed, or the void becomes the one event that erases the answer. So a deal that was closed, voided and re-issued returns both documents here, and the live one is the row whose `status` is `issued`.
          *
          *     **Every row carries `totals`** — the SAME object `GET /sale-notes/{id}` embeds, computed by the same roll-up: `total_a_pagar_clp` (price + IVA + Σ statutory add-ons), `total_pagos_clp`, `saldo_clp`, `payment_count`, `complete` and `gaps`. ⚠ **A POSITIVE `saldo_clp` means the customer has OVERPAID; a NEGATIVE one is what they still owe** (BR-245 — it is the sign the printed document uses). `total_a_pagar_clp` and `saldo_clp` are both **`null`** when `tax_clp` was never recorded, with `gaps` naming it: that is "not computable", never zero, and a client must render it as such rather than treating the unrecorded IVA as 0. Voided rows are totalled like any other — the money against them was really taken, and `status` is what says the document is dead. Do not sum the payments client-side; there is one definition of this balance and this is it.
          *
-         *     **`economics` — only for callers holding `dealership_economics:read`** (absent, not null, for everyone else): `margen_bruto_clp` (Margen bruto), `margen_neto_clp` (Utilidad del negocio), `comisiones_vendedores_clp` (Comisión) and `canal` (where the buyer came from), each the SAME figure `GET /margin` serves — one definition, computed in batch for the page. A figure that is not computable is `null`, never zero, and `gaps` names the missing input (`cost_rollup` = Sin costo, `seller_commission` = Sin comisión, `liquidacion` = Sin liquidación). A voided row has `economics: null`.
+         *     **`economics` — only for callers holding `dealership_economics:read`** (absent, not null, for everyone else): `margen_bruto_clp` (Margen bruto), `margen_neto_clp` (Utilidad del negocio), `comisiones_vendedores_clp` (Comisión) and `canal` (where the buyer came from), each the SAME figure `GET /margin` serves — one definition, computed in batch for the page. A figure that is not computable is `null`, never zero, and `gaps` names the missing input (`cost_rollup` = Falta el costo de compra, `liquidacion` = Falta liquidar). A participation with no recorded commission counts as zero, so `comisiones_vendedores_clp` is always a number. A voided row has `economics: null`.
          *
          *     **`status`** narrows to one derived status; `status=issued` is the «Por aprobar» list (emitted, waiting for its approval — ADR 0114 §4).
          *
@@ -37910,6 +38443,7 @@ export interface paths {
                     vehicle_id?: string;
                     lead_id?: string;
                     status?: "issued" | "approved" | "voided";
+                    price_approval?: "pending" | "none";
                     limit?: number;
                 };
                 header?: never;
@@ -37936,6 +38470,7 @@ export interface paths {
                          *           "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *           "lead_id": null,
                          *           "converted_from_reservation_id": null,
+                         *           "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *           "seller_of_record": "automotora",
                          *           "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *           "net_clp": 11900000,
@@ -37952,7 +38487,24 @@ export interface paths {
                          *           "void_reason": null,
                          *           "voided_by": null,
                          *           "created_at": "2026-09-19T13:00:00.000Z",
-                         *           "updated_at": "2026-09-19T13:00:00.000Z"
+                         *           "updated_at": "2026-09-19T13:00:00.000Z",
+                         *           "vehicle_ref": {
+                         *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
+                         *             "title": null,
+                         *             "make": "Volvo",
+                         *             "model": "S60",
+                         *             "version": "2.0 T5 Momentum",
+                         *             "year": 2019,
+                         *             "registration_number": "GDSL82",
+                         *             "deleted": false
+                         *           },
+                         *           "contact_ref": {
+                         *             "id": "22222222-0000-4000-8000-000000000002",
+                         *             "name": "María José Fuentes",
+                         *             "tax_id": "15432100-4",
+                         *             "tax_id_kind": "rut",
+                         *             "archived": false
+                         *           }
                          *         }
                          *       ],
                          *       "meta": {
@@ -38031,6 +38583,8 @@ export interface paths {
          *
          *     **`emitted_by` is the caller** (ADR 0114 §4): the member (also behind a personal token) or the API key that issued it, stamped from the credential — there is no body field for it.
          *
+         *     **`observaciones`** (optional, app#7581): free text printed on the nota de venta under «Observaciones», trimmed, up to 2000 characters; blank or `null` = none (the paper prints no block). Not internal notes. `PATCH /sale-notes/{id}` sets or clears it later.
+         *
          *     **Money is whole CLP pesos** (`bigint`, never minor units, never decimals) and the triple is `net_clp` + `tax_clp` + `tax_treatment`. Omit `tax_clp` to record "not recorded"; pass `0` to record "no tax" — ADR 0058 §2 makes those two different claims and nothing collapses them. `tax_treatment` is REQUIRED and has no default: the same peso falls inside or outside the IVA base depending on how the deal is structured, so a default would be a guess stored as a determination.
          *
          *     `vehicle_id`, `buyer_contact_id` and `lead_id` must belong to the calling workspace — no foreign key carries a tenant, so this is checked before the insert. A foreign id and a nonexistent one answer identically (404), deliberately: a difference between them is an existence oracle. A soft-deleted or merged vehicle is also refused.
@@ -38058,6 +38612,8 @@ export interface paths {
          *     **`approve: true` IS «EMITIR Y APROBAR» (app#7316)** — the note is issued and then approved in the same request, as the caller (car sold, deal won, post-sale obligations opened). At or above the floor it approves for anyone who can issue; below the floor only for a caller holding `price_approval:approve`. Otherwise the note STAYS ISSUED (never half-approved) and the 201 says why under `approval: { approved, reason, message, price_approval_id }` — `reason` = `price_approval_required` (a price approval was filed into the queue; `price_approval_id` names it) or `approval_refused` (any other approval rule: the car was sold by another note, the deal’s board, the mandato…; `message` is the Spanish reason). `approval` is present only when `approve` was sent. Omitted / `false` is «Solo emitir»: today’s behaviour. `approve` with `approved_by`/`approved_at` is a 400.
          *
          *     **`registered_owner: { name, tax_id }`** is «compra para tercero» (app#7321): the person the car is registered to when it is not the buyer. Typed, no contact record; omitted / `null` = the buyer. Correct it later with `PUT /sale-notes/{id}/registered-owner`.
+         *
+         *     **The short form (app#7580/7581).** `{vehicle_id, sale_price_clp, approve: true, add_ons: [{kind: "transferencia"}]}` is enough: `sale_price_clp` is what the buyer pays (IVA included when the car is Con IVA); `tax_treatment` omitted = the car’s own IVA setting; the Vendedor omitted = the seller of the lead or reserva, else the member creating it (never Vitrina staff, never refused); `add_ons` takes the items of `POST /sale-notes/{id}/add-ons`, and a transferencia with no amount is the estimate.
          */
         post: {
             parameters: {
@@ -38079,7 +38635,8 @@ export interface paths {
                      *       "salesperson_id": "11111111-0000-4000-8000-000000000001",
                      *       "net_clp": 11900000,
                      *       "tax_clp": 1900000,
-                     *       "tax_treatment": "afecto"
+                     *       "tax_treatment": "afecto",
+                     *       "observaciones": "Se entrega con dos llaves y la mantención al día."
                      *     }
                      */
                     "application/json": {
@@ -38100,10 +38657,11 @@ export interface paths {
                             commission_rate_bp?: number | null;
                             commission_basis_clp?: number | null;
                         }[];
-                        net_clp: number;
+                        net_clp?: number;
+                        sale_price_clp?: number;
                         tax_clp?: number | null;
                         /** @enum {string} */
-                        tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                         expected_list_price_clp?: number | null;
                         /** Format: date-time */
                         issued_at?: string | null;
@@ -38113,11 +38671,15 @@ export interface paths {
                         approved_at?: string | null;
                         funding?: {
                             payments: {
-                                /** @enum {string} */
-                                instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "otro";
+                                /**
+                                 * @description Medio de pago. Opcional: si se omite queda `transferencia` (ADR 0159: un pago pide solo su monto).
+                                 * @enum {string}
+                                 */
+                                instrument?: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "otro";
                                 amount_clp: number;
                                 card_surcharge_clp?: number | null;
-                                paid_on: string;
+                                /** @description Día en que se recibió el pago, YYYY-MM-DD. Opcional: si se omite queda hoy, en la zona horaria del espacio de trabajo (ADR 0159). */
+                                paid_on?: string;
                                 bank?: string | null;
                                 account_number?: string | null;
                                 document_number?: string | null;
@@ -38139,6 +38701,27 @@ export interface paths {
                         carry_reservation_abono?: boolean;
                         approve?: boolean;
                         registered_owner?: components["schemas"]["SaleNoteRegisteredOwnerInput"];
+                        /** @description Observaciones que se imprimen en la nota de venta, tal como se escribieron (hasta 2000 caracteres). Se guardan sin espacios al inicio ni al final; vacío o null las borra. No son notas internas. */
+                        observaciones?: string | null;
+                        add_ons?: ({
+                            /** @enum {string} */
+                            kind: "transferencia_municipal" | "arancel_registro_civil" | "notarial" | "inscripcion" | "soap" | "tag";
+                            /** @enum {string} */
+                            framing?: "reembolso_mandato" | "gasto_financiamiento";
+                            description?: string;
+                            charge_clp: number;
+                            /** @enum {string} */
+                            tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+                            cost_clp?: number | null;
+                            /** @enum {string|null} */
+                            beneficiary?: "notaria" | "registro_civil" | "municipalidad" | "aseguradora" | "concesionaria_peaje" | null;
+                            documents_in_customer_name?: boolean | null;
+                            fee_citation?: {
+                                /** @enum {string} */
+                                kind: "transferencia_municipal" | "registro_civil_arancel";
+                                effective_from: string;
+                            } | null;
+                        } | components["schemas"]["OwnAddOnItem"] | components["schemas"]["TransferCostsAddOnItem"])[];
                     };
                 };
             };
@@ -38160,6 +38743,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -38256,7 +38840,9 @@ export interface paths {
         };
         /**
          * Fetch one nota de venta
-         * @description Accepts the UUID **or the folio** (`V-47`) — the folio is the form a dealer actually has in hand. Only the `V-` series resolves here; another entity’s display id (`T-1247`) is not a nota de venta.
+         * @description **`price_approval` (app#7589).** Every nota de venta read (this list, `GET /sale-notes/{id}`, the create and approve answers) carries `price_approval: { id, status: pending|approved|rejected, is_correction, requested_at } | null`: the price approval the note waits on (a pending one wins), else its last one; `null` when it never needed one. Readable with `sale_notes:read` alone. An issued note with `status: pending` (and `is_correction: false`) is «Esperando aprobación del precio»; an issued note without is «Venta sin cerrar».
+         *
+         *     Accepts the UUID **or the folio** (`V-47`) — the folio is the form a dealer actually has in hand. Only the `V-` series resolves here; another entity’s display id (`T-1247`) is not a nota de venta.
          *
          *     A document belonging to another workspace is a 404, indistinguishable from one that does not exist.
          *
@@ -38268,7 +38854,7 @@ export interface paths {
          *
          *     **`receivable_obligation_id`** is the open ledger receivable this note settles — pass it as `obligation_id` to `POST /payments` to apply a payment to this note. `null` once the note is voided (the void releases its money) or when it has no receivable.
          *
-         *     **`print_missing_fields`** is what `GET /sale-notes/{id}/pdf` would refuse with right now — the SAME `{ variable, label, fix, contact_id? }` list as its 409 `details.missing_fields` — so a screen can ask for the buyer’s domicilio while the buyer is still at the counter. `[]` when the note prints, and always `[]` on a voided note.
+         *     **`print_missing_fields`** is always `[]` (deprecated, app#7582): the nota de venta always prints. Kept for older screens.
          *
          *     **`history`** lists every correction (app#7317), oldest first: `{ id, kind (terms | buyer | add_on | payment), changes: { field: { from, to } }, at, actor, on_approved_note, price_approval_id, authorised_by }`. A `payment` entry with `changes.payment.from: null` is money a staff member put on the note: `changes.payment.to.origin` is `recorded` (a new payment) or `applied` (an existing payment on the client’s account, applied to the note). **`compraventa_outdated`** is `true` when the compraventa in force was printed before a later price or buyer correction (reprint with `POST /sale-notes/{id}/compraventa`). **`pending_price_change`** is a below-floor correction waiting for a manager: `{ price_approval_id, requested_at, requested_by, requested_price_clp, proposed_terms }`, or `null`.
          *
@@ -38304,6 +38890,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -38322,14 +38909,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -38471,6 +39051,8 @@ export interface paths {
          *     **202 `pending_approval`**: on an APPROVED note, a correction that lowers the price below the floor (the price-approval policy, tolerance included) by a caller WITHOUT `price_approval:approve` is not applied. It is filed as a price approval on the note carrying the proposed terms (`proposed_terms` on `GET /price-approvals`), shown as `pending_price_change` on the note; granting it (`POST /price-approvals/{id}/decision`) applies the correction in the same transaction, rejecting it leaves the note as it was. A caller holding `price_approval:approve`, a grant on this note that covers the price, a raise, or a pending (unapproved) note applies directly.
          *
          *     **409** with `details.blocked_reason` = `sale_note_voided`, or `sale_note_approved` only when a PENDING note was approved while the edit ran (nothing changed; retry, it now applies the approved-note rule), and a Spanish message. Requires `sale_notes:write`.
+         *
+         *     **`observaciones`** (app#7581) rides the same body: a string sets the text printed on the nota de venta (trimmed, up to 2000 characters), `null` or blank clears it. It is not a money fact: it applies on an issued or approved note with no price approval, no `history` entry and no `compraventa_outdated` (audited as `sale_notes.set_observaciones`). Sent alone it answers 200 with `correction.outcome` `applied` (or `unchanged`) and `change_id: null`; on a voided note it is the same **409** `sale_note_voided`.
          */
         patch: {
             parameters: {
@@ -38496,6 +39078,8 @@ export interface paths {
                         tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                         /** Format: date-time */
                         issued_at?: string;
+                        /** @description Observaciones que se imprimen en la nota de venta, tal como se escribieron (hasta 2000 caracteres). Se guardan sin espacios al inicio ni al final; vacío o null las borra. No son notas internas. */
+                        observaciones?: string | null;
                     };
                 };
             };
@@ -38517,6 +39101,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -38535,14 +39120,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -38633,6 +39211,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -38651,14 +39230,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -38790,6 +39362,348 @@ export interface paths {
         };
         trace?: never;
     };
+    "/sale-notes/{id}/compraventa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Print and freeze the contrato de compraventa
+         * @description Produces the **signed contract** for an approved nota de venta and freezes it as an immutable `rendered_document` (ADR 0057) carrying the template version it was drafted under.
+         *
+         *     **The words are the dealership’s own** (ADR 0114 §6.2): the workspace’s `compraventa` document template — its default, else its only one, else the standard text — at its current version, whose `<key>-v<n>` lands in `template_version`. The clause that depends on who sells (`{{CLAUSULA_REPRESENTACION}}`) is written by the platform for the sale’s leg, and clause headings are numbered on print. **An issued contract keeps its words:** a re-print uses the version of the current artefact, so publishing a new template never re-words a contract already issued. A value the template names but the sale does not have is a **409** (`compraventa_template_value_missing`, with `details.missing`).
+         *
+         *     **It is a write, and the scope is `sale_notes:write`.** The call brings a binding legal instrument into existence: bytes are stored and an append-only row is recorded that a court may later read.
+         *
+         *     **Reachable only while the document is APPROVED and not voided** (BR-488). Both other states are a **409** — printing from an unapproved or voided note would put a binding contract in a customer’s hands for a sale the dealership has not accepted, or has undone.
+         *
+         *     **The vendor comes from the seller-of-record ladder**, not from this request. `GET /sale-notes/{id}/legal-seller`’s verdict is the only source, so every one of its `blocked_reason` codes refuses the print with the same **409** and the same code in `details` (BR-824). A consignor or a retoma’s previous owner who sells without name, RUT, tipo de persona, calle or comuna is a **409** too (`vendor_incomplete`, with `details.contact_id`, `missing` and `missing_fields`). There is no body and nothing about the instrument is caller-supplied: the parties, the vehicle, the money and the clauses are all read off the rows.
+         *
+         *     **RE-PRINTING IS NOT A NEW CONTRACT.** The rendered bytes are a pure function of the document — the place and date of execution come from the sale (BR-501 corrected: never a print-time clock) — so a second call on an unchanged note returns the **same artefact id and the same `sha256`** with `frozen: true`, `already_issued: true` and a **200**, having written nothing — a normal outcome, not a warning: a UI should simply open the PDF. «Unchanged» means what the contract SAYS: the PDF carries a fingerprint of its words, so a new logo, brand colour or page design never mints a second version of the same contract. When an input genuinely changed (a corrected RUT, a newly recorded payment, a filed escritura) a **201** carries a NEW artefact whose `supersedes_id` names the previous one; the previous bytes are never edited, because `rendered_document` refuses an UPDATE outright.
+         *
+         *     The instrument itself carries the exhaustive vehicle identity with the plate’s **check digit** (BR-496/497), the price in figures **and in Spanish words** (BR-498 — the words govern if the two disagree), the **real payment structure** off the document’s own ledger payments — the `customer_payment` rows allocated to it — with the credit split out (BR-499, correcting BR-500’s hard-coded method), the four statutory clauses (BR-502), the **1,5 % *pacto en contrario*** that moves the municipal transfer tax to the buyer — without which charging the buyer is the dealer’s own cost recharged, i.e. price, and the pass-through treatment collapses — and, on a consigned car, the **mandato con representación y rendición de cuentas** clause (BR-823/824) that is the only thing letting a dealer sell a car it does not own. The *personería* clause citing the escritura prints only when the dealership itself is the vendor (BR-494).
+         *
+         *     `delivery.status` reports where the artefact went: `posted` (an internal note naming it was left on the buyer’s conversation), `already_delivered` (a frozen re-print — no second note), `no_buyer_contact` or `no_conversation`. A delivery that cannot be made **never fails the print**: the contract is already committed.
+         *
+         *     **Legal data on request (app#7582).** The contract asks for the legal data it needs only here: `GET /sale-notes/{id}/compraventa/requirements` lists it as one form, and this call may carry it as the optional body `{ legal_data: { "<missing_fields[].key>": "<value>" } }`: each value is saved where it belongs (the dealership’s Datos legales, created when the workspace has none, needs `organization_legal:write`; the buyer’s or the owner’s contact needs `contacts:write`, else **403**) and the contract prints in the same call. Still missing → **409** `details.blocked_reason: compraventa_data_missing` with `details.missing` (labels) and `details.missing_fields` (the same shape as the requirements). The buyer’s name, RUT, dirección and comuna are required here (never on the nota de venta).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "legal_data": {
+                     *         "house.giro": "Compraventa de vehículos motorizados",
+                     *         "buyer.address_street": "Los Leones 120"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Values keyed by `missing_fields[].key` (e.g. `{"buyer.tax_id": "12.345.678-5", "house.giro": "Venta de vehículos"}`). Comunas are CUT codes, dates `YYYY-MM-DD`. Blank values are ignored. */
+                        legal_data?: {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The frozen artefact, served unchanged */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "d5d5d5d5-0000-4000-8000-000000000001",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *           "purchase_note_id": null,
+                         *           "consignment_contract_id": null,
+                         *           "clinic_consent_id": null,
+                         *           "storage_bucket": "rendered-documents",
+                         *           "storage_key": "a1a1a1a1-0000-4000-8000-000000000001/sale_note/d4d4d4d4-0000-4000-8000-000000000001/d5d5d5d5-0000-4000-8000-000000000001.pdf",
+                         *           "mime": "application/pdf",
+                         *           "byte_size": 48213,
+                         *           "sha256": "9f2c4e1a7b3d5f6081a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708",
+                         *           "template_version": "contrato-de-compraventa-v1",
+                         *           "deed_version": null,
+                         *           "fee_schedule_version": null,
+                         *           "terms_version": null,
+                         *           "rendered_at": "2026-09-19T15:10:00.000Z",
+                         *           "rendered_by": "11111111-0000-4000-8000-000000000001",
+                         *           "supersedes_id": null
+                         *         },
+                         *         "frozen": true,
+                         *         "already_issued": true,
+                         *         "leg": "automotora",
+                         *         "delivery": {
+                         *           "status": "already_delivered",
+                         *           "conversation_id": null,
+                         *           "conversation_note_id": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CompraventaIssuance"];
+                        };
+                    };
+                };
+                /** @description The newly issued artefact */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "d5d5d5d5-0000-4000-8000-000000000001",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *           "purchase_note_id": null,
+                         *           "consignment_contract_id": null,
+                         *           "clinic_consent_id": null,
+                         *           "storage_bucket": "rendered-documents",
+                         *           "storage_key": "a1a1a1a1-0000-4000-8000-000000000001/sale_note/d4d4d4d4-0000-4000-8000-000000000001/d5d5d5d5-0000-4000-8000-000000000001.pdf",
+                         *           "mime": "application/pdf",
+                         *           "byte_size": 48213,
+                         *           "sha256": "9f2c4e1a7b3d5f6081a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708",
+                         *           "template_version": "contrato-de-compraventa-v1",
+                         *           "deed_version": null,
+                         *           "fee_schedule_version": null,
+                         *           "terms_version": null,
+                         *           "rendered_at": "2026-09-19T15:10:00.000Z",
+                         *           "rendered_by": "11111111-0000-4000-8000-000000000001",
+                         *           "supersedes_id": null
+                         *         },
+                         *         "frozen": false,
+                         *         "already_issued": false,
+                         *         "leg": "automotora",
+                         *         "delivery": {
+                         *           "status": "no_conversation",
+                         *           "conversation_id": null,
+                         *           "conversation_note_id": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CompraventaIssuance"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sale-notes/{id}/compraventa/requirements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the contrato de compraventa still needs
+         * @description The legal data the contract states and this sale does not have yet, as ONE short form (app#7582). Asked only when the dealer requests the compraventa: nothing here gates the nota de venta, its approval, the liquidación or closing the sale.
+         *
+         *     `ready: true` = it prints now. `missing_fields[]` = `{ key, label, input, saved_to: { resource, id, field } }`: `key` is what `POST /sale-notes/{id}/compraventa` takes in `legal_data`; `label` is Spanish; `input` is `text` | `rut` | `comuna` (CUT code) | `date` (`YYYY-MM-DD`); `saved_to.resource` is `organization_legal` (the dealership’s Datos legales; `id: null` = created on save) or `contact` (the buyer, or the consignor / previous owner who sells). Keys: `house.legal_name|tax_id|giro|address_street|comuna_code|representative_name|representative_tax_id|escritura_date|escritura_notary|escritura_comuna_code`, `buyer.name|tax_id|address_street|comuna_code`, `seller.name|tax_id|address_street|comuna_code`. **One round (app#7589):** only what the contract cannot print without is asked, so the list never grows after a save. The house fields come only when the workspace has no Datos legales (the six the record needs); `house.representative_tax_id` and the `house.escritura_*` keys are never asked (their sentences drop out of the contract when absent) and are still accepted in `legal_data`. `blocked` (`{ reason, message }`, else `null`) is a state no form fixes: `sale_note_not_approved`, `buyer_missing`, `automotora_identity_ambiguous` or a legal-seller code (a revoked poder, a consignment that names nobody…).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description What the contract still needs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "ready": false,
+                         *         "missing_fields": [
+                         *           {
+                         *             "key": "house.giro",
+                         *             "label": "Giro de la automotora",
+                         *             "input": "text",
+                         *             "saved_to": {
+                         *               "resource": "organization_legal",
+                         *               "id": null,
+                         *               "field": "giro"
+                         *             }
+                         *           },
+                         *           {
+                         *             "key": "buyer.address_street",
+                         *             "label": "Dirección del comprador",
+                         *             "input": "text",
+                         *             "saved_to": {
+                         *               "resource": "contact",
+                         *               "id": "22222222-0000-4000-8000-000000000002",
+                         *               "field": "address_street"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "blocked": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CompraventaRequirements"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sale-notes/{id}/registered-owner": {
         parameters: {
             query?: never;
@@ -38848,6 +39762,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -38866,14 +39781,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -39073,6 +39981,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -39091,14 +40000,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -39241,7 +40143,7 @@ export interface paths {
          * Print the nota de venta
          * @description The nota de venta as a printable PDF (`application/pdf`, served `inline`): the workspace’s default `sale_note` template — or `template_id` — filled with this sale’s facts (dealership legal identity, folio, ejecutivo, buyer, seller, vehicle, price, payments). With no live template it prints the standard text. Rendered on demand and not stored (the frozen legal instrument is the compraventa). Any status prints; a voided note carries an «ANULADA» banner. The `X-Template-Version` header names the prose used.
          *
-         *     **409** when a fact the template needs is missing — nothing is printed with a blank. `details.blocked_reason` is `sale_note_print_incomplete` (or the legal-seller code when the seller is what is missing), `details.missing` lists Spanish labels (e.g. «RUT de la automotora», «RUT del comprador») and `details.missing_fields[]` carries `{ variable, label, fix, contact_id? }` where `fix` is `organization_legal` | `buyer_contact` | `owner_contact` | `sale_note` | `legal_seller` — the form to open. Requires `sale_notes:read`.
+         *     **It always prints (app#7582).** Whatever the sale has is printed; a fact it lacks (the buyer’s RUT or domicilio, the dealership’s legal data, the representative) is simply left out of the paper: no blank lines, no «PENDIENTE», no 409. The seller is always the dealership, also for a consigned car. The file name carries the folio, plate and model (`nota-de-venta-V-12-ABCD12-mazda-3.pdf`). Legal data is asked only by the contrato de compraventa (`GET /sale-notes/{id}/compraventa/requirements`). Requires `sale_notes:read`.
          */
         get: {
             parameters: {
@@ -39301,47 +40203,12 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description A fact the template needs is missing */
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
                 409: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        /**
-                         * @example {
-                         *       "error": {
-                         *         "code": "CONFLICT",
-                         *         "message": "No se puede imprimir la nota de venta V-1: faltan datos. Falta: Razón social de la automotora, RUT de la automotora, RUT del comprador.",
-                         *         "details": {
-                         *           "blocked_reason": "sale_note_print_incomplete",
-                         *           "sale_note_id": "7c1e9a52-3b4d-4f6a-9e21-5d8b0c4f2a17",
-                         *           "missing": [
-                         *             "Razón social de la automotora",
-                         *             "RUT de la automotora",
-                         *             "RUT del comprador"
-                         *           ],
-                         *           "missing_fields": [
-                         *             {
-                         *               "variable": "MANDATARIA_RAZON_SOCIAL",
-                         *               "label": "Razón social de la automotora",
-                         *               "fix": "organization_legal"
-                         *             },
-                         *             {
-                         *               "variable": "MANDATARIA_RUT",
-                         *               "label": "RUT de la automotora",
-                         *               "fix": "organization_legal"
-                         *             },
-                         *             {
-                         *               "variable": "COMPRADOR_RUT",
-                         *               "label": "RUT del comprador",
-                         *               "fix": "buyer_contact",
-                         *               "contact_id": "2f6d8b14-9c3a-4e57-a0b2-6e1f7d3c9a48"
-                         *             }
-                         *           ]
-                         *         }
-                         *       }
-                         *     }
-                         */
                         "application/json": components["schemas"]["Error"];
                     };
                 };
@@ -39427,6 +40294,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -39445,14 +40313,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -39642,6 +40503,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -39660,14 +40522,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -39883,6 +40738,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -39901,14 +40757,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -40126,6 +40975,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -40144,14 +40994,7 @@ export interface paths {
                          *         "created_at": "2026-09-19T13:00:00.000Z",
                          *         "updated_at": "2026-09-19T13:00:00.000Z",
                          *         "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
-                         *         "print_missing_fields": [
-                         *           {
-                         *             "variable": "COMPRADOR_DOMICILIO",
-                         *             "label": "Domicilio del comprador",
-                         *             "fix": "buyer_contact",
-                         *             "contact_id": "01a1ad2b-a52a-7b04-abf8-389e20e8217a"
-                         *           }
-                         *         ],
+                         *         "print_missing_fields": [],
                          *         "payments": [
                          *           {
                          *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
@@ -40337,7 +41180,9 @@ export interface paths {
         put?: never;
         /**
          * Approve a nota de venta (the sale fan-out)
-         * @description Approves the document — the instant it becomes **legally valid** (BR-485) and the instant every consequence of the sale fires. All of it happens in **ONE database transaction**, so either all of it happened or none of it did:
+         * @description **Below the floor without `price_approval:approve` (app#7589):** **409** `details.reason: price_approval_required` with `details.price_approval_pending` and `details.price_approval_id`. When none was pending the call files one in the caller's name first, so the answer always says the approval is requested: «No puedes cerrar la venta V-41 todavía: el precio está bajo el mínimo y un administrador tiene que aprobarlo primero. La aprobación del precio ya está pedida.» The answer carries `price_approval` like every note read.
+         *
+         *     Approves the document — the instant it becomes **legally valid** (BR-485) and the instant every consequence of the sale fires. All of it happens in **ONE database transaction**, so either all of it happened or none of it did:
          *
          *     * the document is stamped with WHO approved it and WHEN (BR-484);
          *     * **the car is marked `vendido`** (BR-486), which is TERMINAL — a sold unit never sells or lists again (ADR 0030, regla de Estadía);
@@ -40352,7 +41197,7 @@ export interface paths {
          *
          *     * **409** when the sale’s price is below the level this organisation requires an authorisation for and no APPROVED `price_approval` names this document (BR-433/BR-434 — a salesperson cannot authorise their own discount). Raise one with `POST /price-approvals` and have somebody else decide it. A caller holding `price_approval:approve` (an owner or admin) is not refused: approving the sale is their authorisation of the price. The refusal deliberately states no figure: the shortfall and the reference are cost disclosures gated on `dealership_economics:read`.
          *     * **409** when the unit has already been sold by another document.
-         *     * **409** when the car is consigned (active contrato de consignación) and its mandato was never emitted — «Emite el mandato antes de aprobar» (`details.reason: mandate_not_emitted`). Emit it with `POST /consignments/{id}/contract`.
+         *     * A consigned car never refuses over its mandato: the approval emits it when the contract can produce it, and otherwise it is produced with `POST /consignments/{id}/contract` when someone asks for it.
          *     * **409** when the document is already approved, or is voided — an approval names a person and a moment and cannot be restated.
          *     * **400** when the deal’s board has no Won column, or forbids the move onto it.
          *
@@ -40396,6 +41241,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -40495,7 +41341,7 @@ export interface paths {
         };
         /**
          * The Vendedor a new nota de venta would get
-         * @description Who `POST /sale-notes` credits as the **Vendedor** when its body names nobody (ADR 0114 §3), so a screen or an agent can propose that person up front: the assignee of the sale’s lead — the `lead_id` given, else the buyer’s lead on this car (`buyer_contact_id` + `vehicle_id`) — otherwise the car’s **Responsable del auto**, otherwise the **signed-in member** asking (never a Vitrina staff email, never an API key — for those the rung is skipped). A member who left the workspace is skipped. `source` says which rung answered (`lead_owner` | `vehicle_responsible` | `signed_in_user`) and `lead` (`id`, `display_id`) names the lead when it did. `data` is `null` when nobody can be proposed: the emit is then refused until a Vendedor is chosen. The inferred lead only proposes the Vendedor; it is never written as the nota de venta’s `lead_id`.
+         * @description Who `POST /sale-notes` credits as the **Vendedor** when its body names nobody (ADR 0114 §3), so a screen or an agent can propose that person up front: the assignee of the sale’s lead — the `lead_id` given, else the buyer’s lead on this car (`buyer_contact_id` + `vehicle_id`) — otherwise the salesperson of the car’s live **reserva**, otherwise the **signed-in member** asking (never a Vitrina staff email, never an API key — for those the rung is skipped). Since app#7581 the car’s Responsable del auto is no longer a rung. A member who left the workspace is skipped. `source` says which rung answered (`lead_owner` | `reservation_seller` | `signed_in_user`; `vehicle_responsible` is no longer produced) and `lead` (`id`, `display_id`) names the lead when it did. `data` is `null` when nobody can be proposed: the note is then created with no Vendedor, never refused. The inferred lead only proposes the Vendedor; it is never written as the nota de venta’s `lead_id`.
          */
         get: {
             parameters: {
@@ -40618,6 +41464,8 @@ export interface paths {
          *     The actor comes from the authenticated principal; a `voided_by` in the body is IGNORED rather than rejected — a self-declared actor is not an attestation. Voiding twice is a **409**: the first actor and reason stand.
          *
          *     Requires `sale_notes:void`, which is a DIFFERENT authority from `sale_notes:write` — holding the write scope does not permit a void.
+         *
+         *     **`void_outcome` says what happened (app#7587)** — the voided row plus `{ reservation: { outcome: reopened | not_reopened | none, reason: hold_lapsed | another_hold_active | not_completed | different_vehicle | not_found | null, id, display_id, abono_clp }, vehicle: { id, status, changed, ads_closed_by_sale, ads_republished: false }, payments: { released_clp, returned_to_reservation_clp, buyer_credit_clp }, appointments: { cancelled_by_sale_restored: false }, deal_reopened, message }`. A reopened reserva carries its abono again and holds the car; a lapsed one is not reopened and the money stays with the buyer as credit (payments are kept: for the replacement note or to be refunded). Portal ads the sale closed are not re-published automatically, and test drives the sale cancelled are not restored. `message` is one short Spanish paragraph to show as is.
          */
         post: {
             parameters: {
@@ -40661,6 +41509,7 @@ export interface paths {
                          *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *         "lead_id": null,
                          *         "converted_from_reservation_id": null,
+                         *         "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
@@ -40677,7 +41526,33 @@ export interface paths {
                          *         "void_reason": "el banco rechazó el financiamiento del comprador",
                          *         "voided_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-19T13:00:00.000Z",
-                         *         "updated_at": "2026-09-19T13:00:00.000Z"
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "void_outcome": {
+                         *           "reservation": {
+                         *             "outcome": "reopened",
+                         *             "reason": null,
+                         *             "id": "d3d3d3d3-0000-4000-8000-000000000001",
+                         *             "display_id": "R-4",
+                         *             "abono_clp": 500000
+                         *           },
+                         *           "vehicle": {
+                         *             "id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *             "status": "reservado",
+                         *             "changed": true,
+                         *             "ads_closed_by_sale": true,
+                         *             "ads_republished": false
+                         *           },
+                         *           "payments": {
+                         *             "released_clp": 500000,
+                         *             "returned_to_reservation_clp": 500000,
+                         *             "buyer_credit_clp": 0
+                         *           },
+                         *           "appointments": {
+                         *             "cancelled_by_sale_restored": false
+                         *           },
+                         *           "deal_reopened": true,
+                         *           "message": "Nota de venta V-12 anulada. La reserva R-4 volvió a quedar activa con su abono de $500.000. El auto quedó reservado. Los avisos que la venta cerró en los portales no se vuelven a publicar solos, y las visitas canceladas no se recuperan."
+                         *         }
                          *       }
                          *     }
                          */
@@ -40760,7 +41635,11 @@ export interface paths {
         };
         /**
          * List cotizaciones
-         * @description The quote register, most recently issued first.
+         * @description **Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.
+         *
+         *     **Every row carries `contact_ref`, the person it names** (the buyer of a nota de venta or cotización, the holder of a reserva, the owner of a consignación), read in ONE tenant-scoped batch for the page so a client never fetches the contacts one by one: `{ id, name, tax_id, tax_id_kind, archived }`. `name` is the display name; `archived: true` = archived or merged away (the name is kept). `tax_id` / `tax_id_kind` (the RUT) are `null` unless the caller also holds `contacts:read`. `null` only when the row names nobody or the contact row is gone.
+         *
+         *     The quote register, most recently issued first.
          *
          *     **Everything each row says about the CAR is the frozen snapshot taken at issuance**, not what the stock record says today — this endpoint never joins the vehicle.
          *
@@ -40824,7 +41703,24 @@ export interface paths {
                          *           "archive_reason": null,
                          *           "archived_by": null,
                          *           "created_at": "2026-09-08T14:02:11.000Z",
-                         *           "updated_at": "2026-09-08T14:02:11.000Z"
+                         *           "updated_at": "2026-09-08T14:02:11.000Z",
+                         *           "vehicle_ref": {
+                         *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
+                         *             "title": null,
+                         *             "make": "Volvo",
+                         *             "model": "S60",
+                         *             "version": "2.0 T5 Momentum",
+                         *             "year": 2019,
+                         *             "registration_number": "GDSL82",
+                         *             "deleted": false
+                         *           },
+                         *           "contact_ref": {
+                         *             "id": "22222222-0000-4000-8000-000000000002",
+                         *             "name": "María José Fuentes",
+                         *             "tax_id": "15432100-4",
+                         *             "tax_id_kind": "rut",
+                         *             "archived": false
+                         *           }
                          *         }
                          *       ],
                          *       "meta": {
@@ -43272,13 +44168,6 @@ export interface paths {
                          *             "description": "Kilometraje."
                          *           },
                          *           {
-                         *             "key": "impuesto_transferencia",
-                         *             "label": "Impuesto a la transferencia",
-                         *             "tier": "recomendada",
-                         *             "present": true,
-                         *             "description": "Impuesto a la transferencia."
-                         *           },
-                         *           {
                          *             "key": "condiciones",
                          *             "label": "Condiciones",
                          *             "tier": "recomendada",
@@ -43292,8 +44181,8 @@ export interface paths {
                          *             "total": 5
                          *           },
                          *           "recomendadas": {
-                         *             "present": 5,
-                         *             "total": 6
+                         *             "present": 4,
+                         *             "total": 5
                          *           }
                          *         },
                          *         "missing_esenciales": [],
@@ -44750,6 +45639,322 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/consignments/{id}/contract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Print and freeze the contrato de consignación (mandato)
+         * @description Produces the **signed mandato con representación** for a contract and freezes it as an immutable `rendered_document` (ADR 0057) carrying both the clause version it was drafted under (`template_version`, S5-1) and the `consignment_revision` its mínimo was read from (`terms_version`, S5-2).
+         *
+         *     **It is a write, and the scope is `consignments:write`.** The call brings a binding legal instrument into existence — BR-823 calls it "the only instrument permitting a dealer to sell a car it does not own" — storing bytes and appending an append-only row a court may later read.
+         *
+         *     **There is no body and nothing is caller-supplied.** The parties, the vehicle, the comisión, the vencimiento and the clause prose are all read off the rows. A **409** names whichever fact the instrument cannot state without: no MANDANTE linked, no nombre/RUT/domicilio on the mandante (tipo de persona only for a foreign tax id; a RUT says it), no patente on the vehicle, or an unconfigured or ambiguous dealership identity. A missing Precio cliente or commission is not a gap (the sentences that state them are left out).
+         *
+         *     **Legal data on request (app#7589).** The mandato asks for the data it prints only here: `GET /consignments/{id}/contract/requirements` lists it as one form, and this call may carry it as the optional body `{ legal_data: { "<missing_fields[].key>": "<value>" } }`: each value is saved where it belongs (the dealership’s Datos legales, created when the workspace has none, needs `organization_legal:write`; the owner’s contact needs `contacts:write`, else **403**; an unknown key is a **400**) and the contract prints in the same call. Still missing → **409** `details.blocked_reason: consignment_contract_data_missing` with `details.missing` (labels), `details.missing_fields` (the same shape as the requirements) and `details.legacy_blocked_reason` (`automotora_identity_missing` | `mandante_incomplete`, the code this refusal had before). The tipo de persona is never asked.
+         *
+         *     **RE-PRINTING IS NOT A NEW INSTRUMENT.** The rendered bytes are a pure function of the contract — the printed date comes from the contract itself and the PDF `creationDate` is pinned to it, never a print-time clock (BR-501 corrected) — so a second call on an unchanged contract returns the **same artefact id and the same `sha256`** with `frozen: true` and a **200**, having written nothing. When an input genuinely changed — a renegotiated mínimo (a new `terms_version`), a corrected RUT, an edited comisión, a new template version — a **201** carries a NEW artefact whose `supersedes_id` names the previous one; the previous bytes are never edited, because `rendered_document` refuses an UPDATE outright.
+         *
+         *     **THE WORDS ARE THE WORKSPACE’S (app#7586).** The text is the workspace’s `consignment` document template (Plantillas: its default, else its only one), else the platform’s standard text; `template_version` is `<key>-v<n>` or `mandato-de-consignacion-estandar`. Passages written `{{#NOMBRE}}…{{/NOMBRE}}` print only when the value exists (`{{^NOMBRE}}…{{/NOMBRE}}` only when it does not). A template that names a value this contract lacks outside such a passage prints the standard text instead of refusing. A template carrying a sin-representación formulation is a **400** with `error.details.blocked_reason = "consignment_template_wording"`. Re-posting on a contract already printed under another text (an older standard text or template version) issues a new artefact under the current one.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "legal_data": {
+                     *         "owner.tax_id": "12.345.678-5",
+                     *         "owner.address_street": "Los Aromos 455"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Values keyed by `missing_fields[].key` (e.g. `{"owner.tax_id": "12.345.678-5", "house.comuna_code": "13123"}`). Comunas are CUT codes. Blank values are ignored. */
+                        legal_data?: {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The frozen artefact, served unchanged */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "ddddddd0-0000-4000-8000-000000000001",
+                         *           "subject_kind": "consignment_contract",
+                         *           "subject_id": "d7d7d7d7-0000-4000-8000-000000000001",
+                         *           "template_key": "mandato-de-consignacion",
+                         *           "template_version": "mandato-de-consignacion-estandar",
+                         *           "terms_version": 1,
+                         *           "sha256": "9f2c4e1a7b3d5f6081a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708",
+                         *           "byte_size": 41872,
+                         *           "rendered_at": "2026-09-19T15:10:00.000Z",
+                         *           "rendered_by": "11111111-0000-4000-8000-000000000001",
+                         *           "supersedes_id": null,
+                         *           "superseded_by_id": null
+                         *         },
+                         *         "frozen": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description The newly issued artefact */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "ddddddd0-0000-4000-8000-000000000001",
+                         *           "subject_kind": "consignment_contract",
+                         *           "subject_id": "d7d7d7d7-0000-4000-8000-000000000001",
+                         *           "template_key": "mandato-de-consignacion",
+                         *           "template_version": "mandato-de-consignacion-estandar",
+                         *           "terms_version": 1,
+                         *           "sha256": "9f2c4e1a7b3d5f6081a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708",
+                         *           "byte_size": 41872,
+                         *           "rendered_at": "2026-09-19T15:10:00.000Z",
+                         *           "rendered_by": "11111111-0000-4000-8000-000000000001",
+                         *           "supersedes_id": null,
+                         *           "superseded_by_id": null
+                         *         },
+                         *         "frozen": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/consignments/{id}/contract/requirements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the contrato de consignación still needs
+         * @description The data the mandato prints and this consignment does not have yet, as ONE short form (app#7589). Asked only when the dealer requests the contract.
+         *
+         *     `ready: true` = it prints now. `missing_fields[]` = `{ key, label, input, saved_to: { resource, id, field } }`: `key` is what `POST /consignments/{id}/contract` takes in `legal_data`; `label` is Spanish; `input` is `text` | `rut` | `comuna` (CUT code); `saved_to.resource` is `organization_legal` (the dealership’s Datos legales; `id: null` = created on save) or `contact` (the owner). Keys: `house.legal_name|tax_id|address_street|comuna_code` (what the mandato prints), plus `house.giro|representative_name` only when the workspace has no Datos legales yet (the record cannot exist without them); `owner.name|tax_id|address_street|comuna_code`. The tipo de persona, the escritura and the representative’s RUT are never asked. `blocked` (`{ reason, message }`, else `null`) is a state no form fixes: `owner_missing` (no owner linked), `vehicle_plate_missing`, `automotora_identity_ambiguous`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description What the contract still needs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "consignment_contract_id": "d7d7d7d7-0000-4000-8000-000000000001",
+                         *         "ready": false,
+                         *         "missing_fields": [
+                         *           {
+                         *             "key": "owner.tax_id",
+                         *             "label": "RUT del dueño",
+                         *             "input": "rut",
+                         *             "saved_to": {
+                         *               "resource": "contact",
+                         *               "id": "22222222-0000-4000-8000-000000000004",
+                         *               "field": "tax_id"
+                         *             }
+                         *           },
+                         *           {
+                         *             "key": "owner.address_street",
+                         *             "label": "Dirección del dueño",
+                         *             "input": "text",
+                         *             "saved_to": {
+                         *               "resource": "contact",
+                         *               "id": "22222222-0000-4000-8000-000000000004",
+                         *               "field": "address_street"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "blocked": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ConsignmentContractRequirements"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/organization-legal": {
         parameters: {
             query?: never;
@@ -45773,7 +46978,11 @@ export interface paths {
         };
         /**
          * List reservations — the active-holds worklist
-         * @description The dealership’s HOLD REGISTER, most urgent first: ordered by `hold_expires_on` ascending, then by folio descending. Every status is included by default — a voided or completed reserva keeps its folio and stays listable so "where is reserva R-47?" has an answer (ADR 0058 §10) — so pass `status` to narrow to the live ones.
+         * @description **Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.
+         *
+         *     **Every row carries `contact_ref`, the person it names** (the buyer of a nota de venta or cotización, the holder of a reserva, the owner of a consignación), read in ONE tenant-scoped batch for the page so a client never fetches the contacts one by one: `{ id, name, tax_id, tax_id_kind, archived }`. `name` is the display name; `archived: true` = archived or merged away (the name is kept). `tax_id` / `tax_id_kind` (the RUT) are `null` unless the caller also holds `contacts:read`. `null` only when the row names nobody or the contact row is gone.
+         *
+         *     The dealership’s HOLD REGISTER, most urgent first: ordered by `hold_expires_on` ascending, then by folio descending. Every status is included by default — a voided or completed reserva keeps its folio and stays listable so "where is reserva R-47?" has an answer (ADR 0058 §10) — so pass `status` to narrow to the live ones.
          *
          *     **Each row carries its money.** `total_pagos_clp` is the sum of every ledger payment (`customer_payment` allocated via `payment_allocation`) recorded against the hold and `payment_count` is how many there are; a hold with no payments reports `0` / `0`. Both come from one grouped join, so the list is one query rather than one per row.
          *
@@ -45844,7 +47053,24 @@ export interface paths {
                          *           "void_reason": null,
                          *           "voided_by": null,
                          *           "created_at": "2026-09-18T16:40:00.000Z",
-                         *           "updated_at": "2026-09-18T16:40:00.000Z"
+                         *           "updated_at": "2026-09-18T16:40:00.000Z",
+                         *           "vehicle_ref": {
+                         *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
+                         *             "title": null,
+                         *             "make": "Volvo",
+                         *             "model": "S60",
+                         *             "version": "2.0 T5 Momentum",
+                         *             "year": 2019,
+                         *             "registration_number": "GDSL82",
+                         *             "deleted": false
+                         *           },
+                         *           "contact_ref": {
+                         *             "id": "22222222-0000-4000-8000-000000000002",
+                         *             "name": "María José Fuentes",
+                         *             "tax_id": "15432100-4",
+                         *             "tax_id_kind": "rut",
+                         *             "archived": false
+                         *           }
                          *         }
                          *       ],
                          *       "meta": {
@@ -47171,7 +48397,7 @@ export interface paths {
          * Convert a reservation into a nota de venta
          * @description Produces a NEW sale-note document — 201, the same as `POST /sale-notes`. Scoped `sale_notes:write`, borrowed rather than a fifth reservations scope. `net_clp` omitted = the sale inherits the hold’s `agreed_price_clp`; stated = the sale closes at that price. A hold with no agreed price needs `net_clp` (400 otherwise).
          *
-         *     **`approve: true`** is «Emitir y aprobar» (app#7316): the new nota de venta is approved in the same request with the same rules and the same `approval` outcome as `POST /sale-notes`; `sale_note` is then the approved row. **`registered_owner: { name, tax_id }`** is «compra para tercero» (app#7321), as on `POST /sale-notes`.
+         *     **`approve: true`** is «Emitir y aprobar» (app#7316): the new nota de venta is approved in the same request with the same rules and the same `approval` outcome as `POST /sale-notes`; `sale_note` is then the approved row. **`registered_owner: { name, tax_id }`** is «compra para tercero» (app#7321), as on `POST /sale-notes`. **`observaciones`** (app#7581): the text printed on the new nota de venta, as on `POST /sale-notes`; the reserva has none of its own to carry.
          */
         post: {
             parameters: {
@@ -47199,7 +48425,7 @@ export interface paths {
                         /** @enum {string} */
                         seller_of_record?: "consignante" | "retoma" | "automotora";
                         /** @enum {string} */
-                        tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                         net_clp?: number;
                         tax_clp?: number | null;
                         /** Format: date-time */
@@ -47208,6 +48434,8 @@ export interface paths {
                         carry_transfer_cost?: boolean;
                         approve?: boolean;
                         registered_owner?: components["schemas"]["SaleNoteRegisteredOwnerInput"];
+                        /** @description Observaciones que se imprimen en la nota de venta, tal como se escribieron (hasta 2000 caracteres). Se guardan sin espacios al inicio ni al final; vacío o null las borra. No son notas internas. */
+                        observaciones?: string | null;
                     };
                 };
             };
@@ -47269,6 +48497,7 @@ export interface paths {
                          *           "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
                          *           "lead_id": null,
                          *           "converted_from_reservation_id": "d3d3d3d3-0000-4000-8000-000000000001",
+                         *           "observaciones": "Se entrega con dos llaves y la mantención al día.",
                          *           "seller_of_record": "automotora",
                          *           "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *           "net_clp": 11900000,
@@ -47547,10 +48776,14 @@ export interface paths {
                     "application/json": {
                         reservation_id?: string;
                         sale_note_id?: string;
-                        /** @enum {string} */
-                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "otro";
+                        /**
+                         * @description Medio de pago. Opcional: si se omite queda `transferencia` (ADR 0159: un pago pide solo su monto).
+                         * @enum {string}
+                         */
+                        instrument?: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "otro";
                         amount_clp: number;
-                        paid_on: string;
+                        /** @description Día en que se recibió el pago, YYYY-MM-DD. Opcional: si se omite queda hoy, en la zona horaria del espacio de trabajo. */
+                        paid_on?: string;
                         card_surcharge_clp?: number | null;
                         bank?: string | null;
                         account_number?: string | null;
@@ -47664,7 +48897,11 @@ export interface paths {
         };
         /**
          * The approval queue
-         * @description Oldest-first. Cost fields (e.g. `floor_price_snapshot_clp`) are ABSENT from the response unless the caller also holds `dealership_economics:read`.
+         * @description **Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.
+         *
+         *     **Every row carries `subject`** (app#7589), the document the approval is about, read in one batch for the page: `{ kind: quote|reservation|sale_note, id, display_id, contact_ref, unit_label, unit_plate }`. `contact_ref` is the person, as on every dealer list (its RUT only with `contacts:read`); `unit_label` / `unit_plate` are the unit the cotización froze (null on a reserva or nota de venta). `null` only when the document row is gone.
+         *
+         *     Oldest-first. Cost fields (e.g. `floor_price_snapshot_clp`) are ABSENT from the response unless the caller also holds `dealership_economics:read`.
          */
         get: {
             parameters: {
@@ -47705,7 +48942,31 @@ export interface paths {
                          *           "decided_at": null,
                          *           "decision_note": null,
                          *           "created_at": "2026-09-19T12:40:00.000Z",
-                         *           "updated_at": "2026-09-19T12:40:00.000Z"
+                         *           "updated_at": "2026-09-19T12:40:00.000Z",
+                         *           "vehicle_ref": {
+                         *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
+                         *             "title": null,
+                         *             "make": "Volvo",
+                         *             "model": "S60",
+                         *             "version": "2.0 T5 Momentum",
+                         *             "year": 2019,
+                         *             "registration_number": "GDSL82",
+                         *             "deleted": false
+                         *           },
+                         *           "subject": {
+                         *             "kind": "sale_note",
+                         *             "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "display_id": "V-118",
+                         *             "contact_ref": {
+                         *               "id": "22222222-0000-4000-8000-000000000002",
+                         *               "name": "María José Fuentes",
+                         *               "tax_id": "15432100-4",
+                         *               "tax_id_kind": "rut",
+                         *               "archived": false
+                         *             },
+                         *             "unit_label": null,
+                         *             "unit_plate": null
+                         *           }
                          *         }
                          *       ],
                          *       "meta": {
@@ -48215,6 +49476,205 @@ export interface paths {
                             meta?: {
                                 [key: string]: unknown;
                             };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicle-acquisitions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record how a unit arrived, or its bare Costo de compra
+         * @description Two shapes. (1) THE BARE COSTO DE COMPRA (vitrina-app#7612): `{ vehicle_id, kind: "compra", net_clp }` with no document link records what the dealership paid for a car of its own — the «Falta el costo de compra» field of the profit report. `net_clp` is the total paid (no IVA split). Defaults: `acquired_on` = the day the car was created in Vitrina (dealership calendar), `tax_treatment` = the car’s IVA regime (the car’s, else the dealership default, else `exento`), `borne_by` = `automotora`, `generates_fiscal_credit` = false, `tax_clp` = null. The SAME call on a car that already has a bare cost replaces its amount and answers 200; a new cost answers 201. When the nota de compra the cost came from was VOIDED, the same call detaches the cost from it (same row, 200, defaults as above, the voided note’s retained cost lines withdrawn) and a later nota de compra can take it over again. 409 with `error.details.code`: `purchase_cost_on_purchase_note` (a live nota de compra: correct it there, `details.purchase_note_id`), `purchase_cost_on_trade_in` (the car came in as parte de pago, `details.sale_note_id`), `purchase_cost_consigned_vehicle` (a consigned car has no purchase cost). The profit report (`GET /margin`) counts the cost on the next read. (2) AN ACQUISITION UNDER ITS DOCUMENT: any kind naming its document (`purchase_note_id`, `consignment_contract_id`, `sale_note_id`); `acquired_on`, `tax_treatment`, `borne_by` and `generates_fiscal_credit` are then required (400), and a second acquisition for one unit is a 409.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "vehicle_id": "7c1e2a40-5b7d-4f0e-9a51-3d2f8e6b1c90",
+                     *       "kind": "compra",
+                     *       "net_clp": 8500000
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        vehicle_id: string;
+                        /** @enum {string} */
+                        kind: "compra" | "consignacion" | "retoma";
+                        /** Format: uuid */
+                        counterparty_contact_id?: string | null;
+                        /** @description Fecha de adquisición. Obligatoria cuando se nombra un documento. En un costo de compra sin documento, por defecto el día en que el auto se creó en Vitrina. */
+                        acquired_on?: string;
+                        /** Format: uuid */
+                        purchase_note_id?: string | null;
+                        /** Format: uuid */
+                        consignment_contract_id?: string | null;
+                        /** Format: uuid */
+                        sale_note_id?: string | null;
+                        /** @description Costo de compra en pesos. En un costo de compra sin documento es el total pagado por el auto (no se separa el IVA). */
+                        net_clp: number;
+                        tax_clp?: number | null;
+                        /**
+                         * @description Obligatorio cuando se nombra un documento. En un costo de compra sin documento, por defecto el régimen de IVA del auto (el del auto, si no el de la automotora, si no exento).
+                         * @enum {string}
+                         */
+                        tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        /**
+                         * @description Obligatorio cuando se nombra un documento. En un costo de compra sin documento, por defecto automotora.
+                         * @enum {string}
+                         */
+                        borne_by?: "automotora" | "cliente";
+                        /** @description Obligatorio cuando se nombra un documento. En un costo de compra sin documento, por defecto false. */
+                        generates_fiscal_credit?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The bare Costo de compra, corrected */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "b5f0d6c2-1e8a-4c3b-9f7d-2a6e4b8c0d11",
+                         *         "tenant_id": "a3c9e1f0-7b2d-4e5a-8c6f-1d0b9e2a4f73",
+                         *         "vehicle_id": "7c1e2a40-5b7d-4f0e-9a51-3d2f8e6b1c90",
+                         *         "kind": "compra",
+                         *         "counterparty_contact_id": null,
+                         *         "acquired_on": "2026-08-03",
+                         *         "purchase_note_id": null,
+                         *         "consignment_contract_id": null,
+                         *         "sale_note_id": null,
+                         *         "net_clp": 8200000,
+                         *         "tax_clp": null,
+                         *         "tax_treatment": "exento",
+                         *         "borne_by": "automotora",
+                         *         "generates_fiscal_credit": false,
+                         *         "created_at": "2026-11-19T15:02:00.000Z",
+                         *         "updated_at": "2026-11-19T15:10:00.000Z",
+                         *         "derived_tenencia": "propio"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description The recorded acquisition (a new bare Costo de compra) */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "b5f0d6c2-1e8a-4c3b-9f7d-2a6e4b8c0d11",
+                         *         "tenant_id": "a3c9e1f0-7b2d-4e5a-8c6f-1d0b9e2a4f73",
+                         *         "vehicle_id": "7c1e2a40-5b7d-4f0e-9a51-3d2f8e6b1c90",
+                         *         "kind": "compra",
+                         *         "counterparty_contact_id": null,
+                         *         "acquired_on": "2026-08-03",
+                         *         "purchase_note_id": null,
+                         *         "consignment_contract_id": null,
+                         *         "sale_note_id": null,
+                         *         "net_clp": 8500000,
+                         *         "tax_clp": null,
+                         *         "tax_treatment": "exento",
+                         *         "borne_by": "automotora",
+                         *         "generates_fiscal_credit": false,
+                         *         "created_at": "2026-11-19T15:02:00.000Z",
+                         *         "updated_at": "2026-11-19T15:02:00.000Z",
+                         *         "derived_tenencia": "propio"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
                         };
                     };
                 };
@@ -49973,6 +51433,345 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/margin/months": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The last twelve months of the profit report
+         * @description One read, twelve months ending in `to` (default: the current month in the dealership’s calendar), oldest first; a month with no sale is present with zeros. Body: `as_of`, `from_period`, `to_period` and `months[]`, each `{ period, deal_count, complete_deal_count, incomplete_deal_count, incomplete_by_gap: { cost_rollup, liquidacion }, sales_ingresos_clp, sales_with_ingresos_count, sales_missing_ingresos_count, ingresos_clp, costo_venta_clp, margen_bruto_clp, comisiones_vendedores_clp, gastos_adicionales_clp, margen_neto_clp }` — the SAME walk `GET /margin?period=` serves for that month, figure for figure. Cars sold = `deal_count`; «Ganancia» = `margen_neto_clp` (the sales it could count, before fixed overhead); not counted = `incomplete_deal_count`, by reason in `incomplete_by_gap`. Same scope and the same 413 row cap as the single-month report, over the twelve months together.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    to?: components["schemas"]["OverheadPeriod"] & unknown;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Twelve months of the profit report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "as_of": "2026-11-19T12:00:00.000Z",
+                         *         "from_period": "2025-12",
+                         *         "to_period": "2026-11",
+                         *         "months": [
+                         *           {
+                         *             "period": "2025-12",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-01",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-02",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-03",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-04",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-05",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-06",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-07",
+                         *             "deal_count": 0,
+                         *             "sales_ingresos_clp": 0,
+                         *             "sales_with_ingresos_count": 0,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 0,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 0,
+                         *             "costo_venta_clp": 0,
+                         *             "margen_bruto_clp": 0,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 0
+                         *           },
+                         *           {
+                         *             "period": "2026-08",
+                         *             "deal_count": 1,
+                         *             "sales_ingresos_clp": 9000000,
+                         *             "sales_with_ingresos_count": 1,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 1,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 9000000,
+                         *             "costo_venta_clp": 7800000,
+                         *             "margen_bruto_clp": 1200000,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 1200000
+                         *           },
+                         *           {
+                         *             "period": "2026-09",
+                         *             "deal_count": 2,
+                         *             "sales_ingresos_clp": 18000000,
+                         *             "sales_with_ingresos_count": 2,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 2,
+                         *             "incomplete_deal_count": 0,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 18000000,
+                         *             "costo_venta_clp": 18300000,
+                         *             "margen_bruto_clp": -300000,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": -300000
+                         *           },
+                         *           {
+                         *             "period": "2026-10",
+                         *             "deal_count": 3,
+                         *             "sales_ingresos_clp": 27000000,
+                         *             "sales_with_ingresos_count": 3,
+                         *             "sales_missing_ingresos_count": 0,
+                         *             "complete_deal_count": 2,
+                         *             "incomplete_deal_count": 1,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 1,
+                         *               "liquidacion": 0
+                         *             },
+                         *             "ingresos_clp": 18000000,
+                         *             "costo_venta_clp": 15125000,
+                         *             "margen_bruto_clp": 2875000,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 2875000
+                         *           },
+                         *           {
+                         *             "period": "2026-11",
+                         *             "deal_count": 2,
+                         *             "sales_ingresos_clp": 9000000,
+                         *             "sales_with_ingresos_count": 1,
+                         *             "sales_missing_ingresos_count": 1,
+                         *             "complete_deal_count": 1,
+                         *             "incomplete_deal_count": 1,
+                         *             "incomplete_by_gap": {
+                         *               "cost_rollup": 0,
+                         *               "liquidacion": 1
+                         *             },
+                         *             "ingresos_clp": 9000000,
+                         *             "costo_venta_clp": 7552028,
+                         *             "margen_bruto_clp": 1447972,
+                         *             "comisiones_vendedores_clp": 0,
+                         *             "gastos_adicionales_clp": 0,
+                         *             "margen_neto_clp": 1447972
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/margin/preview": {
         parameters: {
             query?: never;
@@ -50309,7 +52108,7 @@ export interface paths {
          *
          *     Commissions are frozen when the sale is approved and never change (ADR 0114 §2.4), while `margin.margen_bruto_clp` is always current: when an approved sale’s `commissions[].commission_basis_clp` differs from it (it does for sales approved before retenciones joined the Costo de compra, §2.5), say so — «Base fijada al aprobar la venta ($X). Las comisiones aprobadas no se recalculan.» — and never present the difference as an error. The PDF and the planilla print that line.
          *
-         *     The car’s lifecycle facts ride along: `ingreso` (how the car entered stock — `compra`, `consignacion` or `retoma` — the day, and the backing document with its folio; `null` = «Sin costo»), `sale_note.emitted_by` and `sale_note.approved_by` (who emitted and who approved the sale, by name; `null` = not recorded), `basis.consignment.contract_id` (where the Liquidación lives) and `post_sale` (the trámites the approved sale opened: total, pending, overdue on the dealership day and the next deadline; `null` until the sale is approved).
+         *     The car’s lifecycle facts ride along: `ingreso` (how the car entered stock — `compra`, `consignacion` or `retoma` — the day, and the backing document with its folio; `null` = «Sin costo»), `sale_note.emitted_by` and `sale_note.approved_by` (who emitted and who approved the sale, by name; `null` = not recorded), `basis.consignment.contract_id` (where the Liquidación lives) and `post_sale` (the trámites the approved sale opened: total and pending, a plain checklist; `overdue` is always 0 and `next_due_on` always null, trámites carry no deadline; `null` until the sale is approved).
          *
          *     Cobros por cuenta del comprador (the transfer tax, registry fees, notary — charged at exact cost) are in no margin figure; `pricing.pass_through_clp` (cobrado) and `pricing.pass_through_paid_out_clp` (rendido) carry the memo line «Cobrado por cuenta del comprador $X · rendido $Y».
          *
@@ -50585,7 +52384,7 @@ export interface paths {
                          *           "total": 3,
                          *           "pending": 1,
                          *           "overdue": 0,
-                         *           "next_due_on": "2026-10-20",
+                         *           "next_due_on": null,
                          *           "completed_at": null
                          *         },
                          *         "timeline": {
@@ -70310,7 +72109,8 @@ export interface paths {
                          *             "P2": 2,
                          *             "P3": 3,
                          *             "P4": 4
-                         *           }
+                         *           },
+                         *           "unlogged_people_p1p2": 3
                          *         },
                          *         "rows": [
                          *           {
@@ -70347,6 +72147,7 @@ export interface paths {
                          *             "lead_created_at": "2026-09-20T15:02:11.000Z",
                          *             "last_message_at": "2026-10-09T13:40:00.000Z",
                          *             "days_since_last_message": 0,
+                         *             "days_since_last_inbound": 0,
                          *             "outcome": null,
                          *             "recontacto": null
                          *           }
@@ -70386,6 +72187,8 @@ export interface paths {
                                         P3: number;
                                         P4: number;
                                     };
+                                    /** @description People in P1/P2 with no outcome logged today: one per contact (a second-interest lead counts apart), however many open leads they have. */
+                                    unlogged_people_p1p2: number;
                                 };
                                 rows: {
                                     /**
@@ -70455,6 +72258,8 @@ export interface paths {
                                     lead_created_at: string;
                                     last_message_at: string | null;
                                     days_since_last_message: number | null;
+                                    /** @description Clinic days since the PERSON's last message (never the clinic's); null when they never wrote. */
+                                    days_since_last_inbound: number | null;
                                     /** @description Today's newest logged outcome. */
                                     outcome: {
                                         /** @enum {string} */
@@ -70642,6 +72447,7 @@ export interface paths {
                          *         "lead_created_at": "2026-09-20T15:02:11.000Z",
                          *         "last_message_at": "2026-10-09T13:40:00.000Z",
                          *         "days_since_last_message": 0,
+                         *         "days_since_last_inbound": 0,
                          *         "outcome": {
                          *           "value": "no_answer",
                          *           "at": "2026-10-09T14:12:03.000Z"
@@ -70719,6 +72525,8 @@ export interface paths {
                                 lead_created_at: string;
                                 last_message_at: string | null;
                                 days_since_last_message: number | null;
+                                /** @description Clinic days since the PERSON's last message (never the clinic's); null when they never wrote. */
+                                days_since_last_inbound: number | null;
                                 /** @description Today's newest logged outcome. */
                                 outcome: {
                                     /** @enum {string} */
@@ -167472,7 +169280,7 @@ export interface paths {
         };
         /**
          * «Tu agenda con Vitrina»: what the AI did for the diary
-         * @description One canonical read of what Vitrina's agent did for the clinic's agenda, aggregates only (never a patient, cita or conversation id). A cita is «agendada por Vitrina» when the agent booked it in a conversation (`source = 'agent'` and no public booking page); the window is on the day the cita HAPPENS (`starts_at`), blocks and holds out. Blocks: `bookings` (count and share of the agenda, with the previous period of the same length); `money` (the value of those citas — pipeline — and the CASH their patients paid in the period from the day Vitrina booked them, read from the revenue mirror when it is on, else from the native ledger; `null` with `withheld: true` for a caller without `clinic_money:read`); `out_of_hours` (bookings made while the workspace was closed per its business hours, plus a weekday × hour heatmap; `null` when no hours are configured); `autonomy` (bookings with no team message in the conversation, from the patient's first message of the 7 days before); `time_to_book` (median and p95, first patient message → booking); `hours_returned` (AI bookings × 10 minutes, a stated rule); `recovery` (no-shows over known attendance, and no-shows / cancellations the same patient booked again within 30 days, with how many of those Vitrina booked); `confirmation` (attendance of confirmed vs unconfirmed citas, the `confirmaciones` report's own figures); `ads` (cost per cita agendada / asistida / paciente que pagó = the Ads overview's spend ÷ its counts for the same dates; `not_active` without Vitrina Ads); `reminders` (reminders that did not go out, by cause). Every block carries a printable `rule`; every rate is `null` — never 0 — without a denominator, and measured figures carry `measured` / `unknown` counts. Requires `clinic:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` inclusive; default the 90 days ending today in the clinic's zone) and `location_id`.
+         * @description One canonical read of what Vitrina's agent did for the clinic's agenda, aggregates only (never a patient, cita or conversation id). A cita is «agendada por Vitrina» when the agent booked it in a conversation (`source = 'agent'` and no public booking page); the window is on the day the cita HAPPENS (`starts_at`), blocks and holds out. Blocks: `bookings` (count and share of the agenda, with the previous period of the same length); `money` (the value of those citas — pipeline — and the CASH their patients paid in the period from the day Vitrina booked them, read from the revenue mirror when it is on, else from the native ledger; `null` with `withheld: true` for a caller without `clinic_money:read`); `out_of_hours` (bookings made while the workspace was closed per its business hours, plus a weekday × hour heatmap; `null` when no hours are configured); `autonomy` (bookings with no team message in the conversation, from the patient's first message of the 7 days before); `time_to_book` (median and p95, first patient message → booking); `hours_returned` (AI bookings × 10 minutes, a stated rule); `recovery` (no-shows over known attendance, and no-shows / cancellations the same patient booked again within 30 days, with how many of those Vitrina booked); `confirmation` (attendance of confirmed vs unconfirmed citas, the `confirmaciones` report's own figures); `ads` (cost per cita agendada / asistida / paciente que pagó = the Ads overview's spend ÷ its counts for the same dates; `not_active` without Vitrina Ads); `reminders` (reminders that did not go out, by cause); `agent_citas` (#7476: the agent's citas split into attended / no-show / cancelled / upcoming / not closed plus `attendance.rate` (attended ÷ (attended + no-show), `rate_pct` null without a base, `min_base` 20 and `reliable` for clients' display floor), with citas later moved — a «Cambio de …» estado, or a move made through Vitrina — reported apart as `moved`; and the share booked CORRECTLY: of the attended, not-moved citas whose record of what the agent chose can be judged, the share whose visit reason and professional were still the agent's choice, the rest `corrected` by what changed; citas with no record, a record that could not be rebuilt, or an engine with no visit reason (Medilink) are counted as `sin_dato`, never as correct; `correct_pct: null` and `state: 'sin_dato'` with nothing to judge; `bookings.ai_attended` / `ai_missed` are the legacy pair, unchanged); `treatments_started` (#7477: of the patients who attended an evaluation (Cita de diagnóstico) the agent booked, one per patient, how many started a treatment within 90 days, by the month of the evaluation — «Tratamiento iniciado» exactly as the clinic's money source defines it (the revenue mirror's plans, or Vitrina's own presupuestos), the evaluation fee never counting; `measurable: false` with `reason: 'no_source'` and null counts when the clinic has no plan or presupuesto data, never 0; months whose last evaluation is under 90 days old are `maturing`, and `matured` gives the rate over the other months only (null without one); moved evaluations are out of the base). Every block carries a printable `rule`; every rate is `null` — never 0 — without a denominator, and measured figures carry `measured` / `unknown` counts. Requires `clinic:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` inclusive; default the 90 days ending today in the clinic's zone) and `location_id`.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -167647,6 +169455,87 @@ export interface paths {
                          *           ],
                          *           "rule": "Recordatorios de citas del período que no salieron, agrupados por la causa que registró el envío."
                          *         },
+                         *         "agent_citas": {
+                         *           "applies": true,
+                         *           "booked": 286,
+                         *           "moved": 14,
+                         *           "attendance": {
+                         *             "attended": 171,
+                         *             "no_show": 22,
+                         *             "cancelled": 31,
+                         *             "upcoming": 40,
+                         *             "not_closed": 8,
+                         *             "rate": {
+                         *               "numerator": 171,
+                         *               "denominator": 193,
+                         *               "rate_pct": 88.6,
+                         *               "min_base": 20,
+                         *               "reliable": true
+                         *             }
+                         *           },
+                         *           "correct": {
+                         *             "measured": 120,
+                         *             "correct": 104,
+                         *             "corrected": 16,
+                         *             "corrected_by": {
+                         *               "visit_reason": 9,
+                         *               "professional": 5,
+                         *               "both": 2
+                         *             },
+                         *             "sin_dato": {
+                         *               "no_record": 12,
+                         *               "not_rebuilt": 21,
+                         *               "no_visit_reason": 18
+                         *             },
+                         *             "backfilled": 47,
+                         *             "correct_pct": 86.7,
+                         *             "state": "measured"
+                         *           },
+                         *           "rule_correct": "Citas que agendó Vitrina y a las que el paciente asistió, en las que el motivo de la visita y el profesional seguían siendo los que eligió el asistente al agendar.",
+                         *           "rule_attendance": "Citas del período que agendó Vitrina, según su asistencia. Las movidas no se cuentan aquí.",
+                         *           "rule_moved": "Una cita de Vitrina que luego se movió se cuenta como movida, fuera de la asistencia y de la reserva correcta."
+                         *         },
+                         *         "treatments_started": {
+                         *           "applies": true,
+                         *           "measurable": true,
+                         *           "reason": null,
+                         *           "source": "mirror",
+                         *           "evaluated": 96,
+                         *           "started": 31,
+                         *           "rate_pct": 32.3,
+                         *           "matured": {
+                         *             "months": 2,
+                         *             "evaluated": 76,
+                         *             "started": 29,
+                         *             "rate_pct": 38.2
+                         *           },
+                         *           "unlinked": 2,
+                         *           "horizon_days": 90,
+                         *           "months": [
+                         *             {
+                         *               "month": "2026-07",
+                         *               "evaluated": 40,
+                         *               "started": 18,
+                         *               "rate_pct": 45,
+                         *               "maturing": false
+                         *             },
+                         *             {
+                         *               "month": "2026-08",
+                         *               "evaluated": 36,
+                         *               "started": 11,
+                         *               "rate_pct": 30.6,
+                         *               "maturing": false
+                         *             },
+                         *             {
+                         *               "month": "2026-09",
+                         *               "evaluated": 20,
+                         *               "started": 2,
+                         *               "rate_pct": 10,
+                         *               "maturing": true
+                         *             }
+                         *           ],
+                         *           "rule": "Pacientes que asistieron a una evaluación (cita de diagnóstico) que agendó Vitrina, y cuántos empezaron un tratamiento dentro de 90 días."
+                         *         },
                          *         "truncated": false
                          *       }
                          *     }
@@ -167729,7 +169618,7 @@ export interface paths {
         };
         /**
          * «Tu agenda con Vitrina»: the patients behind a count
-         * @description The citas or patients behind ONE count of `GET /clinic/insights/resultados`, read through the same window read — so `count` equals the page's number and `people` has exactly `count` rows. `metric`: `ai_bookings` (`bookings.ai`, one row per cita), `out_of_hours` (`out_of_hours.count`, one row per cita; `count: null` without business hours), `paid_patients` (`money.paid_patients`, one row per patient with every payment since Vitrina booked them; needs `clinic_money:read`, else `withheld: true` and no list). Each row: the contact and its roster patient (`patient_link`, `patient.{id,name,rut,phone}` — the identity gate of `/ads/attributed-sales`: `contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential), and the cita (start, booking instant, status, professional, out-of-hours). Requires `clinic:read`. Accepts the page's `from` / `to` / `location_id`.
+         * @description The citas or patients behind ONE count of `GET /clinic/insights/resultados`, read through the same window read — so `count` equals the page's number and `people` has exactly `count` rows. `metric`: `ai_bookings` (`bookings.ai`, one row per cita), `out_of_hours` (`out_of_hours.count`, one row per cita; `count: null` without business hours), `paid_patients` (`money.paid_patients`, one row per patient with every payment since Vitrina booked them; needs `clinic_money:read`, else `withheld: true` and no list); `ai_corrected` (`agent_citas.correct.corrected`, one row per cita, `cita.changes` naming what changed from → to), `ai_attended` / `ai_upcoming` / `ai_no_show` / `ai_cancelled` / `ai_not_closed` (`agent_citas.attendance.*`) and `ai_moved` (`agent_citas.moved`) — clinics only. Each row: the contact and its roster patient (`patient_link`, `patient.{id,name,rut,phone}` — the identity gate of `/ads/attributed-sales`: `contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential), and the cita (start, booking instant, status, professional, out-of-hours). Requires `clinic:read`. Accepts the page's `from` / `to` / `location_id`.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -167742,8 +169631,8 @@ export interface paths {
                     to?: string;
                     /** @description One sucursal. Omit for all of them. */
                     location_id?: string;
-                    /** @description WHICH count to list (same window / sucursal as the page): `ai_bookings` = `bookings.ai` (one row per cita), `out_of_hours` = `out_of_hours.count` (one row per cita), `paid_patients` = `money.paid_patients` (one row per patient; needs `clinic_money:read`, else `withheld`). */
-                    metric: "ai_bookings" | "out_of_hours" | "paid_patients";
+                    /** @description WHICH count to list (same window / sucursal as the page): `ai_bookings` = `bookings.ai` (one row per cita), `out_of_hours` = `out_of_hours.count` (one row per cita), `paid_patients` = `money.paid_patients` (one row per patient; needs `clinic_money:read`, else `withheld`), `ai_corrected` = `agent_citas.correct.corrected` (each row's `cita.changes` says what changed), `ai_attended` / `ai_upcoming` / `ai_no_show` / `ai_cancelled` / `ai_not_closed` = `agent_citas.attendance.attended` / `.upcoming` / `.no_show` / `.cancelled` / `.not_closed`, `ai_moved` = `agent_citas.moved` (one row per cita; the `ai_*` lists are clinics only, `count: null` elsewhere), `treatment_evaluated` = `treatments_started.evaluated` and `treatment_started` = `treatments_started.started` (one row per patient, their first attended agent evaluation as `cita`; `started` carries the day and the evidence; `count: null` and no rows when `treatments_started.measurable` is false). */
+                    metric: "ai_bookings" | "out_of_hours" | "paid_patients" | "ai_corrected" | "ai_attended" | "ai_upcoming" | "ai_no_show" | "ai_cancelled" | "ai_not_closed" | "ai_moved" | "treatment_evaluated" | "treatment_started";
                 };
                 header?: never;
                 path?: never;
@@ -167790,7 +169679,8 @@ export interface paths {
                          *                 "id": "b5d7f9a3-0000-4000-8000-000000000004",
                          *                 "name": "Dra. Ejemplo"
                          *               },
-                         *               "out_of_hours": true
+                         *               "out_of_hours": true,
+                         *               "changes": null
                          *             },
                          *             "paid": {
                          *               "total": 45000,
@@ -167802,7 +169692,8 @@ export interface paths {
                          *                   "amount": 45000
                          *                 }
                          *               ]
-                         *             }
+                         *             },
+                         *             "started": null
                          *           }
                          *         ],
                          *         "truncated": false,
@@ -176394,11 +178285,7 @@ export interface paths {
                          *         },
                          *         {
                          *           "instrument": "cheque",
-                         *           "required_fields": [
-                         *             "bank",
-                         *             "account_number",
-                         *             "document_number"
-                         *           ]
+                         *           "required_fields": []
                          *         },
                          *         {
                          *           "instrument": "vale_vista",
@@ -181301,7 +183188,13 @@ export interface paths {
         };
         /**
          * List consignment contracts
-         * @description Filter by `vehicle_id` and/or `estado`, with `limit` / `offset`. No total is returned — the response carries the rows and nothing else.
+         * @description **Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.
+         *
+         *     **Every row carries `contact_ref`, the person it names** (the buyer of a nota de venta or cotización, the holder of a reserva, the owner of a consignación), read in ONE tenant-scoped batch for the page so a client never fetches the contacts one by one: `{ id, name, tax_id, tax_id_kind, archived }`. `name` is the display name; `archived: true` = archived or merged away (the name is kept). `tax_id` / `tax_id_kind` (the RUT) are `null` unless the caller also holds `contacts:read`. `null` only when the row names nobody or the contact row is gone.
+         *
+         *     Filter by `vehicle_id` and/or `estado`, with `limit` / `offset`. No total is returned — the response carries the rows and nothing else.
+         *
+         *     Each row also carries (app#7589) `dueno_name` (the consignante, `null` without one) and `liquidacion`: the booked settlement as `{ id, settlement_mode, amount_venta_clp, comision_type, comision_value, comision_amount_clp, comision_iva_clp, comision_minima_applied, monto_owner_clp, deducciones_clp, payout_method, paid_at }`, or `null` when the contract has none (a sale not settled yet, a return that moved no money). `comision_minima_applied: true` = the Comisión mínima won over the percentage: read the commission as «Comisión mínima». A list screen needs no per-contract `GET /consignments/{id}/liquidacion`.
          */
         get: {
             parameters: {
@@ -181335,7 +183228,12 @@ export interface paths {
                          *           "contract_structure": "mandato_con_representacion",
                          *           "comision_type": "percentage",
                          *           "comision_value": 10,
+                         *           "comision_mas_iva": true,
+                         *           "comision_minima_clp": 500000,
+                         *           "comision_minima_mas_iva": true,
+                         *           "cobro_retiro_anticipado_clp": null,
                          *           "minimo_clp": 8000000,
+                         *           "precio_cliente_clp": 8000000,
                          *           "vencimiento": "2026-12-31",
                          *           "estado": "activo",
                          *           "vencimiento_reminded_at": null,
@@ -181343,7 +183241,28 @@ export interface paths {
                          *           "created_at": "2026-08-20T10:00:00.000Z",
                          *           "updated_at": "2026-08-20T10:00:00.000Z",
                          *           "sale_iva_regime": "exento",
-                         *           "not_on_lot": false
+                         *           "notes": null,
+                         *           "observaciones": "Se entrega con dos llaves.",
+                         *           "not_on_lot": false,
+                         *           "vehicle_ref": {
+                         *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
+                         *             "title": null,
+                         *             "make": "Volvo",
+                         *             "model": "S60",
+                         *             "version": "2.0 T5 Momentum",
+                         *             "year": 2019,
+                         *             "registration_number": "GDSL82",
+                         *             "deleted": false
+                         *           },
+                         *           "liquidacion": null,
+                         *           "dueno_name": "Rodrigo Fuentes",
+                         *           "contact_ref": {
+                         *             "id": "22222222-0000-4000-8000-000000000004",
+                         *             "name": "Rodrigo Fuentes",
+                         *             "tax_id": "15432100-4",
+                         *             "tax_id_kind": "rut",
+                         *             "archived": false
+                         *           }
                          *         }
                          *       ],
                          *       "meta": {
@@ -181420,7 +183339,9 @@ export interface paths {
          * Create a contract
          * @description Creates it already `activo` — there is no draft state — and ACTIVATION HAS SIDE EFFECTS on the vehicle: its `tenencia` becomes `consignacion`, and `minimo_clp`, if given, is written through as the vehicle’s `floor_price_clp`. That floor is load-bearing: the pricing watch clamps every suggestion up to it and refuses to apply below it, so the owner’s minimum is what stops an automated recommendation undercutting them. WITHOUT a `minimo_clp` the vehicle’s existing floor is left exactly as it was — a contract that names no minimum never clears one the dealer set by hand.
          *
-         *     **Only `vehicle_id` and `modalidad` are required.** `dueno_contact_id`, the `comision_type`/`comision_value` pair, `minimo_clp` and `vencimiento` are all completable later through `PATCH /consignments/{id}` — this is the *contrato mínimo*, the shape a dealer can actually produce while classifying stock at the counter. It is a real, active contract and it imposes the tenencia like any other; what is deferred is the terms. Until they are recorded the contract cannot be sold (no commission means no split to settle — 409) and its mandato cannot be printed, and `GET /consignments/{id}/documentation` reports exactly which fields are missing with `documentationComplete: false`. Completing them clears all three by itself; there is no flag to set.
+         *     **Only `vehicle_id` and `modalidad` are required.** `dueno_contact_id`, the `comision_type`/`comision_value` pair, `minimo_clp` and `vencimiento` are all completable later through `PATCH /consignments/{id}` — this is the *contrato mínimo*, the shape a dealer can actually produce while classifying stock at the counter. It is a real, active contract and it imposes the tenencia like any other; what is deferred is the terms. Its mandato prints with only the car and the owner. Until a commission is recorded the sale cannot settle without stating the commission of that sale (`comision_amount_clp` on sell; otherwise 409).
+         *
+         *     **Terms (app#7585, ADR 0159).** `precio_cliente_clp` is the Precio cliente, what the owner expects (optional; the same fact as `minimo_clp`, the old name, still accepted and returned). `comision_minima_clp` + `comision_minima_mas_iva` (default true) are the Comisión mínima: the commission of a sale is the higher of the percentage and the minimum. `cobro_retiro_anticipado_clp` and `observaciones` print on the contract; `notes` stays internal. `sale_iva_regime` is no longer asked: omitted it stores `exento`.
          *
          *     `comision_type` and `comision_value` go together or not at all: a value with no type is unreadable (is `5` five percent or five pesos?).
          *
@@ -181447,7 +183368,8 @@ export interface paths {
                      *       "modalidad": "en_local",
                      *       "comision_type": "percentage",
                      *       "comision_value": 10,
-                     *       "minimo_clp": 8000000
+                     *       "comision_minima_clp": 500000,
+                     *       "precio_cliente_clp": 8000000
                      *     }
                      */
                     "application/json": {
@@ -181468,6 +183390,16 @@ export interface paths {
                         sale_iva_regime?: "afecto" | "exento" | null;
                         /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
                         notes?: string | null;
+                        /** @description Precio cliente: lo que el dueño espera recibir por el auto, en pesos. Opcional: vacío, el contrato no menciona precio del dueño y la venta no tiene piso. Mismo dato que `minimo_clp` (nombre anterior, que se sigue aceptando); si se envían ambos deben coincidir. Cuando existe es el piso del vigilante de precios del auto. */
+                        precio_cliente_clp?: number | null;
+                        /** @description Comisión mínima en pesos. La comisión de una venta es la mayor entre el porcentaje y este mínimo. No es un piso del precio de venta. */
+                        comision_minima_clp?: number | null;
+                        /** @description «más IVA» de la Comisión mínima, aparte del de la comisión porcentual. Por defecto true. */
+                        comision_minima_mas_iva?: boolean;
+                        /** @description Cobro por retiro anticipado en pesos: lo que paga el dueño si retira el auto antes de la venta. Se imprime en el contrato. */
+                        cobro_retiro_anticipado_clp?: number | null;
+                        /** @description Observaciones que se imprimen en el contrato. Distintas de `notes`, que es interno y no se imprime. */
+                        observaciones?: string | null;
                     };
                 };
             };
@@ -181489,7 +183421,12 @@ export interface paths {
                          *         "contract_structure": "mandato_con_representacion",
                          *         "comision_type": "percentage",
                          *         "comision_value": 10,
+                         *         "comision_mas_iva": true,
+                         *         "comision_minima_clp": 500000,
+                         *         "comision_minima_mas_iva": true,
+                         *         "cobro_retiro_anticipado_clp": null,
                          *         "minimo_clp": 8000000,
+                         *         "precio_cliente_clp": 8000000,
                          *         "vencimiento": "2026-12-31",
                          *         "estado": "activo",
                          *         "vencimiento_reminded_at": null,
@@ -181497,6 +183434,8 @@ export interface paths {
                          *         "created_at": "2026-08-20T10:00:00.000Z",
                          *         "updated_at": "2026-08-20T10:00:00.000Z",
                          *         "sale_iva_regime": "exento",
+                         *         "notes": null,
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -181618,7 +183557,12 @@ export interface paths {
                          *           "contract_structure": "mandato_con_representacion",
                          *           "comision_type": "percentage",
                          *           "comision_value": 10,
+                         *           "comision_mas_iva": true,
+                         *           "comision_minima_clp": 500000,
+                         *           "comision_minima_mas_iva": true,
+                         *           "cobro_retiro_anticipado_clp": null,
                          *           "minimo_clp": 8000000,
+                         *           "precio_cliente_clp": 8000000,
                          *           "vencimiento": "2026-12-31",
                          *           "estado": "activo",
                          *           "vencimiento_reminded_at": null,
@@ -181626,6 +183570,8 @@ export interface paths {
                          *           "created_at": "2026-08-20T10:00:00.000Z",
                          *           "updated_at": "2026-08-20T10:00:00.000Z",
                          *           "sale_iva_regime": "exento",
+                         *           "notes": null,
+                         *           "observaciones": "Se entrega con dos llaves.",
                          *           "not_on_lot": false
                          *         },
                          *         "mandato": {
@@ -181748,7 +183694,12 @@ export interface paths {
                          *         "contract_structure": "mandato_con_representacion",
                          *         "comision_type": "percentage",
                          *         "comision_value": 10,
+                         *         "comision_mas_iva": true,
+                         *         "comision_minima_clp": 500000,
+                         *         "comision_minima_mas_iva": true,
+                         *         "cobro_retiro_anticipado_clp": null,
                          *         "minimo_clp": 8000000,
+                         *         "precio_cliente_clp": 8000000,
                          *         "vencimiento": "2026-12-31",
                          *         "estado": "activo",
                          *         "vencimiento_reminded_at": null,
@@ -181756,6 +183707,8 @@ export interface paths {
                          *         "created_at": "2026-08-20T10:00:00.000Z",
                          *         "updated_at": "2026-08-20T10:00:00.000Z",
                          *         "sale_iva_regime": "exento",
+                         *         "notes": null,
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -181835,9 +183788,11 @@ export interface paths {
          *
          *     Moving `vencimiento` RE-ARMS the expiry reminder: the "already reminded" stamp is cleared, so a pushed-out date produces a fresh nudge rather than staying silent.
          *
-         *     Supplying `minimo_clp` RENEGOTIATES the mínimo rather than editing a column: it appends an immutable revision to the contract’s terms history (`GET /consignments/{id}/terms`), dated `minimo_effective_on` or today. The new value must DIFFER from the one currently governing — repeating it is a **409**, as is a second revision on a date already taken.
+         *     Supplying `minimo_clp` RENEGOTIATES the mínimo rather than editing a column: it appends an immutable revision to the contract’s terms history (`GET /consignments/{id}/terms`), dated `minimo_effective_on` or today. `precio_cliente_clp` is the same field under its new name. Sending the value already governing, with no `minimo_effective_on`, is a no-op (a form may resend every field); a second revision on a date already taken is a **409**.
          *
-         *     A raised `minimo_clp` writes through to the vehicle’s floor while the contract is active — but **clearing it never clears the floor**, and neither does the contract ending. The vehicle has one floor column with no record of who set it, so removing it here could silently wipe a floor the dealer set by hand. Clear the vehicle’s floor deliberately if that is what you want.
+         *     A raised Precio cliente writes through to the vehicle’s floor while the contract is active. Withdrawing it (null) clears the floor only while the floor still holds the withdrawn price, so a floor the dealer set by hand is kept; the contract ending never clears it.
+         *
+         *     `comision_minima_clp`, `comision_minima_mas_iva`, `cobro_retiro_anticipado_clp` and `observaciones` are plain edits (null clears).
          */
         patch: {
             parameters: {
@@ -181852,7 +183807,7 @@ export interface paths {
                 content: {
                     /**
                      * @example {
-                     *       "minimo_clp": 8300000
+                     *       "precio_cliente_clp": 8300000
                      *     }
                      */
                     "application/json": {
@@ -181873,6 +183828,12 @@ export interface paths {
                         sale_iva_regime?: "afecto" | "exento" | null;
                         /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
                         notes?: string | null;
+                        precio_cliente_clp?: number | null;
+                        comision_minima_clp?: number | null;
+                        comision_minima_mas_iva?: boolean;
+                        cobro_retiro_anticipado_clp?: number | null;
+                        /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
+                        observaciones?: string | null;
                     };
                 };
             };
@@ -181894,7 +183855,12 @@ export interface paths {
                          *         "contract_structure": "mandato_con_representacion",
                          *         "comision_type": "percentage",
                          *         "comision_value": 10,
+                         *         "comision_mas_iva": true,
+                         *         "comision_minima_clp": 500000,
+                         *         "comision_minima_mas_iva": true,
+                         *         "cobro_retiro_anticipado_clp": null,
                          *         "minimo_clp": 8300000,
+                         *         "precio_cliente_clp": 8300000,
                          *         "vencimiento": "2026-12-31",
                          *         "estado": "activo",
                          *         "vencimiento_reminded_at": null,
@@ -181902,6 +183868,8 @@ export interface paths {
                          *         "created_at": "2026-08-20T10:00:00.000Z",
                          *         "updated_at": "2026-08-20T10:00:00.000Z",
                          *         "sale_iva_regime": "exento",
+                         *         "notes": null,
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -182018,7 +183986,12 @@ export interface paths {
                          *         "contract_structure": "mandato_con_representacion",
                          *         "comision_type": "percentage",
                          *         "comision_value": 10,
+                         *         "comision_mas_iva": true,
+                         *         "comision_minima_clp": 500000,
+                         *         "comision_minima_mas_iva": true,
+                         *         "cobro_retiro_anticipado_clp": null,
                          *         "minimo_clp": 8000000,
+                         *         "precio_cliente_clp": 8000000,
                          *         "vencimiento": "2026-12-31",
                          *         "estado": "devuelto",
                          *         "vencimiento_reminded_at": null,
@@ -182026,6 +183999,8 @@ export interface paths {
                          *         "created_at": "2026-08-20T10:00:00.000Z",
                          *         "updated_at": "2026-09-15T09:00:00.000Z",
                          *         "sale_iva_regime": "exento",
+                         *         "notes": null,
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -182113,7 +184088,7 @@ export interface paths {
          * Sell the car and settle with the owner
          * @description One atomic action doing two things: moves the contract to `vendido`, and produces the **Liquidación** — sale price minus commission equals the amount owed to the owner, minus every retained cost line the owner bears (derived from the car's cost ledger, never sent; a 409 if they exceed the payout), plus the payment record. Requires `amount_venta_clp`; `paid_at` records when the owner was actually paid.
          *
-         *     **Only the medio de pago is required**: `payout_method` (transferencia, vale_vista or cheque). `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace; defaults to whoever registers it) are optional. What was recorded prints on the liquidación with the payment and registration dates.
+         *     **No payout detail is required** (ADR 0159): `payout_method` (transferencia, vale_vista or cheque) defaults to `transferencia`. `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace; defaults to whoever registers it) are optional. What was recorded prints on the liquidación with the payment and registration dates.
          *
          *     **The commission can be set for this sale**: `comision_amount_clp` (net of IVA) replaces what the contract’s terms would compute — a minimum commission, a figure renegotiated at closing. The liquidación then records a fixed commission of that amount; the contract keeps its terms. To charge the owner an additional cost, record it on the car’s cost ledger with a `dueno` share before settling.
          *
@@ -182153,10 +184128,10 @@ export interface paths {
                         /** @description Comisión acordada para ESTA venta, neta de IVA, en pesos. Opcional: si se omite, se calcula con los términos del contrato. Cuando se envía, la liquidación la registra como comisión fija (el contrato no cambia) y el «+ IVA» sigue siendo el del contrato. No puede superar `amount_venta_clp`. */
                         comision_amount_clp?: number;
                         /**
-                         * @description Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`. Es el único dato del pago que se exige.
+                         * @description Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`. Opcional: si se omite queda `transferencia` (ADR 0159: un pago pide solo su monto).
                          * @enum {string}
                          */
-                        payout_method: "transferencia" | "vale_vista" | "cheque";
+                        payout_method?: "transferencia" | "vale_vista" | "cheque";
                         /** @description Banco por el que se pagó. Opcional. */
                         payout_bank?: string;
                         /** @description Cuenta de destino. Opcional. Solo se guardan sus últimos 4 dígitos (`payout_account_last4`), que es lo que muestran la app y la liquidación; si se envía, necesita al menos 4 dígitos. */
@@ -182190,7 +184165,12 @@ export interface paths {
                          *           "contract_structure": "mandato_con_representacion",
                          *           "comision_type": "percentage",
                          *           "comision_value": 10,
+                         *           "comision_mas_iva": true,
+                         *           "comision_minima_clp": 500000,
+                         *           "comision_minima_mas_iva": true,
+                         *           "cobro_retiro_anticipado_clp": null,
                          *           "minimo_clp": 8000000,
+                         *           "precio_cliente_clp": 8000000,
                          *           "vencimiento": "2026-12-31",
                          *           "estado": "vendido",
                          *           "vencimiento_reminded_at": null,
@@ -182198,6 +184178,8 @@ export interface paths {
                          *           "created_at": "2026-08-20T10:00:00.000Z",
                          *           "updated_at": "2026-08-20T10:00:00.000Z",
                          *           "sale_iva_regime": "exento",
+                         *           "notes": null,
+                         *           "observaciones": "Se entrega con dos llaves.",
                          *           "not_on_lot": false
                          *         },
                          *         "liquidacion": {
@@ -182224,7 +184206,8 @@ export interface paths {
                          *           "payout_paid_by_name": "Ana Pérez",
                          *           "paid_at": "2026-09-18T15:00:00.000Z",
                          *           "created_at": "2026-09-18T15:00:05.000Z",
-                         *           "updated_at": "2026-09-18T15:00:05.000Z"
+                         *           "updated_at": "2026-09-18T15:00:05.000Z",
+                         *           "comision_minima_applied": false
                          *         }
                          *       }
                          *     }
@@ -182307,6 +184290,8 @@ export interface paths {
          * Fetch the settlement record
          * @description The persisted Liquidación for a contract. It only exists once the contract has been sold — this is a read of a record, not a projection computed on demand, so the figures are what was agreed at settlement even if the terms changed afterwards.
          *
+         *     `comision_minima_applied: true` when the Comisión mínima won over the percentage (stored as a fixed commission of the minimum): the commission reads «Comisión mínima», as on the PDF (app#7589).
+         *
          *     It carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields existed they are all `null`; since then `payout_method` is always set and each of the others is `null` when it was not recorded.
          *
          *     `deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.
@@ -182359,6 +184344,7 @@ export interface paths {
                          *         "paid_at": "2026-09-18T15:00:00.000Z",
                          *         "created_at": "2026-09-18T15:00:05.000Z",
                          *         "updated_at": "2026-09-18T15:00:05.000Z",
+                         *         "comision_minima_applied": false,
                          *         "sends": [
                          *           {
                          *             "channel": "email",
@@ -198940,7 +200926,7 @@ export interface paths {
         };
         /**
          * What happens next for each of a contact’s leads
-         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `held` (the sweep holds the step when it comes due, asked at that moment through the sweep’s own functions: G25 `no_reachable_address` (no phone or email for the step’s channel), G52 a visit fixed, the store visited or a sale under way; G50 handed to a person for a complaint or a step only a person can do; G49 «Nada»; G34, G36, R13 / G38, R5, G43; and the composer’s channel resolution: `no_deliverable_channel` (e.g. Instagram past its window), `template_missing`, `policy_blocked`, `account_restricted`. `held` carries the guard, `code` and `until` when known; never a send time), `draft` (a draft of the step is written and waits on a person: `draft` = `attempt_id`, `auto_send_at` and `auto_send_at_label` when G49 sends it itself, null when only a person sends it), `queued` (G24 backlog queue: `queue` = `position` (1-based), `waiting`, `per_day`, `label`; `at` is the estimated release), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. `step_label` names the step as the hero does («Conversó y dejó de responder · paso 3 de 5»), and `sentence` uses it. `at` is the lead sweep’s hourly tick (the grid `/plan` draws). `handoff_draft` is set when the step becomes a draft for the person handling a handed-off conversation (G49: `approver_user_id`, `auto_send_at`, `auto_send_at_label`, `window_note`; `auto_send_at` is capped inside the channel’s 24 h window exactly as the engine stores it, null when only a person can send it), else null. When the step resolves to another channel than configured (an Instagram step past its window goes as a WhatsApp template), `channel` and `what` name the resolved one. `conversations` is the chat rail’s next reminder on the person’s open WhatsApp / Instagram threads, from the chat sweep’s own candidate query and hold spacing: the same fields as a lead plus `conversation_id`, `thread_channel` and `situation: unanswered_message`. `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: why it was handed over; since 2026-10-25 it no longer decides anything: every handed-off or taken conversation is silent until «Devolver a la IA», its steps follow `mode`, and the AI answers a waiting customer only when `after_handoff.ai_answers_waiting` allows it), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it, `window_note`: when it must be sent by on a free-text WhatsApp or Instagram draft), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`), `next` (`kind` `draft` | `step` | `held` | `none`, `at_label`, `label`: the next step as one short fact) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»). With no draft and nobody waiting, the line names the person’s actual next step: «borrador para quien lo atiende · {fecha}», the hold’s own words, or «sin seguimiento automático: le toca a {owner}».
+         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `held` (the sweep holds the step when it comes due, asked at that moment through the sweep’s own functions: G25 `no_reachable_address` (no phone or email for the step’s channel), G52 a visit fixed, the store visited or a sale under way; G50 handed to a person for a complaint or a step only a person can do; G49 «Nada»; G34, G36, R13 / G38, R5, G43; and the composer’s channel resolution: `no_deliverable_channel` (e.g. Instagram past its window), `template_missing`, `policy_blocked`, `account_restricted`. `held` carries the guard, `code` and `until` when known; never a send time), `draft` (a draft of the step is written and waits on a person: `draft` = `attempt_id`, `auto_send_at` and `auto_send_at_label` when G49 sends it itself, null when only a person sends it), `queued` (G24 backlog queue: `queue` = `position` (1-based), `waiting`, `per_day`, `label`; `at` is the estimated release), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. `step_label` names the step as the hero does («Conversó y dejó de responder · paso 3 de 5»), and `sentence` uses it. `at` is the lead sweep’s hourly tick (the grid `/plan` draws). `handoff_draft` is set when the step becomes a draft for the person handling a handed-off conversation (G49: `approver_user_id`, `auto_send_at`, `auto_send_at_label`, `window_note`; `auto_send_at` is capped inside the channel’s 24 h window exactly as the engine stores it, null when only a person can send it), else null. When the step resolves to another channel than configured (an Instagram step past its window goes as a WhatsApp template), `channel` and `what` name the resolved one. `conversations` is the chat rail’s next reminder on the person’s open WhatsApp / Instagram threads, from the chat sweep’s own candidate query and hold spacing: the same fields as a lead plus `conversation_id`, `thread_channel` and `situation: unanswered_message`. `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: why it was handed over; since 2026-10-25 it no longer decides anything: every handed-off or taken conversation is silent until «Devolver a la IA», its steps follow `mode`, and the AI answers a waiting customer only when `after_handoff.ai_answers_waiting` allows it), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it, `window_note`: when it must be sent by on a free-text WhatsApp or Instagram draft), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`, and `no_answer_reason` when the AI will not answer: `turn_passed`, `window_closed` (WhatsApp past 24 h), `human_agent_only` (Instagram / Messenger 24 h – 7 d: only a person on the team can reply), `channel_closed` (Instagram / Messenger past 7 d), `setting_off`, `quiet_days_only`), `next` (`kind` `draft` | `step` | `held` | `none`, `at_label`, `label`: the next step as one short fact) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»). With no draft and nobody waiting, the line names the person’s actual next step: «borrador para quien lo atiende · {fecha}», the hold’s own words, or «sin seguimiento automático: le toca a {owner}».
          */
         get: {
             parameters: {
@@ -220855,7 +222841,7 @@ export interface paths {
         };
         /**
          * What the AI did for the agenda (any vertical)
-         * @description The same facts as `GET /clinic/insights/resultados`, for any vertical, with the vertical's vocabulary (`family`: a dealer reads visits and test drives, `clientes`). Blocks with no data for the vertical come back `applies: false` (money, confirmation, reminders for a dealer) rather than as zeros. Aggregates only. Requires `analytics:read`; CLP figures additionally require `clinic_money:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` inclusive; default the 90 days ending today) and `location_id`.
+         * @description The same facts as `GET /clinic/insights/resultados`, for any vertical, with the vertical's vocabulary (`family`: a dealer reads visits and test drives, `clientes`). Blocks with no data for the vertical come back `applies: false` (money, confirmation, reminders for a dealer) rather than as zeros (`agent_citas` and `treatments_started` too: the agent's citas by attendance, the correct-booking share and the treatments started after an evaluation are clinic-only). Aggregates only. Requires `analytics:read`; CLP figures additionally require `clinic_money:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` inclusive; default the 90 days ending today) and `location_id`.
          */
         get: {
             parameters: {
@@ -221027,6 +223013,87 @@ export interface paths {
                          *             }
                          *           ],
                          *           "rule": "Recordatorios de citas del período que no salieron, agrupados por la causa que registró el envío."
+                         *         },
+                         *         "agent_citas": {
+                         *           "applies": true,
+                         *           "booked": 286,
+                         *           "moved": 14,
+                         *           "attendance": {
+                         *             "attended": 171,
+                         *             "no_show": 22,
+                         *             "cancelled": 31,
+                         *             "upcoming": 40,
+                         *             "not_closed": 8,
+                         *             "rate": {
+                         *               "numerator": 171,
+                         *               "denominator": 193,
+                         *               "rate_pct": 88.6,
+                         *               "min_base": 20,
+                         *               "reliable": true
+                         *             }
+                         *           },
+                         *           "correct": {
+                         *             "measured": 120,
+                         *             "correct": 104,
+                         *             "corrected": 16,
+                         *             "corrected_by": {
+                         *               "visit_reason": 9,
+                         *               "professional": 5,
+                         *               "both": 2
+                         *             },
+                         *             "sin_dato": {
+                         *               "no_record": 12,
+                         *               "not_rebuilt": 21,
+                         *               "no_visit_reason": 18
+                         *             },
+                         *             "backfilled": 47,
+                         *             "correct_pct": 86.7,
+                         *             "state": "measured"
+                         *           },
+                         *           "rule_correct": "Citas que agendó Vitrina y a las que el paciente asistió, en las que el motivo de la visita y el profesional seguían siendo los que eligió el asistente al agendar.",
+                         *           "rule_attendance": "Citas del período que agendó Vitrina, según su asistencia. Las movidas no se cuentan aquí.",
+                         *           "rule_moved": "Una cita de Vitrina que luego se movió se cuenta como movida, fuera de la asistencia y de la reserva correcta."
+                         *         },
+                         *         "treatments_started": {
+                         *           "applies": true,
+                         *           "measurable": true,
+                         *           "reason": null,
+                         *           "source": "mirror",
+                         *           "evaluated": 96,
+                         *           "started": 31,
+                         *           "rate_pct": 32.3,
+                         *           "matured": {
+                         *             "months": 2,
+                         *             "evaluated": 76,
+                         *             "started": 29,
+                         *             "rate_pct": 38.2
+                         *           },
+                         *           "unlinked": 2,
+                         *           "horizon_days": 90,
+                         *           "months": [
+                         *             {
+                         *               "month": "2026-07",
+                         *               "evaluated": 40,
+                         *               "started": 18,
+                         *               "rate_pct": 45,
+                         *               "maturing": false
+                         *             },
+                         *             {
+                         *               "month": "2026-08",
+                         *               "evaluated": 36,
+                         *               "started": 11,
+                         *               "rate_pct": 30.6,
+                         *               "maturing": false
+                         *             },
+                         *             {
+                         *               "month": "2026-09",
+                         *               "evaluated": 20,
+                         *               "started": 2,
+                         *               "rate_pct": 10,
+                         *               "maturing": true
+                         *             }
+                         *           ],
+                         *           "rule": "Pacientes que asistieron a una evaluación (cita de diagnóstico) que agendó Vitrina, y cuántos empezaron un tratamiento dentro de 90 días."
                          *         },
                          *         "truncated": false
                          *       }
@@ -319543,6 +321610,55 @@ export interface components {
             /** @description When the client confirmed the data: saved in the app (source in_app), or typed into the onboarding form (source import, the import time). Null = migrated data nobody has reviewed. Whether a factura can be issued is `complete`, not this. */
             confirmed_at: string | null;
         };
+        BillingAgentProduct: {
+            /** @description The agent product is on: an active agent with instructions is the workspace default or assigned to a channel. */
+            activated: boolean;
+            /**
+             * @description Why it is off: no agent with instructions yet, or one exists but is neither the default nor on a channel. Null when on.
+             * @enum {string|null}
+             */
+            reason: "no_agent" | "agent_not_reachable" | null;
+            agents: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                /** @description The workspace default or assigned to a channel. */
+                reachable: boolean;
+                has_instructions: boolean;
+            }[];
+            /**
+             * @description What the owner does next. Null when on.
+             * @enum {string|null}
+             */
+            next_step: "build_agent" | "turn_on_agent" | null;
+            /** @description Billable conversations of the month in progress (Santiago): conversations the agent answered, the same meter the invoice uses. */
+            conversations_this_period: number;
+            /** @description YYYY-MM-01 of the month in progress. */
+            period_month: string;
+            /** @description Graduated price per conversation, in UF. */
+            price_ladder: {
+                /** @description First conversation of the band (1-based). */
+                from: number;
+                /** @description Last conversation of the band; null = no ceiling. */
+                up_to: number | null;
+                /** @description UF per conversation inside the band. */
+                uf: number;
+            }[];
+            /** @description Today's UF in CLP (estimate). */
+            uf_value: number | null;
+            /** @description YYYY-MM-DD of uf_value. */
+            uf_date: string | null;
+        };
+        BillingAgentActivation: {
+            /** @enum {string} */
+            status: "activated" | "already_active";
+            /** Format: uuid */
+            ai_agent_id: string;
+            /** @description Channels this call assigned the agent to. */
+            pinned_channels: number;
+            /** @description This call made the agent the workspace default. */
+            set_default: boolean;
+        };
         PaymentMethodSetup: {
             /** @enum {string} */
             provider: "fintoc" | "mercadopago" | "transbank_oneclick";
@@ -320106,6 +322222,7 @@ export interface components {
             /** Format: uuid */
             buyer_contact_id: string | null;
             registered_owner: components["schemas"]["SaleNoteRegisteredOwner"] | null;
+            observaciones: string | null;
             net_clp: number;
             tax_clp: number | null;
             /** @enum {string} */
@@ -320118,6 +322235,22 @@ export interface components {
             name: string;
             tax_id: string;
         } | null;
+        OwnAddOnItem: {
+            /** @enum {string} */
+            kind: "otro";
+            /** @enum {string} */
+            framing?: "cargo_propio";
+            description: string;
+            charge_clp: number;
+            /** @enum {string} */
+            tax_treatment?: "afecto" | "exento";
+        };
+        TransferCostsAddOnItem: {
+            /** @enum {string} */
+            kind: "transferencia";
+            description?: string;
+            charge_clp?: number;
+        };
         SaleNoteFieldChange: {
             from?: unknown;
             to?: unknown;
@@ -320240,6 +322373,7 @@ export interface components {
             /** Format: uuid */
             buyer_contact_id: string | null;
             registered_owner: components["schemas"]["SaleNoteRegisteredOwner"] | null;
+            observaciones: string | null;
             net_clp: number;
             tax_clp: number | null;
             /** @enum {string} */
@@ -320253,6 +322387,62 @@ export interface components {
             settlement_difference: components["schemas"]["SettlementDifference"] | null;
         } & {
             [key: string]: unknown;
+        };
+        CompraventaArtefact: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            sale_note_id: string | null;
+            mime: string;
+            byte_size: number;
+            sha256: string;
+            template_version: string | null;
+            rendered_at: string;
+            rendered_by: string | null;
+            /** Format: uuid */
+            supersedes_id: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        CompraventaIssuance: {
+            document: components["schemas"]["CompraventaArtefact"];
+            frozen: boolean;
+            already_issued: boolean;
+            /** @enum {string} */
+            leg: "consignante" | "retoma" | "automotora";
+            delivery: {
+                /** @enum {string} */
+                status: "posted" | "already_delivered" | "no_buyer_contact" | "no_conversation";
+                /** Format: uuid */
+                conversation_id: string | null;
+                /** Format: uuid */
+                conversation_note_id: string | null;
+            };
+        };
+        CompraventaMissingField: {
+            /** @example buyer.tax_id */
+            key: string;
+            /** @example RUT del comprador */
+            label: string;
+            /** @enum {string} */
+            input: "text" | "rut" | "comuna" | "date";
+            saved_to: {
+                /** @enum {string} */
+                resource: "organization_legal" | "contact";
+                /** Format: uuid */
+                id: string | null;
+                field: string;
+            };
+        };
+        CompraventaRequirements: {
+            /** Format: uuid */
+            sale_note_id: string;
+            ready: boolean;
+            missing_fields: components["schemas"]["CompraventaMissingField"][];
+            blocked: {
+                reason: string;
+                message: string;
+            } | null;
         };
         SaleNoteCorrection: {
             /** @enum {string} */
@@ -320298,6 +322488,31 @@ export interface components {
             charge_clp?: number;
             /** @enum {string} */
             tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+        };
+        ConsignmentContractMissingField: {
+            /** @example owner.tax_id */
+            key: string;
+            /** @example RUT del dueño */
+            label: string;
+            /** @enum {string} */
+            input: "text" | "rut" | "comuna";
+            saved_to: {
+                /** @enum {string} */
+                resource: "organization_legal" | "contact";
+                /** Format: uuid */
+                id: string | null;
+                field: string;
+            };
+        };
+        ConsignmentContractRequirements: {
+            /** Format: uuid */
+            consignment_contract_id: string;
+            ready: boolean;
+            missing_fields: components["schemas"]["ConsignmentContractMissingField"][];
+            blocked: {
+                reason: string;
+                message: string;
+            } | null;
         };
         ReservationConverted: {
             reservation: {
@@ -326399,6 +328614,51 @@ export interface components {
                 produccion_clp: number;
             }[];
         };
+        AgendaTreatmentsStarted: {
+            /** @description Clinics only; a dealer or generic workspace gets `false` and nulls. */
+            applies: boolean;
+            /** @description `false` = «sin dato»: the clinic has no plan or presupuesto data to say when a treatment started (`reason`), or the read failed. */
+            measurable: boolean;
+            /** @enum {string|null} */
+            reason: "no_source" | "unavailable" | null;
+            /**
+             * @description Which money sources the clinic has data in.
+             * @enum {string|null}
+             */
+            source: "mirror" | "native" | "both" | null;
+            /** @description Patients whose agent-booked evaluation (Cita de diagnóstico) was attended, one per patient (their first of the window). `null` when not measurable. */
+            evaluated: number | null;
+            /** @description Of `evaluated`, who started a treatment within `horizon_days` of the evaluation (the «Tratamiento iniciado» fact). */
+            started: number | null;
+            /** @description `started ÷ evaluated`; `null` without a base. */
+            rate_pct: number | null;
+            /** @description The rate over months whose 90-day window has fully passed (the month last evaluation is at least `horizon_days` old), beside the overall `rate_pct`. */
+            matured: {
+                /** @description How many months are matured (`maturing: false`). */
+                months: number | null;
+                /** @description Sum of the matured months' `evaluated` (denominator). */
+                evaluated: number | null;
+                /** @description Sum of the matured months' `started` (numerator). */
+                started: number | null;
+                /** @description `started ÷ evaluated` over matured months only, one decimal; `null` (never 0) when no month has matured. Everything `null` when not measurable. */
+                rate_pct: number | null;
+            };
+            /** @description Attended agent evaluations with no patient to follow. */
+            unlinked: number | null;
+            /** @description 90. */
+            horizon_days: number;
+            /** @description Empty when not measurable. */
+            months: {
+                /** @description `YYYY-MM` of the patient first evaluation (clinic day). */
+                month: string;
+                evaluated: number;
+                started: number;
+                rate_pct: number | null;
+                /** @description The month last evaluation is under `horizon_days` old: its patients may still start. */
+                maturing: boolean;
+            }[];
+            rule: string;
+        };
         AgendaResults: {
             from: string;
             to: string;
@@ -326421,9 +328681,9 @@ export interface components {
                 agenda_total: number;
                 /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
                 share_pct: number | null;
-                /** @description Of `ai`: citas the patient attended. */
+                /** @description LEGACY pair with `ai_missed` (kept for older clients) — of `ai`: citas the patient attended. `agent_citas.attendance` is the full split. */
                 ai_attended: number;
-                /** @description Of `ai`: cancelled (with or without notice) or no-show. */
+                /** @description LEGACY — of `ai`: cancelled (with or without notice) or no-show; a cancelled cita Vitrina moved is still counted here. `agent_citas` reports moved citas apart. */
                 ai_missed: number;
                 /** @description Agent-booked citas dated after `to` — booked, not happened yet. Not part of `ai`. */
                 ai_upcoming: number;
@@ -326623,16 +328883,83 @@ export interface components {
                 }[];
                 rule: string;
             };
+            /** @description vitrina-app#7476 — the agent's citas: attendance (moved apart) and the share booked correctly («Elección del agente»: the visit reason and professional the agent chose, kept once at booking). */
+            agent_citas: {
+                /** @description Clinics only. `false` for dealers and generic workspaces: every figure is `null`. */
+                applies: boolean;
+                /** @description `bookings.ai`: the period's citas the agent booked. */
+                booked: number | null;
+                /** @description Agent citas later moved on Dentalink / Medilink («Cambio de …» estado) or moved through Vitrina (`moved_to_appointment_id`). Outside `attendance` and `correct`; the replacement is not counted as the agent's. */
+                moved: number | null;
+                /** @description The not-moved agent citas; the parts add up to `booked − moved`. */
+                attendance: {
+                    attended: number;
+                    no_show: number;
+                    /** @description Late cancellations included. */
+                    cancelled: number;
+                    /** @description Still ahead. */
+                    upcoming: number;
+                    /** @description Past, and nobody marked attendance — never counted as attended or missed. */
+                    not_closed: number;
+                    /** @description Attendance rate of the agent citas. */
+                    rate: {
+                        /** @description `attended`. */
+                        numerator: number;
+                        /** @description `attended + no_show`. Cancelled, upcoming, not closed and moved citas are outside it. */
+                        denominator: number;
+                        /** @description `numerator ÷ denominator`, one decimal; `null` (never 0) when `denominator` is 0. No display floor is applied here. */
+                        rate_pct: number | null;
+                        /** @description The base clients apply as a display floor (20): below it show the counts, not the percentage. */
+                        min_base: number;
+                        /** @description `denominator >= min_base`. */
+                        reliable: boolean;
+                    };
+                } | null;
+                correct: {
+                    /** @description Attended, not moved, judgeable: the denominator of `correct_pct`. */
+                    measured: number;
+                    /** @description Visit reason and professional still the ones the agent chose when booking. */
+                    correct: number;
+                    corrected: number;
+                    corrected_by: {
+                        visit_reason: number;
+                        professional: number;
+                        both: number;
+                    };
+                    /** @description Attended citas that cannot be judged — never counted as correct. */
+                    sin_dato: {
+                        /** @description No record of what the agent chose (booked before the record existed and not rebuildable). */
+                        no_record: number;
+                        /** @description The record lacks the visit reason or the professional, or the cita lacks the current value. */
+                        not_rebuilt: number;
+                        /** @description The engine keeps no visit reason (Medilink): never judged. */
+                        no_visit_reason: number;
+                    };
+                    /** @description Of `measured`, judged on a record rebuilt from history (`origin = backfill`). */
+                    backfilled: number;
+                    /** @description `correct ÷ measured`, percent with one decimal; `null` when `measured` is 0. */
+                    correct_pct: number | null;
+                    /**
+                     * @description `sin_dato` when no attended cita could be judged.
+                     * @enum {string}
+                     */
+                    state: "measured" | "sin_dato";
+                } | null;
+                rule_correct: string;
+                rule_attendance: string;
+                rule_moved: string;
+            };
+            treatments_started: components["schemas"]["AgendaTreatmentsStarted"];
             truncated: boolean;
         };
         AgendaResultsPeople: {
             /** @enum {string} */
-            metric: "ai_bookings" | "out_of_hours" | "paid_patients";
+            metric: "ai_bookings" | "out_of_hours" | "paid_patients" | "ai_corrected" | "ai_attended" | "ai_upcoming" | "ai_no_show" | "ai_cancelled" | "ai_not_closed" | "ai_moved" | "treatment_evaluated" | "treatment_started";
             from: string;
             to: string;
             /** Format: uuid */
             location_id: string | null;
-            /** @description The number on the page, by construction (one read): `bookings.ai`, `out_of_hours.count` or `money.paid_patients`. `null` = not measured (no schedule; money withheld or nobody linked). */
+            /** @description The number on the page, by construction (one read): `bookings.ai`, `out_of_hours.count`, `money.paid_patients`, the `agent_citas` or `treatments_started` figure the metric names. `null` = not measured (no schedule; money withheld or nobody linked; an `ai_*` list outside a clinic). */
             count: number | null;
             /** @description Exactly `count` rows (citas by start; payers by total). */
             people: {
@@ -326669,6 +328996,21 @@ export interface components {
                     } | null;
                     /** @description Booked while closed; `null` when no business hours are set. */
                     out_of_hours: boolean | null;
+                    /** @description `ai_corrected` only: what changed since the agent booked it, by name (visit reason: the motivo, the prestación booked or the Reservo tratamiento). `null` on every other list. */
+                    changes: {
+                        visit_reason?: {
+                            /** @description What the agent chose. */
+                            from: string | null;
+                            /** @description What the cita had when attended. */
+                            to: string | null;
+                        };
+                        professional?: {
+                            /** @description What the agent chose. */
+                            from: string | null;
+                            /** @description What the cita had when attended. */
+                            to: string | null;
+                        };
+                    } | null;
                 } | null;
                 /** @description `paid_patients` only. */
                 paid: {
@@ -326681,6 +329023,16 @@ export interface components {
                         day: string;
                         amount: number;
                     }[];
+                } | null;
+                /** @description `treatment_evaluated` / `treatment_started`: the treatment the patient started within 90 days of the evaluation in `cita`; `null` = not started, and on every other list. */
+                started: {
+                    /** @description The clinic day the treatment started. */
+                    day: string;
+                    /**
+                     * @description `payment`: money reached a treatment line (or the first payment on a presupuesto); `performed`: the first treatment prestación was performed.
+                     * @enum {string}
+                     */
+                    evidence: "payment" | "performed";
                 } | null;
             }[];
             /** @description The window read hit its row cap, as the page’s own. */
