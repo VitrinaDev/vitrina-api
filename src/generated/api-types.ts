@@ -38339,6 +38339,9 @@ export interface paths {
                                     uf_value: number | null;
                                     uf_value_date: string | null;
                                 } | null;
+                                cancel_at_period_end: boolean;
+                                ends_on: string | null;
+                                plan_ended_at: string | null;
                             };
                         };
                     };
@@ -39447,6 +39450,7 @@ export interface paths {
                          *           "deed_version": null,
                          *           "fee_schedule_version": null,
                          *           "terms_version": null,
+                         *           "document_family": null,
                          *           "rendered_at": "2026-09-19T15:10:00.000Z",
                          *           "rendered_by": "11111111-0000-4000-8000-000000000001",
                          *           "supersedes_id": null
@@ -39492,6 +39496,7 @@ export interface paths {
                          *           "deed_version": null,
                          *           "fee_schedule_version": null,
                          *           "terms_version": null,
+                         *           "document_family": null,
                          *           "rendered_at": "2026-09-19T15:10:00.000Z",
                          *           "rendered_by": "11111111-0000-4000-8000-000000000001",
                          *           "supersedes_id": null
@@ -39638,6 +39643,282 @@ export interface paths {
                         "application/json": {
                             data: components["schemas"]["CompraventaRequirements"];
                         };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sale-notes/{id}/declaracion-responsabilidad": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Print and freeze the buyer’s declaración de responsabilidad
+         * @description Produces the **declaración de responsabilidad** the buyer signs when taking the car, for a closed (approved) nota de venta, and freezes it as an immutable `rendered_document` (ADR 0057) with `document_family: "declaracion_responsabilidad"` and the template version it was worded with. One page, portrait A4, on the workspace’s document branding.
+         *
+         *     The buyer declares that, from the purchase on, they answer for any damage to people or property from using the car (by them or anyone else) and for every traffic fine and toll charge, and that fines from before the purchase stay with the dealership. The plate stays registered to the seller until the transfer is inscribed; this is the dealership’s cover for that window.
+         *
+         *     **The words are the dealership’s own:** the workspace’s `declaracion_responsabilidad` document template (Plantillas) — its default, else its only one, else the standard text (`declaracion-de-responsabilidad-estandar`). Withdrawing the template returns to the standard text. A re-print keeps the words of the declaración already issued.
+         *
+         *     **It never asks for legal data.** It prints with whatever the sale has (buyer name, RUT, domicilio, phone and e-mail; the car’s make, model, year, colour, plate with its check digit, VIN) and leaves out what is missing — never a blank, never a placeholder, never a 409 for data.
+         *
+         *     **Reachable only once the sale is closed (approved) and not voided:** a sale not yet closed is a **409** with `details.blocked_reason: sale_note_not_approved` («La venta V-12 todavía no está cerrada. Ciérrala para imprimir la declaración de responsabilidad.»), a voided one a **409** with `sale_note_voided`.
+         *
+         *     **Re-printing is not a new document:** an unchanged note answers **200** with the same artefact, `frozen: true`. When the facts changed (say the buyer’s RUT was added) a **201** carries a NEW artefact whose `supersedes_id` names the previous one. Then `GET /sale-notes/{id}/declaracion-responsabilidad/pdf` serves the bytes.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The frozen artefact, served unchanged */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "d5d5d5d5-0000-4000-8000-000000000002",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *           "purchase_note_id": null,
+                         *           "consignment_contract_id": null,
+                         *           "clinic_consent_id": null,
+                         *           "storage_bucket": "rendered-documents",
+                         *           "storage_key": "tenants/a1a1a1a1-0000-4000-8000-000000000001/documents/sale_note/d4d4d4d4-0000-4000-8000-000000000001/d5d5d5d5-0000-4000-8000-000000000002.pdf",
+                         *           "mime": "application/pdf",
+                         *           "byte_size": 31877,
+                         *           "sha256": "4be1c0d2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7f8e9d0",
+                         *           "template_version": "declaracion-de-responsabilidad-v1",
+                         *           "deed_version": null,
+                         *           "fee_schedule_version": null,
+                         *           "terms_version": null,
+                         *           "document_family": "declaracion_responsabilidad",
+                         *           "rendered_at": "2026-11-19T15:10:00.000Z",
+                         *           "rendered_by": "11111111-0000-4000-8000-000000000001",
+                         *           "supersedes_id": null
+                         *         },
+                         *         "frozen": true,
+                         *         "already_issued": true,
+                         *         "template_version": "declaracion-de-responsabilidad-v1"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["DeclaracionResponsabilidadIssuance"];
+                        };
+                    };
+                };
+                /** @description The newly issued artefact */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "d5d5d5d5-0000-4000-8000-000000000002",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *           "purchase_note_id": null,
+                         *           "consignment_contract_id": null,
+                         *           "clinic_consent_id": null,
+                         *           "storage_bucket": "rendered-documents",
+                         *           "storage_key": "tenants/a1a1a1a1-0000-4000-8000-000000000001/documents/sale_note/d4d4d4d4-0000-4000-8000-000000000001/d5d5d5d5-0000-4000-8000-000000000002.pdf",
+                         *           "mime": "application/pdf",
+                         *           "byte_size": 31877,
+                         *           "sha256": "4be1c0d2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7f8e9d0",
+                         *           "template_version": "declaracion-de-responsabilidad-v1",
+                         *           "deed_version": null,
+                         *           "fee_schedule_version": null,
+                         *           "terms_version": null,
+                         *           "document_family": "declaracion_responsabilidad",
+                         *           "rendered_at": "2026-11-19T15:10:00.000Z",
+                         *           "rendered_by": "11111111-0000-4000-8000-000000000001",
+                         *           "supersedes_id": null
+                         *         },
+                         *         "frozen": false,
+                         *         "already_issued": false,
+                         *         "template_version": "declaracion-de-responsabilidad-v1"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["DeclaracionResponsabilidadIssuance"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sale-notes/{id}/declaracion-responsabilidad/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download the declaración de responsabilidad
+         * @description The **stored bytes** of the current declaración, as `application/pdf` (inline), with its `sha256` re-verified against the row; it never re-renders. The `X-Template-Version` header names the words it carries. A voided note still serves the declaración it printed before the void. A **404** when none was printed yet — call `POST /sale-notes/{id}/declaracion-responsabilidad` first.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The declaración, as stored */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
                     };
                 };
                 /** @description Validation error */
@@ -316680,6 +316961,7 @@ export interface paths {
                          *             "vendor_active": true,
                          *             "active": true,
                          *             "agent_bookable": true,
+                         *             "is_evaluation": true,
                          *             "color": "#cccccc",
                          *             "agenda_online": false,
                          *             "overrides": [
@@ -316803,6 +317085,8 @@ export interface paths {
                         duration_minutes?: number | null;
                         active?: boolean;
                         agent_bookable?: boolean;
+                        /** @description Is this motivo the evaluation visit? Absent = seeded from the name («Evaluación», «Diagnóstico», «Primera consulta»…). */
+                        is_evaluation?: boolean;
                         professionals?: {
                             /** Format: uuid */
                             professional_id: string;
@@ -316832,6 +317116,7 @@ export interface paths {
                          *         "vendor_active": true,
                          *         "active": true,
                          *         "agent_bookable": true,
+                         *         "is_evaluation": true,
                          *         "color": "#cccccc",
                          *         "agenda_online": false,
                          *         "overrides": [],
@@ -317217,6 +317502,8 @@ export interface paths {
                         duration_minutes?: number;
                         active?: boolean;
                         agent_bookable?: boolean;
+                        /** @description Mark or unmark this motivo as the evaluation visit (mirrored and native motivos alike; never an override, a resync keeps it). */
+                        is_evaluation?: boolean;
                         reset?: ("duration_minutes" | "active" | "professionals")[];
                     };
                 };
@@ -317242,6 +317529,7 @@ export interface paths {
                          *         "vendor_active": true,
                          *         "active": true,
                          *         "agent_bookable": true,
+                         *         "is_evaluation": true,
                          *         "color": "#cccccc",
                          *         "agenda_online": false,
                          *         "overrides": [
@@ -317386,6 +317674,7 @@ export interface paths {
                          *         "vendor_active": true,
                          *         "active": true,
                          *         "agent_bookable": true,
+                         *         "is_evaluation": true,
                          *         "color": "#cccccc",
                          *         "agenda_online": false,
                          *         "overrides": [
@@ -317525,6 +317814,7 @@ export interface paths {
                          *         "vendor_active": true,
                          *         "active": true,
                          *         "agent_bookable": true,
+                         *         "is_evaluation": true,
                          *         "color": "#cccccc",
                          *         "agenda_online": false,
                          *         "overrides": [],
@@ -317683,6 +317973,7 @@ export interface paths {
                          *         "vendor_active": true,
                          *         "active": true,
                          *         "agent_bookable": true,
+                         *         "is_evaluation": true,
                          *         "color": "#cccccc",
                          *         "agenda_online": false,
                          *         "overrides": [],
@@ -317835,6 +318126,7 @@ export interface paths {
                          *         "vendor_active": true,
                          *         "active": true,
                          *         "agent_bookable": true,
+                         *         "is_evaluation": true,
                          *         "color": "#cccccc",
                          *         "agenda_online": false,
                          *         "overrides": [],
@@ -322397,6 +322689,7 @@ export interface components {
             byte_size: number;
             sha256: string;
             template_version: string | null;
+            document_family?: string | null;
             rendered_at: string;
             rendered_by: string | null;
             /** Format: uuid */
@@ -322443,6 +322736,12 @@ export interface components {
                 reason: string;
                 message: string;
             } | null;
+        };
+        DeclaracionResponsabilidadIssuance: {
+            document: components["schemas"]["CompraventaArtefact"];
+            frozen: boolean;
+            already_issued: boolean;
+            template_version: string;
         };
         SaleNoteCorrection: {
             /** @enum {string} */
@@ -339581,6 +339880,8 @@ export interface components {
             vendor_active: boolean;
             active: boolean;
             agent_bookable: boolean;
+            /** @description Vitrina's own answer: this motivo is the evaluation visit (where a plan is diagnosed and quoted). Seeded from the name when the motivo is created or first synced, editable, never overwritten by a resync. The AI agent never books a second live evaluation for the same patient. */
+            is_evaluation: boolean;
             color: string | null;
             agenda_online: boolean | null;
             overrides: ("duration_minutes" | "active" | "professionals")[];
