@@ -44205,7 +44205,7 @@ export interface paths {
          *
          *     It also carries the unit it bought, the same as each row of the list: `vehicle` is `{ id, make, model, year, registration_number }` or `null`, and `vehicle_count` says how many units the document acquired (`vehicle` is the FIRST of them when there are several, and `null` exactly when the count is `0`).
          *
-         *     Since vitrina-app#7723 it also carries what the «Modificar» form opens with: `acquisition` (the car’s cost under this note, with `invoice_includes_iva` and `amount_paid_clp`, or `null`) and `retentions` (the note’s live «Descuentos», each with `description` and `net_clp`).
+         *     Since vitrina-app#7723 it also carries what the «Modificar» form opens with: `acquisition` (the car’s cost under this note, with `invoice_includes_iva` and `amount_paid_clp`, or `null`) and `retentions` (the note’s live «Descuentos», each with `description` and `net_clp`). The Descuentos a «Modificar» replaced are never listed. A voided note lists the Descuentos it had when it was voided, so its total is still price − Σ retentions.
          *
          *     A nota de compra written by closing a sale with a car in part payment (vitrina-app#7725) carries `sale_note_id`, `sale_note_trade_in_id` and `sale_note_display_id` (`V-n`); its amount is that sale’s precio de toma and `acquisition` is the car’s `retoma` cost. Every other nota has the three as `null`.
          *
@@ -50925,7 +50925,84 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Remove a typed Costo de compra
+         * @description The dealer typed a Costo de compra by mistake and empties the field (vitrina-app#7719): the bare cost (`kind: "compra"` with no document link) is removed and the car is back to «sin costo de compra», as if none had been typed. Needs `dealership_economics:write`. 204 with no body. A cost that comes from a document is never removed here and answers the same 409 as a correction, with `error.details.code`: `purchase_cost_on_purchase_note` (+ `purchase_note_id`), `purchase_cost_on_trade_in` (+ `sale_note_id`), `purchase_cost_consigned_vehicle`. 404 for an id of another workspace or none at all. The profit report (`GET /margin`) drops the cost on the next read.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
