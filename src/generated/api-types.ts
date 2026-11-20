@@ -51657,7 +51657,9 @@ export interface paths {
                          *           "signed_document_type": null,
                          *           "signed_document_id": null,
                          *           "label": null,
-                         *           "expires_on": null
+                         *           "expires_on": null,
+                         *           "customer_shareable": false,
+                         *           "customer_share_allowed": true
                          *         },
                          *         {
                          *           "id": "f1f1f1f1-0000-4000-8000-000000000002",
@@ -51676,7 +51678,9 @@ export interface paths {
                          *           "signed_document_type": null,
                          *           "signed_document_id": null,
                          *           "label": null,
-                         *           "expires_on": null
+                         *           "expires_on": null,
+                         *           "customer_shareable": false,
+                         *           "customer_share_allowed": false
                          *         },
                          *         {
                          *           "id": "f1f1f1f1-0000-4000-8000-000000000003",
@@ -51695,7 +51699,9 @@ export interface paths {
                          *           "signed_document_type": "compraventa",
                          *           "signed_document_id": "d4d4d4d4-0000-4000-8000-000000000001",
                          *           "label": null,
-                         *           "expires_on": null
+                         *           "expires_on": null,
+                         *           "customer_shareable": false,
+                         *           "customer_share_allowed": false
                          *         },
                          *         {
                          *           "id": "f1f1f1f1-0000-4000-8000-000000000004",
@@ -51714,7 +51720,9 @@ export interface paths {
                          *           "signed_document_type": null,
                          *           "signed_document_id": null,
                          *           "label": null,
-                         *           "expires_on": "2027-03-31"
+                         *           "expires_on": "2027-03-31",
+                         *           "customer_shareable": false,
+                         *           "customer_share_allowed": true
                          *         },
                          *         {
                          *           "id": "f1f1f1f1-0000-4000-8000-000000000005",
@@ -51733,7 +51741,9 @@ export interface paths {
                          *           "signed_document_type": null,
                          *           "signed_document_id": null,
                          *           "label": "Informe mecánico",
-                         *           "expires_on": null
+                         *           "expires_on": null,
+                         *           "customer_shareable": true,
+                         *           "customer_share_allowed": true
                          *         }
                          *       ]
                          *     }
@@ -51853,6 +51863,8 @@ export interface paths {
                          */
                         label?: string;
                         expires_on?: string | "";
+                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
+                        customer_shareable?: boolean | ("true" | "false");
                         /**
                          * Format: uuid
                          * @description Replace a filed paper: the id of the paper this file supersedes (same car, same kind; not a signed copy). The old paper is erased only after the new one is filed.
@@ -51901,6 +51913,8 @@ export interface paths {
                          */
                         label?: string;
                         expires_on?: string | "";
+                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
+                        customer_shareable?: boolean | ("true" | "false");
                         /**
                          * Format: uuid
                          * @description Replace a filed paper: the id of the paper this file supersedes (same car, same kind; not a signed copy). The old paper is erased only after the new one is filed.
@@ -51935,7 +51949,9 @@ export interface paths {
                          *         "signed_document_type": null,
                          *         "signed_document_id": null,
                          *         "label": null,
-                         *         "expires_on": null
+                         *         "expires_on": null,
+                         *         "customer_shareable": false,
+                         *         "customer_share_allowed": true
                          *       }
                          *     }
                          */
@@ -52192,8 +52208,8 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Rename a paper or set its «Vence» day
-         * @description ADR 0114 §7 — corrects a filed paper without touching its file: `label` renames a paper filed as `otro` (a named kind — SOAP, padrón… — is named by its kind and refuses a label, 400); `expires_on` sets the day the paper stops being valid, `null` clears it. A new file is a replace (`POST` with `replaces_id`), not this. Recorded in the car’s Historial.
+         * Rename a paper, set its «Vence» day or let customers receive it
+         * @description ADR 0114 §7 — corrects a filed paper without touching its file: `label` renames a paper filed as `otro` (a named kind — SOAP, padrón… — is named by its kind and refuses a label, 400); `expires_on` sets the day the paper stops being valid, `null` clears it; `customer_shareable` marks the paper «Se puede enviar a clientes» — the AI agent then sends it to a customer who asks for it (400 on a cédula, a contrato, a factura, a paper naming a person or a signed copy; `customer_share_allowed` on the row says which). A new file is a replace (`POST` with `replaces_id`), not this. Recorded in the car’s Historial.
          */
         patch: {
             parameters: {
@@ -52222,6 +52238,8 @@ export interface paths {
                          * @example 2027-03-31
                          */
                         expires_on?: string | null;
+                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
+                        customer_shareable?: boolean;
                     };
                 };
             };
@@ -52251,7 +52269,9 @@ export interface paths {
                          *         "signed_document_type": null,
                          *         "signed_document_id": null,
                          *         "label": null,
-                         *         "expires_on": "2027-03-31"
+                         *         "expires_on": "2027-03-31",
+                         *         "customer_shareable": false,
+                         *         "customer_share_allowed": true
                          *       }
                          *     }
                          */

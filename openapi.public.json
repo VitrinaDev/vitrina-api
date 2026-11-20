@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.93.0",
+    "version": "17.95.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -143987,7 +143987,9 @@
                       "signed_document_type": null,
                       "signed_document_id": null,
                       "label": null,
-                      "expires_on": null
+                      "expires_on": null,
+                      "customer_shareable": false,
+                      "customer_share_allowed": true
                     },
                     {
                       "id": "f1f1f1f1-0000-4000-8000-000000000002",
@@ -144006,7 +144008,9 @@
                       "signed_document_type": null,
                       "signed_document_id": null,
                       "label": null,
-                      "expires_on": null
+                      "expires_on": null,
+                      "customer_shareable": false,
+                      "customer_share_allowed": false
                     },
                     {
                       "id": "f1f1f1f1-0000-4000-8000-000000000003",
@@ -144025,7 +144029,9 @@
                       "signed_document_type": "compraventa",
                       "signed_document_id": "d4d4d4d4-0000-4000-8000-000000000001",
                       "label": null,
-                      "expires_on": null
+                      "expires_on": null,
+                      "customer_shareable": false,
+                      "customer_share_allowed": false
                     },
                     {
                       "id": "f1f1f1f1-0000-4000-8000-000000000004",
@@ -144044,7 +144050,9 @@
                       "signed_document_type": null,
                       "signed_document_id": null,
                       "label": null,
-                      "expires_on": "2027-03-31"
+                      "expires_on": "2027-03-31",
+                      "customer_shareable": false,
+                      "customer_share_allowed": true
                     },
                     {
                       "id": "f1f1f1f1-0000-4000-8000-000000000005",
@@ -144063,7 +144071,9 @@
                       "signed_document_type": null,
                       "signed_document_id": null,
                       "label": "Informe mecánico",
-                      "expires_on": null
+                      "expires_on": null,
+                      "customer_shareable": true,
+                      "customer_share_allowed": true
                     }
                   ]
                 }
@@ -144208,6 +144218,21 @@
                       }
                     ]
                   },
+                  "customer_shareable": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "true",
+                          "false"
+                        ]
+                      }
+                    ],
+                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
+                  },
                   "replaces_id": {
                     "type": "string",
                     "format": "uuid",
@@ -144314,6 +144339,21 @@
                       }
                     ]
                   },
+                  "customer_shareable": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "true",
+                          "false"
+                        ]
+                      }
+                    ],
+                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
+                  },
                   "replaces_id": {
                     "type": "string",
                     "format": "uuid",
@@ -144366,7 +144406,9 @@
                     "signed_document_type": null,
                     "signed_document_id": null,
                     "label": null,
-                    "expires_on": null
+                    "expires_on": null,
+                    "customer_shareable": false,
+                    "customer_share_allowed": true
                   }
                 }
               }
@@ -144641,8 +144683,8 @@
         "x-vitrina-destructive": true
       },
       "patch": {
-        "summary": "Rename a paper or set its «Vence» day",
-        "description": "ADR 0114 §7 — corrects a filed paper without touching its file: `label` renames a paper filed as `otro` (a named kind — SOAP, padrón… — is named by its kind and refuses a label, 400); `expires_on` sets the day the paper stops being valid, `null` clears it. A new file is a replace (`POST` with `replaces_id`), not this. Recorded in the car’s Historial.",
+        "summary": "Rename a paper, set its «Vence» day or let customers receive it",
+        "description": "ADR 0114 §7 — corrects a filed paper without touching its file: `label` renames a paper filed as `otro` (a named kind — SOAP, padrón… — is named by its kind and refuses a label, 400); `expires_on` sets the day the paper stops being valid, `null` clears it; `customer_shareable` marks the paper «Se puede enviar a clientes» — the AI agent then sends it to a customer who asks for it (400 on a cédula, a contrato, a factura, a paper naming a person or a signed copy; `customer_share_allowed` on the row says which). A new file is a replace (`POST` with `replaces_id`), not this. Recorded in the car’s Historial.",
         "security": [
           {
             "BearerAuth": []
@@ -144684,6 +144726,10 @@
                     ],
                     "description": "The day the paper stops being valid («Vence»), `YYYY-MM-DD`; `null` clears it.",
                     "example": "2027-03-31"
+                  },
+                  "customer_shareable": {
+                    "type": "boolean",
+                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
                   }
                 },
                 "additionalProperties": false
@@ -144727,7 +144773,9 @@
                     "signed_document_type": null,
                     "signed_document_id": null,
                     "label": null,
-                    "expires_on": "2027-03-31"
+                    "expires_on": "2027-03-31",
+                    "customer_shareable": false,
+                    "customer_share_allowed": true
                   }
                 }
               }
