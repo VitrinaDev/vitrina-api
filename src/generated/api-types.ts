@@ -1984,10 +1984,10 @@ export interface paths {
                              */
                             opening_marks?: "inherit" | "none" | "keep";
                             /**
-                             * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions.
+                             * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer); wins over the agent's instructions.
                              * @enum {string}
                              */
-                            register?: "inherit" | "tu" | "usted" | "mirror";
+                            register?: "inherit" | "tu" | "usted" | "mirror" | "vos";
                         };
                         /** @description The `draft_version` version you last read (the `X-Config-Version` response header, or the version field in the body). If it is no longer current the write is refused with 409 `VERSION_CONFLICT` and nothing is written; the error carries the current version and a diff hint. Optional for backward compatibility (an omitted value is accepted and logged), but send it: without it two editors silently overwrite each other. The `If-Match` header is accepted as an alternative. */
                         expected_version?: number | null;
@@ -2278,10 +2278,10 @@ export interface paths {
                                      */
                                     opening_marks?: "inherit" | "none" | "keep";
                                     /**
-                                     * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions.
+                                     * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer); wins over the agent's instructions.
                                      * @enum {string}
                                      */
-                                    register?: "inherit" | "tu" | "usted" | "mirror";
+                                    register?: "inherit" | "tu" | "usted" | "mirror" | "vos";
                                 };
                                 draft: {
                                     /**
@@ -2326,10 +2326,10 @@ export interface paths {
                                      */
                                     opening_marks?: "inherit" | "none" | "keep";
                                     /**
-                                     * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions.
+                                     * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer); wins over the agent's instructions.
                                      * @enum {string}
                                      */
-                                    register?: "inherit" | "tu" | "usted" | "mirror";
+                                    register?: "inherit" | "tu" | "usted" | "mirror" | "vos";
                                 } | null;
                                 price_policy_conflicts: {
                                     /** @enum {string} */
@@ -322605,20 +322605,20 @@ export interface components {
                 /** @description Brand name templates say literally ("te escribimos de Automec"). Absent = the workspace name. */
                 brand_name?: string;
                 /**
-                 * @description How templates address people. Absent = `usted` for healthcare, `tu` otherwise.
+                 * @description How templates address people: `tu`, `usted` or `vos` (voseo; any workspace may choose it, it is the form in Argentina and Uruguay). A template with no «vos» copy is sent in tú. Absent = `vos` when the workspace country is AR or UY, else `usted` for healthcare and `tu` otherwise.
                  * @enum {string}
                  */
-                register?: "tu" | "usted";
+                register?: "tu" | "usted" | "vos";
                 /**
                  * @description «Signos de apertura» in the AI's chat replies and follow-ups. `none` (default when absent): no opening «¿» «¡», the way people type in a Chilean chat; removed at send time from every AI message. `keep`: the agent writes them. An agent can override it (`behavior_policies.opening_marks`).
                  * @enum {string}
                  */
                 opening_marks?: "none" | "keep";
                 /**
-                 * @description «Trato» of the AI agents: `tu`, `usted`, or `mirror` (tú until the customer uses usted). Absent: each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
+                 * @description «Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: `vos` when the template `register` resolves to `vos`, otherwise each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
                  * @enum {string}
                  */
-                agent_register?: "tu" | "usted" | "mirror";
+                agent_register?: "tu" | "usted" | "mirror" | "vos";
             };
             /** @description The AI agent's vocabulary: the workspace's banned terms; absent until set. */
             agent_language?: {
@@ -322629,11 +322629,11 @@ export interface components {
             voice_resolved?: {
                 brand_name: string;
                 /** @enum {string} */
-                register: "tu" | "usted";
+                register: "tu" | "usted" | "vos";
                 /** @enum {string} */
                 brand_name_source: "stored" | "workspace_name";
                 /** @enum {string} */
-                register_source: "stored" | "vertical_default";
+                register_source: "stored" | "country_default" | "vertical_default";
             };
             /** @description Read-only: the country, time zone and currency the workspace runs on (stored value, the country default, or the legacy guess), with where each came from. Ignored on write. */
             locale_resolved?: {
@@ -322745,20 +322745,20 @@ export interface components {
                 /** @description Brand name templates say literally ("te escribimos de Automec"). Absent = the workspace name. */
                 brand_name?: string;
                 /**
-                 * @description How templates address people. Absent = `usted` for healthcare, `tu` otherwise.
+                 * @description How templates address people: `tu`, `usted` or `vos` (voseo; any workspace may choose it, it is the form in Argentina and Uruguay). A template with no «vos» copy is sent in tú. Absent = `vos` when the workspace country is AR or UY, else `usted` for healthcare and `tu` otherwise.
                  * @enum {string}
                  */
-                register?: "tu" | "usted";
+                register?: "tu" | "usted" | "vos";
                 /**
                  * @description «Signos de apertura» in the AI's chat replies and follow-ups. `none` (default when absent): no opening «¿» «¡», the way people type in a Chilean chat; removed at send time from every AI message. `keep`: the agent writes them. An agent can override it (`behavior_policies.opening_marks`).
                  * @enum {string}
                  */
                 opening_marks?: "none" | "keep";
                 /**
-                 * @description «Trato» of the AI agents: `tu`, `usted`, or `mirror` (tú until the customer uses usted). Absent: each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
+                 * @description «Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: `vos` when the template `register` resolves to `vos`, otherwise each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
                  * @enum {string}
                  */
-                agent_register?: "tu" | "usted" | "mirror";
+                agent_register?: "tu" | "usted" | "mirror" | "vos";
             } | null;
             agent_language?: {
                 /** @description Words the AI agent must never write to customers (case- and accent-insensitive, whole words), merged with the platform es-CL list. A reply that uses one is rewritten without it before it is sent. Up to 100 terms of 2 to 60 characters. */

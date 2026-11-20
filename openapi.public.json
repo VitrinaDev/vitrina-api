@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.92.0",
+    "version": "17.93.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1883,9 +1883,10 @@
                 "type": "string",
                 "enum": [
                   "tu",
-                  "usted"
+                  "usted",
+                  "vos"
                 ],
-                "description": "How templates address people. Absent = `usted` for healthcare, `tu` otherwise."
+                "description": "How templates address people: `tu`, `usted` or `vos` (voseo; any workspace may choose it, it is the form in Argentina and Uruguay). A template with no «vos» copy is sent in tú. Absent = `vos` when the workspace country is AR or UY, else `usted` for healthcare and `tu` otherwise."
               },
               "opening_marks": {
                 "type": "string",
@@ -1900,9 +1901,10 @@
                 "enum": [
                   "tu",
                   "usted",
-                  "mirror"
+                  "mirror",
+                  "vos"
                 ],
-                "description": "«Trato» of the AI agents: `tu`, `usted`, or `mirror` (tú until the customer uses usted). Absent: each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`)."
+                "description": "«Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: `vos` when the template `register` resolves to `vos`, otherwise each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`)."
               }
             },
             "additionalProperties": false,
@@ -1936,7 +1938,8 @@
                 "type": "string",
                 "enum": [
                   "tu",
-                  "usted"
+                  "usted",
+                  "vos"
                 ]
               },
               "brand_name_source": {
@@ -1950,6 +1953,7 @@
                 "type": "string",
                 "enum": [
                   "stored",
+                  "country_default",
                   "vertical_default"
                 ]
               }
@@ -2329,9 +2333,10 @@
                 "type": "string",
                 "enum": [
                   "tu",
-                  "usted"
+                  "usted",
+                  "vos"
                 ],
-                "description": "How templates address people. Absent = `usted` for healthcare, `tu` otherwise."
+                "description": "How templates address people: `tu`, `usted` or `vos` (voseo; any workspace may choose it, it is the form in Argentina and Uruguay). A template with no «vos» copy is sent in tú. Absent = `vos` when the workspace country is AR or UY, else `usted` for healthcare and `tu` otherwise."
               },
               "opening_marks": {
                 "type": "string",
@@ -2346,9 +2351,10 @@
                 "enum": [
                   "tu",
                   "usted",
-                  "mirror"
+                  "mirror",
+                  "vos"
                 ],
-                "description": "«Trato» of the AI agents: `tu`, `usted`, or `mirror` (tú until the customer uses usted). Absent: each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`)."
+                "description": "«Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: `vos` when the template `register` resolves to `vos`, otherwise each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`)."
               }
             },
             "additionalProperties": false
@@ -81350,9 +81356,10 @@
                           "inherit",
                           "tu",
                           "usted",
-                          "mirror"
+                          "mirror",
+                          "vos"
                         ],
-                        "description": "«Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions."
+                        "description": "«Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer); wins over the agent's instructions."
                       }
                     },
                     "additionalProperties": false
@@ -81726,9 +81733,10 @@
                                 "inherit",
                                 "tu",
                                 "usted",
-                                "mirror"
+                                "mirror",
+                                "vos"
                               ],
-                              "description": "«Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions."
+                              "description": "«Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer); wins over the agent's instructions."
                             }
                           },
                           "required": [
@@ -81875,9 +81883,10 @@
                                 "inherit",
                                 "tu",
                                 "usted",
-                                "mirror"
+                                "mirror",
+                                "vos"
                               ],
-                              "description": "«Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions."
+                              "description": "«Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer); wins over the agent's instructions."
                             }
                           },
                           "required": [
