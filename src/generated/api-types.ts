@@ -43699,6 +43699,9 @@ export interface paths {
                          *           "tax_treatment": "no_gravado",
                          *           "status": "issued",
                          *           "issued_at": "2026-09-12T10:15:00.000Z",
+                         *           "notes": null,
+                         *           "forma_de_pago": "Transferencia a la cuenta del vendedor",
+                         *           "observaciones": "Se entrega con dos llaves.",
                          *           "corrected_at": null,
                          *           "corrected_by": null,
                          *           "voided_at": null,
@@ -43782,11 +43785,15 @@ export interface paths {
          * Issue a nota de compra
          * @description Issues the document and allocates its folio (`P-1`, `P-2`, …) inside the inserting transaction, so a failed issue RELEASES the number rather than burning it out of a legally accountable series.
          *
-         *     **Money is whole CLP pesos** (`bigint`, never minor units, never decimals) and the triple is `net_clp` + `tax_clp` + `tax_treatment`, on the header AND again per line. Omit `tax_clp` to record "not recorded"; pass `0` to record "no tax" — ADR 0058 §2 makes those two different claims and nothing collapses them. `tax_treatment` is REQUIRED and has no default: the same peso falls inside or outside the IVA base depending on how the deal is structured.
+         *     **The Veekls-shape form (app#7721, ADR 0162): a car and a price are enough.** `{ net_clp, acquisition: { vehicle_id } }` issues the note and records the car's Costo de compra. Nothing about tax is required: `tax_treatment` defaults to the car's own IVA setting (`exento` with no car), and the acquisition's `acquired_on` (the note's day), `tax_treatment`, `borne_by` (`automotora`) and `generates_fiscal_credit` (false) are filled by the server. `invoice_includes_iva: true` is the «Compra con factura (incluye IVA)» tick: `net_clp` then includes IVA, the note stores it without IVA plus the IVA apart (`afecto`), and the car's cost carries the same split with fiscal credit; it wins over every stated tax field. «Descuentos» are `acquisition.retentions[]` as `{ description, net_clp }`: without `category_id` the line is filed under the workspace's «Descuentos de compra» cost category (created on first use), `tax_treatment` defaults to `no_gravado`. Total a pagar = `net_clp` (+ `tax_clp` under the tick) minus the Descuentos; Descuentos above the price are a **400** with `error.details.code` `discounts_exceed_price`. `forma_de_pago` (one line) and `observaciones` are free text that print; `notes` stays internal. Requests in the older shape (header `tax_treatment`, a full acquisition block, retention categories) keep working.
+         *
+         *     **Refusals the form branches on** (`error.details.code`, 409): `vehicle_has_documented_cost` (the car already has a cost from another document; `details` names it: `purchase_note_id`, `sale_note_id` or `consignment_contract_id`) and `vehicle_sold_by_other_seller` (a live nota de venta names another seller; `details.sale_note_id`, `details.sale_note_display_id`). A car with a typed (bare) Costo de compra is NOT refused: the note takes that cost over.
+         *
+         *     **Money is whole CLP pesos** (`bigint`, never minor units, never decimals) and the triple is `net_clp` + `tax_clp` + `tax_treatment`, on the header AND again per line. Omit `tax_clp` to record "not recorded"; pass `0` to record "no tax" — ADR 0058 §2 makes those two different claims and nothing collapses them. A LINE still states its `tax_treatment`.
          *
          *     **`lines` are `document_line` rows**, written in the SAME transaction as the document, so a folio is never spent on a document whose breakdown never arrived. The array order IS the document order; positions are assigned by the database and cannot be supplied. Omit `lines` for a document with a header amount and no breakdown, which is complete and ordinary. Whether the lines add up to the header is deliberately NOT enforced.
          *
-         *     **This does NOT attach the document to a vehicle.** Recording that a unit arrived under this note is a separate act on `/vehicle-acquisitions`, because the ownership regime is imposed by the document and never chosen (BR-1446) — and one nota de compra may acquire several units.
+         *     `acquisition` attaches the car in the same transaction; without it the document is issued alone, and a unit can be attached later on `/vehicle-acquisitions` (one nota de compra may acquire several units).
          *
          *     `seller_contact_id` must belong to the calling workspace; a foreign id and a nonexistent one answer identically (404), deliberately, because a difference between them is an existence oracle. Unknown body keys are a **400** — `tax` is one character from `tax_clp`, and silently discarding it would record "no IVA was entered" for a caller who entered it. Answers 201.
          */
@@ -43806,26 +43813,40 @@ export interface paths {
                      * @example {
                      *       "seller_contact_id": "22222222-0000-4000-8000-000000000003",
                      *       "net_clp": 6200000,
-                     *       "tax_treatment": "no_gravado",
-                     *       "lines": [
-                     *         {
-                     *           "description": "Compra vehículo usado — Mazda CX-5 2020",
-                     *           "amount_clp": 6200000
-                     *         }
-                     *       ]
+                     *       "forma_de_pago": "Transferencia a la cuenta del vendedor",
+                     *       "observaciones": "Se entrega con dos llaves.",
+                     *       "acquisition": {
+                     *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                     *         "retentions": [
+                     *           {
+                     *             "description": "Multas",
+                     *             "net_clp": 180000
+                     *           }
+                     *         ]
+                     *       }
                      *     }
                      */
                     "application/json": {
                         /** Format: uuid */
                         seller_contact_id?: string | null;
+                        /** @description Precio de compra en pesos. Con `invoice_includes_iva: true` es el monto escrito con IVA incluido: se guarda sin IVA en `net_clp` y el IVA en `tax_clp`. */
                         net_clp: number;
                         tax_clp?: number | null;
-                        /** @enum {string} */
-                        tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        /**
+                         * @description Opcional. Por defecto `afecto` con `invoice_includes_iva`; si no, el régimen de IVA del auto de `acquisition` (el del auto, si no el de la automotora, si no exento); sin auto, exento.
+                         * @enum {string}
+                         */
+                        tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        /** @description «Compra con factura (incluye IVA)». Opcional, por defecto false. Con true `net_clp` incluye IVA: la nota guarda el precio sin IVA y el IVA aparte, queda afecta, y el costo de compra del auto queda sin IVA y con crédito fiscal. Manda sobre `tax_clp`, `tax_treatment` y los campos de impuesto de `acquisition`. */
+                        invoice_includes_iva?: boolean;
                         /** Format: date-time */
                         issued_at?: string | null;
                         /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
                         notes?: string | null;
+                        /** @description «Forma de pago», una línea libre que se imprime en la nota de compra (hasta 500 caracteres). Vacío o null la borra. */
+                        forma_de_pago?: string | null;
+                        /** @description Observaciones que se imprimen en la nota de compra (hasta 2000 caracteres). Vacío o null las borra. No son las notas internas (`notes`). */
+                        observaciones?: string | null;
                         lines?: {
                             description: string;
                             net_clp: number;
@@ -43836,20 +43857,22 @@ export interface paths {
                         acquisition?: {
                             /** Format: uuid */
                             vehicle_id: string;
-                            acquired_on: string;
+                            acquired_on?: string;
                             tax_clp?: number | null;
                             /** @enum {string} */
-                            tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+                            tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                             /** @enum {string} */
-                            borne_by: "automotora" | "cliente";
-                            generates_fiscal_credit: boolean;
+                            borne_by?: "automotora" | "cliente";
+                            generates_fiscal_credit?: boolean;
                             retentions?: {
+                                /** @description Qué se descuenta («Multas», «Prenda», «Permiso de circulación»), hasta 200 caracteres. Se imprime en la nota de compra. */
+                                description?: string | null;
                                 /** Format: uuid */
-                                category_id: string;
+                                category_id?: string;
                                 net_clp: number;
                                 tax_clp?: number | null;
                                 /** @enum {string} */
-                                tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+                                tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                                 incurred_on?: string | null;
                                 /** Format: uuid */
                                 supplier_contact_id?: string | null;
@@ -43879,6 +43902,9 @@ export interface paths {
                          *         "tax_treatment": "no_gravado",
                          *         "status": "issued",
                          *         "issued_at": "2026-09-12T10:15:00.000Z",
+                         *         "notes": null,
+                         *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "corrected_at": null,
                          *         "corrected_by": null,
                          *         "voided_at": null,
@@ -44003,6 +44029,9 @@ export interface paths {
                          *         "tax_treatment": "no_gravado",
                          *         "status": "issued",
                          *         "issued_at": "2026-09-12T10:15:00.000Z",
+                         *         "notes": null,
+                         *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "corrected_at": null,
                          *         "corrected_by": null,
                          *         "voided_at": null,
@@ -44119,6 +44148,10 @@ export interface paths {
                      *     }
                      */
                     "application/json": {
+                        /** @description «Forma de pago», una línea libre que se imprime en la nota de compra (hasta 500 caracteres). Vacío o null la borra. */
+                        forma_de_pago?: string | null;
+                        /** @description Observaciones que se imprimen en la nota de compra (hasta 2000 caracteres). Vacío o null las borra. No son las notas internas (`notes`). */
+                        observaciones?: string | null;
                         /** Format: uuid */
                         seller_contact_id?: string | null;
                         net_clp?: number;
@@ -44159,6 +44192,9 @@ export interface paths {
                          *         "tax_treatment": "no_gravado",
                          *         "status": "issued",
                          *         "issued_at": "2026-09-12T10:15:00.000Z",
+                         *         "notes": null,
+                         *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "corrected_at": "2026-09-13T09:00:00.000Z",
                          *         "corrected_by": "11111111-0000-4000-8000-000000000001",
                          *         "voided_at": null,
@@ -44393,6 +44429,9 @@ export interface paths {
                          *         "tax_treatment": "no_gravado",
                          *         "status": "voided",
                          *         "issued_at": "2026-09-12T10:15:00.000Z",
+                         *         "notes": null,
+                         *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
+                         *         "observaciones": "Se entrega con dos llaves.",
                          *         "corrected_at": null,
                          *         "corrected_by": null,
                          *         "voided_at": "2026-09-14T11:30:00.000Z",
