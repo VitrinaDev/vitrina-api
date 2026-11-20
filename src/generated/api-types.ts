@@ -18391,7 +18391,7 @@ export interface paths {
          *
          *     Phase 2 (tenencia_source): `tenencia_source` COMPOSES with `tenencia` rather than narrowing it — `?tenencia=propio&tenencia_source=decided` is "propio, and a person or a document actually settled that" (`decided` ⇒ `tenencia_source <> 'default'`); `document` / `declared` / `default` match the column exactly. See `POST /vehicles/tenencia` for how a `declared` row is produced.
          *
-         *     SIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the pile still on the floor — active, not vendido, no acquisition; the SAME predicate as the `sin_costo` count on `GET /vehicles/stats` and the `stock_without_cost` dealer alert. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.
+         *     SIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the ones still on the floor — active, not vendido, no acquisition — as a filter the dealer may choose. Nothing flags these cars while they are in stock (ADR 0162): no alert, and the `sin_costo` count on `GET /vehicles/stats` is always 0. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.
          *
          *     MANDATO SIN FIRMAR (ADR 0114 §5). `view=mandato_sin_firmar` lists the cars whose consignación (activa or vendida) has an emitted mandato and no signed copy filed in the expediente — the SAME predicate as the `mandato_sin_firmar` count on `GET /vehicles/stats`. Never a gate, and no longer a dealer alert (retired 2026-11-10: it is a filter you open, not a to-do).
          */
@@ -300576,7 +300576,7 @@ export interface paths {
          *
          *     `propio_sin_clasificar` (Phase 2, tenencia_source, 20270903000000) is a SUB-COUNT of `propio`, NOT a fifth bucket — the four above still sum to `total`. It is the cars nobody has ever classified (`tenencia_source=default`), provably coextensive with "sin clasificar" (a consignación can never be `default`). Measured on production 2026-08-31: 903 of 967 vehicles carried `propio` with nobody having said so — that is what this number answers, rather than leaving `propio` an unresolved warning. Opens with `GET /vehicles?active=false&tenencia=propio&tenencia_source=default`.
          *
-         *     `sin_costo` (ADR 0114 §8, «Sin costo») counts the active, non-vendido cars with NO acquisition — no nota de compra, contrato de consignación or parte de pago — so their cost is unknown. Opens with `GET /vehicles?view=sin_costo`, the same predicate. A statement about the cost basis: ABSENT (not 0) for a caller without `dealership_economics:read`.
+         *     `sin_costo` is always 0 since ADR 0162 (app#7720): a car in stock without Costo de compra is not flagged until it is sold. The list `GET /vehicles?view=sin_costo` still works as a filter; only its count is gone. Kept for the clients that read it, and still ABSENT for a caller without `dealership_economics:read`.
          *
          *     `mandato_sin_firmar` (ADR 0114 §5) counts the cars whose consignación (activa, or vendida) has an emitted mandato and no signed copy filed in the expediente. Opens with `GET /vehicles?view=mandato_sin_firmar`, the same predicate.
          *
@@ -300618,7 +300618,7 @@ export interface paths {
                          *         "with_error": 0,
                          *         "unpublished": 7,
                          *         "stale": 0,
-                         *         "sin_costo": 7,
+                         *         "sin_costo": 0,
                          *         "mandato_sin_firmar": 1,
                          *         "needs_review": 1,
                          *         "sin_sucursal": 2,
