@@ -322888,7 +322888,7 @@ export interface components {
                  */
                 opening_marks?: "none" | "keep";
                 /**
-                 * @description «Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: `vos` when the template `register` resolves to `vos`, otherwise each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
+                 * @description «Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: a saved `register` of `usted` or `vos` (one «trato» for templates, fixed texts and AI replies); a saved `tu`, or nothing saved outside AR/UY: each agent's own instructions decide; nothing saved in AR/UY: `vos`. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
                  * @enum {string}
                  */
                 agent_register?: "tu" | "usted" | "mirror" | "vos";
@@ -323028,7 +323028,7 @@ export interface components {
                  */
                 opening_marks?: "none" | "keep";
                 /**
-                 * @description «Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: `vos` when the template `register` resolves to `vos`, otherwise each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
+                 * @description «Trato» of the AI agents: `tu`, `usted`, `vos` (voseo), or `mirror` (opens in the country's form, «vos» in AR/UY and «tú» elsewhere, and follows the customer). Absent: a saved `register` of `usted` or `vos` (one «trato» for templates, fixed texts and AI replies); a saved `tu`, or nothing saved outside AR/UY: each agent's own instructions decide; nothing saved in AR/UY: `vos`. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
                  * @enum {string}
                  */
                 agent_register?: "tu" | "usted" | "mirror" | "vos";
