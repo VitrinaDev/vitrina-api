@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.87.0",
+    "version": "17.88.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1989,6 +1989,45 @@
                   "country_default",
                   "legacy_guess"
                 ]
+              },
+              "patient_document": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "rut",
+                      "curp",
+                      "cedula_co",
+                      "dni_ar",
+                      "dni_pe"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "description": "What a person calls it: «RUT», «DNI»…"
+                  },
+                  "placeholder": {
+                    "type": "string"
+                  },
+                  "pattern": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "The accepted shape (an HTML/Meta `pattern`)."
+                  }
+                },
+                "required": [
+                  "kind",
+                  "label",
+                  "placeholder",
+                  "pattern"
+                ],
+                "description": "The workspace country's main patient document (vitrina-app#7475); null where the country has none (patients give a passport). Every patient form reads this one spec."
               }
             },
             "required": [
@@ -74192,6 +74231,8 @@
                   "cpf",
                   "dni_ar",
                   "dni_pe",
+                  "curp",
+                  "cedula_co",
                   "patente"
                 ]
               },
@@ -277057,9 +277098,13 @@
                         ],
                         "enum": [
                           "rut",
+                          "curp",
+                          "cedula_co",
+                          "dni_ar",
+                          "dni_pe",
                           "passport"
                         ],
-                        "description": "What `rut` holds. `passport`: a foreign document, compared as typed by the one-ficha rule. Default `rut` when a document is given."
+                        "description": "What `rut` holds (the column name is historical). `rut` (Chile), `curp` (Mexico), `cedula_co` (Colombia), `dni_ar` (Argentina), `dni_pe` (Peru) or `passport`. Default: the workspace country's own document when a document is given (`rut` in Chile; `GET /tenant/settings` → `locale_resolved.patient_document`). A country's own document must have its shape (400 `invalid_document`) and is compared by its digits (DNI, cédula) or letters and digits (CURP); a passport as typed."
                       },
                       "emergency_contact_name": {
                         "type": [
@@ -477331,9 +477376,13 @@
                     ],
                     "enum": [
                       "rut",
+                      "curp",
+                      "cedula_co",
+                      "dni_ar",
+                      "dni_pe",
                       "passport"
                     ],
-                    "description": "What `rut` holds. `passport`: a foreign document, compared as typed by the one-ficha rule. Default `rut` when a document is given."
+                    "description": "What `rut` holds (the column name is historical). `rut` (Chile), `curp` (Mexico), `cedula_co` (Colombia), `dni_ar` (Argentina), `dni_pe` (Peru) or `passport`. Default: the workspace country's own document when a document is given (`rut` in Chile; `GET /tenant/settings` → `locale_resolved.patient_document`). A country's own document must have its shape (400 `invalid_document`) and is compared by its digits (DNI, cédula) or letters and digits (CURP); a passport as typed."
                   },
                   "emergency_contact_name": {
                     "type": [
@@ -477452,7 +477501,23 @@
                           "string",
                           "null"
                         ],
-                        "maxLength": 20
+                        "maxLength": 20,
+                        "description": "The apoderado’s document (the field name is historical): the workspace country’s own document, or a passport with `document_kind: passport`."
+                      },
+                      "document_kind": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "enum": [
+                          "rut",
+                          "curp",
+                          "cedula_co",
+                          "dni_ar",
+                          "dni_pe",
+                          "passport"
+                        ],
+                        "description": "What `rut` holds: the workspace country’s own document (the default) or `passport`."
                       },
                       "phone_whatsapp": {
                         "type": [
@@ -477628,7 +477693,7 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 40,
-              "description": "The RUT or passport, as typed."
+              "description": "The document as typed: the workspace country’s own (RUT, CURP, cédula, DNI) or a passport."
             },
             "required": true,
             "name": "document",
@@ -477638,9 +477703,27 @@
             "schema": {
               "type": "string",
               "enum": [
+                "rut",
+                "curp",
+                "cedula_co",
+                "dni_ar",
+                "dni_pe",
+                "passport"
+              ],
+              "description": "What `document` is. Default: the workspace country’s own document (`passport=true` still means `passport`)."
+            },
+            "required": false,
+            "name": "kind",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
                 "true",
                 "false"
-              ]
+              ],
+              "description": "Alias of `kind=passport`, kept for older clients."
             },
             "required": false,
             "name": "passport",
@@ -478354,9 +478437,13 @@
                     ],
                     "enum": [
                       "rut",
+                      "curp",
+                      "cedula_co",
+                      "dni_ar",
+                      "dni_pe",
                       "passport"
                     ],
-                    "description": "What `rut` holds. `passport`: a foreign document, compared as typed by the one-ficha rule. Default `rut` when a document is given."
+                    "description": "What `rut` holds (the column name is historical). `rut` (Chile), `curp` (Mexico), `cedula_co` (Colombia), `dni_ar` (Argentina), `dni_pe` (Peru) or `passport`. Default: the workspace country's own document when a document is given (`rut` in Chile; `GET /tenant/settings` → `locale_resolved.patient_document`). A country's own document must have its shape (400 `invalid_document`) and is compared by its digits (DNI, cédula) or letters and digits (CURP); a passport as typed."
                   },
                   "emergency_contact_name": {
                     "type": [
@@ -478475,7 +478562,23 @@
                           "string",
                           "null"
                         ],
-                        "maxLength": 20
+                        "maxLength": 20,
+                        "description": "The apoderado’s document (the field name is historical): the workspace country’s own document, or a passport with `document_kind: passport`."
+                      },
+                      "document_kind": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "enum": [
+                          "rut",
+                          "curp",
+                          "cedula_co",
+                          "dni_ar",
+                          "dni_pe",
+                          "passport"
+                        ],
+                        "description": "What `rut` holds: the workspace country’s own document (the default) or `passport`."
                       },
                       "phone_whatsapp": {
                         "type": [
