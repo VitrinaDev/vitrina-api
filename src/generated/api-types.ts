@@ -16393,7 +16393,8 @@ export interface paths {
                          *           "goal_at": "2026-09-01T12:00:00.000Z",
                          *           "goal_by": "20000000-0000-4000-8000-000000000001"
                          *         },
-                         *         "slack_webhook_configured": false
+                         *         "slack_webhook_configured": false,
+                         *         "currency_locked": false
                          *       }
                          *     }
                          */
@@ -16460,7 +16461,7 @@ export interface paths {
         };
         /**
          * Patch tenant-level settings
-         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, the AI agent's banned terms under `agent_language`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state), and when the assigned seller is notified (`staff_notice_schedule`). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice`, `agent_language`, `notifications` and `staff_notice_schedule` (among others documented here): any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
+         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. On a clinic workspace that already has prices, presupuestos, deposit rules or payments, a write that would change the effective currency (an explicit `currency`, or a `country` whose default currency differs while none is stored) is refused with 422 `WORKSPACE_CURRENCY_LOCKED` (`details.reason` `workspace_currency_locked`, `currency`, `requested_currency`) and nothing is written; Vitrina support changes it. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, the AI agent's banned terms under `agent_language`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state), and when the assigned seller is notified (`staff_notice_schedule`). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice`, `agent_language`, `notifications` and `staff_notice_schedule` (among others documented here): any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
          */
         put: {
             parameters: {
@@ -318009,6 +318010,7 @@ export interface paths {
                         codigo?: string | null;
                         categoria?: string | null;
                         tipo?: string | null;
+                        /** @description Integer, minor unit of the workspace currency (whole pesos for CLP; centavos for MXN, ARS, PEN, USD, COP). Max 1,000,000,000 minor units. Null clears the price; 0 = free. */
                         precio?: number | null;
                         duration_minutes?: number | null;
                         active?: boolean;
@@ -320968,6 +320970,7 @@ export interface paths {
                         codigo?: string | null;
                         categoria?: string | null;
                         tipo?: string | null;
+                        /** @description Integer, minor unit of the workspace currency (whole pesos for CLP; centavos for MXN, ARS, PEN, USD, COP). Max 1,000,000,000 minor units. Null clears the price; 0 = free. */
                         precio?: number | null;
                         duration_minutes?: number | null;
                         active?: boolean;
@@ -322657,6 +322660,13 @@ export interface components {
                     pattern: string | null;
                 } | null;
             };
+            /** @description Read-only: true when changing the workspace currency would be refused with 422 `WORKSPACE_CURRENCY_LOCKED` (a clinic that already has prices, presupuestos, deposit rules or payments). Always false for a dealer. Ignored on write. */
+            currency_locked?: boolean;
+            /**
+             * @description Read-only: present only while `currency_locked` is true; the same code as the 422 `details.reason`. Ignored on write.
+             * @enum {string}
+             */
+            currency_lock_reason?: "workspace_currency_locked";
             /**
              * @description Write-only secret: the Slack incoming-webhook URL is never returned. `••••` when one is configured; absent otherwise. Read `slack_webhook_configured` instead.
              * @enum {string}
@@ -323559,7 +323569,10 @@ export interface components {
             codigo: string | null;
             categoria: string | null;
             tipo: string | null;
+            /** @description List price, integer in the minor unit of the workspace currency (whole pesos for CLP, centavos for MXN; ADR 0160-clinic-money-in-the-workspace-currency). Null = not priced; 0 = free. */
             precio: number | null;
+            /** @description The workspace currency `precio` is in (ISO 4217), e.g. `CLP`, `MXN`. */
+            currency: string;
             unpriced: boolean;
             arancel: string | null;
             arancel_external_id: string | null;
