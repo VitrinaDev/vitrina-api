@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.96.0",
+    "version": "17.97.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -143907,7 +143907,7 @@
     "/vehicle-attachments": {
       "get": {
         "summary": "List the car's papers",
-        "description": "`vehicle_id` is required; there is no tenant-wide list of documents. Newest first. Each paper carries its `kind`, its `label` (an `otro` paper) and its `expires_on` («Vence»), when recorded.\n\n`expiring_within_days` (ADR 0114 §7) narrows to the papers «Vencido» or due within that many days, soonest first, each with `expiry_state`; without `vehicle_id` it covers every car in stock and never returns a cédula or a paper naming a person. The same papers raise the `vehicle_papers_expiring` dealer alert and fill the Stock counts `papers_expired` / `papers_expiring` on `GET /vehicles/stats`.",
+        "description": "`vehicle_id` is required; there is no tenant-wide list of documents. Newest first. Each paper carries its `kind`, its `label` (an `otro` paper) and its `expires_on` («Vence»), when recorded. `meta.kinds` lists every kind with `customer_share_allowed` (may a paper of this kind be sent to customers) and `customer_shareable_default` (is it sendable when the upload does not say) — what an upload form needs before the paper exists.\n\n`expiring_within_days` (ADR 0114 §7) narrows to the papers «Vencido» or due within that many days, soonest first, each with `expiry_state`; without `vehicle_id` it covers every car in stock and never returns a cédula or a paper naming a person. The same papers raise the `vehicle_papers_expiring` dealer alert and fill the Stock counts `papers_expired` / `papers_expiring` on `GET /vehicles/stats`.",
         "security": [
           {
             "BearerAuth": []
@@ -143939,9 +143939,10 @@
                 "permiso_circulacion",
                 "revision_tecnica",
                 "soap",
+                "informe_vehiculo",
                 "otro"
               ],
-              "description": "Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`)."
+              "description": "Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `informe_vehiculo` (informe del vehículo: the car’s history report, Autofact in Chile), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`)."
             },
             "required": false,
             "name": "kind",
@@ -144080,7 +144081,26 @@
                       "customer_shareable": true,
                       "customer_share_allowed": true
                     }
-                  ]
+                  ],
+                  "meta": {
+                    "kinds": [
+                      {
+                        "kind": "padron",
+                        "customer_share_allowed": true,
+                        "customer_shareable_default": false
+                      },
+                      {
+                        "kind": "cedula",
+                        "customer_share_allowed": false,
+                        "customer_shareable_default": false
+                      },
+                      {
+                        "kind": "informe_vehiculo",
+                        "customer_share_allowed": true,
+                        "customer_shareable_default": true
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -144150,7 +144170,7 @@
       },
       "post": {
         "summary": "File one of the car's papers (multipart/form-data)",
-        "description": "Capped at the configured max size; the file part is required. PDF or an image (JPEG, PNG, WebP, HEIC, TIFF — a phone photo of a paper is fine).\n\nTHE CAR’S PAPERS (ADR 0114 §7): `kind` names the paper — `permiso_circulacion`, `revision_tecnica`, `soap`, `padron`, `certificado_anotaciones` (CAV), `factura`, `contrato`, `cedula`. Any other paper is `otro` with a `label` that names it («Factura de compra», «Informe mecánico»); a `label` with no `kind` files it as `otro`. `expires_on` records the day the paper stops being valid («Vence»). `replaces_id` supersedes a filed paper of the same kind: the old one is erased once the new one is filed.\n\nA SIGNED COPY of one of the car’s documents (ADR 0114 §7) is filed with `signed_document_type` (`purchase_note`, `sale_note`, `compraventa`, `consignment_contract`, `liquidacion`) and `signed_document_id` (the nota de venta’s id for a compraventa, the consignación’s id for a liquidación). The document must be this car’s, and a compraventa must have been printed; `kind` may then be omitted — it is `contrato` for the compraventa and the mandato, `otro` for the rest — and a contradicting `kind` is refused (400). `GET /vehicles/{id}/documents` shows the copy on its document.\n\n**Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `\"base64\"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.",
+        "description": "Capped at the configured max size; the file part is required. PDF or an image (JPEG, PNG, WebP, HEIC, TIFF — a phone photo of a paper is fine).\n\nTHE CAR’S PAPERS (ADR 0114 §7): `kind` names the paper — `permiso_circulacion`, `revision_tecnica`, `soap`, `padron`, `certificado_anotaciones` (CAV), `informe_vehiculo` (the car’s history report — Autofact in Chile — which is filed as sendable to customers unless `customer_shareable` says otherwise), `factura`, `contrato`, `cedula`. Any other paper is `otro` with a `label` that names it («Factura de compra», «Informe mecánico»); a `label` with no `kind` files it as `otro`. `expires_on` records the day the paper stops being valid («Vence»). `replaces_id` supersedes a filed paper of the same kind: the old one is erased once the new one is filed.\n\nA SIGNED COPY of one of the car’s documents (ADR 0114 §7) is filed with `signed_document_type` (`purchase_note`, `sale_note`, `compraventa`, `consignment_contract`, `liquidacion`) and `signed_document_id` (the nota de venta’s id for a compraventa, the consignación’s id for a liquidación). The document must be this car’s, and a compraventa must have been printed; `kind` may then be omitted — it is `contrato` for the compraventa and the mandato, `otro` for the rest — and a contradicting `kind` is refused (400). `GET /vehicles/{id}/documents` shows the copy on its document.\n\n**Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `\"base64\"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.",
         "security": [
           {
             "BearerAuth": []
@@ -144180,9 +144200,10 @@
                       "permiso_circulacion",
                       "revision_tecnica",
                       "soap",
+                      "informe_vehiculo",
                       "otro"
                     ],
-                    "description": "Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`)."
+                    "description": "Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `informe_vehiculo` (informe del vehículo: the car’s history report, Autofact in Chile), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`)."
                   },
                   "subject_contact_id": {
                     "type": "string",
@@ -144236,7 +144257,7 @@
                         ]
                       }
                     ],
-                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
+                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Omitted on upload, an `informe_vehiculo` is sendable and every other kind is internal (`meta.kinds` on the list says so per kind). Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
                   },
                   "replaces_id": {
                     "type": "string",
@@ -144301,9 +144322,10 @@
                       "permiso_circulacion",
                       "revision_tecnica",
                       "soap",
+                      "informe_vehiculo",
                       "otro"
                     ],
-                    "description": "Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`)."
+                    "description": "Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `informe_vehiculo` (informe del vehículo: the car’s history report, Autofact in Chile), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`)."
                   },
                   "subject_contact_id": {
                     "type": "string",
@@ -144357,7 +144379,7 @@
                         ]
                       }
                     ],
-                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
+                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Omitted on upload, an `informe_vehiculo` is sendable and every other kind is internal (`meta.kinds` on the list says so per kind). Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
                   },
                   "replaces_id": {
                     "type": "string",
@@ -144734,7 +144756,7 @@
                   },
                   "customer_shareable": {
                     "type": "boolean",
-                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
+                    "description": "«Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Omitted on upload, an `informe_vehiculo` is sendable and every other kind is internal (`meta.kinds` on the list says so per kind). Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal."
                   }
                 },
                 "additionalProperties": false

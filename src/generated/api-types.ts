@@ -51614,7 +51614,7 @@ export interface paths {
         };
         /**
          * List the car's papers
-         * @description `vehicle_id` is required; there is no tenant-wide list of documents. Newest first. Each paper carries its `kind`, its `label` (an `otro` paper) and its `expires_on` («Vence»), when recorded.
+         * @description `vehicle_id` is required; there is no tenant-wide list of documents. Newest first. Each paper carries its `kind`, its `label` (an `otro` paper) and its `expires_on` («Vence»), when recorded. `meta.kinds` lists every kind with `customer_share_allowed` (may a paper of this kind be sent to customers) and `customer_shareable_default` (is it sendable when the upload does not say) — what an upload form needs before the paper exists.
          *
          *     `expiring_within_days` (ADR 0114 §7) narrows to the papers «Vencido» or due within that many days, soonest first, each with `expiry_state`; without `vehicle_id` it covers every car in stock and never returns a cédula or a paper naming a person. The same papers raise the `vehicle_papers_expiring` dealer alert and fill the Stock counts `papers_expired` / `papers_expiring` on `GET /vehicles/stats`.
          */
@@ -51622,7 +51622,7 @@ export interface paths {
             parameters: {
                 query?: {
                     vehicle_id?: string;
-                    kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "otro";
+                    kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "informe_vehiculo" | "otro";
                     expiring_within_days?: number;
                 };
                 header?: never;
@@ -51745,7 +51745,26 @@ export interface paths {
                          *           "customer_shareable": true,
                          *           "customer_share_allowed": true
                          *         }
-                         *       ]
+                         *       ],
+                         *       "meta": {
+                         *         "kinds": [
+                         *           {
+                         *             "kind": "padron",
+                         *             "customer_share_allowed": true,
+                         *             "customer_shareable_default": false
+                         *           },
+                         *           {
+                         *             "kind": "cedula",
+                         *             "customer_share_allowed": false,
+                         *             "customer_shareable_default": false
+                         *           },
+                         *           {
+                         *             "kind": "informe_vehiculo",
+                         *             "customer_share_allowed": true,
+                         *             "customer_shareable_default": true
+                         *           }
+                         *         ]
+                         *       }
                          *     }
                          */
                         "application/json": {
@@ -51817,7 +51836,7 @@ export interface paths {
          * File one of the car's papers (multipart/form-data)
          * @description Capped at the configured max size; the file part is required. PDF or an image (JPEG, PNG, WebP, HEIC, TIFF — a phone photo of a paper is fine).
          *
-         *     THE CAR’S PAPERS (ADR 0114 §7): `kind` names the paper — `permiso_circulacion`, `revision_tecnica`, `soap`, `padron`, `certificado_anotaciones` (CAV), `factura`, `contrato`, `cedula`. Any other paper is `otro` with a `label` that names it («Factura de compra», «Informe mecánico»); a `label` with no `kind` files it as `otro`. `expires_on` records the day the paper stops being valid («Vence»). `replaces_id` supersedes a filed paper of the same kind: the old one is erased once the new one is filed.
+         *     THE CAR’S PAPERS (ADR 0114 §7): `kind` names the paper — `permiso_circulacion`, `revision_tecnica`, `soap`, `padron`, `certificado_anotaciones` (CAV), `informe_vehiculo` (the car’s history report — Autofact in Chile — which is filed as sendable to customers unless `customer_shareable` says otherwise), `factura`, `contrato`, `cedula`. Any other paper is `otro` with a `label` that names it («Factura de compra», «Informe mecánico»); a `label` with no `kind` files it as `otro`. `expires_on` records the day the paper stops being valid («Vence»). `replaces_id` supersedes a filed paper of the same kind: the old one is erased once the new one is filed.
          *
          *     A SIGNED COPY of one of the car’s documents (ADR 0114 §7) is filed with `signed_document_type` (`purchase_note`, `sale_note`, `compraventa`, `consignment_contract`, `liquidacion`) and `signed_document_id` (the nota de venta’s id for a compraventa, the consignación’s id for a liquidación). The document must be this car’s, and a compraventa must have been printed; `kind` may then be omitted — it is `contrato` for the compraventa and the mandato, `otro` for the rest — and a contradicting `kind` is refused (400). `GET /vehicles/{id}/documents` shows the copy on its document.
          *
@@ -51847,10 +51866,10 @@ export interface paths {
                         /** Format: uuid */
                         vehicle_id: string;
                         /**
-                         * @description Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`).
+                         * @description Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `informe_vehiculo` (informe del vehículo: the car’s history report, Autofact in Chile), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`).
                          * @enum {string}
                          */
-                        kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "otro";
+                        kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "informe_vehiculo" | "otro";
                         /** Format: uuid */
                         subject_contact_id?: string;
                         /** @enum {string} */
@@ -51863,7 +51882,7 @@ export interface paths {
                          */
                         label?: string;
                         expires_on?: string | "";
-                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
+                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Omitted on upload, an `informe_vehiculo` is sendable and every other kind is internal (`meta.kinds` on the list says so per kind). Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
                         customer_shareable?: boolean | ("true" | "false");
                         /**
                          * Format: uuid
@@ -51897,10 +51916,10 @@ export interface paths {
                         /** Format: uuid */
                         vehicle_id: string;
                         /**
-                         * @description Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`).
+                         * @description Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `informe_vehiculo` (informe del vehículo: the car’s history report, Autofact in Chile), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`).
                          * @enum {string}
                          */
-                        kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "otro";
+                        kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "informe_vehiculo" | "otro";
                         /** Format: uuid */
                         subject_contact_id?: string;
                         /** @enum {string} */
@@ -51913,7 +51932,7 @@ export interface paths {
                          */
                         label?: string;
                         expires_on?: string | "";
-                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
+                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Omitted on upload, an `informe_vehiculo` is sendable and every other kind is internal (`meta.kinds` on the list says so per kind). Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
                         customer_shareable?: boolean | ("true" | "false");
                         /**
                          * Format: uuid
@@ -52238,7 +52257,7 @@ export interface paths {
                          * @example 2027-03-31
                          */
                         expires_on?: string | null;
-                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
+                        /** @description «Se puede enviar a clientes»: `true` lets a customer receive this paper in a conversation (the AI agent sends it when asked — an informe Autofact, the revisión técnica, the padrón); `false` keeps it internal. Omitted on upload, an `informe_vehiculo` is sendable and every other kind is internal (`meta.kinds` on the list says so per kind). Refused (400) on a `cedula`, a `contrato`, a `factura`, a paper naming a person (`subject_contact_id`) and a signed copy — each row says so in `customer_share_allowed`. It never publishes the paper to a portal. */
                         customer_shareable?: boolean;
                     };
                 };
