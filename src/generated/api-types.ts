@@ -44027,6 +44027,8 @@ export interface paths {
          *
          *     It also carries the unit it bought, the same as each row of the list: `vehicle` is `{ id, make, model, year, registration_number }` or `null`, and `vehicle_count` says how many units the document acquired (`vehicle` is the FIRST of them when there are several, and `null` exactly when the count is `0`).
          *
+         *     Since vitrina-app#7723 it also carries what the «Modificar» form opens with: `acquisition` (the car’s cost under this note, with `invoice_includes_iva` and `amount_paid_clp`, or `null`) and `retentions` (the note’s live «Descuentos», each with `description` and `net_clp`).
+         *
          *     A document belonging to another workspace is a 404, indistinguishable from one that does not exist.
          */
         get: {
@@ -44076,7 +44078,42 @@ export interface paths {
                          *           "year": 2020,
                          *           "registration_number": "KXPT21"
                          *         },
-                         *         "vehicle_count": 1
+                         *         "vehicle_count": 1,
+                         *         "acquisition": {
+                         *           "id": "7b0e1c52-3a1f-4d8e-9c2a-5f6b7c8d9e01",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "kind": "compra",
+                         *           "counterparty_contact_id": "22222222-0000-4000-8000-000000000003",
+                         *           "acquired_on": "2026-09-12",
+                         *           "purchase_note_id": "d5d5d5d5-0000-4000-8000-000000000001",
+                         *           "consignment_contract_id": null,
+                         *           "sale_note_id": null,
+                         *           "net_clp": 6020000,
+                         *           "tax_clp": null,
+                         *           "tax_treatment": "no_gravado",
+                         *           "borne_by": "automotora",
+                         *           "generates_fiscal_credit": false,
+                         *           "created_at": "2026-09-12T10:15:00.000Z",
+                         *           "updated_at": "2026-09-12T10:15:00.000Z",
+                         *           "invoice_includes_iva": false,
+                         *           "amount_paid_clp": 6020000
+                         *         },
+                         *         "retentions": [
+                         *           {
+                         *             "id": "9c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f",
+                         *             "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *             "kind": "expense",
+                         *             "description": "Multas",
+                         *             "net_clp": 180000,
+                         *             "tax_clp": null,
+                         *             "tax_treatment": "no_gravado",
+                         *             "incurred_on": "2026-09-12",
+                         *             "purchase_note_id": "d5d5d5d5-0000-4000-8000-000000000001",
+                         *             "retained": true,
+                         *             "voided_at": null
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -44150,8 +44187,10 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Correct a nota de compra
-         * @description Corrects a LIVE document and **stamps it**: `corrected_at` and the acting principal are written onto the row, so a reader of the document can tell it has been changed since it was issued without joining an audit table. The folio and the status are never touched.
+         * Modify a nota de compra
+         * @description **Everything is editable until the note is voided** (vitrina-app#7723): seller, car, price, date, «Descuentos», forma de pago, observaciones and the «Compra con factura (incluye IVA)» tick. **The car’s cost follows in the same write**: the acquisition takes the new payout (price − Descuentos), the seller, the day and the tax split; `acquisition.retentions` replaces the Descuentos (the old cost lines are voided, never edited); `acquisition.vehicle_id` moves the cost and the Descuentos to another car (the old one is left without a cost). Send `invoice_includes_iva` on every save of the form. The answer is the note as `GET` returns it plus `previous` (what it said before); every change is also an audit-log row with who and when. Refusals (`error.details.code`): `purchase_note_voided` (409), `discounts_exceed_price` (400), `vehicle_has_documented_cost` (409), `vehicle_sold_by_other_seller` (409), `purchase_note_has_several_cars` (409, a legacy note that bought several cars: price, tick, car or Descuentos), `purchase_note_changed_meanwhile` (409).
+         *
+         *     Corrects a LIVE document and **stamps it**: `corrected_at` and the acting principal are written onto the row, so a reader of the document can tell it has been changed since it was issued without joining an audit table. The folio and the status are never touched.
          *
          *     **An ABSENT field is left alone; an explicit `null` CLEARS it.** On `tax_clp` that is the difference between "not recorded" and "no tax", which ADR 0058 §2 keeps apart — so correcting away an amount entered by mistake is expressible without being confused with zero.
          *
@@ -44174,7 +44213,16 @@ export interface paths {
                 content: {
                     /**
                      * @example {
-                     *       "net_clp": 6150000
+                     *       "net_clp": 6150000,
+                     *       "invoice_includes_iva": false,
+                     *       "acquisition": {
+                     *         "retentions": [
+                     *           {
+                     *             "description": "Multas",
+                     *             "net_clp": 180000
+                     *           }
+                     *         ]
+                     *       }
                      *     }
                      */
                     "application/json": {
@@ -44199,6 +44247,30 @@ export interface paths {
                             /** @enum {string} */
                             tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
                         }[];
+                        /** @description «Compra con factura (incluye IVA)». Mándalo en cada guardado del formulario. true: `net_clp` (o el precio actual si no viene) incluye IVA y se separa como al emitir. false: el precio completo es el costo, sin IVA aparte. Sin el campo, `net_clp` es el precio sin IVA y los campos de impuesto quedan como se indiquen. */
+                        invoice_includes_iva?: boolean;
+                        acquisition?: {
+                            /**
+                             * Format: uuid
+                             * @description Otro auto para la nota. Su costo y sus descuentos pasan a ese auto; el auto anterior queda sin costo de compra. Sin el campo, el auto no cambia.
+                             */
+                            vehicle_id?: string;
+                            /** @description Los «Descuentos» pasan a ser exactamente esta lista (`[]` = ninguno). Sin el campo, no cambian. */
+                            retentions?: {
+                                /** @description Qué se descuenta («Multas», «Prenda», «Permiso de circulación»), hasta 200 caracteres. Se imprime en la nota de compra. */
+                                description?: string | null;
+                                /** Format: uuid */
+                                category_id?: string;
+                                net_clp: number;
+                                tax_clp?: number | null;
+                                /** @enum {string} */
+                                tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
+                                incurred_on?: string | null;
+                                /** Format: uuid */
+                                supplier_contact_id?: string | null;
+                                document_ref?: string | null;
+                            }[];
+                        };
                     };
                 };
             };
@@ -44231,7 +44303,57 @@ export interface paths {
                          *         "void_reason": null,
                          *         "voided_by": null,
                          *         "created_at": "2026-09-12T10:15:00.000Z",
-                         *         "updated_at": "2026-09-12T10:15:00.000Z"
+                         *         "updated_at": "2026-09-12T10:15:00.000Z",
+                         *         "lines": [],
+                         *         "vehicle": {
+                         *           "id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "make": "Mazda",
+                         *           "model": "CX-5",
+                         *           "year": 2020,
+                         *           "registration_number": "KXPT21"
+                         *         },
+                         *         "vehicle_count": 1,
+                         *         "acquisition": {
+                         *           "id": "7b0e1c52-3a1f-4d8e-9c2a-5f6b7c8d9e01",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "kind": "compra",
+                         *           "counterparty_contact_id": "22222222-0000-4000-8000-000000000003",
+                         *           "acquired_on": "2026-09-12",
+                         *           "purchase_note_id": "d5d5d5d5-0000-4000-8000-000000000001",
+                         *           "consignment_contract_id": null,
+                         *           "sale_note_id": null,
+                         *           "net_clp": 5970000,
+                         *           "tax_clp": null,
+                         *           "tax_treatment": "no_gravado",
+                         *           "borne_by": "automotora",
+                         *           "generates_fiscal_credit": false,
+                         *           "created_at": "2026-09-12T10:15:00.000Z",
+                         *           "updated_at": "2026-09-12T10:15:00.000Z",
+                         *           "invoice_includes_iva": false,
+                         *           "amount_paid_clp": 5970000
+                         *         },
+                         *         "retentions": [
+                         *           {
+                         *             "id": "9c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f",
+                         *             "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *             "kind": "expense",
+                         *             "description": "Multas",
+                         *             "net_clp": 180000,
+                         *             "tax_clp": null,
+                         *             "tax_treatment": "no_gravado",
+                         *             "incurred_on": "2026-09-12",
+                         *             "purchase_note_id": "d5d5d5d5-0000-4000-8000-000000000001",
+                         *             "retained": true,
+                         *             "voided_at": null
+                         *           }
+                         *         ],
+                         *         "previous": {
+                         *           "net_clp": 6200000,
+                         *           "tax_clp": null,
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "discounts_clp": 180000
+                         *         }
                          *       }
                          *     }
                          */
@@ -44413,6 +44535,8 @@ export interface paths {
          *
          *     The actor comes from the authenticated principal; a `voided_by` in the body is IGNORED rather than rejected — a self-declared actor is not an attestation. Voiding twice is a **409**: the first actor and reason stand.
          *
+         *     **The car keeps its cost** (vitrina-app#7723): in the same transaction each car the note bought keeps the note’s total (payout + «Descuentos») as a plain Costo de compra, no longer linked to the note, and the Descuentos stop counting apart. That cost can then be corrected by typing it (`POST /vehicle-acquisitions`) or taken over by a new nota de compra. `void_outcome` says what happened per car, and `void_outcome.message` is ready to show as is. Voiding a voided note is a 409 `purchase_note_voided`.
+         *
          *     Requires `purchase_notes:void`, which is a DIFFERENT authority from `purchase_notes:write` — holding the write scope does not permit a void.
          */
         post: {
@@ -44468,7 +44592,20 @@ export interface paths {
                          *         "void_reason": "se anuló la compra: el vendedor desistió antes de firmar",
                          *         "voided_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-12T10:15:00.000Z",
-                         *         "updated_at": "2026-09-12T10:15:00.000Z"
+                         *         "updated_at": "2026-09-12T10:15:00.000Z",
+                         *         "lines": [],
+                         *         "void_outcome": {
+                         *           "vehicles": [
+                         *             {
+                         *               "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *               "acquisition_id": "7b0e1c52-3a1f-4d8e-9c2a-5f6b7c8d9e01",
+                         *               "purchase_cost_clp": 6200000,
+                         *               "invoice_includes_iva": false,
+                         *               "discounts_clp": 180000
+                         *             }
+                         *           ],
+                         *           "message": "Anulaste la nota de compra P-9. El Mazda CX-5 2020 (KXPT21) conserva su costo de compra de $6.200.000 como costo escrito a mano: puedes corregirlo en la ficha del auto o registrar una nota de compra nueva. Los descuentos de la nota ($180.000) ya no se cuentan aparte: quedan dentro de ese costo."
+                         *         }
                          *       }
                          *     }
                          */
