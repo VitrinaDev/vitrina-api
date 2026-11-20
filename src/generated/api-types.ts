@@ -18602,6 +18602,8 @@ export interface paths {
          *
          *     **Publish in the same call (`publish_to`).** Optional. Name the marketplaces this vehicle should go to — portal slugs such as `chileautos` / `mercadolibre`, or integration ids from GET /marketplaces — and it is published right after it is saved, through the same path as POST /vehicles/{id}/publish. Omitted or `[]` saves only; there is no default. Every entry is validated first: a portal with no connected account, a slug matching several accounts, or an id from another workspace answers **422 and nothing is saved**. Once saved, the vehicle stays saved: a portal that fails to publish is an `error` entry in `publications`, never a failed request (still 201). The response then carries `publications`, one `PublishOutcome` per account (`published`, `pending` for queued transports such as `chileautos_panel`, `already_published`, or `error` with the reason). `publications` is absent when `publish_to` was not sent.
          *
+         *     **Costo de compra in the same call (`purchase_cost_clp`).** Optional (vitrina-app#7719). The amount the dealership paid, recorded as the car’s Costo de compra exactly as `POST /vehicle-acquisitions` with `kind: "compra"` would; `invoice_includes_iva: true` says it includes IVA («Compra con factura»). Needs `dealership_economics:write`: without it the call is a **403 and nothing is saved**. The response then carries `acquisition` (the recorded row, the same shape `POST /vehicle-acquisitions` returns, shown only to callers holding `dealership_economics:read`); `acquisition: null` means the car was saved but its cost was not, and it can be typed on the car’s page. Both fields are create-only.
+         *
          *     **Sanity range.** A price fans out to every connected portal, so a typo is stopped here. `price_amount` must be between 100.000 and 2.000.000.000 CLP (a UF price is bounded at the day's UF; other currencies are not bounded) and `odometer_value` between 0 and 2.000.000; `null` clears either and is always accepted. Outside the range: **422 `VEHICLE_VALUE_OUT_OF_RANGE`**, with a Spanish `message`, `field_errors.<field>` and `details.violations[]` (`field`, `reason` = `price_out_of_range` | `km_out_of_range`, `value`, `min`, `max`, `currency`). A price change beyond 10x up or down from the current price answers **422 `PRICE_CHANGE_CONFIRMATION_REQUIRED`** (`details.reason` = `large_price_change`, `current_price`, `requested_price`, `currency`, `factor`, `confirm_flag`) unless the body carries `confirm_large_price_change: true`; ask the user, then resend the same body with it. Nothing is written on either 422.
          *
          *     **Normalization and `catalog_match`.** On create and update, `make` and `model` that equal an entry of GET /vehicles/catalog/brands and /catalog/models up to case, accents, spaces and hyphens are stored in the catalog's spelling ("toyota" → "Toyota", "mercedes benz" → "Mercedes-Benz", "rav 4" → "RAV4"); `fuel_type`, `gear_type` and `body_style` are stored as vocabulary codes ("Bencina" → `gasolina`, "Automática" → `automatica`, "Station Wagon" → `wagon`; codes: fuel `gasolina|diesel|hibrido|electrico|gnc|glp|otro`, gear `mecanica|automatica|otro`, body `sedan|hatchback|suv|camioneta|coupe|wagon|furgon|convertible|minivan|otro`; for `vehicle_type: moto` body_style is the «Tipo de moto» instead: `moto_calle|moto_deportiva|moto_touring|moto_trail|moto_enduro|moto_scooter|moto_custom|moto_cuatrimoto|moto_otro`, and "Trail" / "BODY.MOTORCYCLE.TRAIL" snap to `moto_trail`). Nothing is invented: a value with no match is stored exactly as sent. The response (and GET /vehicles/{id}) carries `catalog_match`: `make` / `model` are `matched` | `unmatched` | `missing` (`not_applicable` for a non-`auto` vehicle_type); `version` adds `approximate` (word overlap with a catalog version, same displacement) and `catalog_version` names the catalog version it matched or most resembles; `fuel_type` / `gear_type` / `body_style` are `matched` | `unmatched` | `missing`; `warnings[]` lists `{ field, code, message }` for everything not matched, with a Spanish `message` ready to show (codes: `make_missing`, `make_not_in_catalog`, `model_missing`, `model_not_in_catalog`, `version_approximate`, `version_not_in_catalog`, `fuel_type_not_recognized`, `gear_type_not_recognized`, `body_style_not_recognized`). A make or model that is not matched still saves, but Chileautos publishes it without a technical sheet (ficha). `catalog_match` is null only when the catalog could not be loaded. Example of an unmatched push: {"make":"matched","model":"unmatched","version":"unmatched","catalog_version":null,"fuel_type":"unmatched","gear_type":"matched","body_style":"missing","warnings":[{"field":"model","code":"model_not_in_catalog","message":"Modelo 'Rav-4 xx' no está en el catálogo de Toyota (GET /vehicles/catalog/models); Chileautos lo publicará sin ficha."},{"field":"fuel_type","code":"fuel_type_not_recognized","message":"Combustible 'Hidrógeno' no se reconoce; valores aceptados: gasolina, diesel, hibrido, electrico, gnc, glp, otro."}]}
@@ -18712,6 +18714,10 @@ export interface paths {
                          *     ]
                          */
                         publish_to?: string[];
+                        /** @description Costo de compra del auto en pesos, opcional. Se registra en la misma llamada como el costo de compra del auto (lo mismo que `POST /vehicle-acquisitions` con `kind: "compra"`). Necesita el permiso `dealership_economics:write`; sin él la llamada responde 403 y no crea el auto. */
+                        purchase_cost_clp?: number;
+                        /** @description «Compra con factura (incluye IVA)» para `purchase_cost_clp`. Opcional, por defecto false. Con true el monto incluye IVA y el costo de compra queda sin IVA. */
+                        invoice_includes_iva?: boolean;
                     };
                 };
             };
@@ -50049,7 +50055,7 @@ export interface paths {
         put?: never;
         /**
          * Record how a unit arrived, or its bare Costo de compra
-         * @description Two shapes. (1) THE BARE COSTO DE COMPRA (vitrina-app#7612): `{ vehicle_id, kind: "compra", net_clp }` with no document link records what the dealership paid for a car of its own — the «Falta el costo de compra» field of the profit report. `net_clp` is the total paid (no IVA split). Defaults: `acquired_on` = the day the car was created in Vitrina (dealership calendar), `tax_treatment` = the car’s IVA regime (the car’s, else the dealership default, else `exento`), `borne_by` = `automotora`, `generates_fiscal_credit` = false, `tax_clp` = null. The SAME call on a car that already has a bare cost replaces its amount and answers 200; a new cost answers 201. When the nota de compra the cost came from was VOIDED, the same call detaches the cost from it (same row, 200, defaults as above, the voided note’s retained cost lines withdrawn) and a later nota de compra can take it over again. 409 with `error.details.code`: `purchase_cost_on_purchase_note` (a live nota de compra: correct it there, `details.purchase_note_id`), `purchase_cost_on_trade_in` (the car came in as parte de pago, `details.sale_note_id`), `purchase_cost_consigned_vehicle` (a consigned car has no purchase cost). The profit report (`GET /margin`) counts the cost on the next read. (2) AN ACQUISITION UNDER ITS DOCUMENT: any kind naming its document (`purchase_note_id`, `consignment_contract_id`, `sale_note_id`); `acquired_on`, `tax_treatment`, `borne_by` and `generates_fiscal_credit` are then required (400), and a second acquisition for one unit is a 409.
+         * @description Two shapes. (1) THE BARE COSTO DE COMPRA (vitrina-app#7612): `{ vehicle_id, kind: "compra", net_clp }` with no document link records what the dealership paid for a car of its own — the cost field of the profit report, of the car’s page and of the new-car form. `net_clp` is the amount typed: the total paid, unless `invoice_includes_iva: true` («Compra con factura (incluye IVA)», vitrina-app#7719) says it includes IVA; then the stored `net_clp` is the amount without IVA, `tax_clp` the IVA, `tax_treatment` afecto and `generates_fiscal_credit` true. A correction resends the tick; without it the cost is the whole amount again. Every response carries `invoice_includes_iva` and `amount_paid_clp` (what was typed) to prefill the field. Defaults: `acquired_on` = the day the car was created in Vitrina (dealership calendar), `tax_treatment` = the car’s IVA regime (the car’s, else the dealership default, else `exento`), `borne_by` = `automotora`, `generates_fiscal_credit` = false, `tax_clp` = null. The SAME call on a car that already has a bare cost replaces its amount and answers 200; a new cost answers 201. When the nota de compra the cost came from was VOIDED, the same call detaches the cost from it (same row, 200, defaults as above, the voided note’s retained cost lines withdrawn) and a later nota de compra can take it over again. 409 with `error.details.code`: `purchase_cost_on_purchase_note` (a live nota de compra: correct it there, `details.purchase_note_id`), `purchase_cost_on_trade_in` (the car came in as parte de pago, `details.sale_note_id`), `purchase_cost_consigned_vehicle` (a consigned car has no purchase cost). The profit report (`GET /margin`) counts the cost on the next read. (2) AN ACQUISITION UNDER ITS DOCUMENT: any kind naming its document (`purchase_note_id`, `consignment_contract_id`, `sale_note_id`); the same defaults and the same tick apply (nothing beyond the car, kind, document and amount is required since vitrina-app#7719), and a second acquisition for one unit is a 409.
          */
         post: {
             parameters: {
@@ -50077,7 +50083,7 @@ export interface paths {
                         kind: "compra" | "consignacion" | "retoma";
                         /** Format: uuid */
                         counterparty_contact_id?: string | null;
-                        /** @description Fecha de adquisición. Obligatoria cuando se nombra un documento. En un costo de compra sin documento, por defecto el día en que el auto se creó en Vitrina. */
+                        /** @description Fecha de adquisición. Opcional: por defecto el día en que el auto se creó en Vitrina (calendario de la automotora). */
                         acquired_on?: string;
                         /** Format: uuid */
                         purchase_note_id?: string | null;
@@ -50085,21 +50091,23 @@ export interface paths {
                         consignment_contract_id?: string | null;
                         /** Format: uuid */
                         sale_note_id?: string | null;
-                        /** @description Costo de compra en pesos. En un costo de compra sin documento es el total pagado por el auto (no se separa el IVA). */
+                        /** @description Costo de compra en pesos, el monto que escribe la automotora. Sin `invoice_includes_iva` es el costo completo. Con `invoice_includes_iva: true` el monto incluye IVA: se guarda sin IVA en `net_clp` y el IVA en `tax_clp`. */
                         net_clp: number;
                         tax_clp?: number | null;
                         /**
-                         * @description Obligatorio cuando se nombra un documento. En un costo de compra sin documento, por defecto el régimen de IVA del auto (el del auto, si no el de la automotora, si no exento).
+                         * @description Opcional. Por defecto el régimen de IVA del auto (el del auto, si no el de la automotora, si no exento); `afecto` con `invoice_includes_iva`.
                          * @enum {string}
                          */
                         tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                         /**
-                         * @description Obligatorio cuando se nombra un documento. En un costo de compra sin documento, por defecto automotora.
+                         * @description Opcional. Por defecto automotora.
                          * @enum {string}
                          */
                         borne_by?: "automotora" | "cliente";
-                        /** @description Obligatorio cuando se nombra un documento. En un costo de compra sin documento, por defecto false. */
+                        /** @description Opcional. Por defecto false; true con `invoice_includes_iva`. */
                         generates_fiscal_credit?: boolean;
+                        /** @description «Compra con factura (incluye IVA)». Opcional, por defecto false. Con true el monto de `net_clp` incluye IVA: el costo de compra queda sin IVA, el IVA se guarda aparte (`tax_clp`), la compra queda afecta y con crédito fiscal. Manda sobre `tax_clp`, `tax_treatment` y `generates_fiscal_credit`. Al corregir un costo se manda de nuevo: sin él, el costo vuelve a ser el monto completo. */
+                        invoice_includes_iva?: boolean;
                     };
                 };
             };
@@ -50129,7 +50137,9 @@ export interface paths {
                          *         "generates_fiscal_credit": false,
                          *         "created_at": "2026-11-19T15:02:00.000Z",
                          *         "updated_at": "2026-11-19T15:10:00.000Z",
-                         *         "derived_tenencia": "propio"
+                         *         "derived_tenencia": "propio",
+                         *         "invoice_includes_iva": false,
+                         *         "amount_paid_clp": 8500000
                          *       }
                          *     }
                          */
@@ -50166,7 +50176,9 @@ export interface paths {
                          *         "generates_fiscal_credit": false,
                          *         "created_at": "2026-11-19T15:02:00.000Z",
                          *         "updated_at": "2026-11-19T15:02:00.000Z",
-                         *         "derived_tenencia": "propio"
+                         *         "derived_tenencia": "propio",
+                         *         "invoice_includes_iva": false,
+                         *         "amount_paid_clp": 8500000
                          *       }
                          *     }
                          */
