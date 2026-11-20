@@ -8257,6 +8257,144 @@
         "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
         "example": "2026-01"
       },
+      "VehicleAcquisition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "El auto."
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "compra",
+              "consignacion",
+              "retoma"
+            ],
+            "description": "Cómo llegó el auto: compra (de la automotora), consignacion o retoma (parte de pago)."
+          },
+          "counterparty_contact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "De quién llegó el auto (contacto). null = no registrado."
+          },
+          "acquired_on": {
+            "type": "string",
+            "description": "Fecha de adquisición, YYYY-MM-DD."
+          },
+          "purchase_note_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "La nota de compra de una compra. null en un costo de compra escrito a mano."
+          },
+          "consignment_contract_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "El contrato de una consignación."
+          },
+          "sale_note_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "La nota de venta que recibió el auto en parte de pago (retoma)."
+          },
+          "net_clp": {
+            "type": "integer",
+            "description": "Costo de compra en pesos, sin IVA cuando la compra fue con factura."
+          },
+          "tax_clp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "IVA de la compra en pesos. null = no registrado; 0 = sin IVA."
+          },
+          "tax_treatment": {
+            "type": "string",
+            "enum": [
+              "afecto",
+              "exento",
+              "no_gravado",
+              "pass_through"
+            ],
+            "description": "Tratamiento de IVA de la compra."
+          },
+          "borne_by": {
+            "type": "string",
+            "enum": [
+              "automotora",
+              "cliente"
+            ],
+            "description": "Quién asume el costo (automotora o cliente)."
+          },
+          "generates_fiscal_credit": {
+            "type": "boolean",
+            "description": "La compra genera crédito fiscal (IVA recuperable)."
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "derived_tenencia": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "La tenencia del auto (propio o consignacion) tal como quedó tras este registro."
+          },
+          "invoice_includes_iva": {
+            "type": "boolean",
+            "description": "«Compra con factura (incluye IVA)» tal como quedó registrada. Sirve para mostrar el tick al reabrir el costo."
+          },
+          "amount_paid_clp": {
+            "type": "integer",
+            "description": "El monto que escribió la automotora: net_clp más el IVA cuando la compra fue con factura, si no net_clp. Sirve para mostrar el monto al reabrir el costo."
+          }
+        },
+        "required": [
+          "id",
+          "tenant_id",
+          "vehicle_id",
+          "kind",
+          "counterparty_contact_id",
+          "acquired_on",
+          "purchase_note_id",
+          "consignment_contract_id",
+          "sale_note_id",
+          "net_clp",
+          "tax_clp",
+          "tax_treatment",
+          "borne_by",
+          "generates_fiscal_credit",
+          "created_at",
+          "updated_at",
+          "derived_tenencia",
+          "invoice_includes_iva",
+          "amount_paid_clp"
+        ]
+      },
       "GatewayPaymentRef": {
         "type": [
           "object",
@@ -141707,6 +141845,145 @@
       }
     },
     "/vehicle-acquisitions": {
+      "get": {
+        "summary": "The acquisition record for a vehicle",
+        "description": "How one car arrived and what it cost (its Costo de compra). Needs `dealership_economics:read`. `vehicle_id` is required (no whole-lot cost dump). An empty array, not a 404, when no acquisition has been recorded yet; a car removed from Stock answers the same empty array. The cost editor prefills its amount from `amount_paid_clp` and its «Compra con factura (incluye IVA)» tick from `invoice_includes_iva` (vitrina-app#7719); a correction is `POST /vehicle-acquisitions`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicle Acquisitions"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "vehicle_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The acquisition of the car: a list of at most one row.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VehicleAcquisition"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "b5f0d6c2-1e8a-4c3b-9f7d-2a6e4b8c0d11",
+                      "tenant_id": "a3c9e1f0-7b2d-4e5a-8c6f-1d0b9e2a4f73",
+                      "vehicle_id": "7c1e2a40-5b7d-4f0e-9a51-3d2f8e6b1c90",
+                      "kind": "compra",
+                      "counterparty_contact_id": null,
+                      "acquired_on": "2026-08-03",
+                      "purchase_note_id": null,
+                      "consignment_contract_id": null,
+                      "sale_note_id": null,
+                      "net_clp": 8500000,
+                      "tax_clp": null,
+                      "tax_treatment": "exento",
+                      "borne_by": "automotora",
+                      "generates_fiscal_credit": false,
+                      "created_at": "2026-11-19T15:02:00.000Z",
+                      "updated_at": "2026-11-19T15:02:00.000Z",
+                      "derived_tenencia": "propio",
+                      "invoice_includes_iva": false,
+                      "amount_paid_clp": 8500000
+                    }
+                  ],
+                  "meta": {
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
       "post": {
         "summary": "Record how a unit arrived, or its bare Costo de compra",
         "description": "Two shapes. (1) THE BARE COSTO DE COMPRA (vitrina-app#7612): `{ vehicle_id, kind: \"compra\", net_clp }` with no document link records what the dealership paid for a car of its own — the cost field of the profit report, of the car’s page and of the new-car form. `net_clp` is the amount typed: the total paid, unless `invoice_includes_iva: true` («Compra con factura (incluye IVA)», vitrina-app#7719) says it includes IVA; then the stored `net_clp` is the amount without IVA, `tax_clp` the IVA, `tax_treatment` afecto and `generates_fiscal_credit` true. A correction resends the tick; without it the cost is the whole amount again. Every response carries `invoice_includes_iva` and `amount_paid_clp` (what was typed) to prefill the field. Defaults: `acquired_on` = the day the car was created in Vitrina (dealership calendar), `tax_treatment` = the car’s IVA regime (the car’s, else the dealership default, else `exento`), `borne_by` = `automotora`, `generates_fiscal_credit` = false, `tax_clp` = null. The SAME call on a car that already has a bare cost replaces its amount and answers 200; a new cost answers 201. When the nota de compra the cost came from was VOIDED, the same call detaches the cost from it (same row, 200, defaults as above, the voided note’s retained cost lines withdrawn) and a later nota de compra can take it over again. 409 with `error.details.code`: `purchase_cost_on_purchase_note` (a live nota de compra: correct it there, `details.purchase_note_id`), `purchase_cost_on_trade_in` (the car came in as parte de pago, `details.sale_note_id`), `purchase_cost_consigned_vehicle` (a consigned car has no purchase cost). The profit report (`GET /margin`) counts the cost on the next read. (2) AN ACQUISITION UNDER ITS DOCUMENT: any kind naming its document (`purchase_note_id`, `consignment_contract_id`, `sale_note_id`); the same defaults and the same tick apply (nothing beyond the car, kind, document and amount is required since vitrina-app#7719), and a second acquisition for one unit is a 409.",
@@ -141977,6 +142254,139 @@
             }
           }
         ]
+      }
+    },
+    "/vehicle-acquisitions/{id}": {
+      "get": {
+        "summary": "Fetch one acquisition record",
+        "description": "One acquisition by its id, in the same shape as the list read. Needs `dealership_economics:read`. 404 for an id of another workspace or none at all.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicle Acquisitions"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The acquisition record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/VehicleAcquisition"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "b5f0d6c2-1e8a-4c3b-9f7d-2a6e4b8c0d11",
+                    "tenant_id": "a3c9e1f0-7b2d-4e5a-8c6f-1d0b9e2a4f73",
+                    "vehicle_id": "7c1e2a40-5b7d-4f0e-9a51-3d2f8e6b1c90",
+                    "kind": "compra",
+                    "counterparty_contact_id": null,
+                    "acquired_on": "2026-08-03",
+                    "purchase_note_id": null,
+                    "consignment_contract_id": null,
+                    "sale_note_id": null,
+                    "net_clp": 8500000,
+                    "tax_clp": null,
+                    "tax_treatment": "exento",
+                    "borne_by": "automotora",
+                    "generates_fiscal_credit": false,
+                    "created_at": "2026-11-19T15:02:00.000Z",
+                    "updated_at": "2026-11-19T15:02:00.000Z",
+                    "derived_tenencia": "propio",
+                    "invoice_includes_iva": false,
+                    "amount_paid_clp": 8500000
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
       }
     },
     "/vehicles/kanban": {
