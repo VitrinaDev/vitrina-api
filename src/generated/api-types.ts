@@ -18645,7 +18645,7 @@ export interface paths {
                     without_acquisition?: boolean | string;
                     view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo" | "mandato_sin_firmar";
                     active?: boolean | string;
-                    sort?: "price_asc" | "price_desc" | "year_desc" | "year_asc" | "km_asc" | "km_desc" | "recent" | "days_desc" | "interest_desc" | "estacionamiento";
+                    sort?: "price_asc" | "price_desc" | "year_desc" | "year_asc" | "km_asc" | "km_desc" | "recent" | "created_desc" | "days_desc" | "interest_desc" | "estacionamiento" | "name_asc" | "name_desc";
                     limit?: number;
                     offset?: number | null;
                 };
@@ -19216,7 +19216,7 @@ export interface paths {
                     tenencia?: "propio" | "consignacion";
                     consignacion_modalidad?: "en_local" | "virtual" | "sin_contrato";
                     tenencia_source?: "document" | "declared" | "default" | "decided";
-                    sort?: "price_asc" | "price_desc" | "year_desc" | "year_asc" | "km_asc" | "km_desc" | "recent" | "published_asc" | "published_desc" | "created_asc" | "created_desc" | "days_desc" | "interest_desc" | "estacionamiento";
+                    sort?: "price_asc" | "price_desc" | "year_desc" | "year_asc" | "km_asc" | "km_desc" | "recent" | "published_asc" | "published_desc" | "created_asc" | "created_desc" | "days_desc" | "interest_desc" | "estacionamiento" | "name_asc" | "name_desc";
                     ids?: string;
                     include_inactive?: boolean | null;
                     include_internal_prices?: boolean | null;

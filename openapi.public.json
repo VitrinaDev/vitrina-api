@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.95.0",
+    "version": "17.96.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -102334,9 +102334,12 @@
                 "km_asc",
                 "km_desc",
                 "recent",
+                "created_desc",
                 "days_desc",
                 "interest_desc",
-                "estacionamiento"
+                "estacionamiento",
+                "name_asc",
+                "name_desc"
               ]
             },
             "required": false,
@@ -103398,7 +103401,9 @@
                 "created_desc",
                 "days_desc",
                 "interest_desc",
-                "estacionamiento"
+                "estacionamiento",
+                "name_asc",
+                "name_desc"
               ]
             },
             "required": false,
