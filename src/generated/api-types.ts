@@ -72333,6 +72333,8 @@ export interface paths {
                          *             "compute_errors": [],
                          *             "whatsapp": {
                          *               "state": "connected",
+                         *               "total_count": 1,
+                         *               "connected_count": 1,
                          *               "accounts": [
                          *                 {
                          *                   "messaging_account_id": "0192f1c4-2222-7000-8000-000000000002",
@@ -324392,10 +324394,14 @@ export interface components {
             /** @description WhatsApp channel health. Needs `messaging_accounts:read`. */
             whatsapp?: {
                 /**
-                 * @description `not_connected`: no WhatsApp number yet (a setup state).
+                 * @description `not_connected`: no WhatsApp number yet (a setup state). `connected` only says a number exists: the counts say how many work.
                  * @enum {string}
                  */
                 state: "connected" | "not_connected";
+                /** @description WhatsApp numbers on the workspace. */
+                total_count: number;
+                /** @description Numbers whose stored health is not `disconnected` (a number with no health row yet, and `attention`, count as connected). `connected_count < total_count` means at least one number is down: show «N de M números conectados». */
+                connected_count: number;
                 accounts: {
                     /** Format: uuid */
                     messaging_account_id: string;

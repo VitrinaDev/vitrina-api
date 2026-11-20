@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.84.0",
+    "version": "17.85.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -9795,7 +9795,15 @@
                   "connected",
                   "not_connected"
                 ],
-                "description": "`not_connected`: no WhatsApp number yet (a setup state)."
+                "description": "`not_connected`: no WhatsApp number yet (a setup state). `connected` only says a number exists: the counts say how many work."
+              },
+              "total_count": {
+                "type": "integer",
+                "description": "WhatsApp numbers on the workspace."
+              },
+              "connected_count": {
+                "type": "integer",
+                "description": "Numbers whose stored health is not `disconnected` (a number with no health row yet, and `attention`, count as connected). `connected_count < total_count` means at least one number is down: show «N de M números conectados»."
               },
               "accounts": {
                 "type": "array",
@@ -9884,6 +9892,8 @@
             },
             "required": [
               "state",
+              "total_count",
+              "connected_count",
               "accounts"
             ],
             "description": "WhatsApp channel health. Needs `messaging_accounts:read`."
@@ -169024,6 +169034,8 @@
                         "compute_errors": [],
                         "whatsapp": {
                           "state": "connected",
+                          "total_count": 1,
+                          "connected_count": 1,
                           "accounts": [
                             {
                               "messaging_account_id": "0192f1c4-2222-7000-8000-000000000002",
