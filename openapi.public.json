@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.79.0",
+    "version": "17.81.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -9498,6 +9498,1493 @@
           "plan",
           "history",
           "suppression"
+        ]
+      },
+      "ClinicSignalKind": {
+        "type": "string",
+        "enum": [
+          "whatsapp_disconnected",
+          "whatsapp_attention",
+          "first_contact_templates_not_approved",
+          "unmapped_forms",
+          "first_contact_missed",
+          "first_contact_off"
+        ],
+        "description": "`whatsapp_disconnected`: a WhatsApp number of the clinic is disconnected (critical; `detail`: `messaging_account_id`, `account_name`, `reason_code`, `is_first_contact_sender`). `whatsapp_attention`: a number needs attention (warning; same detail). `first_contact_templates_not_approved`: the clinic form first contact is on but its ladder cannot send (critical when step 1 or the in-hours step 2 has no approved template, warning when only the out-of-hours step 2 is missing; `detail`: `messaging_account_id`, `ready_in_hours`, `ready_out_of_hours`, `templates` [{name, language, status}]). `unmapped_forms`: submissions of the last 7 days came from a form that is not in the clinic’s current form map (warning; `detail`: `submissions_7d`, `forms` [{form_id, submissions}], `forms_total`, `without_form_id`). `first_contact_missed`: in the last 24 hours submissions ended without a first contact for a reason someone can fix, or a lead raised the first-contact-missing alarm (warning; `detail`: `outcomes` {outcome: count}, `missing_alarms`, `needs_form_setup`). `first_contact_off`: the clinic has a WhatsApp number and its clinic form first contact is switched off (low; `detail`: `submissions_7d` = forms that arrived while off). A value added later is a changelog entry."
+      },
+      "ClinicSignalSeverity": {
+        "type": "string",
+        "enum": [
+          "critical",
+          "warning",
+          "low"
+        ],
+        "description": "`critical`: nothing can be sent or patients are being lost now. `warning`: something is wrong and needs a person. `low`: a deliberate setting worth a look, always sorted below real problems."
+      },
+      "ClinicSignalFixTarget": {
+        "type": "string",
+        "enum": [
+          "channels",
+          "channel_templates",
+          "clinic_first_contact"
+        ],
+        "description": "Where the signal is fixed, as a stable key (not a URL): `channels` = the workspace’s channel settings, `channel_templates` = the WhatsApp templates of the sending number, `clinic_first_contact` = the clinic form first contact settings."
+      },
+      "ClinicSignal": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ClinicSignalKind"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/ClinicSignalSeverity"
+          },
+          "since": {
+            "type": "string",
+            "description": "ISO instant the problem started: its own timestamp when one exists, else `first_seen_at`."
+          },
+          "first_seen_at": {
+            "type": "string",
+            "description": "The first refresh that saw this signal; stable across refreshes."
+          },
+          "section": {
+            "type": "string",
+            "enum": [
+              "whatsapp",
+              "first_contact"
+            ],
+            "description": "The summary section whose scope gates reading this signal."
+          },
+          "fix_target": {
+            "$ref": "#/components/schemas/ClinicSignalFixTarget"
+          },
+          "detail": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Non-personal facts only (ids, states, template and form names, counts); the keys per kind are listed on `ClinicSignalKind`."
+          }
+        },
+        "required": [
+          "kind",
+          "severity",
+          "since",
+          "first_seen_at",
+          "section",
+          "fix_target",
+          "detail"
+        ]
+      },
+      "ClinicSummary": {
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tenant_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tenant_logo_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "description": "The caller’s built-in role tier in this workspace."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "pending"
+            ],
+            "description": "`pending`: no summary computed yet (every section absent)."
+          },
+          "timezone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The zone the windows were cut in."
+          },
+          "computed_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "stale": {
+            "type": "boolean",
+            "description": "`computed_at` is older than two job ticks (30 min)."
+          },
+          "floored": {
+            "type": "boolean",
+            "description": "`leads` and `agenda` went through the minimum-count floor (a Consultor seat): a count from 1 to 4 reads null."
+          },
+          "compute_errors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "whatsapp",
+                "first_contact",
+                "leads",
+                "agenda"
+              ]
+            },
+            "description": "Readable sections that failed on the last run (each is null)."
+          },
+          "whatsapp": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "connected",
+                  "not_connected"
+                ],
+                "description": "`not_connected`: no WhatsApp number yet (a setup state)."
+              },
+              "accounts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "messaging_account_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "The number’s label in Vitrina."
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "clinic_form_sender": {
+                      "type": "boolean",
+                      "description": "The clinic form first contact sends from this number."
+                    },
+                    "health": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "description": "`healthy`, `attention` or `disconnected`."
+                        },
+                        "reason_code": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "unhealthy_since": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "last_checked_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "reason_code",
+                        "unhealthy_since",
+                        "last_checked_at"
+                      ],
+                      "description": "The stored health verdict; null when never checked."
+                    },
+                    "messaging_limit_tier": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "quality_rating": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "messaging_account_id",
+                    "name",
+                    "enabled",
+                    "clinic_form_sender",
+                    "health",
+                    "messaging_limit_tier",
+                    "quality_rating"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "state",
+              "accounts"
+            ],
+            "description": "WhatsApp channel health. Needs `messaging_accounts:read`."
+          },
+          "first_contact": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "set_up",
+                  "not_set_up"
+                ],
+                "description": "`not_set_up`: no clinic form source."
+              },
+              "enabled": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "enabled_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ready_in_hours": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "ready_out_of_hours": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "step2_templates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "language": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "language",
+                    "status"
+                  ]
+                }
+              },
+              "step2_ready": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "daily_cap": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "daily_cap_reached": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "windows": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "today": {
+                    "type": "object",
+                    "properties": {
+                      "since": {
+                        "type": "string",
+                        "description": "Window start (local midnight, ISO instant)."
+                      },
+                      "submissions": {
+                        "type": "integer"
+                      },
+                      "outcomes": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer"
+                        },
+                        "description": "Count per intake outcome (`scheduled`, `repeat_noted`, `daily_cap`, …; `received` = not finished yet). `scheduled` only means a first contact was QUEUED, not delivered: show `delivery`, never `outcomes.scheduled`, as «contacted»."
+                      },
+                      "delivery": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Settled submissions in the window."
+                          },
+                          "sent": {
+                            "type": "integer",
+                            "description": "Step 1 accepted by the provider."
+                          },
+                          "failed": {
+                            "type": "integer",
+                            "description": "The send errored."
+                          },
+                          "failed_by_code": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "pending": {
+                            "type": "integer",
+                            "description": "Queued or waiting (template review, billing block): goes out on its own."
+                          },
+                          "pending_by_reason": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "skipped": {
+                            "type": "integer",
+                            "description": "The first contact ran and skipped."
+                          },
+                          "skipped_by_reason": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "not_queued": {
+                            "type": "integer",
+                            "description": "The intake decided not to queue a first contact (repeat, upcoming cita, no phone, …)."
+                          },
+                          "not_queued_by_outcome": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "required": [
+                          "total",
+                          "sent",
+                          "failed",
+                          "failed_by_code",
+                          "pending",
+                          "pending_by_reason",
+                          "skipped",
+                          "skipped_by_reason",
+                          "not_queued",
+                          "not_queued_by_outcome"
+                        ],
+                        "description": "What happened to each submission’s first message, the same buckets as `GET /lead-outreach/status` `clinic_form.delivery` (#7680): `sent + failed + pending + skipped + not_queued = total`. Absent on a row stored before this field existed (until its next refresh, at most 15 minutes)."
+                      },
+                      "unmapped": {
+                        "type": "integer"
+                      },
+                      "first_contacts_sent": {
+                        "type": "integer"
+                      },
+                      "wait": {
+                        "type": "object",
+                        "properties": {
+                          "measured": {
+                            "type": "integer"
+                          },
+                          "median_seconds": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "p90_seconds": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "in_hours": {
+                            "type": "object",
+                            "properties": {
+                              "measured": {
+                                "type": "integer"
+                              },
+                              "median_seconds": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "p90_seconds": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "measured",
+                              "median_seconds",
+                              "p90_seconds"
+                            ]
+                          },
+                          "out_of_hours_count": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "measured",
+                          "median_seconds",
+                          "p90_seconds",
+                          "in_hours",
+                          "out_of_hours_count"
+                        ],
+                        "description": "Form → first message over the first contacts sent in the window (#7468)."
+                      }
+                    },
+                    "required": [
+                      "since",
+                      "submissions",
+                      "outcomes",
+                      "unmapped",
+                      "first_contacts_sent",
+                      "wait"
+                    ]
+                  },
+                  "7d": {
+                    "type": "object",
+                    "properties": {
+                      "since": {
+                        "type": "string",
+                        "description": "Window start (local midnight, ISO instant)."
+                      },
+                      "submissions": {
+                        "type": "integer"
+                      },
+                      "outcomes": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer"
+                        },
+                        "description": "Count per intake outcome (`scheduled`, `repeat_noted`, `daily_cap`, …; `received` = not finished yet). `scheduled` only means a first contact was QUEUED, not delivered: show `delivery`, never `outcomes.scheduled`, as «contacted»."
+                      },
+                      "delivery": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Settled submissions in the window."
+                          },
+                          "sent": {
+                            "type": "integer",
+                            "description": "Step 1 accepted by the provider."
+                          },
+                          "failed": {
+                            "type": "integer",
+                            "description": "The send errored."
+                          },
+                          "failed_by_code": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "pending": {
+                            "type": "integer",
+                            "description": "Queued or waiting (template review, billing block): goes out on its own."
+                          },
+                          "pending_by_reason": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "skipped": {
+                            "type": "integer",
+                            "description": "The first contact ran and skipped."
+                          },
+                          "skipped_by_reason": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "not_queued": {
+                            "type": "integer",
+                            "description": "The intake decided not to queue a first contact (repeat, upcoming cita, no phone, …)."
+                          },
+                          "not_queued_by_outcome": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "required": [
+                          "total",
+                          "sent",
+                          "failed",
+                          "failed_by_code",
+                          "pending",
+                          "pending_by_reason",
+                          "skipped",
+                          "skipped_by_reason",
+                          "not_queued",
+                          "not_queued_by_outcome"
+                        ],
+                        "description": "What happened to each submission’s first message, the same buckets as `GET /lead-outreach/status` `clinic_form.delivery` (#7680): `sent + failed + pending + skipped + not_queued = total`. Absent on a row stored before this field existed (until its next refresh, at most 15 minutes)."
+                      },
+                      "unmapped": {
+                        "type": "integer"
+                      },
+                      "first_contacts_sent": {
+                        "type": "integer"
+                      },
+                      "wait": {
+                        "type": "object",
+                        "properties": {
+                          "measured": {
+                            "type": "integer"
+                          },
+                          "median_seconds": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "p90_seconds": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "in_hours": {
+                            "type": "object",
+                            "properties": {
+                              "measured": {
+                                "type": "integer"
+                              },
+                              "median_seconds": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "p90_seconds": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "measured",
+                              "median_seconds",
+                              "p90_seconds"
+                            ]
+                          },
+                          "out_of_hours_count": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "measured",
+                          "median_seconds",
+                          "p90_seconds",
+                          "in_hours",
+                          "out_of_hours_count"
+                        ],
+                        "description": "Form → first message over the first contacts sent in the window (#7468)."
+                      }
+                    },
+                    "required": [
+                      "since",
+                      "submissions",
+                      "outcomes",
+                      "unmapped",
+                      "first_contacts_sent",
+                      "wait"
+                    ]
+                  },
+                  "30d": {
+                    "type": "object",
+                    "properties": {
+                      "since": {
+                        "type": "string",
+                        "description": "Window start (local midnight, ISO instant)."
+                      },
+                      "submissions": {
+                        "type": "integer"
+                      },
+                      "outcomes": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer"
+                        },
+                        "description": "Count per intake outcome (`scheduled`, `repeat_noted`, `daily_cap`, …; `received` = not finished yet). `scheduled` only means a first contact was QUEUED, not delivered: show `delivery`, never `outcomes.scheduled`, as «contacted»."
+                      },
+                      "delivery": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Settled submissions in the window."
+                          },
+                          "sent": {
+                            "type": "integer",
+                            "description": "Step 1 accepted by the provider."
+                          },
+                          "failed": {
+                            "type": "integer",
+                            "description": "The send errored."
+                          },
+                          "failed_by_code": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "pending": {
+                            "type": "integer",
+                            "description": "Queued or waiting (template review, billing block): goes out on its own."
+                          },
+                          "pending_by_reason": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "skipped": {
+                            "type": "integer",
+                            "description": "The first contact ran and skipped."
+                          },
+                          "skipped_by_reason": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "not_queued": {
+                            "type": "integer",
+                            "description": "The intake decided not to queue a first contact (repeat, upcoming cita, no phone, …)."
+                          },
+                          "not_queued_by_outcome": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "required": [
+                          "total",
+                          "sent",
+                          "failed",
+                          "failed_by_code",
+                          "pending",
+                          "pending_by_reason",
+                          "skipped",
+                          "skipped_by_reason",
+                          "not_queued",
+                          "not_queued_by_outcome"
+                        ],
+                        "description": "What happened to each submission’s first message, the same buckets as `GET /lead-outreach/status` `clinic_form.delivery` (#7680): `sent + failed + pending + skipped + not_queued = total`. Absent on a row stored before this field existed (until its next refresh, at most 15 minutes)."
+                      },
+                      "unmapped": {
+                        "type": "integer"
+                      },
+                      "first_contacts_sent": {
+                        "type": "integer"
+                      },
+                      "wait": {
+                        "type": "object",
+                        "properties": {
+                          "measured": {
+                            "type": "integer"
+                          },
+                          "median_seconds": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "p90_seconds": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "in_hours": {
+                            "type": "object",
+                            "properties": {
+                              "measured": {
+                                "type": "integer"
+                              },
+                              "median_seconds": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "p90_seconds": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "measured",
+                              "median_seconds",
+                              "p90_seconds"
+                            ]
+                          },
+                          "out_of_hours_count": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "measured",
+                          "median_seconds",
+                          "p90_seconds",
+                          "in_hours",
+                          "out_of_hours_count"
+                        ],
+                        "description": "Form → first message over the first contacts sent in the window (#7468)."
+                      }
+                    },
+                    "required": [
+                      "since",
+                      "submissions",
+                      "outcomes",
+                      "unmapped",
+                      "first_contacts_sent",
+                      "wait"
+                    ]
+                  }
+                },
+                "required": [
+                  "today",
+                  "7d",
+                  "30d"
+                ]
+              }
+            },
+            "required": [
+              "state",
+              "enabled",
+              "enabled_at",
+              "ready_in_hours",
+              "ready_out_of_hours",
+              "step2_templates",
+              "step2_ready",
+              "daily_cap",
+              "daily_cap_reached",
+              "windows"
+            ],
+            "description": "Clinic form first contact readiness and outcomes. Needs `tenant:read`."
+          },
+          "leads": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "windows": {
+                "type": "object",
+                "properties": {
+                  "today": {
+                    "type": "object",
+                    "properties": {
+                      "since": {
+                        "type": "string"
+                      },
+                      "new_leads": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Leads created in the window (imports excluded)."
+                      },
+                      "first_contacts_sent": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Clinic form first contacts sent."
+                      },
+                      "replied": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Of them, the patient wrote back afterwards (through the lead’s contact; a reply from a second, unmerged contact is not seen)."
+                      },
+                      "reply_rate": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "description": "replied ÷ first_contacts_sent, one decimal; null with no denominator."
+                      }
+                    },
+                    "required": [
+                      "since",
+                      "new_leads",
+                      "first_contacts_sent",
+                      "replied",
+                      "reply_rate"
+                    ]
+                  },
+                  "7d": {
+                    "type": "object",
+                    "properties": {
+                      "since": {
+                        "type": "string"
+                      },
+                      "new_leads": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Leads created in the window (imports excluded)."
+                      },
+                      "first_contacts_sent": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Clinic form first contacts sent."
+                      },
+                      "replied": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Of them, the patient wrote back afterwards (through the lead’s contact; a reply from a second, unmerged contact is not seen)."
+                      },
+                      "reply_rate": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "description": "replied ÷ first_contacts_sent, one decimal; null with no denominator."
+                      }
+                    },
+                    "required": [
+                      "since",
+                      "new_leads",
+                      "first_contacts_sent",
+                      "replied",
+                      "reply_rate"
+                    ]
+                  },
+                  "30d": {
+                    "type": "object",
+                    "properties": {
+                      "since": {
+                        "type": "string"
+                      },
+                      "new_leads": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Leads created in the window (imports excluded)."
+                      },
+                      "first_contacts_sent": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Clinic form first contacts sent."
+                      },
+                      "replied": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "description": "Of them, the patient wrote back afterwards (through the lead’s contact; a reply from a second, unmerged contact is not seen)."
+                      },
+                      "reply_rate": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "description": "replied ÷ first_contacts_sent, one decimal; null with no denominator."
+                      }
+                    },
+                    "required": [
+                      "since",
+                      "new_leads",
+                      "first_contacts_sent",
+                      "replied",
+                      "reply_rate"
+                    ]
+                  }
+                },
+                "required": [
+                  "today",
+                  "7d",
+                  "30d"
+                ]
+              },
+              "rule": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "windows",
+              "rule"
+            ],
+            "description": "Leads and the reply rate to the first contact. Needs `leads:read` with record visibility `all`."
+          },
+          "agenda": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "computed_at": {
+                "type": "string",
+                "description": "When the agenda blocks were computed (at most hourly)."
+              },
+              "has_ai_agent": {
+                "type": "boolean"
+              },
+              "shown": {
+                "type": "string",
+                "enum": [
+                  "agent",
+                  "clinic"
+                ],
+                "description": "Which block the row shows and labels: `agent` when the clinic has an active AI agent, `clinic` otherwise. Both are always present."
+              },
+              "windows": {
+                "type": "object",
+                "properties": {
+                  "7d": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string"
+                      },
+                      "to": {
+                        "type": "string"
+                      },
+                      "clinic": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Past citas of the window, moved ones included."
+                          },
+                          "attended": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Attended."
+                          },
+                          "no_show": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "No-show."
+                          },
+                          "cancelled": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Cancelled, late ones included."
+                          },
+                          "not_closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Past citas nobody closed — never counted as attended."
+                          },
+                          "moved": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Moved by the clinic software — in no attendance count."
+                          },
+                          "closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "attended + no_show + cancelled."
+                          },
+                          "attendance_pct": {
+                            "type": [
+                              "number",
+                              "null"
+                            ],
+                            "description": "attended ÷ closed, whole percent."
+                          },
+                          "truncated": {
+                            "type": "boolean",
+                            "description": "The read hit its cap: counts are a floor."
+                          }
+                        },
+                        "required": [
+                          "total",
+                          "attended",
+                          "no_show",
+                          "cancelled",
+                          "not_closed",
+                          "moved",
+                          "closed",
+                          "attendance_pct",
+                          "truncated"
+                        ],
+                        "description": "The clinic’s whole agenda."
+                      },
+                      "agent": {
+                        "type": "object",
+                        "properties": {
+                          "booked": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Citas the agent booked in the window."
+                          },
+                          "attended": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Of them, attended."
+                          },
+                          "missed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "No-show + cancelled."
+                          },
+                          "no_show": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "cancelled": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "not_closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "moved": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "upcoming": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Agent bookings dated after the window."
+                          },
+                          "closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "attended + missed."
+                          },
+                          "attendance_pct": {
+                            "type": [
+                              "number",
+                              "null"
+                            ],
+                            "description": "attended ÷ closed, one decimal."
+                          },
+                          "split": {
+                            "type": "boolean",
+                            "description": "True once no-show, cancelled, not closed and moved are separate."
+                          }
+                        },
+                        "required": [
+                          "booked",
+                          "attended",
+                          "missed",
+                          "no_show",
+                          "cancelled",
+                          "not_closed",
+                          "moved",
+                          "upcoming",
+                          "closed",
+                          "attendance_pct",
+                          "split"
+                        ],
+                        "description": "The citas booked by the agent."
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to",
+                      "clinic",
+                      "agent"
+                    ]
+                  },
+                  "30d": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string"
+                      },
+                      "to": {
+                        "type": "string"
+                      },
+                      "clinic": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Past citas of the window, moved ones included."
+                          },
+                          "attended": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Attended."
+                          },
+                          "no_show": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "No-show."
+                          },
+                          "cancelled": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Cancelled, late ones included."
+                          },
+                          "not_closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Past citas nobody closed — never counted as attended."
+                          },
+                          "moved": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Moved by the clinic software — in no attendance count."
+                          },
+                          "closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "attended + no_show + cancelled."
+                          },
+                          "attendance_pct": {
+                            "type": [
+                              "number",
+                              "null"
+                            ],
+                            "description": "attended ÷ closed, whole percent."
+                          },
+                          "truncated": {
+                            "type": "boolean",
+                            "description": "The read hit its cap: counts are a floor."
+                          }
+                        },
+                        "required": [
+                          "total",
+                          "attended",
+                          "no_show",
+                          "cancelled",
+                          "not_closed",
+                          "moved",
+                          "closed",
+                          "attendance_pct",
+                          "truncated"
+                        ],
+                        "description": "The clinic’s whole agenda."
+                      },
+                      "agent": {
+                        "type": "object",
+                        "properties": {
+                          "booked": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Citas the agent booked in the window."
+                          },
+                          "attended": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Of them, attended."
+                          },
+                          "missed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "No-show + cancelled."
+                          },
+                          "no_show": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "cancelled": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "not_closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "moved": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Null until the split is available (`split`)."
+                          },
+                          "upcoming": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Agent bookings dated after the window."
+                          },
+                          "closed": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "attended + missed."
+                          },
+                          "attendance_pct": {
+                            "type": [
+                              "number",
+                              "null"
+                            ],
+                            "description": "attended ÷ closed, one decimal."
+                          },
+                          "split": {
+                            "type": "boolean",
+                            "description": "True once no-show, cancelled, not closed and moved are separate."
+                          }
+                        },
+                        "required": [
+                          "booked",
+                          "attended",
+                          "missed",
+                          "no_show",
+                          "cancelled",
+                          "not_closed",
+                          "moved",
+                          "upcoming",
+                          "closed",
+                          "attendance_pct",
+                          "split"
+                        ],
+                        "description": "The citas booked by the agent."
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to",
+                      "clinic",
+                      "agent"
+                    ]
+                  }
+                },
+                "required": [
+                  "7d",
+                  "30d"
+                ]
+              },
+              "rule": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "computed_at",
+              "has_ai_agent",
+              "shown",
+              "windows",
+              "rule"
+            ],
+            "description": "Citas and attendance. Needs `clinic:read` with record visibility `all`."
+          },
+          "withheld": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "whatsapp",
+                "first_contact",
+                "leads",
+                "agenda"
+              ]
+            },
+            "description": "Sections this membership may not read: absent above, never zeroed."
+          },
+          "signals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClinicSignal"
+            },
+            "description": "«Necesitan atención»: what a person must act on in this clinic, ordered by severity then `since` (oldest first), only for the sections this membership reads. Each clears itself on the first refresh after it is fixed."
+          },
+          "top_severity": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "critical",
+              "warning",
+              "low"
+            ],
+            "description": "The highest severity in `signals` (`critical` > `warning` > `low`); null when there is none."
+          }
+        },
+        "required": [
+          "tenant_id",
+          "tenant_name",
+          "tenant_slug",
+          "tenant_logo_url",
+          "role",
+          "status",
+          "timezone",
+          "computed_at",
+          "stale",
+          "floored",
+          "compute_errors",
+          "withheld",
+          "signals",
+          "top_severity"
+        ]
+      },
+      "ClinicSummariesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "clinics": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ClinicSummary"
+                }
+              }
+            },
+            "required": [
+              "clinics"
+            ]
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ClinicSummaryRefreshResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "enqueued": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "enqueued"
+            ]
+          }
+        },
+        "required": [
+          "data"
         ]
       },
       "TeamNote": {
@@ -89811,6 +91298,8 @@
                         "personal_tokens:write",
                         "notifications:read",
                         "notifications:write",
+                        "my_clinics:read",
+                        "my_clinics:write",
                         "audit:read",
                         "analytics:read",
                         "analytics:write",
@@ -89985,7 +91474,7 @@
                       ]
                     },
                     "minItems": 1,
-                    "maxItems": 205
+                    "maxItems": 207
                   },
                   "expires_at": {
                     "type": "string",
@@ -166866,6 +168355,464 @@
                     },
                     "history": [],
                     "suppression": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/me/clinic-summaries": {
+      "get": {
+        "summary": "The operating summary of every clinic I belong to",
+        "description": "vitrina-app#7471 («Mis clínicas»). One row per open, non-sandbox clinic workspace where the caller holds an ACTIVE membership, read from a summary a job stores every 15 minutes (the agenda section at most hourly): WhatsApp health (`whatsapp`), the clinic form first contact (`first_contact`), leads and the reply rate to the first contact (`leads`), and citas and attendance (`agenda`), for the windows `today`, `7d` and `30d` (agenda `7d` and `30d`) cut in each workspace’s own timezone. `agenda` stores two blocks — the clinic’s whole agenda (`clinic`) and the citas booked by the agent (`agent`) — and `agenda.shown` says which one the row displays: `agent` when the clinic has an active AI agent, `clinic` otherwise. Moved citas and citas nobody closed never count as attended. Each section is gated by the caller’s role IN THAT WORKSPACE: `whatsapp` needs `messaging_accounts:read`, `first_contact` `tenant:read`, `leads` `leads:read` and `agenda` `clinic:read` (both with record visibility `all`). A section the role may not read is absent and listed in `withheld`, never zeroed. `signals` («Necesitan atención», #7472) lists what a person must act on in the clinic (kind, severity `critical` / `warning` / `low`, since when, where it is fixed, and non-personal detail), ordered by severity then `since`, limited to the sections the role reads; `top_severity` is the highest severity present. A signal clears itself on the first refresh after it is fixed. A Consultor seat (aggregates only) reads `leads` and `agenda` through the minimum-count floor (`floored: true`). `status: pending` until the first computation; `stale` when older than 30 minutes. Counts only: no patient data and no money, and nothing is summed across clinics. Needs `my_clinics:read` (every built-in role holds it; a personal token without it gets 403). Credentials: a signed-in session reads every clinic it belongs to; a personal token or a connected app (MCP) reads ONLY the workspace it is bound to, within its own scopes (`clinics: []` when that workspace is not a clinic); an API key gets 403. Membership is read at request time with no cache: a removed member loses the row on the next call.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Me"
+        ],
+        "responses": {
+          "200": {
+            "description": "The caller’s clinic summaries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicSummariesResponse"
+                },
+                "example": {
+                  "data": {
+                    "clinics": [
+                      {
+                        "tenant_id": "0192f1c4-1111-7000-8000-000000000001",
+                        "tenant_name": "Clínica Ejemplo Providencia",
+                        "tenant_slug": "clinica-ejemplo-providencia",
+                        "tenant_logo_url": null,
+                        "role": "admin",
+                        "status": "ready",
+                        "timezone": "America/Santiago",
+                        "computed_at": "2026-11-18T13:15:00.000Z",
+                        "stale": false,
+                        "floored": false,
+                        "compute_errors": [],
+                        "whatsapp": {
+                          "state": "connected",
+                          "accounts": [
+                            {
+                              "messaging_account_id": "0192f1c4-2222-7000-8000-000000000002",
+                              "name": "Recepción",
+                              "enabled": true,
+                              "clinic_form_sender": true,
+                              "health": {
+                                "status": "healthy",
+                                "reason_code": null,
+                                "unhealthy_since": null,
+                                "last_checked_at": "2026-11-18T13:10:00.000Z"
+                              },
+                              "messaging_limit_tier": "TIER_1K",
+                              "quality_rating": "GREEN"
+                            }
+                          ]
+                        },
+                        "first_contact": {
+                          "state": "set_up",
+                          "enabled": true,
+                          "enabled_at": "2026-10-01T12:00:00.000Z",
+                          "ready_in_hours": true,
+                          "ready_out_of_hours": true,
+                          "step2_templates": [
+                            {
+                              "name": "seguimiento_clinica",
+                              "language": "es",
+                              "status": "APPROVED"
+                            }
+                          ],
+                          "step2_ready": true,
+                          "daily_cap": 100,
+                          "daily_cap_reached": false,
+                          "windows": {
+                            "today": {
+                              "since": "2026-11-18T03:00:00.000Z",
+                              "submissions": 4,
+                              "outcomes": {
+                                "scheduled": 3,
+                                "repeat_noted": 1
+                              },
+                              "unmapped": 0,
+                              "first_contacts_sent": 3,
+                              "wait": {
+                                "measured": 3,
+                                "median_seconds": 42,
+                                "p90_seconds": 75,
+                                "in_hours": {
+                                  "measured": 3,
+                                  "median_seconds": 42,
+                                  "p90_seconds": 75
+                                },
+                                "out_of_hours_count": 0
+                              }
+                            },
+                            "7d": {
+                              "since": "2026-11-12T03:00:00.000Z",
+                              "submissions": 31,
+                              "outcomes": {
+                                "scheduled": 26,
+                                "repeat_noted": 4,
+                                "no_phone": 1
+                              },
+                              "unmapped": 1,
+                              "first_contacts_sent": 26,
+                              "wait": {
+                                "measured": 26,
+                                "median_seconds": 48,
+                                "p90_seconds": 160,
+                                "in_hours": {
+                                  "measured": 19,
+                                  "median_seconds": 40,
+                                  "p90_seconds": 90
+                                },
+                                "out_of_hours_count": 7
+                              }
+                            },
+                            "30d": {
+                              "since": "2026-10-20T03:00:00.000Z",
+                              "submissions": 122,
+                              "outcomes": {
+                                "scheduled": 104,
+                                "repeat_noted": 15,
+                                "no_phone": 3
+                              },
+                              "unmapped": 2,
+                              "first_contacts_sent": 104,
+                              "wait": {
+                                "measured": 98,
+                                "median_seconds": 51,
+                                "p90_seconds": 210,
+                                "in_hours": {
+                                  "measured": 70,
+                                  "median_seconds": 41,
+                                  "p90_seconds": 95
+                                },
+                                "out_of_hours_count": 28
+                              }
+                            }
+                          }
+                        },
+                        "leads": {
+                          "windows": {
+                            "today": {
+                              "since": "2026-11-18T03:00:00.000Z",
+                              "new_leads": 5,
+                              "first_contacts_sent": 3,
+                              "replied": 1,
+                              "reply_rate": 33.3
+                            },
+                            "7d": {
+                              "since": "2026-11-12T03:00:00.000Z",
+                              "new_leads": 38,
+                              "first_contacts_sent": 26,
+                              "replied": 15,
+                              "reply_rate": 57.7
+                            },
+                            "30d": {
+                              "since": "2026-10-20T03:00:00.000Z",
+                              "new_leads": 140,
+                              "first_contacts_sent": 104,
+                              "replied": 66,
+                              "reply_rate": 63.5
+                            }
+                          },
+                          "rule": "Leads nuevos: leads creados en el período (sin los importados)."
+                        },
+                        "agenda": {
+                          "computed_at": "2026-11-18T13:00:00.000Z",
+                          "has_ai_agent": true,
+                          "shown": "agent",
+                          "windows": {
+                            "7d": {
+                              "from": "2026-11-12",
+                              "to": "2026-11-18",
+                              "clinic": {
+                                "total": 210,
+                                "attended": 160,
+                                "no_show": 18,
+                                "cancelled": 22,
+                                "not_closed": 6,
+                                "moved": 4,
+                                "closed": 200,
+                                "attendance_pct": 80,
+                                "truncated": false
+                              },
+                              "agent": {
+                                "booked": 24,
+                                "attended": 15,
+                                "missed": 3,
+                                "no_show": null,
+                                "cancelled": null,
+                                "not_closed": null,
+                                "moved": null,
+                                "upcoming": 6,
+                                "closed": 18,
+                                "attendance_pct": 83.3,
+                                "split": false
+                              }
+                            },
+                            "30d": {
+                              "from": "2026-10-20",
+                              "to": "2026-11-18",
+                              "clinic": {
+                                "total": 902,
+                                "attended": 690,
+                                "no_show": 80,
+                                "cancelled": 101,
+                                "not_closed": 19,
+                                "moved": 12,
+                                "closed": 871,
+                                "attendance_pct": 79,
+                                "truncated": false
+                              },
+                              "agent": {
+                                "booked": 97,
+                                "attended": 70,
+                                "missed": 15,
+                                "no_show": null,
+                                "cancelled": null,
+                                "not_closed": null,
+                                "moved": null,
+                                "upcoming": 12,
+                                "closed": 85,
+                                "attendance_pct": 82.4,
+                                "split": false
+                              }
+                            }
+                          },
+                          "rule": "Clínica: todas las citas pasadas del período en la agenda."
+                        },
+                        "withheld": [],
+                        "signals": [
+                          {
+                            "kind": "first_contact_templates_not_approved",
+                            "severity": "warning",
+                            "since": "2026-11-17T09:30:00.000Z",
+                            "first_seen_at": "2026-11-17T09:30:00.000Z",
+                            "section": "first_contact",
+                            "fix_target": "channel_templates",
+                            "detail": {
+                              "messaging_account_id": "0192f1c4-2222-7000-8000-000000000002",
+                              "ready_in_hours": true,
+                              "ready_out_of_hours": false,
+                              "templates": [
+                                {
+                                  "name": "seguimiento_clinica_fuera_horario",
+                                  "language": "es",
+                                  "status": "PENDING"
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "top_severity": "warning"
+                      },
+                      {
+                        "tenant_id": "0192f1c4-3333-7000-8000-000000000003",
+                        "tenant_name": "Clínica Ejemplo Ñuñoa",
+                        "tenant_slug": "clinica-ejemplo-nunoa",
+                        "tenant_logo_url": null,
+                        "role": "marketing",
+                        "status": "pending",
+                        "timezone": null,
+                        "computed_at": null,
+                        "stale": false,
+                        "floored": false,
+                        "compute_errors": [],
+                        "withheld": [
+                          "whatsapp",
+                          "leads",
+                          "agenda"
+                        ],
+                        "signals": [],
+                        "top_severity": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/me/clinic-summaries/{tenant_id}/refresh": {
+      "post": {
+        "summary": "Recompute one clinic’s summary now",
+        "description": "vitrina-app#7471. Needs `my_clinics:write` (every built-in role holds it; a connector never does). Enqueues the summary of one clinic workspace for recomputation (202); `GET /me/clinic-summaries` shows it once the job ran (usually seconds; the agenda section is recomputed at most hourly). A burst of requests collapses to one run. The caller must hold an ACTIVE membership in that workspace (403 otherwise); a personal token or a connected app only for the workspace it is bound to (403 for any other); 404 when the workspace is not an open clinic. Audited as `clinic_summary.refresh` in that workspace.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Me"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "tenant_id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Refresh enqueued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicSummaryRefreshResponse"
+                },
+                "example": {
+                  "data": {
+                    "enqueued": true
                   }
                 }
               }
@@ -310562,6 +312509,8 @@
                         "personal_tokens:write",
                         "notifications:read",
                         "notifications:write",
+                        "my_clinics:read",
+                        "my_clinics:write",
                         "audit:read",
                         "analytics:read",
                         "analytics:write",

@@ -10391,7 +10391,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic:delete" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_consent:read" | "clinic_consent:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_price_override:write" | "clinic_commission_own:read" | "clinic_chair_money:write" | "clinic_patient_contact:read" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "finanzas_patients:read" | "finanzas_payroll:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "promo_codes:write" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "my_clinics:read" | "my_clinics:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic:delete" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_consent:read" | "clinic_consent:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_price_override:write" | "clinic_commission_own:read" | "clinic_chair_money:write" | "clinic_patient_contact:read" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "finanzas_patients:read" | "finanzas_payroll:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "promo_codes:write" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -71962,6 +71962,462 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/clinic-summaries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The operating summary of every clinic I belong to
+         * @description vitrina-app#7471 («Mis clínicas»). One row per open, non-sandbox clinic workspace where the caller holds an ACTIVE membership, read from a summary a job stores every 15 minutes (the agenda section at most hourly): WhatsApp health (`whatsapp`), the clinic form first contact (`first_contact`), leads and the reply rate to the first contact (`leads`), and citas and attendance (`agenda`), for the windows `today`, `7d` and `30d` (agenda `7d` and `30d`) cut in each workspace’s own timezone. `agenda` stores two blocks — the clinic’s whole agenda (`clinic`) and the citas booked by the agent (`agent`) — and `agenda.shown` says which one the row displays: `agent` when the clinic has an active AI agent, `clinic` otherwise. Moved citas and citas nobody closed never count as attended. Each section is gated by the caller’s role IN THAT WORKSPACE: `whatsapp` needs `messaging_accounts:read`, `first_contact` `tenant:read`, `leads` `leads:read` and `agenda` `clinic:read` (both with record visibility `all`). A section the role may not read is absent and listed in `withheld`, never zeroed. `signals` («Necesitan atención», #7472) lists what a person must act on in the clinic (kind, severity `critical` / `warning` / `low`, since when, where it is fixed, and non-personal detail), ordered by severity then `since`, limited to the sections the role reads; `top_severity` is the highest severity present. A signal clears itself on the first refresh after it is fixed. A Consultor seat (aggregates only) reads `leads` and `agenda` through the minimum-count floor (`floored: true`). `status: pending` until the first computation; `stale` when older than 30 minutes. Counts only: no patient data and no money, and nothing is summed across clinics. Needs `my_clinics:read` (every built-in role holds it; a personal token without it gets 403). Credentials: a signed-in session reads every clinic it belongs to; a personal token or a connected app (MCP) reads ONLY the workspace it is bound to, within its own scopes (`clinics: []` when that workspace is not a clinic); an API key gets 403. Membership is read at request time with no cache: a removed member loses the row on the next call.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The caller’s clinic summaries */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "clinics": [
+                         *           {
+                         *             "tenant_id": "0192f1c4-1111-7000-8000-000000000001",
+                         *             "tenant_name": "Clínica Ejemplo Providencia",
+                         *             "tenant_slug": "clinica-ejemplo-providencia",
+                         *             "tenant_logo_url": null,
+                         *             "role": "admin",
+                         *             "status": "ready",
+                         *             "timezone": "America/Santiago",
+                         *             "computed_at": "2026-11-18T13:15:00.000Z",
+                         *             "stale": false,
+                         *             "floored": false,
+                         *             "compute_errors": [],
+                         *             "whatsapp": {
+                         *               "state": "connected",
+                         *               "accounts": [
+                         *                 {
+                         *                   "messaging_account_id": "0192f1c4-2222-7000-8000-000000000002",
+                         *                   "name": "Recepción",
+                         *                   "enabled": true,
+                         *                   "clinic_form_sender": true,
+                         *                   "health": {
+                         *                     "status": "healthy",
+                         *                     "reason_code": null,
+                         *                     "unhealthy_since": null,
+                         *                     "last_checked_at": "2026-11-18T13:10:00.000Z"
+                         *                   },
+                         *                   "messaging_limit_tier": "TIER_1K",
+                         *                   "quality_rating": "GREEN"
+                         *                 }
+                         *               ]
+                         *             },
+                         *             "first_contact": {
+                         *               "state": "set_up",
+                         *               "enabled": true,
+                         *               "enabled_at": "2026-10-01T12:00:00.000Z",
+                         *               "ready_in_hours": true,
+                         *               "ready_out_of_hours": true,
+                         *               "step2_templates": [
+                         *                 {
+                         *                   "name": "seguimiento_clinica",
+                         *                   "language": "es",
+                         *                   "status": "APPROVED"
+                         *                 }
+                         *               ],
+                         *               "step2_ready": true,
+                         *               "daily_cap": 100,
+                         *               "daily_cap_reached": false,
+                         *               "windows": {
+                         *                 "today": {
+                         *                   "since": "2026-11-18T03:00:00.000Z",
+                         *                   "submissions": 4,
+                         *                   "outcomes": {
+                         *                     "scheduled": 3,
+                         *                     "repeat_noted": 1
+                         *                   },
+                         *                   "unmapped": 0,
+                         *                   "first_contacts_sent": 3,
+                         *                   "wait": {
+                         *                     "measured": 3,
+                         *                     "median_seconds": 42,
+                         *                     "p90_seconds": 75,
+                         *                     "in_hours": {
+                         *                       "measured": 3,
+                         *                       "median_seconds": 42,
+                         *                       "p90_seconds": 75
+                         *                     },
+                         *                     "out_of_hours_count": 0
+                         *                   }
+                         *                 },
+                         *                 "7d": {
+                         *                   "since": "2026-11-12T03:00:00.000Z",
+                         *                   "submissions": 31,
+                         *                   "outcomes": {
+                         *                     "scheduled": 26,
+                         *                     "repeat_noted": 4,
+                         *                     "no_phone": 1
+                         *                   },
+                         *                   "unmapped": 1,
+                         *                   "first_contacts_sent": 26,
+                         *                   "wait": {
+                         *                     "measured": 26,
+                         *                     "median_seconds": 48,
+                         *                     "p90_seconds": 160,
+                         *                     "in_hours": {
+                         *                       "measured": 19,
+                         *                       "median_seconds": 40,
+                         *                       "p90_seconds": 90
+                         *                     },
+                         *                     "out_of_hours_count": 7
+                         *                   }
+                         *                 },
+                         *                 "30d": {
+                         *                   "since": "2026-10-20T03:00:00.000Z",
+                         *                   "submissions": 122,
+                         *                   "outcomes": {
+                         *                     "scheduled": 104,
+                         *                     "repeat_noted": 15,
+                         *                     "no_phone": 3
+                         *                   },
+                         *                   "unmapped": 2,
+                         *                   "first_contacts_sent": 104,
+                         *                   "wait": {
+                         *                     "measured": 98,
+                         *                     "median_seconds": 51,
+                         *                     "p90_seconds": 210,
+                         *                     "in_hours": {
+                         *                       "measured": 70,
+                         *                       "median_seconds": 41,
+                         *                       "p90_seconds": 95
+                         *                     },
+                         *                     "out_of_hours_count": 28
+                         *                   }
+                         *                 }
+                         *               }
+                         *             },
+                         *             "leads": {
+                         *               "windows": {
+                         *                 "today": {
+                         *                   "since": "2026-11-18T03:00:00.000Z",
+                         *                   "new_leads": 5,
+                         *                   "first_contacts_sent": 3,
+                         *                   "replied": 1,
+                         *                   "reply_rate": 33.3
+                         *                 },
+                         *                 "7d": {
+                         *                   "since": "2026-11-12T03:00:00.000Z",
+                         *                   "new_leads": 38,
+                         *                   "first_contacts_sent": 26,
+                         *                   "replied": 15,
+                         *                   "reply_rate": 57.7
+                         *                 },
+                         *                 "30d": {
+                         *                   "since": "2026-10-20T03:00:00.000Z",
+                         *                   "new_leads": 140,
+                         *                   "first_contacts_sent": 104,
+                         *                   "replied": 66,
+                         *                   "reply_rate": 63.5
+                         *                 }
+                         *               },
+                         *               "rule": "Leads nuevos: leads creados en el período (sin los importados)."
+                         *             },
+                         *             "agenda": {
+                         *               "computed_at": "2026-11-18T13:00:00.000Z",
+                         *               "has_ai_agent": true,
+                         *               "shown": "agent",
+                         *               "windows": {
+                         *                 "7d": {
+                         *                   "from": "2026-11-12",
+                         *                   "to": "2026-11-18",
+                         *                   "clinic": {
+                         *                     "total": 210,
+                         *                     "attended": 160,
+                         *                     "no_show": 18,
+                         *                     "cancelled": 22,
+                         *                     "not_closed": 6,
+                         *                     "moved": 4,
+                         *                     "closed": 200,
+                         *                     "attendance_pct": 80,
+                         *                     "truncated": false
+                         *                   },
+                         *                   "agent": {
+                         *                     "booked": 24,
+                         *                     "attended": 15,
+                         *                     "missed": 3,
+                         *                     "no_show": null,
+                         *                     "cancelled": null,
+                         *                     "not_closed": null,
+                         *                     "moved": null,
+                         *                     "upcoming": 6,
+                         *                     "closed": 18,
+                         *                     "attendance_pct": 83.3,
+                         *                     "split": false
+                         *                   }
+                         *                 },
+                         *                 "30d": {
+                         *                   "from": "2026-10-20",
+                         *                   "to": "2026-11-18",
+                         *                   "clinic": {
+                         *                     "total": 902,
+                         *                     "attended": 690,
+                         *                     "no_show": 80,
+                         *                     "cancelled": 101,
+                         *                     "not_closed": 19,
+                         *                     "moved": 12,
+                         *                     "closed": 871,
+                         *                     "attendance_pct": 79,
+                         *                     "truncated": false
+                         *                   },
+                         *                   "agent": {
+                         *                     "booked": 97,
+                         *                     "attended": 70,
+                         *                     "missed": 15,
+                         *                     "no_show": null,
+                         *                     "cancelled": null,
+                         *                     "not_closed": null,
+                         *                     "moved": null,
+                         *                     "upcoming": 12,
+                         *                     "closed": 85,
+                         *                     "attendance_pct": 82.4,
+                         *                     "split": false
+                         *                   }
+                         *                 }
+                         *               },
+                         *               "rule": "Clínica: todas las citas pasadas del período en la agenda."
+                         *             },
+                         *             "withheld": [],
+                         *             "signals": [
+                         *               {
+                         *                 "kind": "first_contact_templates_not_approved",
+                         *                 "severity": "warning",
+                         *                 "since": "2026-11-17T09:30:00.000Z",
+                         *                 "first_seen_at": "2026-11-17T09:30:00.000Z",
+                         *                 "section": "first_contact",
+                         *                 "fix_target": "channel_templates",
+                         *                 "detail": {
+                         *                   "messaging_account_id": "0192f1c4-2222-7000-8000-000000000002",
+                         *                   "ready_in_hours": true,
+                         *                   "ready_out_of_hours": false,
+                         *                   "templates": [
+                         *                     {
+                         *                       "name": "seguimiento_clinica_fuera_horario",
+                         *                       "language": "es",
+                         *                       "status": "PENDING"
+                         *                     }
+                         *                   ]
+                         *                 }
+                         *               }
+                         *             ],
+                         *             "top_severity": "warning"
+                         *           },
+                         *           {
+                         *             "tenant_id": "0192f1c4-3333-7000-8000-000000000003",
+                         *             "tenant_name": "Clínica Ejemplo Ñuñoa",
+                         *             "tenant_slug": "clinica-ejemplo-nunoa",
+                         *             "tenant_logo_url": null,
+                         *             "role": "marketing",
+                         *             "status": "pending",
+                         *             "timezone": null,
+                         *             "computed_at": null,
+                         *             "stale": false,
+                         *             "floored": false,
+                         *             "compute_errors": [],
+                         *             "withheld": [
+                         *               "whatsapp",
+                         *               "leads",
+                         *               "agenda"
+                         *             ],
+                         *             "signals": [],
+                         *             "top_severity": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["ClinicSummariesResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/clinic-summaries/{tenant_id}/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Recompute one clinic’s summary now
+         * @description vitrina-app#7471. Needs `my_clinics:write` (every built-in role holds it; a connector never does). Enqueues the summary of one clinic workspace for recomputation (202); `GET /me/clinic-summaries` shows it once the job ran (usually seconds; the agenda section is recomputed at most hourly). A burst of requests collapses to one run. The caller must hold an ACTIVE membership in that workspace (403 otherwise); a personal token or a connected app only for the workspace it is bound to (403 for any other); 404 when the workspace is not an open clinic. Audited as `clinic_summary.refresh` in that workspace.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    tenant_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Refresh enqueued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enqueued": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["ClinicSummaryRefreshResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -183492,7 +183948,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic:delete" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_consent:read" | "clinic_consent:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_price_override:write" | "clinic_commission_own:read" | "clinic_chair_money:write" | "clinic_patient_contact:read" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "finanzas_patients:read" | "finanzas_payroll:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "promo_codes:write" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "my_clinics:read" | "my_clinics:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic:delete" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_consent:read" | "clinic_consent:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_price_override:write" | "clinic_commission_own:read" | "clinic_chair_money:write" | "clinic_patient_contact:read" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "finanzas_patients:read" | "finanzas_payroll:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "promo_codes:write" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
@@ -323494,6 +323950,433 @@ export interface components {
             suppression: {
                 min_count: number;
             } | null;
+        };
+        /**
+         * @description `whatsapp_disconnected`: a WhatsApp number of the clinic is disconnected (critical; `detail`: `messaging_account_id`, `account_name`, `reason_code`, `is_first_contact_sender`). `whatsapp_attention`: a number needs attention (warning; same detail). `first_contact_templates_not_approved`: the clinic form first contact is on but its ladder cannot send (critical when step 1 or the in-hours step 2 has no approved template, warning when only the out-of-hours step 2 is missing; `detail`: `messaging_account_id`, `ready_in_hours`, `ready_out_of_hours`, `templates` [{name, language, status}]). `unmapped_forms`: submissions of the last 7 days came from a form that is not in the clinic’s current form map (warning; `detail`: `submissions_7d`, `forms` [{form_id, submissions}], `forms_total`, `without_form_id`). `first_contact_missed`: in the last 24 hours submissions ended without a first contact for a reason someone can fix, or a lead raised the first-contact-missing alarm (warning; `detail`: `outcomes` {outcome: count}, `missing_alarms`, `needs_form_setup`). `first_contact_off`: the clinic has a WhatsApp number and its clinic form first contact is switched off (low; `detail`: `submissions_7d` = forms that arrived while off). A value added later is a changelog entry.
+         * @enum {string}
+         */
+        ClinicSignalKind: "whatsapp_disconnected" | "whatsapp_attention" | "first_contact_templates_not_approved" | "unmapped_forms" | "first_contact_missed" | "first_contact_off";
+        /**
+         * @description `critical`: nothing can be sent or patients are being lost now. `warning`: something is wrong and needs a person. `low`: a deliberate setting worth a look, always sorted below real problems.
+         * @enum {string}
+         */
+        ClinicSignalSeverity: "critical" | "warning" | "low";
+        /**
+         * @description Where the signal is fixed, as a stable key (not a URL): `channels` = the workspace’s channel settings, `channel_templates` = the WhatsApp templates of the sending number, `clinic_first_contact` = the clinic form first contact settings.
+         * @enum {string}
+         */
+        ClinicSignalFixTarget: "channels" | "channel_templates" | "clinic_first_contact";
+        ClinicSignal: {
+            kind: components["schemas"]["ClinicSignalKind"];
+            severity: components["schemas"]["ClinicSignalSeverity"];
+            /** @description ISO instant the problem started: its own timestamp when one exists, else `first_seen_at`. */
+            since: string;
+            /** @description The first refresh that saw this signal; stable across refreshes. */
+            first_seen_at: string;
+            /**
+             * @description The summary section whose scope gates reading this signal.
+             * @enum {string}
+             */
+            section: "whatsapp" | "first_contact";
+            fix_target: components["schemas"]["ClinicSignalFixTarget"];
+            /** @description Non-personal facts only (ids, states, template and form names, counts); the keys per kind are listed on `ClinicSignalKind`. */
+            detail: {
+                [key: string]: unknown;
+            };
+        };
+        ClinicSummary: {
+            /** Format: uuid */
+            tenant_id: string;
+            tenant_name: string | null;
+            tenant_slug: string | null;
+            tenant_logo_url: string | null;
+            /** @description The caller’s built-in role tier in this workspace. */
+            role: string;
+            /**
+             * @description `pending`: no summary computed yet (every section absent).
+             * @enum {string}
+             */
+            status: "ready" | "pending";
+            /** @description The zone the windows were cut in. */
+            timezone: string | null;
+            computed_at: string | null;
+            /** @description `computed_at` is older than two job ticks (30 min). */
+            stale: boolean;
+            /** @description `leads` and `agenda` went through the minimum-count floor (a Consultor seat): a count from 1 to 4 reads null. */
+            floored: boolean;
+            /** @description Readable sections that failed on the last run (each is null). */
+            compute_errors: ("whatsapp" | "first_contact" | "leads" | "agenda")[];
+            /** @description WhatsApp channel health. Needs `messaging_accounts:read`. */
+            whatsapp?: {
+                /**
+                 * @description `not_connected`: no WhatsApp number yet (a setup state).
+                 * @enum {string}
+                 */
+                state: "connected" | "not_connected";
+                accounts: {
+                    /** Format: uuid */
+                    messaging_account_id: string;
+                    /** @description The number’s label in Vitrina. */
+                    name: string | null;
+                    enabled: boolean;
+                    /** @description The clinic form first contact sends from this number. */
+                    clinic_form_sender: boolean;
+                    /** @description The stored health verdict; null when never checked. */
+                    health: {
+                        /** @description `healthy`, `attention` or `disconnected`. */
+                        status: string;
+                        reason_code: string | null;
+                        unhealthy_since: string | null;
+                        last_checked_at: string | null;
+                    } | null;
+                    messaging_limit_tier: string | null;
+                    quality_rating: string | null;
+                }[];
+            } | null;
+            /** @description Clinic form first contact readiness and outcomes. Needs `tenant:read`. */
+            first_contact?: {
+                /**
+                 * @description `not_set_up`: no clinic form source.
+                 * @enum {string}
+                 */
+                state: "set_up" | "not_set_up";
+                enabled: boolean | null;
+                enabled_at: string | null;
+                ready_in_hours: boolean | null;
+                ready_out_of_hours: boolean | null;
+                step2_templates: {
+                    name: string;
+                    language: string;
+                    status: string | null;
+                }[];
+                step2_ready: boolean | null;
+                daily_cap: number | null;
+                daily_cap_reached: boolean | null;
+                windows: {
+                    today: {
+                        /** @description Window start (local midnight, ISO instant). */
+                        since: string;
+                        submissions: number;
+                        /** @description Count per intake outcome (`scheduled`, `repeat_noted`, `daily_cap`, …; `received` = not finished yet). `scheduled` only means a first contact was QUEUED, not delivered: show `delivery`, never `outcomes.scheduled`, as «contacted». */
+                        outcomes: {
+                            [key: string]: number;
+                        };
+                        /** @description What happened to each submission’s first message, the same buckets as `GET /lead-outreach/status` `clinic_form.delivery` (#7680): `sent + failed + pending + skipped + not_queued = total`. Absent on a row stored before this field existed (until its next refresh, at most 15 minutes). */
+                        delivery?: {
+                            /** @description Settled submissions in the window. */
+                            total: number;
+                            /** @description Step 1 accepted by the provider. */
+                            sent: number;
+                            /** @description The send errored. */
+                            failed: number;
+                            failed_by_code: {
+                                [key: string]: number;
+                            };
+                            /** @description Queued or waiting (template review, billing block): goes out on its own. */
+                            pending: number;
+                            pending_by_reason: {
+                                [key: string]: number;
+                            };
+                            /** @description The first contact ran and skipped. */
+                            skipped: number;
+                            skipped_by_reason: {
+                                [key: string]: number;
+                            };
+                            /** @description The intake decided not to queue a first contact (repeat, upcoming cita, no phone, …). */
+                            not_queued: number;
+                            not_queued_by_outcome: {
+                                [key: string]: number;
+                            };
+                        };
+                        unmapped: number;
+                        first_contacts_sent: number;
+                        /** @description Form → first message over the first contacts sent in the window (#7468). */
+                        wait: {
+                            measured: number;
+                            median_seconds: number | null;
+                            p90_seconds: number | null;
+                            in_hours: {
+                                measured: number;
+                                median_seconds: number | null;
+                                p90_seconds: number | null;
+                            };
+                            out_of_hours_count: number;
+                        };
+                    };
+                    "7d": {
+                        /** @description Window start (local midnight, ISO instant). */
+                        since: string;
+                        submissions: number;
+                        /** @description Count per intake outcome (`scheduled`, `repeat_noted`, `daily_cap`, …; `received` = not finished yet). `scheduled` only means a first contact was QUEUED, not delivered: show `delivery`, never `outcomes.scheduled`, as «contacted». */
+                        outcomes: {
+                            [key: string]: number;
+                        };
+                        /** @description What happened to each submission’s first message, the same buckets as `GET /lead-outreach/status` `clinic_form.delivery` (#7680): `sent + failed + pending + skipped + not_queued = total`. Absent on a row stored before this field existed (until its next refresh, at most 15 minutes). */
+                        delivery?: {
+                            /** @description Settled submissions in the window. */
+                            total: number;
+                            /** @description Step 1 accepted by the provider. */
+                            sent: number;
+                            /** @description The send errored. */
+                            failed: number;
+                            failed_by_code: {
+                                [key: string]: number;
+                            };
+                            /** @description Queued or waiting (template review, billing block): goes out on its own. */
+                            pending: number;
+                            pending_by_reason: {
+                                [key: string]: number;
+                            };
+                            /** @description The first contact ran and skipped. */
+                            skipped: number;
+                            skipped_by_reason: {
+                                [key: string]: number;
+                            };
+                            /** @description The intake decided not to queue a first contact (repeat, upcoming cita, no phone, …). */
+                            not_queued: number;
+                            not_queued_by_outcome: {
+                                [key: string]: number;
+                            };
+                        };
+                        unmapped: number;
+                        first_contacts_sent: number;
+                        /** @description Form → first message over the first contacts sent in the window (#7468). */
+                        wait: {
+                            measured: number;
+                            median_seconds: number | null;
+                            p90_seconds: number | null;
+                            in_hours: {
+                                measured: number;
+                                median_seconds: number | null;
+                                p90_seconds: number | null;
+                            };
+                            out_of_hours_count: number;
+                        };
+                    };
+                    "30d": {
+                        /** @description Window start (local midnight, ISO instant). */
+                        since: string;
+                        submissions: number;
+                        /** @description Count per intake outcome (`scheduled`, `repeat_noted`, `daily_cap`, …; `received` = not finished yet). `scheduled` only means a first contact was QUEUED, not delivered: show `delivery`, never `outcomes.scheduled`, as «contacted». */
+                        outcomes: {
+                            [key: string]: number;
+                        };
+                        /** @description What happened to each submission’s first message, the same buckets as `GET /lead-outreach/status` `clinic_form.delivery` (#7680): `sent + failed + pending + skipped + not_queued = total`. Absent on a row stored before this field existed (until its next refresh, at most 15 minutes). */
+                        delivery?: {
+                            /** @description Settled submissions in the window. */
+                            total: number;
+                            /** @description Step 1 accepted by the provider. */
+                            sent: number;
+                            /** @description The send errored. */
+                            failed: number;
+                            failed_by_code: {
+                                [key: string]: number;
+                            };
+                            /** @description Queued or waiting (template review, billing block): goes out on its own. */
+                            pending: number;
+                            pending_by_reason: {
+                                [key: string]: number;
+                            };
+                            /** @description The first contact ran and skipped. */
+                            skipped: number;
+                            skipped_by_reason: {
+                                [key: string]: number;
+                            };
+                            /** @description The intake decided not to queue a first contact (repeat, upcoming cita, no phone, …). */
+                            not_queued: number;
+                            not_queued_by_outcome: {
+                                [key: string]: number;
+                            };
+                        };
+                        unmapped: number;
+                        first_contacts_sent: number;
+                        /** @description Form → first message over the first contacts sent in the window (#7468). */
+                        wait: {
+                            measured: number;
+                            median_seconds: number | null;
+                            p90_seconds: number | null;
+                            in_hours: {
+                                measured: number;
+                                median_seconds: number | null;
+                                p90_seconds: number | null;
+                            };
+                            out_of_hours_count: number;
+                        };
+                    };
+                } | null;
+            } | null;
+            /** @description Leads and the reply rate to the first contact. Needs `leads:read` with record visibility `all`. */
+            leads?: {
+                windows: {
+                    today: {
+                        since: string;
+                        /** @description Leads created in the window (imports excluded). */
+                        new_leads: number | null;
+                        /** @description Clinic form first contacts sent. */
+                        first_contacts_sent: number | null;
+                        /** @description Of them, the patient wrote back afterwards (through the lead’s contact; a reply from a second, unmerged contact is not seen). */
+                        replied: number | null;
+                        /** @description replied ÷ first_contacts_sent, one decimal; null with no denominator. */
+                        reply_rate: number | null;
+                    };
+                    "7d": {
+                        since: string;
+                        /** @description Leads created in the window (imports excluded). */
+                        new_leads: number | null;
+                        /** @description Clinic form first contacts sent. */
+                        first_contacts_sent: number | null;
+                        /** @description Of them, the patient wrote back afterwards (through the lead’s contact; a reply from a second, unmerged contact is not seen). */
+                        replied: number | null;
+                        /** @description replied ÷ first_contacts_sent, one decimal; null with no denominator. */
+                        reply_rate: number | null;
+                    };
+                    "30d": {
+                        since: string;
+                        /** @description Leads created in the window (imports excluded). */
+                        new_leads: number | null;
+                        /** @description Clinic form first contacts sent. */
+                        first_contacts_sent: number | null;
+                        /** @description Of them, the patient wrote back afterwards (through the lead’s contact; a reply from a second, unmerged contact is not seen). */
+                        replied: number | null;
+                        /** @description replied ÷ first_contacts_sent, one decimal; null with no denominator. */
+                        reply_rate: number | null;
+                    };
+                };
+                rule: string;
+            } | null;
+            /** @description Citas and attendance. Needs `clinic:read` with record visibility `all`. */
+            agenda?: {
+                /** @description When the agenda blocks were computed (at most hourly). */
+                computed_at: string;
+                has_ai_agent: boolean;
+                /**
+                 * @description Which block the row shows and labels: `agent` when the clinic has an active AI agent, `clinic` otherwise. Both are always present.
+                 * @enum {string}
+                 */
+                shown: "agent" | "clinic";
+                windows: {
+                    "7d": {
+                        from: string;
+                        to: string;
+                        /** @description The clinic’s whole agenda. */
+                        clinic: {
+                            /** @description Past citas of the window, moved ones included. */
+                            total: number | null;
+                            /** @description Attended. */
+                            attended: number | null;
+                            /** @description No-show. */
+                            no_show: number | null;
+                            /** @description Cancelled, late ones included. */
+                            cancelled: number | null;
+                            /** @description Past citas nobody closed — never counted as attended. */
+                            not_closed: number | null;
+                            /** @description Moved by the clinic software — in no attendance count. */
+                            moved: number | null;
+                            /** @description attended + no_show + cancelled. */
+                            closed: number | null;
+                            /** @description attended ÷ closed, whole percent. */
+                            attendance_pct: number | null;
+                            /** @description The read hit its cap: counts are a floor. */
+                            truncated: boolean;
+                        };
+                        /** @description The citas booked by the agent. */
+                        agent: {
+                            /** @description Citas the agent booked in the window. */
+                            booked: number | null;
+                            /** @description Of them, attended. */
+                            attended: number | null;
+                            /** @description No-show + cancelled. */
+                            missed: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            no_show: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            cancelled: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            not_closed: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            moved: number | null;
+                            /** @description Agent bookings dated after the window. */
+                            upcoming: number | null;
+                            /** @description attended + missed. */
+                            closed: number | null;
+                            /** @description attended ÷ closed, one decimal. */
+                            attendance_pct: number | null;
+                            /** @description True once no-show, cancelled, not closed and moved are separate. */
+                            split: boolean;
+                        };
+                    };
+                    "30d": {
+                        from: string;
+                        to: string;
+                        /** @description The clinic’s whole agenda. */
+                        clinic: {
+                            /** @description Past citas of the window, moved ones included. */
+                            total: number | null;
+                            /** @description Attended. */
+                            attended: number | null;
+                            /** @description No-show. */
+                            no_show: number | null;
+                            /** @description Cancelled, late ones included. */
+                            cancelled: number | null;
+                            /** @description Past citas nobody closed — never counted as attended. */
+                            not_closed: number | null;
+                            /** @description Moved by the clinic software — in no attendance count. */
+                            moved: number | null;
+                            /** @description attended + no_show + cancelled. */
+                            closed: number | null;
+                            /** @description attended ÷ closed, whole percent. */
+                            attendance_pct: number | null;
+                            /** @description The read hit its cap: counts are a floor. */
+                            truncated: boolean;
+                        };
+                        /** @description The citas booked by the agent. */
+                        agent: {
+                            /** @description Citas the agent booked in the window. */
+                            booked: number | null;
+                            /** @description Of them, attended. */
+                            attended: number | null;
+                            /** @description No-show + cancelled. */
+                            missed: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            no_show: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            cancelled: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            not_closed: number | null;
+                            /** @description Null until the split is available (`split`). */
+                            moved: number | null;
+                            /** @description Agent bookings dated after the window. */
+                            upcoming: number | null;
+                            /** @description attended + missed. */
+                            closed: number | null;
+                            /** @description attended ÷ closed, one decimal. */
+                            attendance_pct: number | null;
+                            /** @description True once no-show, cancelled, not closed and moved are separate. */
+                            split: boolean;
+                        };
+                    };
+                };
+                rule: string;
+            } | null;
+            /** @description Sections this membership may not read: absent above, never zeroed. */
+            withheld: ("whatsapp" | "first_contact" | "leads" | "agenda")[];
+            /** @description «Necesitan atención»: what a person must act on in this clinic, ordered by severity then `since` (oldest first), only for the sections this membership reads. Each clears itself on the first refresh after it is fixed. */
+            signals: components["schemas"]["ClinicSignal"][];
+            /**
+             * @description The highest severity in `signals` (`critical` > `warning` > `low`); null when there is none.
+             * @enum {string|null}
+             */
+            top_severity: "critical" | "warning" | "low" | null;
+        };
+        ClinicSummariesResponse: {
+            data: {
+                clinics: components["schemas"]["ClinicSummary"][];
+            };
+        };
+        ClinicSummaryRefreshResponse: {
+            data: {
+                enqueued: boolean;
+            };
         };
         TeamNote: {
             /** Format: uuid */
