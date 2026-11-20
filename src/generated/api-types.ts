@@ -39346,13 +39346,15 @@ export interface paths {
         head?: never;
         /**
          * Correct the price terms of a nota de venta (issued or approved)
-         * @description Corrects `net_clp`, `tax_clp` (null = not recorded, 0 = no tax), `tax_treatment` and/or `issued_at` on a nota de venta that is ISSUED or APPROVED and not voided, with no cutoff. All optional, at least one; unknown keys are a 400. In one transaction the edit re-derives what issuing at the new terms would have: the buyer’s receivable (the sale note’s open obligation, re-stated from price + IVA + charged add-ons) and the participations’ DEFAULTED commissions (the margin basis and, when the sale’s day moves, the scheme rate); `discount_clp` follows. Payments already recorded, add-on lines, trade-ins, the credit and `list_price_clp` are kept; on an approved note the car stays sold and the deal stays won. Every correction writes a `history` entry (actor, instant, each field `{ from, to }`); a compraventa printed before it reads `compraventa_outdated: true` until it is reprinted. Responds with the same read as `GET /sale-notes/{id}` plus `correction: { outcome, price_approval_id, change_id }`, `outcome` = `applied` | `unchanged` (sending the values it already has is a no-op 200) | `pending_approval`.
+         * @description Corrects `net_clp`, `tax_clp` (null = not recorded, 0 = no tax), `tax_treatment`, `issued_at` and/or the precio de toma (`trade_ins`) on a nota de venta that is ISSUED or APPROVED and not voided, with no cutoff. All optional, at least one; unknown keys are a 400. In one transaction the edit re-derives what issuing at the new terms would have: the buyer’s receivable (the sale note’s open obligation, re-stated from price + IVA + charged add-ons) and the participations’ DEFAULTED commissions (the margin basis and, when the sale’s day moves, the scheme rate); `discount_clp` follows. Payments already recorded, add-on lines, trade-ins, the credit and `list_price_clp` are kept; on an approved note the car stays sold and the deal stays won. Every correction writes a `history` entry (actor, instant, each field `{ from, to }`); a compraventa printed before it reads `compraventa_outdated: true` until it is reprinted. Responds with the same read as `GET /sale-notes/{id}` plus `correction: { outcome, price_approval_id, change_id }`, `outcome` = `applied` | `unchanged` (sending the values it already has is a no-op 200) | `pending_approval`.
          *
          *     **202 `pending_approval`**: on an APPROVED note, a correction that lowers the price below the floor (the price-approval policy, tolerance included) by a caller WITHOUT `price_approval:approve` is not applied. It is filed as a price approval on the note carrying the proposed terms (`proposed_terms` on `GET /price-approvals`), shown as `pending_price_change` on the note; granting it (`POST /price-approvals/{id}/decision`) applies the correction in the same transaction, rejecting it leaves the note as it was. A caller holding `price_approval:approve`, a grant on this note that covers the price, a raise, or a pending (unapproved) note applies directly.
          *
          *     **409** with `details.blocked_reason` = `sale_note_voided`, or `sale_note_approved` only when a PENDING note was approved while the edit ran (nothing changed; retry, it now applies the approved-note rule), and a Spanish message. Requires `sale_notes:write`.
          *
          *     **`observaciones`** (app#7581) rides the same body: a string sets the text printed on the nota de venta (trimmed, up to 2000 characters), `null` or blank clears it. It is not a money fact: it applies on an issued or approved note with no price approval, no `history` entry and no `compraventa_outdated` (audited as `sale_notes.set_observaciones`). Sent alone it answers 200 with `correction.outcome` `applied` (or `unchanged`) and `change_id: null`; on a voided note it is the same **409** `sale_note_voided`.
+         *
+         *     **`trade_ins`** (vitrina-app#7725): `[{ vehicle_id, precio_toma_clp }]` changes the precio de toma of cars this sale already took in part payment (cars are neither added nor removed here), on an issued or approved note. In one transaction, per car that moved: the trade-in line (the credit: the saldo follows on the next read), the car’s `retoma` cost (so its Ganancia follows when it sells), its live nota de compra’s amount (stamped as corrected) and a `history` entry (`kind: terms`, field `precio_toma_clp`). `correction.trade_ins` lists what moved: `{ vehicle_id, from_clp, to_clp, purchase_note_id, purchase_note_display_id, change_id }` (`[]` when nothing moved). 400 for a car the sale did not take, and `discounts_exceed_price` when the new price is below the nota de compra’s «Descuentos».
          */
         patch: {
             parameters: {
@@ -39380,6 +39382,11 @@ export interface paths {
                         issued_at?: string;
                         /** @description Observaciones que se imprimen en la nota de venta, tal como se escribieron (hasta 2000 caracteres). Se guardan sin espacios al inicio ni al final; vacío o null las borra. No son notas internas. */
                         observaciones?: string | null;
+                        trade_ins?: {
+                            /** Format: uuid */
+                            vehicle_id: string;
+                            precio_toma_clp: number;
+                        }[];
                     };
                 };
             };
@@ -42044,6 +42051,8 @@ export interface paths {
          *     Requires `sale_notes:void`, which is a DIFFERENT authority from `sale_notes:write` — holding the write scope does not permit a void.
          *
          *     **`void_outcome` says what happened (app#7587)** — the voided row plus `{ reservation: { outcome: reopened | not_reopened | none, reason: hold_lapsed | another_hold_active | not_completed | different_vehicle | not_found | null, id, display_id, abono_clp }, vehicle: { id, status, changed, ads_closed_by_sale, ads_republished: false }, payments: { released_clp, returned_to_reservation_clp, buyer_credit_clp }, appointments: { cancelled_by_sale_restored: false }, deal_reopened, message }`. A reopened reserva carries its abono again and holds the car; a lapsed one is not reopened and the money stays with the buyer as credit (payments are kept: for the replacement note or to be refunded). Portal ads the sale closed are not re-published automatically, and test drives the sale cancelled are not restored. `message` is one short Spanish paragraph to show as is.
+         *
+         *     **Cars taken in part payment** (vitrina-app#7725): `void_outcome.trade_ins` lists `{ vehicle_id, purchase_note_id, purchase_note_display_id, cost_removed: true }` per car. Its nota de compra (written when the sale was closed) is voided with the sale, and the car is left without a Costo de compra; it stays in Stock for the dealer to remove if it went back to the buyer. `message` says so.
          */
         post: {
             parameters: {
@@ -43696,6 +43705,8 @@ export interface paths {
          *
          *     **Each row carries the unit it bought**: `vehicle` is `{ id, make, model, year, registration_number }` or `null`, and `vehicle_count` says how many units the document acquired. One nota de compra may acquire SEVERAL units, so `vehicle` is the FIRST of them (deterministic: `acquired_on`, then `created_at`, then `id`) and `vehicle_count` is what keeps that from reading as "this note bought one car". `vehicle` is `null` exactly when `vehicle_count` is `0`, which is an ordinary state: the document is issued before anything is attached to it, and attaching is a separate act on `/vehicle-acquisitions`.
          *
+         *     **A nota de compra of a car taken in part payment** (vitrina-app#7725) is written by closing that sale: its row carries `sale_note_id`, `sale_note_trade_in_id` and `sale_note_display_id` (the sale’s folio, `V-n`), all `null` on any other nota. Its `vehicle` is the car taken.
+         *
          *     Unknown query parameters are a **400**, not a silent drop: a filter the caller believes is being applied, returning a full unfiltered list with a 200, is a worse answer than a refusal.
          */
         get: {
@@ -43734,13 +43745,17 @@ export interface paths {
                          *           "notes": null,
                          *           "forma_de_pago": "Transferencia a la cuenta del vendedor",
                          *           "observaciones": "Se entrega con dos llaves.",
+                         *           "sale_note_id": null,
+                         *           "sale_note_trade_in_id": null,
+                         *           "voided_vehicle_id": null,
                          *           "corrected_at": null,
                          *           "corrected_by": null,
                          *           "voided_at": null,
                          *           "void_reason": null,
                          *           "voided_by": null,
                          *           "created_at": "2026-09-12T10:15:00.000Z",
-                         *           "updated_at": "2026-09-12T10:15:00.000Z"
+                         *           "updated_at": "2026-09-12T10:15:00.000Z",
+                         *           "sale_note_display_id": null
                          *         }
                          *       ],
                          *       "meta": {
@@ -43937,6 +43952,9 @@ export interface paths {
                          *         "notes": null,
                          *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
                          *         "observaciones": "Se entrega con dos llaves.",
+                         *         "sale_note_id": null,
+                         *         "sale_note_trade_in_id": null,
+                         *         "voided_vehicle_id": null,
                          *         "corrected_at": null,
                          *         "corrected_by": null,
                          *         "voided_at": null,
@@ -44031,6 +44049,8 @@ export interface paths {
          *
          *     Since vitrina-app#7723 it also carries what the «Modificar» form opens with: `acquisition` (the car’s cost under this note, with `invoice_includes_iva` and `amount_paid_clp`, or `null`) and `retentions` (the note’s live «Descuentos», each with `description` and `net_clp`).
          *
+         *     A nota de compra written by closing a sale with a car in part payment (vitrina-app#7725) carries `sale_note_id`, `sale_note_trade_in_id` and `sale_note_display_id` (`V-n`); its amount is that sale’s precio de toma and `acquisition` is the car’s `retoma` cost. Every other nota has the three as `null`.
+         *
          *     A document belonging to another workspace is a 404, indistinguishable from one that does not exist.
          */
         get: {
@@ -44066,6 +44086,9 @@ export interface paths {
                          *         "notes": null,
                          *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
                          *         "observaciones": "Se entrega con dos llaves.",
+                         *         "sale_note_id": null,
+                         *         "sale_note_trade_in_id": null,
+                         *         "voided_vehicle_id": null,
                          *         "corrected_at": null,
                          *         "corrected_by": null,
                          *         "voided_at": null,
@@ -44081,6 +44104,7 @@ export interface paths {
                          *           "registration_number": "KXPT21"
                          *         },
                          *         "vehicle_count": 1,
+                         *         "sale_note_display_id": null,
                          *         "acquisition": {
                          *           "id": "7b0e1c52-3a1f-4d8e-9c2a-5f6b7c8d9e01",
                          *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
@@ -44192,6 +44216,8 @@ export interface paths {
          * Modify a nota de compra
          * @description **Everything is editable until the note is voided** (vitrina-app#7723): seller, car, price, date, «Descuentos», forma de pago, observaciones and the «Compra con factura (incluye IVA)» tick. **The car’s cost follows in the same write**: the acquisition takes the new payout (price − Descuentos), the seller, the day and the tax split; `acquisition.retentions` replaces the Descuentos (the old cost lines are voided, never edited); `acquisition.vehicle_id` moves the cost and the Descuentos to another car (the old one is left without a cost). Send `invoice_includes_iva` on every save of the form. The answer is the note as `GET` returns it plus `previous` (what it said before); every change is also an audit-log row with who and when. Refusals (`error.details.code`): `purchase_note_voided` (409), `discounts_exceed_price` (400), `vehicle_has_documented_cost` (409), `vehicle_sold_by_other_seller` (409), `purchase_note_has_several_cars` (409, a legacy note that bought several cars: price, tick, car or Descuentos), `purchase_note_changed_meanwhile` (409).
          *
+         *     **A nota de compra of a car taken in part payment** (`sale_note_id` set, vitrina-app#7725): its amount and its car follow the sale. A DIFFERENT `net_clp`, `invoice_includes_iva: true`, a different `tax_clp` / `tax_treatment` or another `acquisition.vehicle_id` is a 409 `purchase_note_follows_sale` (`details.field` = `amount` | `vehicle`, `details.sale_note_id`, `details.sale_note_display_id`; the message points to the sale); the same values are accepted, so the whole form can be sent. Everything else is editable: seller (also the retoma’s counterparty), date, «Descuentos» (the car’s cost stays the precio de toma: the retoma carries the price less the Descuentos), forma de pago, observaciones. The precio de toma is changed with `PATCH /sale-notes/{id}` `trade_ins`.
+         *
          *     Corrects a LIVE document and **stamps it**: `corrected_at` and the acting principal are written onto the row, so a reader of the document can tell it has been changed since it was issued without joining an audit table. The folio and the status are never touched.
          *
          *     **An ABSENT field is left alone; an explicit `null` CLEARS it.** On `tax_clp` that is the difference between "not recorded" and "no tax", which ADR 0058 §2 keeps apart — so correcting away an amount entered by mistake is expressible without being confused with zero.
@@ -44299,6 +44325,9 @@ export interface paths {
                          *         "notes": null,
                          *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
                          *         "observaciones": "Se entrega con dos llaves.",
+                         *         "sale_note_id": null,
+                         *         "sale_note_trade_in_id": null,
+                         *         "voided_vehicle_id": null,
                          *         "corrected_at": "2026-09-13T09:00:00.000Z",
                          *         "corrected_by": "11111111-0000-4000-8000-000000000001",
                          *         "voided_at": null,
@@ -44539,6 +44568,8 @@ export interface paths {
          *
          *     **The car keeps its cost** (vitrina-app#7723): in the same transaction each car the note bought keeps the note’s total (payout + «Descuentos») as a plain Costo de compra, no longer linked to the note, and the Descuentos stop counting apart. That cost can then be corrected by typing it (`POST /vehicle-acquisitions`) or taken over by a new nota de compra. `void_outcome` says what happened per car, and `void_outcome.message` is ready to show as is. Voiding a voided note is a 409 `purchase_note_voided`.
          *
+         *     **A nota de compra of a car taken in part payment** (vitrina-app#7725) can be voided on its own: the document is cancelled, the sale is untouched and the car keeps its whole precio de toma as its cost (its «Descuentos» stop counting apart); `void_outcome.message` says so. Voiding the SALE voids it too.
+         *
          *     Requires `purchase_notes:void`, which is a DIFFERENT authority from `purchase_notes:write` — holding the write scope does not permit a void.
          */
         post: {
@@ -44588,6 +44619,9 @@ export interface paths {
                          *         "notes": null,
                          *         "forma_de_pago": "Transferencia a la cuenta del vendedor",
                          *         "observaciones": "Se entrega con dos llaves.",
+                         *         "sale_note_id": null,
+                         *         "sale_note_trade_in_id": null,
+                         *         "voided_vehicle_id": null,
                          *         "corrected_at": null,
                          *         "corrected_by": null,
                          *         "voided_at": "2026-09-14T11:30:00.000Z",
@@ -323917,6 +323951,13 @@ export interface components {
             price_approval_id: string | null;
             authorised_by: components["schemas"]["DealActor"] | null;
         };
+        SaleNoteTradeInPurchaseNote: {
+            /** Format: uuid */
+            id: string;
+            display_id: string;
+            /** @enum {string} */
+            status: "issued" | "voided";
+        };
         SaleNoteParty: {
             /** Format: uuid */
             contact_id: string;
@@ -323930,6 +323971,7 @@ export interface components {
             precio_toma_clp: number;
             /** Format: uuid */
             acquisition_id: string | null;
+            purchase_note: components["schemas"]["SaleNoteTradeInPurchaseNote"] | null;
             delivered_by: components["schemas"]["SaleNoteParty"] | null;
         } & {
             [key: string]: unknown;
@@ -324092,6 +324134,17 @@ export interface components {
             already_issued: boolean;
             template_version: string;
         };
+        SaleNoteTradeInPriceChange: {
+            /** Format: uuid */
+            vehicle_id: string;
+            from_clp: number;
+            to_clp: number;
+            /** Format: uuid */
+            purchase_note_id: string | null;
+            purchase_note_display_id: string | null;
+            /** Format: uuid */
+            change_id: string | null;
+        };
         SaleNoteCorrection: {
             /** @enum {string} */
             outcome: "applied" | "pending_approval" | "unchanged";
@@ -324099,6 +324152,7 @@ export interface components {
             price_approval_id: string | null;
             /** Format: uuid */
             change_id: string | null;
+            trade_ins: components["schemas"]["SaleNoteTradeInPriceChange"][];
         };
         SaleNoteCorrected: components["schemas"]["SaleNoteRead"] & ({
             correction: components["schemas"]["SaleNoteCorrection"];
