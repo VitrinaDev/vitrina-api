@@ -321306,6 +321306,8 @@ export interface components {
             };
             /** @description Workspace display name. */
             name?: string;
+            /** @description The workspace country, ISO 3166-1 alpha-2 (e.g. `CL`, `MX`, `CO`, `AR`). It supplies the defaults for time zone, currency, phone parsing, national holidays, form of address and patient document whenever those are not set explicitly. Absent until set; `locale_resolved` gives what applies. */
+            country?: string;
             /** @description IANA time zone, e.g. `America/Santiago`. */
             timezone?: string;
             /** @description Default language, e.g. `es`. */
@@ -321405,6 +321407,21 @@ export interface components {
                 /** @enum {string} */
                 register_source: "stored" | "vertical_default";
             };
+            /** @description Read-only: the country, time zone and currency the workspace runs on (stored value, the country default, or the legacy guess), with where each came from. Ignored on write. */
+            locale_resolved?: {
+                /** @description ISO 3166-1 alpha-2. */
+                country: string;
+                /** @description IANA time zone. */
+                timezone: string;
+                /** @description ISO 4217 currency. */
+                currency: string;
+                /** @enum {string} */
+                country_source: "stored" | "country_default" | "legacy_guess";
+                /** @enum {string} */
+                timezone_source: "stored" | "country_default" | "legacy_guess";
+                /** @enum {string} */
+                currency_source: "stored" | "country_default" | "legacy_guess";
+            };
             /**
              * @description Write-only secret: the Slack incoming-webhook URL is never returned. `••••` when one is configured; absent otherwise. Read `slack_webhook_configured` instead.
              * @enum {string}
@@ -321426,6 +321443,8 @@ export interface components {
             };
         };
         TenantSettingsPublicWrite: {
+            /** @description The workspace country, ISO 3166-1 alpha-2 (e.g. `CL`, `MX`). Supplies the defaults for time zone, currency, phone parsing, national holidays, form of address and patient document; an explicit `timezone`/`currency` is never rewritten by it. `null` removes it. */
+            country?: string | null;
             /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?, low_battery_factor?, direct_purchase?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value; `min_battery_pct` = a known battery under it is not bought; `low_battery_factor` (0–1) = a known battery under `perfect_battery_pct` caps the price at `used × low_battery_factor` instead of `used`; `direct_purchase: false` = the model is taken only as part of the payment for another item, never bought outright — absent = true), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool (a wide range of what the customer would still pay) and the `quote_buyback` tool (the most paid for one device sold outright, or the discount for a `direct_purchase: false` model); the business’s own site reads it at `GET /storefront/trade-in`. Replaced whole on write; `null` clears it. */
             trade_in?: {
                 price_table: {
