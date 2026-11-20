@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.85.0",
+    "version": "17.86.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -99660,7 +99660,8 @@
                                         ]
                                       },
                                       "credited_clp": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "description": "Whole CLP that became Saldo a favor because of the void: what was paid on the cobro before it was voided plus transfers that named it afterwards and were not undone; 0 when nothing. A GROSS figure at the time of the void: it is NOT the available balance, because that saldo may since have been applied to another cobro. Never show it as «saldo disponible»: the current balance is `workspace.billing_credit_clp` on `GET /me` (owners and admins)."
                                       }
                                     },
                                     "required": [
@@ -99671,6 +99672,81 @@
                                       "credited_clp"
                                     ],
                                     "description": "The most recent annual Finanzas purchase voided unpaid at day 30, while worth telling the owner (voided in the last 30 days, no annual Finanzas cobro paid since); null otherwise. Same shape as `GET /billing/clinic-plan`'s `last_voided_purchase`."
+                                  },
+                                  "unavailableReason": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "enum": [
+                                      "quoted_price",
+                                      "price_lock",
+                                      "agency_agreement",
+                                      "negotiated_contract",
+                                      "price_check_failed"
+                                    ],
+                                    "description": "Null when annual is offered self-serve. Otherwise why not (the same values and the same check as `GET /billing/clinic-plan`'s `price_options.annual_unavailable_reason`, and the purchase's 409 `annual_not_self_serve`): a quoted price, a price lock, an agency agreement or a negotiated contract, or `price_check_failed` when the facts could not be read. The other fields of `annual` are then reference arithmetic, never an offer."
+                                  },
+                                  "paymentWays": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "transfer",
+                                        "card"
+                                      ]
+                                    },
+                                    "description": "The ways an annual purchase can be paid here, in the order to offer them (the plan read's `annual_payment_ways`): `transfer` first (the default), then `card` when a card, PAC or Oneclick is on file."
+                                  },
+                                  "pendingPurchase": {
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ],
+                                    "properties": {
+                                      "invoiceId": {
+                                        "type": "string",
+                                        "description": "The cobro (same as `purchaseInvoiceId`)."
+                                      },
+                                      "invoiceNumber": {
+                                        "type": "string",
+                                        "description": "The cobro number (`INV-…-AF…`)."
+                                      },
+                                      "ufTotal": {
+                                        "type": [
+                                          "number",
+                                          "null"
+                                        ],
+                                        "description": "Net UF of the year, before IVA."
+                                      },
+                                      "clpTotal": {
+                                        "type": [
+                                          "number",
+                                          "null"
+                                        ],
+                                        "description": "The cobro total, whole CLP."
+                                      },
+                                      "receivedClp": {
+                                        "type": "number",
+                                        "description": "Whole CLP already received on it (a partial transfer); 0 when none."
+                                      },
+                                      "expiresOn": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ],
+                                        "description": "The Santiago day (`YYYY-MM-DD`) it is voided if still unpaid (the plan read's `purchase_expires_on`)."
+                                      }
+                                    },
+                                    "required": [
+                                      "invoiceId",
+                                      "invoiceNumber",
+                                      "ufTotal",
+                                      "clpTotal",
+                                      "receivedClp",
+                                      "expiresOn"
+                                    ],
+                                    "description": "The first annual purchase awaiting payment, so the awaiting-transfer and partly-paid states survive a reload; null when none is out."
                                   }
                                 },
                                 "required": [
@@ -99683,7 +99759,10 @@
                                   "termStart",
                                   "termEnd",
                                   "purchaseInvoiceId",
-                                  "lastVoidedPurchase"
+                                  "lastVoidedPurchase",
+                                  "unavailableReason",
+                                  "paymentWays",
+                                  "pendingPurchase"
                                 ],
                                 "description": "Finanzas: the base paid 12 months in advance at 20 % off. Buy it with `POST /entitlements/finanzas/activate` and `{ \"billing_interval\": \"annual\" }`."
                               },
@@ -100038,7 +100117,13 @@
                             "voided_on": "2026-11-14",
                             "reason": "annual_purchase_expired",
                             "credited_clp": 0
-                          }
+                          },
+                          "unavailableReason": null,
+                          "paymentWays": [
+                            "transfer",
+                            "card"
+                          ],
+                          "pendingPurchase": null
                         }
                       }
                     ],
@@ -127633,7 +127718,8 @@
                               ]
                             },
                             "credited_clp": {
-                              "type": "number"
+                              "type": "number",
+                              "description": "Whole CLP that became Saldo a favor because of the void: what was paid on the cobro before it was voided plus transfers that named it afterwards and were not undone; 0 when nothing. A GROSS figure at the time of the void: it is NOT the available balance, because that saldo may since have been applied to another cobro. Never show it as «saldo disponible»: the current balance is `workspace.billing_credit_clp` on `GET /me` (owners and admins)."
                             }
                           },
                           "required": [
@@ -176335,7 +176421,7 @@
     "/clinic/cash-day": {
       "get": {
         "summary": "One clinic day's money: what came in, by caja",
-        "description": "The one read behind Inicio's «La plata de hoy», the Caja tab and Cuadratura. `collected` is the day's cash; its `gift_cards_sold_clp` is the part that bought gift cards (cash in the drawer, income only when a card is used, so «Mi clínica en números» leaves it out); `shifts` splits Vitrina's payments by the caja they were stamped on, and `outside_shift` lists the ones no caja holds, each with its `reason` read against the shifts open when it was recorded (`no_open_caja`, `other_location`, `several_open`, `not_assigned`) and `counts_in_drawer` (cash: the only kind a count adds by hand; a card or transfer never reaches the cajón); `cash_clp` is the cash part of the line. BLIND COUNT: while a caja is open, a seat without `clinic_admin:write` gets `sees_drawer: false`, `in_drawer_clp: null` (top level and per shift) and an empty `by_instrument`; `collected` stays. `open_since` is when a caja still open was opened on an earlier day (a drawer left open overnight), else null. `date` is a clinic calendar day (America/Santiago), today when absent.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "The one read behind Inicio's «La plata de hoy», the Caja tab and Cuadratura. `collected` is the day's cash; its `gift_cards_sold_clp` is the part that bought gift cards (cash in the drawer, income only when a card is used, so «Mi clínica en números» leaves it out); `shifts` splits Vitrina's payments by the caja they were stamped on, and `outside_shift` lists the ones no caja holds, each with its `reason` read against the shifts open when it was recorded (`no_open_caja`, `other_location`, `several_open`, `not_assigned`) and `counts_in_drawer` (cash: the only kind a count adds by hand; a card or transfer never reaches the cajón); `cash_clp` is the cash part of the line. BLIND COUNT: while a caja is open, a seat without `clinic_admin:write` gets `sees_drawer: false`, `in_drawer_clp: null` (top level and per shift) and an empty `by_instrument`; `collected` stays. `open_since` is when a caja still open was opened on an earlier day (a drawer left open overnight), else null. `date` is a clinic calendar day (the clinic clock: the workspace time zone), today when absent.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []
@@ -246757,7 +246843,7 @@
     "/appointments/config": {
       "get": {
         "summary": "The scheduling configuration",
-        "description": "The workspace’s EFFECTIVE booking rules: timezone, weekly `business_hours` (raw) and `effective_business_hours` (what booking enforces), slot grid, buffer, lead time, horizon, staff capacity, hold TTL, reminder lead, and the `arrival_board_enabled` reception switch. Never null: a workspace that configured nothing gets the table defaults on the workspace clock. A clinic on Vitrina's own diary gets its professionals' working hours as `effective_business_hours` (`business_hours_source: \"clinic_agenda\"`) — the source its booking reads.\n\n`configured` is `true` only once a scheduling POLICY has been saved — a `PUT` carrying any field other than `arrival_board_enabled`. It is NOT \"a stored row exists\": saving `arrival_board_enabled` alone creates the row and leaves `configured: false` (default knobs, the agent's native `appointments` tools stay gated). It is the same flag `availability` reports.\n\n`arrival_board_enabled` is the stored «Sala de espera» switch (`false` when never saved).\n\n`next_day_cutoff_local` / `next_day_earliest_local` (\"HH:MM\", tenant clock, `null` = off) are the overnight booking cutoff the AI agent enforces for EVERY booking engine (native, Medilink/Dentalink, Reservo, native clinic): from the cutoff on day X-1, slots on day X before the earliest time are hidden from `find_slots` and refused by `book_appointment` / `hold_slot` / `reschedule_appointment` with `too_soon`. Like `arrival_board_enabled` they are NOT scheduling policy: saving them alone never marks the agenda `configured`. `min_lead_minutes` is enforced by the same agent tools on every engine.",
+        "description": "The workspace’s EFFECTIVE booking rules: timezone, weekly `business_hours` (raw) and `effective_business_hours` (what booking enforces), slot grid, buffer, lead time, horizon, staff capacity, hold TTL, reminder lead, and the `arrival_board_enabled` reception switch. Never null: a workspace that configured nothing gets the table defaults on the workspace clock. A clinic (`healthcare` workspace) always answers its clinic clock, the workspace time zone, as `timezone`. A clinic on Vitrina's own diary gets its professionals' working hours as `effective_business_hours` (`business_hours_source: \"clinic_agenda\"`) — the source its booking reads.\n\n`configured` is `true` only once a scheduling POLICY has been saved — a `PUT` carrying any field other than `arrival_board_enabled`. It is NOT \"a stored row exists\": saving `arrival_board_enabled` alone creates the row and leaves `configured: false` (default knobs, the agent's native `appointments` tools stay gated). It is the same flag `availability` reports.\n\n`arrival_board_enabled` is the stored «Sala de espera» switch (`false` when never saved).\n\n`next_day_cutoff_local` / `next_day_earliest_local` (\"HH:MM\", tenant clock, `null` = off) are the overnight booking cutoff the AI agent enforces for EVERY booking engine (native, Medilink/Dentalink, Reservo, native clinic): from the cutoff on day X-1, slots on day X before the earliest time are hidden from `find_slots` and refused by `book_appointment` / `hold_slot` / `reschedule_appointment` with `too_soon`. Like `arrival_board_enabled` they are NOT scheduling policy: saving them alone never marks the agenda `configured`. `min_lead_minutes` is enforced by the same agent tools on every engine.",
         "security": [
           {
             "BearerAuth": []
@@ -246981,7 +247067,7 @@
       },
       "put": {
         "summary": "Create or update the scheduling configuration",
-        "description": "An upsert: the first call creates the config, later ones patch the fields present. Everything is optional, so this is safe to call with one field.\n\nThis doubles as the **connect flow** for scheduling. Saving a POLICY field (anything but `arrival_board_enabled`) marks the agenda `configured` and seeds the per-tenant scheduling tool rows, so the booking tools become wireable to an agent the moment scheduling exists. That seeding is best-effort and its failure does not fail the call. `arrival_board_enabled` alone is a reception setting: it creates or patches the row but never marks the agenda configured and seeds nothing.\n\n`business_hours` is a weekday map to a list of `[\"HH:MM\", \"HH:MM\"]` ranges — a list, so a lunch break is two ranges on one day. It is REPLACED wholesale, and it is a different shape from the workspace `business_hours` used for SLA coverage; these are opening hours for booking, not the support clock.\n\n`slot_minutes` is the grid step (also for a Reservo agenda once a policy is saved; without one, Reservo slots step by the service duration), `buffer_minutes` the gap kept between visits, `staff_capacity` how many can overlap at once, `vehicle_exclusive` whether one car can be on only one active visit at a time (default false: several customers may book the same car at the same hour), `owner_capacity` how many appointments one professional / executive may carry at the same time (default 1). Changing them affects future availability only — appointments already booked are never re-validated or evicted.",
+        "description": "An upsert: the first call creates the config, later ones patch the fields present. Everything is optional, so this is safe to call with one field.\n\nThis doubles as the **connect flow** for scheduling. Saving a POLICY field (anything but `arrival_board_enabled`) marks the agenda `configured` and seeds the per-tenant scheduling tool rows, so the booking tools become wireable to an agent the moment scheduling exists. That seeding is best-effort and its failure does not fail the call. `arrival_board_enabled` alone is a reception setting: it creates or patches the row but never marks the agenda configured and seeds nothing.\n\n`business_hours` is a weekday map to a list of `[\"HH:MM\", \"HH:MM\"]` ranges — a list, so a lunch break is two ranges on one day. It is REPLACED wholesale, and it is a different shape from the workspace `business_hours` used for SLA coverage; these are opening hours for booking, not the support clock.\n\n`timezone` is ignored for a clinic (a `healthcare` workspace): its agenda runs on the clinic clock, which is the workspace time zone (General settings), so `GET` answers that zone whatever was sent. Other workspaces store it as the booking clock.\n\n`slot_minutes` is the grid step (also for a Reservo agenda once a policy is saved; without one, Reservo slots step by the service duration), `buffer_minutes` the gap kept between visits, `staff_capacity` how many can overlap at once, `vehicle_exclusive` whether one car can be on only one active visit at a time (default false: several customers may book the same car at the same hour), `owner_capacity` how many appointments one professional / executive may carry at the same time (default 1). Changing them affects future availability only — appointments already booked are never re-validated or evicted.",
         "security": [
           {
             "BearerAuth": []
