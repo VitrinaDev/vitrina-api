@@ -97945,6 +97945,76 @@
                               "billedUnit": {
                                 "type": "string"
                               },
+                              "includedBanks": {
+                                "type": "number",
+                                "description": "Finanzas: banks the plan includes at no extra charge (1)."
+                              },
+                              "extraBankUfMonth": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ],
+                                "description": "Finanzas: UF per connected bank beyond the included ones, per month, billed monthly in arrears even on an annual plan (0.45)."
+                              },
+                              "annual": {
+                                "type": "object",
+                                "properties": {
+                                  "ufGrossYear": {
+                                    "type": "number",
+                                    "description": "12 × the monthly price, UF (18)."
+                                  },
+                                  "discountPct": {
+                                    "type": "number",
+                                    "description": "The annual discount, percent (20)."
+                                  },
+                                  "ufDiscount": {
+                                    "type": "number",
+                                    "description": "The discount, UF (3.6)."
+                                  },
+                                  "ufYear": {
+                                    "type": "number",
+                                    "description": "Net UF of the year, before IVA (14.4)."
+                                  },
+                                  "ufMonthEquivalent": {
+                                    "type": "number",
+                                    "description": "The year expressed per month, UF (1.2)."
+                                  },
+                                  "clpYearEstimate": {
+                                    "type": [
+                                      "number",
+                                      "null"
+                                    ],
+                                    "description": "Net CLP of the year at today's UF; null when the UF is unknown."
+                                  },
+                                  "termStart": {
+                                    "type": "string",
+                                    "description": "First Santiago day of the year if paid today (`YYYY-MM-DD`)."
+                                  },
+                                  "termEnd": {
+                                    "type": "string",
+                                    "description": "Last Santiago day of the year if paid today (`YYYY-MM-DD`)."
+                                  },
+                                  "purchaseInvoiceId": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The unpaid annual purchase cobro, if one is out."
+                                  }
+                                },
+                                "required": [
+                                  "ufGrossYear",
+                                  "discountPct",
+                                  "ufDiscount",
+                                  "ufYear",
+                                  "ufMonthEquivalent",
+                                  "clpYearEstimate",
+                                  "termStart",
+                                  "termEnd",
+                                  "purchaseInvoiceId"
+                                ],
+                                "description": "Finanzas: the base paid 12 months in advance at 20 % off. Buy it with `POST /entitlements/finanzas/activate` and `{ \"billing_interval\": \"annual\" }`."
+                              },
                               "verticals": {
                                 "type": "array",
                                 "items": {
@@ -98037,6 +98107,28 @@
                                 ],
                                 "description": "Last calendar day (`YYYY-MM-DD`, America/Santiago) this add-on is free under a time-boxed waiver: no charge accrues through the end of that day and activation needs no payment method. It bills normally from 00:00 Santiago of the next day. `null` = no waiver."
                               },
+                              "billing_interval": {
+                                "type": "string",
+                                "enum": [
+                                  "monthly",
+                                  "annual"
+                                ],
+                                "description": "`annual` only while the row holds a paid 12-month term that has not ended (Vitrina Finanzas); a term that ended unrenewed reads `monthly`. Extra banks bill monthly either way."
+                              },
+                              "term_start": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Start of the current (or last) paid annual term (ISO)."
+                              },
+                              "term_end": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "End (exclusive, ISO) of the current (or last) paid annual term. A cancelled annual add-on stays active until here, then lapses."
+                              },
                               "created_at": {
                                 "type": "string"
                               },
@@ -98066,6 +98158,67 @@
                                   "not_billed"
                                 ],
                                 "description": "Why this add-on carries no price on the invoice. `complimentary`: granted free; `contract`: the workspace has a fixed monthly contract that replaces every add-on line; `not_billed`: the workspace is never billed. `null` = it bills at the catalog price (unless `billed_by` or `waiver_active` says otherwise). When non-null, show «Incluido en tu plan» instead of the price."
+                              },
+                              "annual_purchase_invoice_id": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "The unpaid annual purchase cobro of this add-on (Vitrina Finanzas), or null. The add-on turns annual only when it is paid."
+                              },
+                              "paid_until": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "While annual: the last Santiago day (`YYYY-MM-DD`) the paid term covers. Null when monthly."
+                              },
+                              "renews_on": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "While annual, not cancelled and not going back to monthly: the Santiago day (`YYYY-MM-DD`) the term ends and its renewal starts. Null otherwise."
+                              },
+                              "next_billing_interval": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "monthly",
+                                  "annual"
+                                ],
+                                "description": "`monthly` when the owner chose to go back to monthly at the term end (`PUT /entitlements/finanzas/interval`); null when the term renews."
+                              },
+                              "renewal_notice_sent_at": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "When the 30-day renewal notice of the current term went out."
+                              },
+                              "renewal_preview": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "uf_period": {
+                                    "type": "number"
+                                  },
+                                  "clp_estimate": {
+                                    "type": [
+                                      "number",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "uf_period",
+                                  "clp_estimate"
+                                ],
+                                "description": "While annual and renewing: the next year in UF after the 20 % and its pesos at today's UF (before IVA). Null otherwise."
                               }
                             },
                             "required": [
@@ -98306,7 +98459,7 @@
     "/entitlements/{feature}/activate": {
       "post": {
         "summary": "Self-serve activate an add-on (returns needs_enrollment without a payment mandate)",
-        "description": "Grants `feature` to the workspace once an active payment mandate exists (`{ status: \"active\", entitlement }`); with none, answers `{ status: \"needs_enrollment\" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. An add-on this workspace cannot buy answers 409 `ADDON_NOT_OFFERED` (`details.reason`: `sandbox` or `vertical`, the same answer `GET /entitlements` publishes in `offers`); reactivating an add-on the workspace still holds is never refused for that. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring).",
+        "description": "Grants `feature` to the workspace once an active payment mandate exists (`{ status: \"active\", entitlement }`); with none, answers `{ status: \"needs_enrollment\" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. An add-on this workspace cannot buy answers 409 `ADDON_NOT_OFFERED` (`details.reason`: `sandbox` or `vertical`, the same answer `GET /entitlements` publishes in `offers`); reactivating an add-on the workspace still holds is never refused for that. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring). ANNUAL (Vitrina Finanzas only, needs `billing:write`; monthly activation keeps `tenant:write`): body `{ \"billing_interval\": \"annual\", \"payment\": \"card\" | \"transfer\" }` issues ONE cobro for the base, 12 months at 20 % off (14.4 UF neto at the UF of the issue day, number `INV-{tenant}-AF{YYYYMM}`), with no payment method required, and answers `{ status: \"awaiting_payment\" | \"active\", billing_interval: \"annual\", invoice_id, invoice_number, uf_total, clp_total, due_at, purchase_expires_on, next_step, term_start, term_end }`. Finanzas opens (or turns annual) only when that cobro is paid; its year starts at the payment instant (after a running waiver). Unpaid, the cobro is voided 30 days after issue and nothing changes. Extra banks keep billing monthly. 409 `ANNUAL_NOT_AVAILABLE` (`details.reason`: `not_annual_feature`, `complimentary`, `billed_elsewhere`, `suspended`, `term_running`); 409 `ANNUAL_PURCHASE_PENDING` while an unpaid purchase is out (`details.invoice_id`).",
         "security": [
           {
             "BearerAuth": []
@@ -98339,6 +98492,36 @@
             }
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "billing_interval": {
+                    "type": "string",
+                    "enum": [
+                      "monthly",
+                      "annual"
+                    ]
+                  },
+                  "payment": {
+                    "type": "string",
+                    "enum": [
+                      "card",
+                      "transfer"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "billing_interval": "annual",
+                "payment": "transfer"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Activation result",
@@ -98504,6 +98687,170 @@
                       "metadata": {},
                       "created_at": "2026-09-01T12:00:00.000Z",
                       "updated_at": "2026-09-23T15:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/entitlements/finanzas/interval": {
+      "put": {
+        "summary": "Switch annual Vitrina Finanzas back to monthly at the term end",
+        "description": "`monthly`: the paid year runs to its end with no refund and does not renew; from that day the base bills monthly in arrears. `annual` undoes it (the year renews). Monthly to annual is the purchase, `POST /entitlements/finanzas/activate` with `billing_interval: annual`. 409 `details.code`: `use_annual_purchase` (annual asked on a monthly row), `not_annual`, `plan_cancelling`, `next_cobro_issued` (the renewal Cobro is already out); 409 `ANNUAL_NOT_AVAILABLE` with `details.reason` `quoted` | `agency` | `contract` on `annual`: the 20 % annual discount is for the public price list only. Requires `billing:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Entitlements"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "interval": {
+                    "type": "string",
+                    "enum": [
+                      "monthly",
+                      "annual"
+                    ]
+                  }
+                },
+                "required": [
+                  "interval"
+                ]
+              },
+              "example": {
+                "interval": "monthly"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "When the change applies and the new price",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "interval": {
+                          "type": "string",
+                          "enum": [
+                            "monthly",
+                            "annual"
+                          ]
+                        },
+                        "effective_on": {
+                          "type": "string"
+                        },
+                        "preview": {
+                          "type": "object",
+                          "properties": {
+                            "uf_period": {
+                              "type": "number"
+                            },
+                            "clp_estimate": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "uf_period",
+                            "clp_estimate"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "interval",
+                        "effective_on",
+                        "preview"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "interval": "monthly",
+                    "effective_on": "2027-11-17",
+                    "preview": {
+                      "uf_period": 1.5,
+                      "clp_estimate": 59785
                     }
                   }
                 }
@@ -125124,7 +125471,7 @@
     "/billing/clinic-plan": {
       "get": {
         "summary": "The clinic banded plan: band, count, price, review, pause state",
-        "description": "Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to.",
+        "description": "Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to. On an annual plan a move up is charged once as the difference for the months of the paid year left, at the annual price (`announced_remaining_months`, `announced_difference_uf`, `announced_difference_clp_estimate`), and a move down only shows as `pending_down_band` until the renewal.",
         "security": [
           {
             "BearerAuth": []
@@ -125465,6 +125812,97 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "pending_down_band": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "S",
+                            "M",
+                            "L",
+                            "XL",
+                            "quoted"
+                          ]
+                        },
+                        "announced_remaining_months": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "announced_difference_uf": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "announced_difference_clp_estimate": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "next_billing_interval": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "monthly",
+                            "annual"
+                          ]
+                        },
+                        "renewal_notice_sent_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "renewal_preview": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "interval": {
+                              "type": "string",
+                              "enum": [
+                                "monthly",
+                                "annual"
+                              ]
+                            },
+                            "band": {
+                              "type": "string",
+                              "enum": [
+                                "S",
+                                "M",
+                                "L",
+                                "XL",
+                                "quoted"
+                              ]
+                            },
+                            "uf_month": {
+                              "type": "number"
+                            },
+                            "uf_period": {
+                              "type": "number"
+                            },
+                            "clp_estimate": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "interval",
+                            "band",
+                            "uf_month",
+                            "uf_period",
+                            "clp_estimate"
+                          ]
                         }
                       },
                       "required": [
@@ -125499,7 +125937,14 @@
                         "price_options",
                         "cancel_at_period_end",
                         "ends_on",
-                        "plan_ended_at"
+                        "plan_ended_at",
+                        "pending_down_band",
+                        "announced_remaining_months",
+                        "announced_difference_uf",
+                        "announced_difference_clp_estimate",
+                        "next_billing_interval",
+                        "renewal_notice_sent_at",
+                        "renewal_preview"
                       ]
                     }
                   },
