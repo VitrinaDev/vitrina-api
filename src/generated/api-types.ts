@@ -322626,6 +322626,11 @@ export interface components {
              * @description `mercadopago`: «Pagar ahora» — an unpaid cobro of this workspace to collect from the new card right away. The card’s subscription then starts its cycle within about an hour (12:00 Santiago at the earliest) and is armed with that cobro, instead of waiting for the cobro’s scheduled day.
              */
             pay_invoice_id?: string;
+            /**
+             * @description The plan the owner asked to activate: `clinic_plan` (Vitrina Clínica, clinics) or `finanzas` (Vitrina Finanzas). The backend activates it, monthly, the moment this payment method becomes active (a Fintoc webhook can take minutes), exactly as the plan's own activate button would: the advance invoice is charged at issue and the plan opens only once it is paid. It always activates the MONTHLY plan (an annual plan is bought from its own screen and needs no card). It runs once per method, within 24 hours of the request; a newer enrolment or an abandoned checkout activates nothing. An enrolment that fails activates nothing. It never creates or enables an agent.
+             * @enum {string}
+             */
+            activate_plan?: "clinic_plan" | "finanzas";
         };
         TransferClaimResult: {
             /** @description False when a claim was already pending (idempotent). */
