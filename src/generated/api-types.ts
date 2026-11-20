@@ -23537,6 +23537,7 @@ export interface paths {
                         metadata?: {
                             [key: string]: unknown;
                         };
+                        internal_only?: boolean;
                     };
                 };
             };
@@ -23908,6 +23909,7 @@ export interface paths {
                         metadata?: {
                             [key: string]: unknown;
                         };
+                        internal_only?: boolean;
                         is_active?: boolean;
                     };
                 };
