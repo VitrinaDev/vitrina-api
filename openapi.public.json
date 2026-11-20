@@ -99489,6 +99489,40 @@
                                       "null"
                                     ],
                                     "description": "The unpaid annual purchase cobro, if one is out."
+                                  },
+                                  "lastVoidedPurchase": {
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ],
+                                    "properties": {
+                                      "invoice_id": {
+                                        "type": "string"
+                                      },
+                                      "invoice_number": {
+                                        "type": "string"
+                                      },
+                                      "voided_on": {
+                                        "type": "string"
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                          "annual_purchase_expired"
+                                        ]
+                                      },
+                                      "credited_clp": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "invoice_id",
+                                      "invoice_number",
+                                      "voided_on",
+                                      "reason",
+                                      "credited_clp"
+                                    ],
+                                    "description": "The most recent annual Finanzas purchase voided unpaid at day 30, while worth telling the owner (voided in the last 30 days, no annual Finanzas cobro paid since); null otherwise. Same shape as `GET /billing/clinic-plan`'s `last_voided_purchase`."
                                   }
                                 },
                                 "required": [
@@ -99500,7 +99534,8 @@
                                   "clpYearEstimate",
                                   "termStart",
                                   "termEnd",
-                                  "purchaseInvoiceId"
+                                  "purchaseInvoiceId",
+                                  "lastVoidedPurchase"
                                 ],
                                 "description": "Finanzas: the base paid 12 months in advance at 20 % off. Buy it with `POST /entitlements/finanzas/activate` and `{ \"billing_interval\": \"annual\" }`."
                               },
@@ -99832,6 +99867,31 @@
                         "flatUfMonth": 0.5,
                         "freeAllowance": 10,
                         "meter": "tasador_valuation"
+                      },
+                      {
+                        "key": "finanzas",
+                        "access": "entitlement",
+                        "flatUfMonth": 1.5,
+                        "includedBanks": 1,
+                        "extraBankUfMonth": 0.45,
+                        "annual": {
+                          "ufGrossYear": 18,
+                          "discountPct": 20,
+                          "ufDiscount": 3.6,
+                          "ufYear": 14.4,
+                          "ufMonthEquivalent": 1.2,
+                          "clpYearEstimate": 566640,
+                          "termStart": "2026-11-19",
+                          "termEnd": "2027-11-18",
+                          "purchaseInvoiceId": null,
+                          "lastVoidedPurchase": {
+                            "invoice_id": "33333333-3333-4333-8333-333333333333",
+                            "invoice_number": "INV-11111111-AF202610",
+                            "voided_on": "2026-11-14",
+                            "reason": "annual_purchase_expired",
+                            "credited_clp": 0
+                          }
+                        }
                       }
                     ],
                     "entitlements": [
@@ -126970,7 +127030,7 @@
     "/billing/clinic-plan": {
       "get": {
         "summary": "The clinic banded plan: band, count, price, review, pause state",
-        "description": "Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to. On an annual plan a move up is charged once as the difference for the months of the paid year left, at the annual price (`announced_remaining_months`, `announced_difference_uf`, `announced_difference_clp_estimate`), and a move down only shows as `pending_down_band` until the renewal.",
+        "description": "Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to. On an annual plan a move up is charged once as the difference for the months of the paid year left, at the annual price (`announced_remaining_months`, `announced_difference_uf`, `announced_difference_clp_estimate`), and a move down only shows as `pending_down_band` until the renewal. `last_voided_purchase` names a first annual purchase voided unpaid at day 30 in the last 30 days with no plan cobro paid since (null otherwise).",
         "security": [
           {
             "BearerAuth": []
@@ -127402,6 +127462,39 @@
                             "uf_period",
                             "clp_estimate"
                           ]
+                        },
+                        "last_voided_purchase": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "invoice_id": {
+                              "type": "string"
+                            },
+                            "invoice_number": {
+                              "type": "string"
+                            },
+                            "voided_on": {
+                              "type": "string"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "annual_purchase_expired"
+                              ]
+                            },
+                            "credited_clp": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "invoice_id",
+                            "invoice_number",
+                            "voided_on",
+                            "reason",
+                            "credited_clp"
+                          ]
                         }
                       },
                       "required": [
@@ -127443,7 +127536,8 @@
                         "announced_difference_clp_estimate",
                         "next_billing_interval",
                         "renewal_notice_sent_at",
-                        "renewal_preview"
+                        "renewal_preview",
+                        "last_voided_purchase"
                       ]
                     }
                   },
@@ -127496,7 +127590,8 @@
                       "annual_unavailable_reason": null,
                       "uf_value": 39350,
                       "uf_value_date": "2026-11-18"
-                    }
+                    },
+                    "last_voided_purchase": null
                   }
                 }
               }

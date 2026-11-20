@@ -16909,6 +16909,31 @@ export interface paths {
                          *             "flatUfMonth": 0.5,
                          *             "freeAllowance": 10,
                          *             "meter": "tasador_valuation"
+                         *           },
+                         *           {
+                         *             "key": "finanzas",
+                         *             "access": "entitlement",
+                         *             "flatUfMonth": 1.5,
+                         *             "includedBanks": 1,
+                         *             "extraBankUfMonth": 0.45,
+                         *             "annual": {
+                         *               "ufGrossYear": 18,
+                         *               "discountPct": 20,
+                         *               "ufDiscount": 3.6,
+                         *               "ufYear": 14.4,
+                         *               "ufMonthEquivalent": 1.2,
+                         *               "clpYearEstimate": 566640,
+                         *               "termStart": "2026-11-19",
+                         *               "termEnd": "2027-11-18",
+                         *               "purchaseInvoiceId": null,
+                         *               "lastVoidedPurchase": {
+                         *                 "invoice_id": "33333333-3333-4333-8333-333333333333",
+                         *                 "invoice_number": "INV-11111111-AF202610",
+                         *                 "voided_on": "2026-11-14",
+                         *                 "reason": "annual_purchase_expired",
+                         *                 "credited_clp": 0
+                         *               }
+                         *             }
                          *           }
                          *         ],
                          *         "entitlements": [
@@ -16994,6 +17019,15 @@ export interface paths {
                                         termEnd: string;
                                         /** @description The unpaid annual purchase cobro, if one is out. */
                                         purchaseInvoiceId: string | null;
+                                        /** @description The most recent annual Finanzas purchase voided unpaid at day 30, while worth telling the owner (voided in the last 30 days, no annual Finanzas cobro paid since); null otherwise. Same shape as `GET /billing/clinic-plan`'s `last_voided_purchase`. */
+                                        lastVoidedPurchase: {
+                                            invoice_id: string;
+                                            invoice_number: string;
+                                            voided_on: string;
+                                            /** @enum {string} */
+                                            reason: "annual_purchase_expired";
+                                            credited_clp: number;
+                                        } | null;
                                     };
                                     /** @description The business types (`tenant.vertical`) this add-on is sold to. Omitted = every vertical. Read `offers` for the per-workspace answer. */
                                     verticals?: string[];
@@ -38418,7 +38452,7 @@ export interface paths {
         };
         /**
          * The clinic banded plan: band, count, price, review, pause state
-         * @description Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to. On an annual plan a move up is charged once as the difference for the months of the paid year left, at the annual price (`announced_remaining_months`, `announced_difference_uf`, `announced_difference_clp_estimate`), and a move down only shows as `pending_down_band` until the renewal.
+         * @description Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to. On an annual plan a move up is charged once as the difference for the months of the paid year left, at the annual price (`announced_remaining_months`, `announced_difference_uf`, `announced_difference_clp_estimate`), and a move down only shows as `pending_down_band` until the renewal. `last_voided_purchase` names a first annual purchase voided unpaid at day 30 in the last 30 days with no plan cobro paid since (null otherwise).
          */
         get: {
             parameters: {
@@ -38481,7 +38515,8 @@ export interface paths {
                          *           "annual_unavailable_reason": null,
                          *           "uf_value": 39350,
                          *           "uf_value_date": "2026-11-18"
-                         *         }
+                         *         },
+                         *         "last_voided_purchase": null
                          *       }
                          *     }
                          */
@@ -38563,6 +38598,14 @@ export interface paths {
                                     uf_month: number;
                                     uf_period: number;
                                     clp_estimate: number | null;
+                                } | null;
+                                last_voided_purchase: {
+                                    invoice_id: string;
+                                    invoice_number: string;
+                                    voided_on: string;
+                                    /** @enum {string} */
+                                    reason: "annual_purchase_expired";
+                                    credited_clp: number;
                                 } | null;
                             };
                         };
