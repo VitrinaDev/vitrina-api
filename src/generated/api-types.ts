@@ -16573,6 +16573,161 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant/country-profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the country profiles
+         * @description The table of countries Vitrina has defaults for (the backend’s single source): time zone, currency, phone region and calling code, money locale, informal form of address, national holiday calendar and identity document. Static and non-sensitive: any authenticated member may read it, no scope required. `PUT /tenant/settings` `country` accepts any ISO country; one without a row here has no defaults.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Country profiles */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "country": "CL",
+                         *           "name": "Chile",
+                         *           "timezone": "America/Santiago",
+                         *           "currency": "CLP",
+                         *           "phone_region": "CL",
+                         *           "dial_code": "56",
+                         *           "money_locale": "es-CL",
+                         *           "informal_address": "tu",
+                         *           "holiday_calendar": "cl-national",
+                         *           "document_kind": "rut"
+                         *         },
+                         *         {
+                         *           "country": "AR",
+                         *           "name": "Argentina",
+                         *           "timezone": "America/Argentina/Buenos_Aires",
+                         *           "currency": "ARS",
+                         *           "phone_region": "AR",
+                         *           "dial_code": "54",
+                         *           "money_locale": "es-AR",
+                         *           "informal_address": "vos",
+                         *           "holiday_calendar": null,
+                         *           "document_kind": "dni"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description ISO 3166-1 alpha-2. */
+                                country: string;
+                                /** @description English country name. */
+                                name: string;
+                                /** @description Default IANA time zone (the capital’s). */
+                                timezone: string;
+                                /** @description Default ISO 4217 currency. */
+                                currency: string;
+                                /** @description Region used to read national phone numbers typed by a person. */
+                                phone_region: string;
+                                /** @description International calling code, no `+`. */
+                                dial_code: string;
+                                /** @description BCP-47 locale for money and number formatting. */
+                                money_locale: string;
+                                /**
+                                 * @description The informal second person of the country.
+                                 * @enum {string}
+                                 */
+                                informal_address: "tu" | "vos";
+                                /**
+                                 * @description The national holiday calendar the platform ships, or null.
+                                 * @enum {string|null}
+                                 */
+                                holiday_calendar: "cl-national" | null;
+                                /**
+                                 * @description The main national identity document.
+                                 * @enum {string}
+                                 */
+                                document_kind: "rut" | "curp" | "cedula" | "dni" | "ci";
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tenant/modules": {
         parameters: {
             query?: never;

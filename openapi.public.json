@@ -99188,6 +99188,203 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/tenant/country-profiles": {
+      "get": {
+        "summary": "Read the country profiles",
+        "description": "The table of countries Vitrina has defaults for (the backend’s single source): time zone, currency, phone region and calling code, money locale, informal form of address, national holiday calendar and identity document. Static and non-sensitive: any authenticated member may read it, no scope required. `PUT /tenant/settings` `country` accepts any ISO country; one without a row here has no defaults.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Tenant"
+        ],
+        "responses": {
+          "200": {
+            "description": "Country profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "country": {
+                            "type": "string",
+                            "description": "ISO 3166-1 alpha-2."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "English country name."
+                          },
+                          "timezone": {
+                            "type": "string",
+                            "description": "Default IANA time zone (the capital’s)."
+                          },
+                          "currency": {
+                            "type": "string",
+                            "description": "Default ISO 4217 currency."
+                          },
+                          "phone_region": {
+                            "type": "string",
+                            "description": "Region used to read national phone numbers typed by a person."
+                          },
+                          "dial_code": {
+                            "type": "string",
+                            "description": "International calling code, no `+`."
+                          },
+                          "money_locale": {
+                            "type": "string",
+                            "description": "BCP-47 locale for money and number formatting."
+                          },
+                          "informal_address": {
+                            "type": "string",
+                            "enum": [
+                              "tu",
+                              "vos"
+                            ],
+                            "description": "The informal second person of the country."
+                          },
+                          "holiday_calendar": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "enum": [
+                              "cl-national"
+                            ],
+                            "description": "The national holiday calendar the platform ships, or null."
+                          },
+                          "document_kind": {
+                            "type": "string",
+                            "enum": [
+                              "rut",
+                              "curp",
+                              "cedula",
+                              "dni",
+                              "ci"
+                            ],
+                            "description": "The main national identity document."
+                          }
+                        },
+                        "required": [
+                          "country",
+                          "name",
+                          "timezone",
+                          "currency",
+                          "phone_region",
+                          "dial_code",
+                          "money_locale",
+                          "informal_address",
+                          "holiday_calendar",
+                          "document_kind"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "country": "CL",
+                      "name": "Chile",
+                      "timezone": "America/Santiago",
+                      "currency": "CLP",
+                      "phone_region": "CL",
+                      "dial_code": "56",
+                      "money_locale": "es-CL",
+                      "informal_address": "tu",
+                      "holiday_calendar": "cl-national",
+                      "document_kind": "rut"
+                    },
+                    {
+                      "country": "AR",
+                      "name": "Argentina",
+                      "timezone": "America/Argentina/Buenos_Aires",
+                      "currency": "ARS",
+                      "phone_region": "AR",
+                      "dial_code": "54",
+                      "money_locale": "es-AR",
+                      "informal_address": "vos",
+                      "holiday_calendar": null,
+                      "document_kind": "dni"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/tenant/modules": {
       "get": {
         "summary": "Read the workspace modules (Proyectos / Corretaje)",
