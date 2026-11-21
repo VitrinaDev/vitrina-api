@@ -44081,7 +44081,7 @@ export interface paths {
                         invoice_includes_iva?: boolean;
                         /** Format: date-time */
                         issued_at?: string | null;
-                        /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
+                        /** @description «Nota interna»: texto libre para el equipo, hasta 4000 caracteres. Nunca se imprime ni es una variable de plantilla. En blanco o `null` la borra. */
                         notes?: string | null;
                         /** @description «Forma de pago», una línea libre que se imprime en la nota de compra (hasta 500 caracteres). Vacío o null la borra. */
                         forma_de_pago?: string | null;
@@ -44417,7 +44417,9 @@ export interface paths {
          *
          *     `lines` REPLACES the whole breakdown, in order: pass the complete list, or omit the field to leave the existing lines untouched. `[]` clears them, which is a legitimate correction of a breakdown entered against the wrong note. The replacement is delete-all-then-reinsert inside one transaction, because the per-document ordering key is not deferrable.
          *
-         *     A **voided** document cannot be corrected — that is a **409**, because voiding withdraws the instrument and correcting a withdrawn accountable record would rewrite something a third party may already have been shown. Issue a replacement instead; the voided one keeps its folio and stays listable.
+         *     A **voided** document cannot be corrected — that is a **409** `purchase_note_voided`, because voiding withdraws the instrument and correcting a withdrawn accountable record would rewrite something a third party may already have been shown. Issue a replacement instead; the voided one keeps its folio and stays listable.
+         *
+         *     **The «Nota interna» (`notes`) is the exception** (vitrina-app#7894): it is for the team, never printed and in no template variable, so a body with ONLY `notes` is not a modification. It is saved on a live note, on a **voided** one and on one that follows a sale; it stamps nothing (`corrected_at` stays as it was), moves no cost, fires no `purchase_note.corrected` webhook, and the last note written wins. `notes` together with any other field on a voided note is still the 409.
          *
          *     A correction must state at least one field — an empty body is a **400**, not a no-op stamp. `PATCH` and not `PUT`: the body is a partial and `absent` vs `null` are different instructions, which replace-the-representation semantics cannot express. Requires `purchase_notes:write`, the same authority as issuing.
          */
@@ -44459,7 +44461,7 @@ export interface paths {
                         tax_treatment?: "afecto" | "exento" | "no_gravado" | "pass_through";
                         /** Format: date-time */
                         issued_at?: string;
-                        /** @description Internal free-text notes. Never printed on the document. Blank clears them. */
+                        /** @description «Nota interna»: texto libre para el equipo, hasta 4000 caracteres. Nunca se imprime ni es una variable de plantilla. En blanco o `null` la borra. Enviada sola no modifica la nota: se guarda también en una nota anulada o que sigue a una venta, no marca `corrected_at` y no mueve el costo del auto. */
                         notes?: string | null;
                         lines?: {
                             description: string;
