@@ -41925,6 +41925,8 @@ export interface paths {
          * Approve a nota de venta (the sale fan-out)
          * @description **Below the floor without `price_approval:approve` (app#7589):** **409** `details.reason: price_approval_required` with `details.price_approval_pending` and `details.price_approval_id`. When none was pending the call files one in the caller's name first, so the answer always says the approval is requested: «No puedes cerrar la venta V-41 todavía: el precio está bajo el mínimo y un administrador tiene que aprobarlo primero. La aprobación del precio ya está pedida.» The answer carries `price_approval` like every note read.
          *
+         *     **Closed by a member holding `price_approval:approve` (app#7704):** the note’s pending price request (if any, and not filed by that same member) is resolved `approved` by them in the same transaction, audited as `price_approvals.decide`; it leaves the approval queue and its count.
+         *
          *     Approves the document — the instant it becomes **legally valid** (BR-485) and the instant every consequence of the sale fires. All of it happens in **ONE database transaction**, so either all of it happened or none of it did:
          *
          *     * the document is stamped with WHO approved it and WHEN (BR-484);
@@ -42201,6 +42203,8 @@ export interface paths {
         /**
          * Void a nota de venta
          * @description Voids the document. It is **never deleted and it KEEPS ITS FOLIO** (ADR 0058 §10): the row records the time, the reason and the acting principal and remains listable. There is deliberately no `DELETE` verb on this resource.
+         *
+         *     Its pending price requests are withdrawn in the same transaction (app#7704): resolved `rejected` by the voider with a note saying the sale was voided, audited as `price_approvals.decide`; they leave the approval queue and its count.
          *
          *     `void_reason` is mandatory and must contain VISIBLE text — a reason made only of whitespace, a U+00A0 or a zero-width space is refused at the edge and by a table CHECK, because a reason nobody can see is not a reason.
          *
@@ -43855,7 +43859,13 @@ export interface paths {
         };
         /**
          * List notas de compra
-         * @description The dealership’s PURCHASE documents, newest first by `issued_at`. A nota de compra is the instrument that CREATES a cost — the unit’s cost basis comes from it, linked through `vehicle_acquisition.purchase_note_id`.
+         * @description **Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.
+         *
+         *     **Every row carries `contact_ref`, the person it names** (the buyer of a nota de venta or cotización, the holder of a reserva, the owner of a consignación), read in ONE tenant-scoped batch for the page so a client never fetches the contacts one by one: `{ id, name, tax_id, tax_id_kind, archived }`. `name` is the display name; `archived: true` = archived or merged away (the name is kept). `tax_id` / `tax_id_kind` (the RUT) are `null` unless the caller also holds `contacts:read`. `null` only when the row names nobody or the contact row is gone.
+         *
+         *     Here `contact_ref` is the SELLER (`seller_contact_id`) and `vehicle_ref` the first unit the document bought (the same car as `vehicle`).
+         *
+         *     The dealership’s PURCHASE documents, newest first by `issued_at`. A nota de compra is the instrument that CREATES a cost — the unit’s cost basis comes from it, linked through `vehicle_acquisition.purchase_note_id`.
          *
          *     **Voided documents are INCLUDED by default** — a voided nota de compra keeps its folio and stays listable so "where is nota de compra #47?" has an answer (ADR 0058 §10, BR-650–655). Pass `exclude_voided=true` to see only live ones; only the literal string `true` opts in, so `exclude_voided=false` does not hide them.
          *
@@ -43913,7 +43923,32 @@ export interface paths {
                          *           "voided_by": null,
                          *           "created_at": "2026-09-12T10:15:00.000Z",
                          *           "updated_at": "2026-09-12T10:15:00.000Z",
-                         *           "sale_note_display_id": null
+                         *           "sale_note_display_id": null,
+                         *           "vehicle": {
+                         *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
+                         *             "make": "Volvo",
+                         *             "model": "S60",
+                         *             "year": 2019,
+                         *             "registration_number": "GDSL82"
+                         *           },
+                         *           "vehicle_count": 1,
+                         *           "vehicle_ref": {
+                         *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
+                         *             "title": null,
+                         *             "make": "Volvo",
+                         *             "model": "S60",
+                         *             "version": "2.0 T5 Momentum",
+                         *             "year": 2019,
+                         *             "registration_number": "GDSL82",
+                         *             "deleted": false
+                         *           },
+                         *           "contact_ref": {
+                         *             "id": "22222222-0000-4000-8000-000000000003",
+                         *             "name": "María José Fuentes",
+                         *             "tax_id": "15432100-4",
+                         *             "tax_id_kind": "rut",
+                         *             "archived": false
+                         *           }
                          *         }
                          *       ],
                          *       "meta": {
@@ -49848,6 +49883,8 @@ export interface paths {
          *     **Every row carries `subject`** (app#7589), the document the approval is about, read in one batch for the page: `{ kind: quote|reservation|sale_note, id, display_id, contact_ref, unit_label, unit_plate }`. `contact_ref` is the person, as on every dealer list (its RUT only with `contacts:read`); `unit_label` / `unit_plate` are the unit the cotización froze (null on a reserva or nota de venta). `null` only when the document row is gone.
          *
          *     Oldest-first. Cost fields (e.g. `floor_price_snapshot_clp`) are ABSENT from the response unless the caller also holds `dealership_economics:read`.
+         *
+         *     `status=pending` lists only requests still waiting (app#7704): a request on a voided nota de venta, or an ordinary request on a nota de venta that was closed anyway, is not listed nor counted in `meta.total`.
          */
         get: {
             parameters: {
@@ -184962,6 +184999,8 @@ export interface paths {
          *     Filter by `vehicle_id` and/or `estado`, with `limit` / `offset`. No total is returned — the response carries the rows and nothing else.
          *
          *     Each row also carries (app#7589) `dueno_name` (the consignante, `null` without one) and `liquidacion`: the booked settlement as `{ id, settlement_mode, amount_venta_clp, comision_type, comision_value, comision_amount_clp, comision_iva_clp, comision_minima_applied, monto_owner_clp, deducciones_clp, payout_method, paid_at }`, or `null` when the contract has none (a sale not settled yet, a return that moved no money). `comision_minima_applied: true` = the Comisión mínima won over the percentage: read the commission as «Comisión mínima». A list screen needs no per-contract `GET /consignments/{id}/liquidacion`.
+         *
+         *     And (app#7704) `contract_document`: the mandato currently issued for the contract as `{ id, rendered_at }` (the `current` artefact of `GET /consignments/{id}/contract`), or `null` when none was ever issued, which is «Contrato sin emitir». Read in one batch for the page: a list screen needs no per-contract `GET /consignments/{id}/contract`.
          */
         get: {
             parameters: {
@@ -185029,6 +185068,10 @@ export interface paths {
                          *             "tax_id": "15432100-4",
                          *             "tax_id_kind": "rut",
                          *             "archived": false
+                         *           },
+                         *           "contract_document": {
+                         *             "id": "6f0e2d1c-3b4a-4c5d-8e6f-7a8b9c0d1e2f",
+                         *             "rendered_at": "2026-08-20T10:05:00.000Z"
                          *           }
                          *         }
                          *       ],
@@ -185555,7 +185598,7 @@ export interface paths {
          *
          *     Moving `vencimiento` RE-ARMS the expiry reminder: the "already reminded" stamp is cleared, so a pushed-out date produces a fresh nudge rather than staying silent.
          *
-         *     Supplying `minimo_clp` RENEGOTIATES the mínimo rather than editing a column: it appends an immutable revision to the contract’s terms history (`GET /consignments/{id}/terms`), dated `minimo_effective_on` or today. `precio_cliente_clp` is the same field under its new name. Sending the value already governing, with no `minimo_effective_on`, is a no-op (a form may resend every field); a second revision on a date already taken is a **409**.
+         *     Supplying `minimo_clp` RENEGOTIATES the mínimo rather than editing a column: it appends an immutable revision to the contract’s terms history (`GET /consignments/{id}/terms`), dated `minimo_effective_on` or today. `precio_cliente_clp` is the same field under its new name. Sending the value already governing, with no `minimo_effective_on`, is a no-op (a form may resend every field). A different value on a date that already has a revision, today or later, CORRECTS it (app#7704): that revision is marked replaced and the new value governs the same date, so the date keeps one revision with the last value (the audit row keeps the previous one). A date already past is never rewritten: a second revision there is a **409**.
          *
          *     A raised Precio cliente writes through to the vehicle’s floor while the contract is active. Withdrawing it (null) clears the floor only while the floor still holds the withdrawn price, so a floor the dealer set by hand is kept; the contract ending never clears it.
          *
