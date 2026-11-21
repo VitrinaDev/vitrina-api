@@ -9834,7 +9834,7 @@
           "first_contact_missed",
           "first_contact_off"
         ],
-        "description": "`whatsapp_disconnected`: a WhatsApp number of the clinic is disconnected (critical; `detail`: `messaging_account_id`, `account_name`, `reason_code`, `is_first_contact_sender`). `whatsapp_attention`: a number needs attention (warning; same detail). `first_contact_templates_not_approved`: the clinic form first contact is on but its ladder cannot send (critical when step 1 or the in-hours step 2 has no approved template, warning when only the out-of-hours step 2 is missing; `detail`: `messaging_account_id`, `ready_in_hours`, `ready_out_of_hours`, `templates` [{name, language, status}]). `unmapped_forms`: submissions of the last 7 days came from a form that is not in the clinic’s current form map (warning; `detail`: `submissions_7d`, `forms` [{form_id, submissions}], `forms_total`, `without_form_id`). `first_contact_missed`: in the last 24 hours submissions ended without a first contact for a reason someone can fix, or a lead raised the first-contact-missing alarm (warning; `detail`: `outcomes` {outcome: count}, `missing_alarms`, `needs_form_setup`). `first_contact_off`: the clinic has a WhatsApp number and its clinic form first contact is switched off (low; `detail`: `submissions_7d` = forms that arrived while off). A value added later is a changelog entry."
+        "description": "`whatsapp_disconnected`: a WhatsApp number of the clinic is disconnected (critical; `detail`: `messaging_account_id`, `account_name`, `reason_code`, `is_first_contact_sender`). `whatsapp_attention`: a number needs attention (warning; same detail). `first_contact_templates_not_approved`: the clinic form first contact is on but its ladder cannot send (critical when step 1 or the in-hours step 2 has no approved template, warning when only the out-of-hours step 2 is missing; `detail`: `messaging_account_id`, `ready_in_hours`, `ready_out_of_hours`, `templates` [{name, language, status, pack, template_key, register, out_of_hours}]; `pack` is the template pack id (e.g. `clinic_form`), `template_key` the pack entry key, `register` `tu`/`usted`/`vos` when the name is a register variant, `out_of_hours` whether it is the out-of-hours copy; all four are null for a template no pack made, such as one the clinic wrote itself). `unmapped_forms`: submissions of the last 7 days came from a form that is not in the clinic’s current form map (warning; `detail`: `submissions_7d`, `forms` [{form_id, submissions}], `forms_total`, `without_form_id`). `first_contact_missed`: in the last 24 hours submissions ended without a first contact for a reason someone can fix, or a lead raised the first-contact-missing alarm (warning; `detail`: `outcomes` {outcome: count}, `missing_alarms`, `needs_form_setup`). `first_contact_off`: the clinic has a WhatsApp number and its clinic form first contact is switched off (low; `detail`: `submissions_7d` = forms that arrived while off). A value added later is a changelog entry."
       },
       "ClinicSignalSeverity": {
         "type": "string",
@@ -170145,9 +170145,13 @@
                               "ready_out_of_hours": false,
                               "templates": [
                                 {
-                                  "name": "seguimiento_clinica_fuera_horario",
+                                  "name": "clinica_formulario_tratamiento_fuera_horario_usted",
                                   "language": "es",
-                                  "status": "PENDING"
+                                  "status": "PENDING",
+                                  "pack": "clinic_form",
+                                  "template_key": "treatment_out_of_hours",
+                                  "register": "usted",
+                                  "out_of_hours": true
                                 }
                               ]
                             }
