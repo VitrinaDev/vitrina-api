@@ -147245,7 +147245,7 @@ export interface paths {
         };
         /**
          * Agenda for a window, any engine, by professional and branch
-         * @description Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. `video` ({staff_link, join_opens_at, join_closes_at, waiting} or null) marks a videoconsulta: the camera icon, the professional's «Entrar» from join_opens_at, and «Esperando en video». Never calls the clinic API. `cancellation` ({by: patient|clinic|null, reason} or null) is set on a cancelled cita: who called it off and why. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`. `booking_kind` is the cita's Tipo de agendamiento: `new` (Nuevo: it would be a primera visita and the patient never booked before), `new_rebooked` (Nuevo · reagenda: a primera visita, but the patient had earlier bookings and never came) or `in_treatment` (En tratamiento: every other cita); null on a row that is not a patient's cita. It uses the primera-visita rule Vitrina Ads counts, so a patient back after 12 months without an attended cita is `new`. `origin` is the patient's Origen (`kind` `meta` with the ad, ad set and campaign names, or `organic`) — the attribution Vitrina Ads reports, one definition; null on a row that is not a patient's cita. Filter with `origin=meta|organic|unknown` and, for Meta, `origin_ad_id` (a Meta ad id): rows that are not a patient's cita never match. `is_diagnosis` marks a diagnosis cita — a primera visita (`booking_kind` `new` / `new_rebooked`), an entry prestación the clinic confirmed, or a cita the clinic named as an evaluación / diagnóstico (the prestación, or the vendor's tratamiento label) unless its prestación is confirmed not to be an entry; `diagnosis=true` returns only those. `booked_via` says how the cita was booked: `agent` (Vitrina's AI agent, with the conversation `channel`), `online` (the patient on a booking page), `whatsapp` (a person booked it within 48 h of a WhatsApp exchange with the patient), `staff` (a team member in Vitrina, `by`), `vendor` (keyed straight into the clinic's system) or `calendar`; `booked_at` is the vendor's own creation time when known. `paid_clp` is what THIS cita was paid (allocations to its own abono and performed prestaciones; never the patient's presupuesto cuotas), returned only to a caller holding `clinic_money:read`. `owed_clp` is everything the cita still owes (abono AND performed prestaciones: every open receivable on the cita, net of allocations) and `patient_owed_clp` everything its patient owes, future cuotas included — the same figure as the ficha's «Debe» (`GET /contacts/{id}/ledger` `outstanding_clp`); both null without `clinic_money:read`. `money` stays the abono alone. `unconfirmed` is true on a live cita (`status` `confirmed`) whose clinic status says the patient has not confirmed it yet («No confirmado»): draw it as «Sin confirmar». It is a confirmation flag beside `status`, never a lifecycle state — the cita still counts as booked everywhere `status` `confirmed` does. `visit_state` is THE cita's one status (lane L2, `GET /clinic/cita-statuses`): `key` is `scheduled` (Agendada), `confirmed` (Confirmada), `waiting` (Esperando), `in_room` (En box), `attended` (Atendida), `no_show` (No llegó) or `cancelled` (Anulada) — a call-off first, then an attended visit, then where the patient is (Vitrina's board, else the mirror's own estado), then whether she confirmed; `minutes` is how long she has waited, been in the box or (attended, still owing) been at the counter, and `stale` says that has gone on for 3 h or since an earlier day. `owes` marks an attended visit that still owes its own lines («Cobrar»): money is a mark, never a status. `overbooked` marks a cita staff booked as a sobrecupo. `status_actions` is `{current, offered}` on the same line: `offered` is what `POST /clinic/appointments/{id}/status` accepts from this caller now — never the current one, empty on a cancelled cita, a bloqueo or an own event, and for a caller without `clinic:write`; no visit-day move on a later day, `no_show` only from the cita's hour; a Medilink/Dentalink mirror offers only where the patient is and the cancel. `motivo` ({id, name} or null) is the motivo de atención a cita in Vitrina's own agenda was booked as — what the cita is called on the block, the drawer and the phone; `service` stays the prestación it is charged as. `professional.name` is «Nombre Apellidos».
+         * @description Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. `video` ({staff_link, join_opens_at, join_closes_at, waiting} or null) marks a videoconsulta: the camera icon, the professional's «Entrar» from join_opens_at, and «Esperando en video». Never calls the clinic API. `cancellation` ({by: patient|clinic|null, reason} or null) is set on a cancelled cita: who called it off and why. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`. `booking_kind` is the cita's Tipo de agendamiento: `new` (Nuevo: it would be a primera visita and the patient never booked before), `new_rebooked` (Nuevo · reagenda: a primera visita, but the patient had earlier bookings and never came) or `in_treatment` (En tratamiento: every other cita); null on a row that is not a patient's cita. It uses the primera-visita rule Vitrina Ads counts, so a patient back after 12 months without an attended cita is `new`. `origin` is the patient's Origen (`kind` `meta` with the ad, ad set and campaign names, or `organic`) — the attribution Vitrina Ads reports, one definition; null on a row that is not a patient's cita. Filter with `origin=meta|organic|unknown` and, for Meta, `origin_ad_id` (a Meta ad id): rows that are not a patient's cita never match. `is_diagnosis` marks a diagnosis cita — a primera visita (`booking_kind` `new` / `new_rebooked`), an entry prestación the clinic confirmed, or a cita the clinic named as an evaluación / diagnóstico (the prestación, or the vendor's tratamiento label) unless its prestación is confirmed not to be an entry; `diagnosis=true` returns only those. `booked_via` says how the cita was booked: `agent` (Vitrina's AI agent, with the conversation `channel`), `online` (the patient on a booking page), `whatsapp` (a person booked it within 48 h of a WhatsApp exchange with the patient), `staff` (a team member in Vitrina, `by`), `vendor` (keyed straight into the clinic's system) or `calendar`; `booked_at` is the vendor's own creation time when known. `paid_clp` is what THIS cita was paid (allocations to its own abono and performed prestaciones; never the patient's presupuesto cuotas), returned only to a caller holding `clinic_money:read`. `owed_clp` is everything the cita still owes (abono AND performed prestaciones: every open receivable on the cita, net of allocations) and `patient_owed_clp` everything its patient owes, future cuotas included — the same figure as the ficha's «Debe» (`GET /contacts/{id}/ledger` `outstanding_clp`); both null without `clinic_money:read`. `money` stays the abono alone. `unconfirmed` is true on a live cita (`status` `confirmed`) whose clinic status says the patient has not confirmed it yet («No confirmado»): draw it as «Sin confirmar». It is a confirmation flag beside `status`, never a lifecycle state — the cita still counts as booked everywhere `status` `confirmed` does. `visit_state` is THE cita's one status (lane L2, `GET /clinic/cita-statuses`): `key` is `scheduled` (Agendada), `confirmed` (Confirmada), `waiting` (Esperando), `in_room` (En box), `attended` (Atendida), `no_show` (No llegó) or `cancelled` (Anulada) — a call-off first, then an attended visit, then where the patient is (Vitrina's board, else the mirror's own estado), then whether she confirmed; `minutes` is how long she has waited, been in the box or (attended, still owing) been at the counter, and `stale` says that has gone on for 3 h or since an earlier day. `owes` marks an attended visit that still owes its own lines («Cobrar»): money is a mark, never a status. `overbooked` marks a cita booked as a sobrecupo and `overbook_reason` says why (the reason staff wrote, or `campaña` for a «Sobrecupo de campaña»; null otherwise). `status_actions` is `{current, offered}` on the same line: `offered` is what `POST /clinic/appointments/{id}/status` accepts from this caller now — never the current one, empty on a cancelled cita, a bloqueo or an own event, and for a caller without `clinic:write`; no visit-day move on a later day, `no_show` only from the cita's hour; a Medilink/Dentalink mirror offers only where the patient is and the cancel. `motivo` ({id, name} or null) is the motivo de atención a cita in Vitrina's own agenda was booked as — what the cita is called on the block, the drawer and the phone; `service` stays the prestación it is charged as. `professional.name` is «Nombre Apellidos».
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -147306,6 +147306,7 @@ export interface paths {
                          *           },
                          *           "owes": false,
                          *           "overbooked": false,
+                         *           "overbook_reason": null,
                          *           "clinic_status_id": null,
                          *           "status_label": null,
                          *           "status_color": null,
@@ -148085,7 +148086,7 @@ export interface paths {
         };
         /**
          * Free slots, from whichever engine owns this diary
-         * @description One endpoint, three truths: a Medilink clinic gets its vendor's live answer, a Reservo clinic the local compute over its mirror, and a native clinic the professionals' work patterns minus exceptions, existing citas and room contention. Each slot carries an opaque `slot_ref` that pins the professional, the box and the branch — book it back verbatim. `allow_overbook` is a STAFF flag and defaults to false: an hour that only exists because the clinic permits sobrecupo is a receptionist's decision with a reason, never something a patient-facing read gives away. `professional_id` is the `id` returned by clinic_professionals_list, and each slot's `professional_id` is in that same id space. The window is half-open like every agenda read: `from` inclusive, `to` EXCLUSIVE. `truncated: true` means more free slots exist than were listed — days of the window left unread (see `searched_through`) or the `limit` cap (max 100) reached; narrow by `professional_id` / `especialidad` or shorten the window to see the rest. A ONE-day read with no slot says why in `empty_reason` (Vitrina's own diary; null elsewhere): `nobody_performs`, `nobody_works` (no horario that day), `professional_off` (the one professional asked for is off that day while others work), `closed` (bloqueos, feriados or vacaciones cover it), `past` or `all_taken`. `performed_by` names whose agendas were read when the visit narrowed them (its who-performs or specialty; null = everyone), so an empty day reads «este motivo solo lo atiende …». On a `complete` read of Vitrina's own diary that came back empty, `next_available` is the first later day with a free hour ({date, first_starts_at}); null otherwise.
+         * @description One endpoint, three truths: a Medilink clinic gets its vendor's live answer, a Reservo clinic the local compute over its mirror, and a native clinic the professionals' work patterns minus exceptions, existing citas and room contention. Each slot carries an opaque `slot_ref` that pins the professional, the box and the branch — book it back verbatim. `allow_overbook` is a STAFF flag and defaults to false: an hour that only exists because the clinic permits sobrecupo is a receptionist's decision with a reason, never something a patient-facing read gives away. The one exception is a clinic that set «Sobrecupo de campaña» (`/clinic/agenda/campaign-overbook`): for an entry prestación, a share of the hours held by ad-origin evaluations is offered once more, to every reader, flagged `campaign_overbook: true` here; booked by its `slot_ref` it is stored as a sobrecupo with reason «campaña». `professional_id` is the `id` returned by clinic_professionals_list, and each slot's `professional_id` is in that same id space. The window is half-open like every agenda read: `from` inclusive, `to` EXCLUSIVE. `truncated: true` means more free slots exist than were listed — days of the window left unread (see `searched_through`) or the `limit` cap (max 100) reached; narrow by `professional_id` / `especialidad` or shorten the window to see the rest. A ONE-day read with no slot says why in `empty_reason` (Vitrina's own diary; null elsewhere): `nobody_performs`, `nobody_works` (no horario that day), `professional_off` (the one professional asked for is off that day while others work), `closed` (bloqueos, feriados or vacaciones cover it), `past` or `all_taken`. `performed_by` names whose agendas were read when the visit narrowed them (its who-performs or specialty; null = everyone), so an empty day reads «este motivo solo lo atiende …». On a `complete` read of Vitrina's own diary that came back empty, `next_available` is the first later day with a free hour ({date, first_starts_at}); null otherwise.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -148129,7 +148130,8 @@ export interface paths {
                          *             "label": "jueves, 24 de septiembre, 09:00",
                          *             "slot_ref": "ncl1_eyJwIjoiZmZmZmZmZmYtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwibCI6ImIxYjFiMWIxLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInMiOiIyMDI2LTA5LTI0VDEyOjAwOjAwLjAwMFoiLCJlIjoiMjAyNi0wOS0yNFQxMjozMDowMC4wMDBaIn0",
                          *             "professional_id": "ffffffff-0000-4000-8000-000000000001",
-                         *             "professional_name": "Ana Rojas"
+                         *             "professional_name": "Ana Rojas",
+                         *             "campaign_overbook": false
                          *           },
                          *           {
                          *             "starts_at": "2026-09-24T12:30:00.000Z",
@@ -148137,7 +148139,8 @@ export interface paths {
                          *             "label": "jueves, 24 de septiembre, 09:30",
                          *             "slot_ref": "ncl1_eyJwIjoiZmZmZmZmZmYtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwibCI6ImIxYjFiMWIxLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInMiOiIyMDI2LTA5LTI0VDEyOjMwOjAwLjAwMFoiLCJlIjoiMjAyNi0wOS0yNFQxMzowMDowMC4wMDBaIn0",
                          *             "professional_id": "ffffffff-0000-4000-8000-000000000001",
-                         *             "professional_name": "Ana Rojas"
+                         *             "professional_name": "Ana Rojas",
+                         *             "campaign_overbook": false
                          *           }
                          *         ],
                          *         "searched_through": "2026-09-24",
@@ -149295,6 +149298,283 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/agenda/campaign-overbook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sobrecupo de campaña: the setting and the measured no-show rate
+         * @description «Sobrecupo de campaña»: the clinic's own bet against the no-shows of ad patients. `percent` (0–100, 0 = off, the default) is the share of the hours held by an evaluation cita (an entry prestación) of a patient whose Origen is Meta that stays bookable once more, per professional and day — by the AI agent and the online booking page as well as staff — for any patient booking an entry prestación. At most one extra cita per held hour; floor(percent × that day's ad-origin evaluation citas) per professional and day; the earliest held hours first; a box is never double-booked; the horario's staff sobrecupo is neither required nor spent. The extra cita is stored as a sobrecupo with reason «campaña» (`overbooked: true`, `overbook_reason: "campaña"` on the feed). `no_show_guidance` is the clinic's measured no-show rate by Origen over the last 90 days, as the Inasistencias report counts it; Vitrina never sets the percentage. Only a clinic whose agenda runs in Vitrina can use it: on a mirrored agenda (Dentalink / Medilink / Reservo) `supported` is false with `unsupported_reason: "mirrored_agenda"` and nothing is offered.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Sobrecupo de campaña */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "percent": 50,
+                         *         "enabled": true,
+                         *         "supported": true,
+                         *         "unsupported_reason": null,
+                         *         "engine": "native-clinic",
+                         *         "no_show_guidance": {
+                         *           "from": "2026-06-26",
+                         *           "to": "2026-09-23",
+                         *           "by_origin": [
+                         *             {
+                         *               "key": "meta",
+                         *               "label": "Meta",
+                         *               "attended": 62,
+                         *               "no_show": 21,
+                         *               "late_cancel": 4,
+                         *               "cancelled": 11,
+                         *               "cancelled_notice_unknown": 1,
+                         *               "unknown": 0,
+                         *               "closed": 94,
+                         *               "no_show_pct": 25,
+                         *               "late_cancel_pct": 40,
+                         *               "attendance_pct": 66
+                         *             },
+                         *             {
+                         *               "key": "organic",
+                         *               "label": "Orgánico",
+                         *               "attended": 140,
+                         *               "no_show": 9,
+                         *               "late_cancel": 3,
+                         *               "cancelled": 15,
+                         *               "cancelled_notice_unknown": 0,
+                         *               "unknown": 0,
+                         *               "closed": 164,
+                         *               "no_show_pct": 6,
+                         *               "late_cancel_pct": 20,
+                         *               "attendance_pct": 85
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicCampaignOverbookSetting"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set the Sobrecupo de campaña percentage
+         * @description «Sobrecupo de campaña»: the clinic's own bet against the no-shows of ad patients. `percent` (0–100, 0 = off, the default) is the share of the hours held by an evaluation cita (an entry prestación) of a patient whose Origen is Meta that stays bookable once more, per professional and day — by the AI agent and the online booking page as well as staff — for any patient booking an entry prestación. At most one extra cita per held hour; floor(percent × that day's ad-origin evaluation citas) per professional and day; the earliest held hours first; a box is never double-booked; the horario's staff sobrecupo is neither required nor spent. The extra cita is stored as a sobrecupo with reason «campaña» (`overbooked: true`, `overbook_reason: "campaña"` on the feed). `no_show_guidance` is the clinic's measured no-show rate by Origen over the last 90 days, as the Inasistencias report counts it; Vitrina never sets the percentage. Only a clinic whose agenda runs in Vitrina can use it: on a mirrored agenda (Dentalink / Medilink / Reservo) `supported` is false with `unsupported_reason: "mirrored_agenda"` and nothing is offered. Owner or admin (`schedule_config:write`); audited. Turning it on for a mirrored agenda answers 409 `mirrored_agenda`; turning it off always works.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "percent": 50
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ClinicCampaignOverbookBody"];
+                };
+            };
+            responses: {
+                /** @description Sobrecupo de campaña */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "percent": 50,
+                         *         "enabled": true,
+                         *         "supported": true,
+                         *         "unsupported_reason": null,
+                         *         "engine": "native-clinic",
+                         *         "no_show_guidance": {
+                         *           "from": "2026-06-26",
+                         *           "to": "2026-09-23",
+                         *           "by_origin": [
+                         *             {
+                         *               "key": "meta",
+                         *               "label": "Meta",
+                         *               "attended": 62,
+                         *               "no_show": 21,
+                         *               "late_cancel": 4,
+                         *               "cancelled": 11,
+                         *               "cancelled_notice_unknown": 1,
+                         *               "unknown": 0,
+                         *               "closed": 94,
+                         *               "no_show_pct": 25,
+                         *               "late_cancel_pct": 40,
+                         *               "attendance_pct": 66
+                         *             },
+                         *             {
+                         *               "key": "organic",
+                         *               "label": "Orgánico",
+                         *               "attended": 140,
+                         *               "no_show": 9,
+                         *               "late_cancel": 3,
+                         *               "cancelled": 15,
+                         *               "cancelled_notice_unknown": 0,
+                         *               "unknown": 0,
+                         *               "closed": 164,
+                         *               "no_show_pct": 6,
+                         *               "late_cancel_pct": 20,
+                         *               "attendance_pct": 85
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicCampaignOverbookSetting"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -219943,7 +220223,7 @@ export interface paths {
         };
         /**
          * What blocks publishing the draft
-         * @description Checks the open draft the way publishing does. `blockers` stop `POST /sequences/{id}/publish`; `warnings` do not. Each problem has a machine-readable `code`, the `step_id` it is about (null for the whole draft), a Spanish `message` and a `fix`: `kind` is `draft_template` (have the AI write the missing WhatsApp template: `POST /followups/recontacto/template-draft`), `connect_channel`, `request_review`, `remove_step`, `change_channel`, `pick_agent` or `contact_support`, with a `target` (the same vocabulary as notifications) when there is a screen for it. Blocker codes: `no_fitting_approved_template` (a WhatsApp step past the 24 h window with no approved template Vitrina can fill), `channel_not_connected` (WhatsApp, email, Instagram), `step_type_unavailable` (a channel the workspace cannot use yet, e.g. SMS), `agent_unavailable` (the chosen AI agent is no longer active), `agent_not_supported` (an agent set on «Al llegar» or «Avisos»), `review_required`. Warning codes: `instagram_past_24h`, `whatsapp_past_24h_without_template`. Steps that never send (mode `skip`, a situation switched off) are not checked. Never calls a model. 404 when there is no draft. Requires `followups:read`.
+         * @description Checks the open draft the way publishing does. `blockers` stop `POST /sequences/{id}/publish`; `warnings` do not. Each problem has a machine-readable `code`, the `step_id` it is about (null for the whole draft), a Spanish `message` and a `fix`: `kind` is `draft_template` (have the AI write the missing WhatsApp template: `POST /followups/recontacto/template-draft`), `connect_channel`, `request_review`, `remove_step`, `change_channel`, `pick_agent`, `pick_media` (choose another library file for a «Paso de video»), `review_template` (open the video step’s template review) or `contact_support`, with a `target` (the same vocabulary as notifications) when there is a screen for it. Blocker codes: `no_fitting_approved_template` (a WhatsApp step past the 24 h window with no approved template Vitrina can fill), `channel_not_connected` (WhatsApp, email, Instagram), `step_type_unavailable` (a channel the workspace cannot use yet, e.g. SMS), `agent_unavailable` (the chosen AI agent is no longer active), `agent_not_supported` (an agent set on «Al llegar» or «Avisos»), `review_required`; for a «Paso de video» (content `media_file`): `media_step_channel_unsupported` (not WhatsApp or same chat), `media_asset_deleted`, `media_asset_expired`, `media_asset_consent_missing`, `media_asset_kind_unsupported` (audio, or not an image, video or PDF), `media_asset_too_large` (over 16 MB), `media_caption_field_unknown`, `media_caption_field_unavailable` (an appointment field without entry `appointment_booked`). Warning codes: `instagram_past_24h`, `whatsapp_past_24h_without_template`, `media_step_past_24h`, `media_step_window_uncertain` (a before-the-appointment wait), `media_asset_scheduled`; and, once the video step’s template is read (vitrina-app#8073, replacing the two window warnings), one per template state that does not send outside the window: `media_template_missing`, `media_template_draft`, `media_template_in_review`, `media_template_rejected` (names Meta’s reason), `media_template_recategorised`, `media_template_paused`, `media_template_disabled` (fix `review_template`: open the template review, `GET /sequences/{id}/media-templates`), `media_template_caption_invalid` (the caption breaks Meta’s template rules), `media_template_file_unsupported` (`pick_media`) and `media_template_name_required`. Steps that never send (mode `skip`, a situation switched off) are not checked. Never calls a model. 404 when there is no draft. Requires `followups:read`.
          */
         get: {
             parameters: {
@@ -222614,6 +222894,459 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["SequencePublishResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/media-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the video-step templates of the workspace
+         * @description A «Paso de video» (content `media_file`) goes out OUTSIDE WhatsApp’s 24 h window as an approved template whose header is the step’s library file and whose body is its caption (fields as NAMED variables). Publishing drafts one per step and content (file version + caption + language; republishing the same content creates nothing, a new file or caption supersedes the old draft for the step). Vitrina never submits it: the workspace does, here. Category MARKETING (a sequence send is marketing-basis; the kernel refuses it on a UTILITY template); `review.price_per_send` is Meta’s list rate for Chile. Until Meta approves it the step is skipped outside the window (`media_template_*` reasons); inside the window the plain file goes.
+         *
+         *     Every live sequence with a video step, one entry per published video step, with the review data. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The templates */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e12",
+                         *           "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "sequence_name": "Seguimiento de cotización",
+                         *           "step_key": "step-2",
+                         *           "state": "draft",
+                         *           "state_message": "La plantilla de este paso está lista para que la revises y la envíes a Meta. Hasta que Meta la apruebe, fuera de las 24 horas el paso se salta.",
+                         *           "can_submit": true,
+                         *           "submit_blocked_reason": null,
+                         *           "template": null,
+                         *           "review": {
+                         *             "language": "es",
+                         *             "category": "MARKETING",
+                         *             "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de tus mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
+                         *             "price_per_send": {
+                         *               "market": "CL",
+                         *               "currency": "USD",
+                         *               "category": "marketing",
+                         *               "amount": 0.0889,
+                         *               "as_of": "2026-11-01",
+                         *               "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a tu cuenta de WhatsApp."
+                         *             },
+                         *             "header": {
+                         *               "format": "VIDEO",
+                         *               "asset_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e13",
+                         *               "asset_name": "Presentación del tratamiento",
+                         *               "mime_type": "video/mp4",
+                         *               "byte_size": 4200000
+                         *             },
+                         *             "body_text": "Hola {{nombre}}, mira cómo es tu primera visita.",
+                         *             "body_preview": "Hola María, mira cómo es tu primera visita.",
+                         *             "variables": [
+                         *               {
+                         *                 "name": "nombre",
+                         *                 "field": "nombre",
+                         *                 "label": "Nombre",
+                         *                 "example": "María"
+                         *               }
+                         *             ],
+                         *             "caption_issues": [],
+                         *             "problem_message": null,
+                         *             "name_note": "Fuera de las 24 horas este paso sale como plantilla y una plantilla no puede dejar {{nombre}} vacío: a quien no tenga su nombre guardado no se le envía fuera de las 24 horas."
+                         *           }
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceMediaTemplate"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/media-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a sequence’s video-step templates
+         * @description A «Paso de video» (content `media_file`) goes out OUTSIDE WhatsApp’s 24 h window as an approved template whose header is the step’s library file and whose body is its caption (fields as NAMED variables). Publishing drafts one per step and content (file version + caption + language; republishing the same content creates nothing, a new file or caption supersedes the old draft for the step). Vitrina never submits it: the workspace does, here. Category MARKETING (a sequence send is marketing-basis; the kernel refuses it on a UTILITY template); `review.price_per_send` is Meta’s list rate for Chile. Until Meta approves it the step is skipped outside the window (`media_template_*` reasons); inside the window the plain file goes.
+         *
+         *     One entry per video step of the PUBLISHED version (empty when unpublished). Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The templates */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e12",
+                         *           "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "sequence_name": "Seguimiento de cotización",
+                         *           "step_key": "step-2",
+                         *           "state": "draft",
+                         *           "state_message": "La plantilla de este paso está lista para que la revises y la envíes a Meta. Hasta que Meta la apruebe, fuera de las 24 horas el paso se salta.",
+                         *           "can_submit": true,
+                         *           "submit_blocked_reason": null,
+                         *           "template": null,
+                         *           "review": {
+                         *             "language": "es",
+                         *             "category": "MARKETING",
+                         *             "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de tus mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
+                         *             "price_per_send": {
+                         *               "market": "CL",
+                         *               "currency": "USD",
+                         *               "category": "marketing",
+                         *               "amount": 0.0889,
+                         *               "as_of": "2026-11-01",
+                         *               "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a tu cuenta de WhatsApp."
+                         *             },
+                         *             "header": {
+                         *               "format": "VIDEO",
+                         *               "asset_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e13",
+                         *               "asset_name": "Presentación del tratamiento",
+                         *               "mime_type": "video/mp4",
+                         *               "byte_size": 4200000
+                         *             },
+                         *             "body_text": "Hola {{nombre}}, mira cómo es tu primera visita.",
+                         *             "body_preview": "Hola María, mira cómo es tu primera visita.",
+                         *             "variables": [
+                         *               {
+                         *                 "name": "nombre",
+                         *                 "field": "nombre",
+                         *                 "label": "Nombre",
+                         *                 "example": "María"
+                         *               }
+                         *             ],
+                         *             "caption_issues": [],
+                         *             "problem_message": null,
+                         *             "name_note": "Fuera de las 24 horas este paso sale como plantilla y una plantilla no puede dejar {{nombre}} vacío: a quien no tenga su nombre guardado no se le envía fuera de las 24 horas."
+                         *           }
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceMediaTemplate"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/media-templates/{step_key}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit a video step’s template to Meta
+         * @description A «Paso de video» (content `media_file`) goes out OUTSIDE WhatsApp’s 24 h window as an approved template whose header is the step’s library file and whose body is its caption (fields as NAMED variables). Publishing drafts one per step and content (file version + caption + language; republishing the same content creates nothing, a new file or caption supersedes the old draft for the step). Vitrina never submits it: the workspace does, here. Category MARKETING (a sequence send is marketing-basis; the kernel refuses it on a UTILITY template); `review.price_per_send` is Meta’s list rate for Chile. Until Meta approves it the step is skipped outside the window (`media_template_*` reasons); inside the window the plain file goes.
+         *
+         *     The workspace’s own act: copies the library file once to a public header link and files the template with Meta (a sandbox captures it). 409 `media_template_not_submittable` (with `details.state`) when it is in review, approved, rejected, paused, disabled, recategorised, when the caption or file cannot be a template, or WhatsApp is not connected. 404 when the published version has no video step with that key. Requires `followups:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    step_key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The template after submitting */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e12",
+                         *         "sequence_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *         "sequence_name": "Seguimiento de cotización",
+                         *         "step_key": "step-2",
+                         *         "state": "in_review",
+                         *         "state_message": "La plantilla de este paso está lista para que la revises y la envíes a Meta. Hasta que Meta la apruebe, fuera de las 24 horas el paso se salta.",
+                         *         "can_submit": false,
+                         *         "submit_blocked_reason": null,
+                         *         "template": {
+                         *           "id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e14",
+                         *           "name": "secuencia_video_3f9a1c",
+                         *           "status": "PENDING",
+                         *           "category": "MARKETING",
+                         *           "rejection_reason": null
+                         *         },
+                         *         "review": {
+                         *           "language": "es",
+                         *           "category": "MARKETING",
+                         *           "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de tus mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
+                         *           "price_per_send": {
+                         *             "market": "CL",
+                         *             "currency": "USD",
+                         *             "category": "marketing",
+                         *             "amount": 0.0889,
+                         *             "as_of": "2026-11-01",
+                         *             "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a tu cuenta de WhatsApp."
+                         *           },
+                         *           "header": {
+                         *             "format": "VIDEO",
+                         *             "asset_id": "0192f0b2-1a2b-7c3d-8e4f-5a6b7c8d9e13",
+                         *             "asset_name": "Presentación del tratamiento",
+                         *             "mime_type": "video/mp4",
+                         *             "byte_size": 4200000
+                         *           },
+                         *           "body_text": "Hola {{nombre}}, mira cómo es tu primera visita.",
+                         *           "body_preview": "Hola María, mira cómo es tu primera visita.",
+                         *           "variables": [
+                         *             {
+                         *               "name": "nombre",
+                         *               "field": "nombre",
+                         *               "label": "Nombre",
+                         *               "example": "María"
+                         *             }
+                         *           ],
+                         *           "caption_issues": [],
+                         *           "problem_message": null,
+                         *           "name_note": "Fuera de las 24 horas este paso sale como plantilla y una plantilla no puede dejar {{nombre}} vacío: a quien no tenga su nombre guardado no se le envía fuera de las 24 horas."
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceMediaTemplate"];
                         };
                     };
                 };
@@ -337613,6 +338346,39 @@ export interface components {
                 };
             }[];
         };
+        ClinicCampaignOverbookSetting: {
+            percent: number;
+            enabled: boolean;
+            supported: boolean;
+            /** @enum {string|null} */
+            unsupported_reason: "mirrored_agenda" | "engine_unavailable" | null;
+            engine: string | null;
+            no_show_guidance: {
+                from: string;
+                to: string;
+                by_origin: {
+                    key: string;
+                    label: string | null;
+                    attended: number;
+                    no_show: number;
+                    late_cancel: number;
+                    cancelled: number;
+                    cancelled_notice_unknown: number;
+                    unknown: number;
+                    closed: number;
+                    no_show_pct: number | null;
+                    late_cancel_pct: number | null;
+                    attendance_pct: number | null;
+                }[];
+            } | null;
+        };
+        ClinicCampaignOverbookBody: {
+            /**
+             * @description Share of the hours held by Meta-origin evaluation citas that stays bookable once more, per professional and day. 0 = off.
+             * @example 50
+             */
+            percent: number;
+        };
         ClinicWaitlistDemand: {
             window: {
                 days: number;
@@ -339738,6 +340504,16 @@ export interface components {
                 /** Format: uuid */
                 followup_id: string;
                 trigger_key: string;
+            } | {
+                /** @enum {string} */
+                type: "media_file";
+                /**
+                 * Format: uuid
+                 * @description The media library file (`GET /media-assets/{id}`).
+                 */
+                asset_id: string;
+                /** @description Sent as written. Fields: `{{nombre}}` (first name; dropped when unknown), `{{cita.fecha}}` and `{{cita.hora}}` (only with entry `appointment_booked`). Empty = the file alone. */
+                caption: string;
             };
             config_ref: {
                 /** @enum {string} */
@@ -340277,6 +341053,16 @@ export interface components {
                 /** Format: uuid */
                 followup_id: string;
                 trigger_key: string;
+            } | {
+                /** @enum {string} */
+                type: "media_file";
+                /**
+                 * Format: uuid
+                 * @description The media library file (`GET /media-assets/{id}`).
+                 */
+                asset_id: string;
+                /** @description Sent as written. Fields: `{{nombre}}` (first name; dropped when unknown), `{{cita.fecha}}` and `{{cita.hora}}` (only with entry `appointment_booked`). Empty = the file alone. */
+                caption: string;
             };
             /** @description Where a built-in step is stored (keep it as read); null for a step added in the draft. */
             config_ref: {
@@ -340591,7 +341377,7 @@ export interface components {
             message: string;
             fix: {
                 /** @enum {string} */
-                kind: "draft_template" | "connect_channel" | "request_review" | "remove_step" | "change_channel" | "pick_agent" | "contact_support";
+                kind: "draft_template" | "connect_channel" | "request_review" | "remove_step" | "change_channel" | "pick_agent" | "pick_media" | "review_template" | "contact_support";
                 target?: components["schemas"]["NotificationTarget"];
             };
         };
@@ -340735,6 +341521,72 @@ export interface components {
                 via?: string | null;
             } | null;
         };
+        SequenceMediaTemplate: {
+            /** @description The draft (null while the step has no draft for its current content: it is made on publish, or on submit). */
+            id: string | null;
+            sequence_id: string;
+            sequence_name: string | null;
+            step_key: string;
+            /**
+             * @description Where the template stands for the step’s CURRENT content (file version + caption + language). Only `approved` sends outside the window; inside it the plain file goes in every state.
+             * @enum {string}
+             */
+            state: "unavailable" | "none" | "draft" | "in_review" | "approved" | "recategorised" | "rejected" | "paused" | "disabled";
+            /** @description One Spanish sentence about the state, for the owner. */
+            state_message: string;
+            can_submit: boolean;
+            submit_blocked_reason: string | null;
+            /** @description The submitted template (the Meta mirror row). */
+            template: {
+                id: string;
+                name: string;
+                status: string;
+                category: string;
+                rejection_reason: string | null;
+            } | null;
+            review: {
+                language: string;
+                /** @enum {string} */
+                category: "MARKETING";
+                category_note: string;
+                price_per_send: {
+                    /** @enum {string} */
+                    market: "CL";
+                    /** @enum {string} */
+                    currency: "USD";
+                    category: string;
+                    amount: number;
+                    as_of: string;
+                    label: string;
+                };
+                header: {
+                    /** @enum {string|null} */
+                    format: "VIDEO" | "IMAGE" | "DOCUMENT" | null;
+                    asset_id: string;
+                    asset_name: string | null;
+                    mime_type: string | null;
+                    byte_size: number | null;
+                };
+                /** @description The body as submitted: the caption with NAMED variables (`{{nombre}}`, `{{cita_fecha}}`, `{{cita_hora}}`). */
+                body_text: string;
+                body_preview: string;
+                variables: {
+                    name: string;
+                    /** @enum {string} */
+                    field: "nombre" | "cita.fecha" | "cita.hora";
+                    label: string;
+                    example: string;
+                }[];
+                caption_issues: {
+                    /** @enum {string} */
+                    code: "empty" | "too_long" | "missing_required" | "unknown_variable" | "numbered_variable" | "repeated_variable" | "starts_with_variable" | "ends_with_variable" | "adjacent_variables" | "stray_brace" | "too_many_variables" | "promotional";
+                    message: string;
+                    slot?: string;
+                }[];
+                problem_message: string | null;
+                name_note: string | null;
+            };
+        };
         SequenceTemplate: {
             /** @enum {string} */
             key: "blank" | "quote_followup" | "reactivate" | "signup_not_paid" | "installments" | "appointment_reminder";
@@ -340832,6 +341684,16 @@ export interface components {
                     /** Format: uuid */
                     followup_id: string;
                     trigger_key: string;
+                } | {
+                    /** @enum {string} */
+                    type: "media_file";
+                    /**
+                     * Format: uuid
+                     * @description The media library file (`GET /media-assets/{id}`).
+                     */
+                    asset_id: string;
+                    /** @description Sent as written. Fields: `{{nombre}}` (first name; dropped when unknown), `{{cita.fecha}}` and `{{cita.hora}}` (only with entry `appointment_booked`). Empty = the file alone. */
+                    caption: string;
                 };
                 /** @description Where a built-in step is stored (keep it as read); null for a step added in the draft. */
                 config_ref: {
