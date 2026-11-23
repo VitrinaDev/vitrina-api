@@ -86785,6 +86785,7 @@ export interface paths {
                          *             "kind": "gasto",
                          *             "behavior": "fijo",
                          *             "no_document": false,
+                         *             "tax_role": "other_deductible",
                          *             "position": 2,
                          *             "depth": 1,
                          *             "path": "Gastos de administración",
@@ -86802,6 +86803,7 @@ export interface paths {
                          *             "kind": "gasto",
                          *             "behavior": "fijo",
                          *             "no_document": false,
+                         *             "tax_role": "rent",
                          *             "position": 0,
                          *             "depth": 2,
                          *             "path": "Gastos de administración > Arriendo de oficina",
@@ -86920,6 +86922,7 @@ export interface paths {
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
                          *         "no_document": false,
+                         *         "tax_role": "rent",
                          *         "position": 0,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -87390,6 +87393,7 @@ export interface paths {
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
                          *         "no_document": false,
+                         *         "tax_role": "rent",
                          *         "position": 1,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -87507,6 +87511,7 @@ export interface paths {
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
                          *         "no_document": false,
+                         *         "tax_role": "rent",
                          *         "position": 0,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -87628,6 +87633,7 @@ export interface paths {
                          *         "kind": "gasto",
                          *         "behavior": "fijo",
                          *         "no_document": false,
+                         *         "tax_role": "rent",
                          *         "position": 0,
                          *         "depth": 2,
                          *         "path": "Gastos de administración > Arriendo de oficina",
@@ -105375,7 +105381,9 @@ export interface paths {
                          *               "kind": "ingreso",
                          *               "path": "Ingresos › Ingresos de explotación",
                          *               "archived": false,
-                         *               "has_children": true
+                         *               "has_children": true,
+                         *               "tax_role": null,
+                         *               "tax_role_label": null
                          *             },
                          *             "sign": 1,
                          *             "values": [
@@ -105404,7 +105412,9 @@ export interface paths {
                          *               "kind": "ingreso",
                          *               "path": "Ingresos › Ingresos de explotación › Atención odontológica",
                          *               "archived": false,
-                         *               "has_children": false
+                         *               "has_children": false,
+                         *               "tax_role": null,
+                         *               "tax_role_label": null
                          *             },
                          *             "sign": 1,
                          *             "values": [
@@ -105482,7 +105492,9 @@ export interface paths {
                          *               "kind": "costo",
                          *               "path": "Costos de explotación",
                          *               "archived": false,
-                         *               "has_children": true
+                         *               "has_children": true,
+                         *               "tax_role": null,
+                         *               "tax_role_label": null
                          *             },
                          *             "sign": -1,
                          *             "values": [
@@ -105511,7 +105523,9 @@ export interface paths {
                          *               "kind": "costo",
                          *               "path": "Costos de explotación › Laboratorios",
                          *               "archived": false,
-                         *               "has_children": false
+                         *               "has_children": false,
+                         *               "tax_role": null,
+                         *               "tax_role_label": null
                          *             },
                          *             "sign": -1,
                          *             "values": [
@@ -105589,7 +105603,9 @@ export interface paths {
                          *               "kind": "gasto",
                          *               "path": "Gastos de administración y venta",
                          *               "archived": false,
-                         *               "has_children": true
+                         *               "has_children": true,
+                         *               "tax_role": null,
+                         *               "tax_role_label": null
                          *             },
                          *             "sign": -1,
                          *             "values": [
@@ -105618,7 +105634,9 @@ export interface paths {
                          *               "kind": "gasto",
                          *               "path": "Gastos de administración y venta › Gastos generales › Arriendo",
                          *               "archived": false,
-                         *               "has_children": false
+                         *               "has_children": false,
+                         *               "tax_role": null,
+                         *               "tax_role_label": null
                          *             },
                          *             "sign": -1,
                          *             "values": [
@@ -105755,6 +105773,20 @@ export interface paths {
                          *             },
                          *             "by_account": null,
                          *             "drillable": true
+                         *           }
+                         *         ],
+                         *         "by_role": [
+                         *           {
+                         *             "tax_role": null,
+                         *             "tax_role_label": null,
+                         *             "section": null,
+                         *             "total": 0,
+                         *             "count": 0,
+                         *             "non_deductible": {
+                         *               "tax_40": 0,
+                         *               "owner": 0,
+                         *               "left_out": 0
+                         *             }
                          *           }
                          *         ],
                          *         "summary": {
@@ -106214,11 +106246,15 @@ export interface paths {
                          *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8102",
                          *               "name": "Atención odontológica",
                          *               "kind": "ingreso",
-                         *               "no_document": false
+                         *               "no_document": false,
+                         *               "tax_role": "business_income"
                          *             },
                          *             "no_vat_breakdown": false,
                          *             "undocumented": false,
                          *             "non_result_kind": null,
+                         *             "tax_role": "business_income",
+                         *             "tax_role_source": "account",
+                         *             "non_deductible": null,
                          *             "settled_clp": 1190000,
                          *             "gross_clp": 1190000,
                          *             "base_clp": 1000000,
@@ -106261,11 +106297,15 @@ export interface paths {
                          *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8108",
                          *               "name": "Sueldos",
                          *               "kind": "gasto",
-                         *               "no_document": true
+                         *               "no_document": true,
+                         *               "tax_role": "remunerations"
                          *             },
                          *             "no_vat_breakdown": false,
                          *             "undocumented": false,
                          *             "non_result_kind": null,
+                         *             "tax_role": "remunerations",
+                         *             "tax_role_source": "account",
+                         *             "non_deductible": null,
                          *             "settled_clp": 850000,
                          *             "gross_clp": 850000,
                          *             "base_clp": 850000,
@@ -106506,7 +106546,8 @@ export interface paths {
                          *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8102",
                          *                 "name": "Atención odontológica",
                          *                 "kind": "ingreso",
-                         *                 "no_document": false
+                         *                 "no_document": false,
+                         *                 "tax_role": "business_income"
                          *               },
                          *               "undocumented": false,
                          *               "non_result_kind": null,
@@ -106526,10 +106567,49 @@ export interface paths {
                          *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8108",
                          *                 "name": "Sueldos",
                          *                 "kind": "gasto",
-                         *                 "no_document": true
+                         *                 "no_document": true,
+                         *                 "tax_role": "remunerations"
                          *               },
                          *               "undocumented": false,
                          *               "non_result_kind": null,
+                         *               "lines": 1,
+                         *               "settled_clp": 850000,
+                         *               "gross_clp": 850000,
+                         *               "base_clp": 850000,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             }
+                         *           ],
+                         *           "by_role": [
+                         *             {
+                         *               "side": "collection",
+                         *               "document_year": "earlier",
+                         *               "tax_role": "business_income",
+                         *               "tax_role_label": "Ingresos del giro",
+                         *               "section": "income",
+                         *               "non_result": false,
+                         *               "non_deductible": null,
+                         *               "owner": null,
+                         *               "lines": 1,
+                         *               "settled_clp": 1190000,
+                         *               "gross_clp": 1190000,
+                         *               "base_clp": 1000000,
+                         *               "net_clp": 1000000,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 190000,
+                         *               "retention_clp": 0
+                         *             },
+                         *             {
+                         *               "side": "payment",
+                         *               "document_year": "current",
+                         *               "tax_role": "remunerations",
+                         *               "tax_role_label": "Remuneraciones",
+                         *               "section": "outlay",
+                         *               "non_result": false,
+                         *               "non_deductible": null,
+                         *               "owner": null,
                          *               "lines": 1,
                          *               "settled_clp": 850000,
                          *               "gross_clp": 850000,
@@ -113008,6 +113088,965 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/tax-tags/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tax roles of accounts, the F22 codes they feed, and art. 21 outcomes
+         * @description The vocabulary an account's tax meaning is chosen from, and, for the tax year, the F22 code each role feeds in 14 A, 14 D N°3 and 14 D N°8 (`earlier` is the twin code for documents of an earlier year paid in this one). A role names what the money is for in plain words; the code derives from it, so a new tax year re-tags nothing. Also the art. 21 outcomes of a non-deductible mark and the regimes where each applies (14 D N°8 has only `left_out`), and the reasons a movement is non-deductible by default. 404 for a tax year with no code table. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` (owner, admin, Contador seat).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    tax_year?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Roles and outcomes */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "tax_year": 2026,
+                         *         "tax_years": [
+                         *           2026
+                         *         ],
+                         *         "roles": [
+                         *           {
+                         *             "role": "rent",
+                         *             "label_es": "Arriendos",
+                         *             "section": "outlay",
+                         *             "hint_es": "Arriendo del local, oficina o equipos.",
+                         *             "codes": {
+                         *               "14A": {
+                         *                 "code": 1140,
+                         *                 "earlier": null
+                         *               },
+                         *               "14D3": {
+                         *                 "code": 1415,
+                         *                 "earlier": null
+                         *               },
+                         *               "14D8": {
+                         *                 "code": 1620,
+                         *                 "earlier": null
+                         *               }
+                         *             }
+                         *           }
+                         *         ],
+                         *         "outcomes": [
+                         *           {
+                         *             "outcome": "left_out",
+                         *             "label_es": "Solo se excluye de la base",
+                         *             "hint_es": "No se descuenta de la base y no paga impuesto aparte.",
+                         *             "regimes": [
+                         *               "14A",
+                         *               "14D3",
+                         *               "14D8"
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "default_reasons": [
+                         *           {
+                         *             "reason": "fine",
+                         *             "label_es": "Multa"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasTaxRoles"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax-tags/accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every account with its tax meaning
+         * @description The plan de cuentas with each account's role (`tax_role`), the F22 code it feeds per regime for `tax_year`, and, for an account with none (`without_tax_meaning`), a `suggestion` from its name. The accounts of the starter charts carry their role; a tenant-created or imported account is «sin significado tributario» until an owner sets one: consumers show its amounts apart, never drop them. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` (owner, admin, Contador seat).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    tax_year?: number;
+                    include_archived?: "true" | "false";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accounts with their tax meaning */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "tax_year": 2026,
+                         *         "without_tax_meaning": 1,
+                         *         "accounts": [
+                         *           {
+                         *             "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8201",
+                         *             "name": "Arriendo",
+                         *             "path": "Gastos de administración y venta › Gastos generales › Arriendo",
+                         *             "kind": "gasto",
+                         *             "archived": false,
+                         *             "seeded": true,
+                         *             "tax_role": "rent",
+                         *             "tax_role_label": "Arriendos",
+                         *             "without_tax_meaning": false,
+                         *             "codes": {
+                         *               "14A": {
+                         *                 "code": 1140,
+                         *                 "earlier": null
+                         *               },
+                         *               "14D3": {
+                         *                 "code": 1415,
+                         *                 "earlier": null
+                         *               },
+                         *               "14D8": {
+                         *                 "code": 1620,
+                         *                 "earlier": null
+                         *               }
+                         *             },
+                         *             "suggestion": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAccountTaxList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax-tags/accounts/{accountId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set or clear an account's tax role
+         * @description Sets the role of an account (null clears it). The role must fit the account's type: 422 `FINANZAS_ACCOUNT_INVALID` (`tax_role_kind_mismatch`) otherwise. Sub-accounts do not inherit it: set each one. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (owner, admin). Audited.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    accountId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "tax_role": "rent"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasAccountTaxBody"];
+                };
+            };
+            responses: {
+                /** @description The account's role */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8201",
+                         *         "tax_role": "rent",
+                         *         "tax_role_label": "Arriendos"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                account_id: string;
+                                tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
+                                tax_role_label: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax-tags/non-deductible": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Non-deductible marks of a year
+         * @description The documents (by issue date) and bank movements (by day) of the commercial year that a person marked, and `defaults`: the fines and income-tax payments (`idpc` kind of `GET /finanzas/tax/payments`) that are non-deductible until a person says otherwise. A mark whose `overrides_default` is true says «deductible» over a default. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` (owner, admin, Contador seat).
+         */
+        get: {
+            parameters: {
+                query: {
+                    year: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Marks and defaults */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "year": 2025,
+                         *         "items": [
+                         *           {
+                         *             "target": "document",
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8202",
+                         *             "date": "2025-06-12",
+                         *             "amount_clp": 119000,
+                         *             "label": "Restaurante X",
+                         *             "non_deductible": {
+                         *               "outcome": "tax_40",
+                         *               "outcome_label": "Paga impuesto único de 40 % la empresa",
+                         *               "owner": null,
+                         *               "note": null,
+                         *               "source": "person",
+                         *               "reason": null,
+                         *               "reason_label": null
+                         *             },
+                         *             "overrides_default": false
+                         *           }
+                         *         ],
+                         *         "defaults": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasNonDeductibleList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax-tags/non-deductible/documents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark a document as not deductible
+         * @description Marks the document (whole) as not deductible with its art. 21 outcome: `tax_40` (the company pays the 40 % single tax), `owner` (taxed on the owner named by `owner_id`, one of the workspace's owners) or `left_out` (only left out of the base). `deductible` overrides a default (a fine, an income-tax payment). Replaces a previous mark. The regime field does not exist yet (#8087): the outcome is stored as chosen and the draft applies the regime rule (14 D N°8: only `left_out`). 422 `FINANZAS_OWNER_INVALID` for `owner` without a valid owner. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (owner, admin). Audited.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "outcome": "left_out",
+                     *       "note": "Multa del banco"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasNonDeductibleBody"];
+                };
+            };
+            responses: {
+                /** @description The mark */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "target": "document",
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8202",
+                         *         "non_deductible": {
+                         *           "outcome": "tax_40",
+                         *           "outcome_label": "Paga impuesto único de 40 % la empresa",
+                         *           "owner": null,
+                         *           "note": null,
+                         *           "source": "person",
+                         *           "reason": null,
+                         *           "reason_label": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasNonDeductibleResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Remove the non-deductible mark of a document
+         * @description Removes the person's mark: the document goes back to its default (deductible, unless it is a fine or an income-tax payment). `removed` is false when there was none. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (owner, admin). Audited.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The mark removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "target": "document",
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8202",
+                         *         "non_deductible": null,
+                         *         "removed": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasNonDeductibleResult"] & {
+                                removed: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax-tags/non-deductible/movements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark a bank movement as not deductible
+         * @description Marks the bank movement (whole) as not deductible with its art. 21 outcome: `tax_40` (the company pays the 40 % single tax), `owner` (taxed on the owner named by `owner_id`, one of the workspace's owners) or `left_out` (only left out of the base). `deductible` overrides a default (a fine, an income-tax payment). Replaces a previous mark. The regime field does not exist yet (#8087): the outcome is stored as chosen and the draft applies the regime rule (14 D N°8: only `left_out`). 422 `FINANZAS_OWNER_INVALID` for `owner` without a valid owner. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (owner, admin). Audited.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "outcome": "left_out",
+                     *       "note": "Multa del banco"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasNonDeductibleBody"];
+                };
+            };
+            responses: {
+                /** @description The mark */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "target": "movement",
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8203",
+                         *         "non_deductible": {
+                         *           "outcome": "tax_40",
+                         *           "outcome_label": "Paga impuesto único de 40 % la empresa",
+                         *           "owner": null,
+                         *           "note": null,
+                         *           "source": "person",
+                         *           "reason": null,
+                         *           "reason_label": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasNonDeductibleResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Remove the non-deductible mark of a bank movement
+         * @description Removes the person's mark: the bank movement goes back to its default (deductible, unless it is a fine or an income-tax payment). `removed` is false when there was none. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (owner, admin). Audited.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The mark removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "target": "movement",
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8203",
+                         *         "non_deductible": null,
+                         *         "removed": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasNonDeductibleResult"] & {
+                                removed: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finanzas/resumen": {
         parameters: {
             query?: never;
@@ -113556,13 +114595,14 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Download the Contador package for a month (zip)
-         * @description One zip, `paquete-contador-<period>.zip`, with seven xlsx: `01-libro-de-compras`, `02-libro-de-ventas`, `03-honorarios`, `04-movimientos-por-cuenta` (one sheet per bank account), `05-clasificaciones-por-cuenta` (net, as the Resultado counts), `06-resultado` and `07-ajustes-posteriores-al-cierre`, each `<name>-<period>.xlsx`, built by the same code as each screen and its export. Read-only. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
+         * Download the Contador package for a month or a year (zip)
+         * @description One zip, `paquete-contador-<period>.zip`, with seven xlsx: `01-libro-de-compras`, `02-libro-de-ventas`, `03-honorarios`, `04-movimientos-por-cuenta` (one sheet per bank account), `05-clasificaciones-por-cuenta` (net, as the Resultado counts), `06-resultado` and `07-ajustes-posteriores-al-cierre`, each `<name>-<period>.xlsx`, built by the same code as each screen and its export. With `year=YYYY` (instead of `period`) it is the Paquete anual of that commercial year: `paquete-contador-<year>.zip`, eight xlsx: `00-estado-del-ano` (what makes the year incomplete), `01-resultado-por-cuenta` (a column per month and the total), `02-base-de-caja` (collected and paid by account, `no_operacional` money apart, undated items listed), `03-iva-y-ppm` (each F29, proposal or filed), `04-honorarios-y-retenciones` (with the comparison against F29 code 151), `05-libro-de-compras`, `06-libro-de-ventas` and `07-pagos-de-impuestos`, each `<name>-<year>.xlsx`. The year is never summed silently as complete: the estado file and the manifest name the months not closed, not read by the SII sync, with unclassified movements or documents, F29 periods with no filing, undated collections and payments and money out nothing explains. A future year answers 400, and so does the current year until a month of it has closed; a workspace with more than one sociedad answers 409. Read-only. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
          */
         get: {
             parameters: {
                 query?: {
                     period?: string;
+                    year?: number;
                 };
                 header?: never;
                 path?: never;
@@ -113652,7 +114692,7 @@ export interface paths {
         };
         /**
          * What the Contador package for a month holds
-         * @description The same package as the download, without the bytes: the period, the zip name and each file (key, label, name, rows, size). Over MCP this is the read that generates and checks the package; the zip itself downloads over HTTPS. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
+         * @description The same package as the download, without the bytes: the period, the zip name and each file (key, label, name, rows, size). For a year, see `GET /finanzas/contador-export/annual-manifest`. Over MCP this is the read that generates and checks the package; the zip itself downloads over HTTPS. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
          */
         get: {
             parameters: {
@@ -113743,6 +114783,376 @@ export interface paths {
                                     /** @description The xlsx inside the zip. */
                                     filename: string;
                                     /** @description Rows of its «Detalle» sheet (documents, items) when it has one, else of its first sheet (movements, adjustments). */
+                                    rows: number;
+                                    size_bytes: number;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contador-export/annual-manifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the Paquete anual of a year holds and what it is missing
+         * @description The Paquete anual's manifest, without the bytes: the files (key, label, name, rows, size), `complete` (true only when nothing is missing), `incomplete` (the months not closed, not read by the SII sync, with unclassified movements or documents, F29 periods with no filing, undated collections and payments, money out nothing explains: Spanish sentences, ready to show), `warnings` (retention declared versus the boletas) and one row per month. The zip downloads from `GET /finanzas/contador-export?year=`. `00-estado-del-ano` (what makes the year incomplete), `01-resultado-por-cuenta` (a column per month and the total), `02-base-de-caja` (collected and paid by account, `no_operacional` money apart, undated items listed), `03-iva-y-ppm` (each F29, proposal or filed), `04-honorarios-y-retenciones` (with the comparison against F29 code 151), `05-libro-de-compras`, `06-libro-de-ventas` and `07-pagos-de-impuestos`, each `<name>-<year>.xlsx`. A future year answers 400, and so does the current year until a month of it has closed; a workspace with more than one sociedad answers 409. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
+         */
+        get: {
+            parameters: {
+                query: {
+                    year: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The annual manifest */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kind": "annual",
+                         *         "year": 2025,
+                         *         "filename": "paquete-contador-2025.zip",
+                         *         "in_progress": false,
+                         *         "complete": true,
+                         *         "sociedad": {
+                         *           "connection_id": "0194f3a0-7c1e-7a52-9d1b-3c5e8f2a6b41",
+                         *           "rut": "76.123.456-7",
+                         *           "legal_name": "Clínica Ejemplo SpA"
+                         *         },
+                         *         "incomplete": [],
+                         *         "warnings": [],
+                         *         "months": [
+                         *           {
+                         *             "month": "2025-01",
+                         *             "label": "Enero 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-02",
+                         *             "label": "Febrero 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-03",
+                         *             "label": "Marzo 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-04",
+                         *             "label": "Abril 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-05",
+                         *             "label": "Mayo 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-06",
+                         *             "label": "Junio 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-07",
+                         *             "label": "Julio 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-08",
+                         *             "label": "Agosto 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-09",
+                         *             "label": "Septiembre 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-10",
+                         *             "label": "Octubre 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-11",
+                         *             "label": "Noviembre 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           },
+                         *           {
+                         *             "month": "2025-12",
+                         *             "label": "Diciembre 2025",
+                         *             "state": "closed",
+                         *             "state_label": "Cerrado",
+                         *             "in_progress": false,
+                         *             "open_cases": 0,
+                         *             "sii_read": true,
+                         *             "f29": "filed",
+                         *             "f29_label": "Presentado",
+                         *             "issues": []
+                         *           }
+                         *         ],
+                         *         "files": [
+                         *           {
+                         *             "key": "estado",
+                         *             "label": "Estado del año",
+                         *             "filename": "00-estado-del-ano-2025.xlsx",
+                         *             "rows": 0,
+                         *             "size_bytes": 7904
+                         *           },
+                         *           {
+                         *             "key": "resultado",
+                         *             "label": "Resultado por cuenta",
+                         *             "filename": "01-resultado-por-cuenta-2025.xlsx",
+                         *             "rows": 96,
+                         *             "size_bytes": 21350
+                         *           },
+                         *           {
+                         *             "key": "base_caja",
+                         *             "label": "Base de caja",
+                         *             "filename": "02-base-de-caja-2025.xlsx",
+                         *             "rows": 7412,
+                         *             "size_bytes": 412880
+                         *           },
+                         *           {
+                         *             "key": "iva_ppm",
+                         *             "label": "IVA y PPM",
+                         *             "filename": "03-iva-y-ppm-2025.xlsx",
+                         *             "rows": 12,
+                         *             "size_bytes": 8120
+                         *           },
+                         *           {
+                         *             "key": "honorarios",
+                         *             "label": "Honorarios y retenciones",
+                         *             "filename": "04-honorarios-y-retenciones-2025.xlsx",
+                         *             "rows": 148,
+                         *             "size_bytes": 15660
+                         *           },
+                         *           {
+                         *             "key": "libro_compras",
+                         *             "label": "Libro de compras",
+                         *             "filename": "05-libro-de-compras-2025.xlsx",
+                         *             "rows": 1004,
+                         *             "size_bytes": 88410
+                         *           },
+                         *           {
+                         *             "key": "libro_ventas",
+                         *             "label": "Libro de ventas",
+                         *             "filename": "06-libro-de-ventas-2025.xlsx",
+                         *             "rows": 14820,
+                         *             "size_bytes": 702330
+                         *           },
+                         *           {
+                         *             "key": "pagos_impuestos",
+                         *             "label": "Pagos de impuestos",
+                         *             "filename": "07-pagos-de-impuestos-2025.xlsx",
+                         *             "rows": 24,
+                         *             "size_bytes": 9240
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                kind: "annual";
+                                year: number;
+                                /** @description The zip the download serves. */
+                                filename: string;
+                                /** @description The current year: figures still moving, future months missing. */
+                                in_progress: boolean;
+                                /** @description True only when `incomplete` is empty. Anything else: the year is NOT complete and nothing in it should be read as final. */
+                                complete: boolean;
+                                sociedad: {
+                                    connection_id: string;
+                                    rut: string;
+                                    legal_name: string | null;
+                                } | null;
+                                incomplete: {
+                                    /** @enum {string} */
+                                    code: "month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated";
+                                    /** @description `YYYY-MM`, or null for an item about the whole year. */
+                                    month: string | null;
+                                    /** @description Spanish, ready to show. */
+                                    message: string;
+                                }[];
+                                warnings: {
+                                    /** @enum {string} */
+                                    code: "honorarios_retention_differs" | "honorarios_no_declared_code";
+                                    month: string | null;
+                                    message: string;
+                                }[];
+                                months: {
+                                    month: string;
+                                    label: string;
+                                    /** @enum {string} */
+                                    state: "open" | "ready_to_close" | "closed" | "closed_imported" | "upcoming";
+                                    state_label: string;
+                                    in_progress: boolean;
+                                    open_cases: number;
+                                    sii_read: boolean;
+                                    /** @enum {string} */
+                                    f29: "filed" | "proposal" | "missing" | "not_due";
+                                    f29_label: string;
+                                    issues: ("month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated")[];
+                                }[];
+                                files: {
+                                    /** @enum {string} */
+                                    key: "estado" | "resultado" | "base_caja" | "iva_ppm" | "honorarios" | "libro_compras" | "libro_ventas" | "pagos_impuestos";
+                                    label: string;
+                                    filename: string;
                                     rows: number;
                                     size_bytes: number;
                                 }[];
@@ -332435,6 +333845,11 @@ export interface components {
         FinanzasAccountKind: "ingreso" | "costo" | "gasto" | "no_operacional";
         /** @enum {string|null} */
         FinanzasAccountBehavior: "fijo" | "variable" | null;
+        /**
+         * @description What the account's money is for the tax return (#8104); null = «sin significado tributario». Set it with `PUT /finanzas/tax-tags/accounts/{accountId}`.
+         * @enum {string|null}
+         */
+        FinanzasTaxRole: "business_income" | "other_income" | "interest_income" | "goods_and_inputs" | "business_services" | "remunerations" | "honorarios" | "rent" | "interest" | "financial_charges" | "donations" | "related_party_expenses" | "income_tax" | "other_deductible" | "withdrawal" | "fixed_asset" | "loan" | "capital" | "own_funds" | "other_non_result" | null;
         /** @description Present only when the list was asked with `usage_month`. */
         FinanzasAccountUsage: {
             /** @example 2026-10 */
@@ -332459,6 +333874,7 @@ export interface components {
             behavior: components["schemas"]["FinanzasAccountBehavior"];
             /** @description «No lleva documento»: money out classified here never has a legal document. It opens no «Falta documento» case and is not counted in «Egresos sin documento». */
             no_document: boolean;
+            tax_role: components["schemas"]["FinanzasTaxRole"];
             position: number;
             depth: number;
             path: string;
@@ -335332,6 +336748,8 @@ export interface components {
                 path: string;
                 archived: boolean;
                 has_children: boolean;
+                tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
+                tax_role_label: string | null;
             } | null;
             /** @description +1 adds to the operating result, −1 subtracts, 0 = a subtotal or outside the result (Retiros). */
             sign: 1 | -1 | 0;
@@ -335392,6 +336810,20 @@ export interface components {
                 } | null;
             }[];
             rows: components["schemas"]["FinanzasResultadoRow"][];
+            /** @description The range by tax role (#8104), same sign and basis as the account rows: `total` of the accounts with the role, and the part marked non-deductible by art. 21 outcome (a fine or income-tax payment counts by default). `tax_role` null gathers the accounts without tax meaning, apart. */
+            by_role: {
+                tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
+                tax_role_label: string | null;
+                /** @enum {string|null} */
+                section: "income" | "outlay" | "non_result" | null;
+                total: number;
+                count: number;
+                non_deductible: {
+                    tax_40: number;
+                    owner: number;
+                    left_out: number;
+                };
+            }[];
             summary: {
                 resultado_operacional_clp: number;
                 ingresos_clp: number;
@@ -335475,6 +336907,30 @@ export interface components {
             counterparty_name: string | null;
             contraparte_id: string | null;
         } | null;
+        /**
+         * @description Art. 21 outcome: `tax_40` (the company pays the 40 % single tax), `owner` (taxed on an owner), `left_out` (only left out of the base). 14 D N°8 has no 40 % tax: only `left_out` applies there; the regime field does not exist yet (#8087), so the value a person chose is stored as is and consumers apply the regime rule (`outcomes[].regimes`).
+         * @enum {string}
+         */
+        FinanzasNonDeductibleOutcome: "tax_40" | "owner" | "left_out";
+        /** @description The non-deductible mark of the line's document (document lines) or bank movement (movement lines), a person's or a default (a fine, an income-tax payment); null = deductible. Consumers apply the regime rule (14 D N°8: only `left_out`). */
+        FinanzasNonDeductible: {
+            outcome: components["schemas"]["FinanzasNonDeductibleOutcome"];
+            outcome_label: string;
+            owner: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            } | null;
+            note: string | null;
+            /**
+             * @description `person`: someone marked it. `default`: a fine or an income-tax payment (`idpc` tax-payment kind), non-deductible until a person says otherwise.
+             * @enum {string}
+             */
+            source: "person" | "default";
+            /** @enum {string|null} */
+            reason: "fine" | "prior_year_income_tax" | null;
+            reason_label: string | null;
+        } | null;
         FinanzasCashLine: {
             /** @description `<payment_id>:<account_id | unclassified>`; a classified movement `<movement_id>:<account_id>`; a processor fee `<movement_id>:fee`. Stable across reads. */
             line_key: string;
@@ -335548,6 +337004,7 @@ export interface components {
                 kind: string;
                 /** @description «No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros). */
                 no_document: boolean;
+                tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
             } | null;
             /** @description The document has only a total (e.g. a gasto created from a movement): base = gross, VAT unknown. */
             no_vat_breakdown: boolean;
@@ -335558,6 +337015,10 @@ export interface components {
              * @enum {string|null}
              */
             non_result_kind: "withdrawal" | "loan" | "fixed_asset" | "capital" | "own_funds" | "other" | null;
+            tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
+            /** @enum {string|null} */
+            tax_role_source: "account" | "clinic_payment" | null;
+            non_deductible: components["schemas"]["FinanzasNonDeductible"];
             /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
             settled_clp: number;
             /** @description Its share of the document total after credit notes; honorarios: GROSS. */
@@ -335643,6 +337104,7 @@ export interface components {
                 kind: string;
                 /** @description «No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros). */
                 no_document: boolean;
+                tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
             }[];
             /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
             settled_clp: number;
@@ -336054,6 +337516,7 @@ export interface components {
                         kind: string;
                         /** @description «No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros). */
                         no_document: boolean;
+                        tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
                     } | null;
                     undocumented: boolean;
                     /**
@@ -336061,6 +337524,42 @@ export interface components {
                      * @enum {string|null}
                      */
                     non_result_kind: "withdrawal" | "loan" | "fixed_asset" | "capital" | "own_funds" | "other" | null;
+                    lines: number;
+                    /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                    settled_clp: number;
+                    /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                    gross_clp: number;
+                    /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                    base_clp: number;
+                    /** @description Its share of the document's neto. */
+                    net_clp: number;
+                    /** @description Its share of the document's exento. */
+                    exempt_clp: number;
+                    /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                    vat_excluded_clp: number;
+                    /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                    retention_clp: number;
+                }[];
+                /** @description Always returned: one subtotal per (side, document year, tax role, non-deductible outcome and owner) over `collections`, `payments` and `non_result`, so the F22 draft maps roles to codes (`GET /finanzas/tax-tags/roles`) without re-reading accounts. `tax_role` null = without tax meaning, apart. Lines marked non-deductible are subtotalled apart from the deductible ones. */
+                by_role: {
+                    /** @enum {string} */
+                    side: "collection" | "payment";
+                    /**
+                     * @description `current` = issued in the year asked (F22 1400 / 1409…); `earlier` = issued in an earlier year (1817 / 1818…); `later` = issued after the year (paid in advance).
+                     * @enum {string}
+                     */
+                    document_year: "current" | "earlier" | "later";
+                    tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
+                    tax_role_label: string | null;
+                    /** @enum {string|null} */
+                    section: "income" | "outlay" | "non_result" | null;
+                    non_result: boolean;
+                    /** @enum {string|null} */
+                    non_deductible: "tax_40" | "owner" | "left_out" | null;
+                    owner: {
+                        id: string;
+                        name: string;
+                    } | null;
                     lines: number;
                     /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
                     settled_clp: number;
@@ -337088,6 +338587,134 @@ export interface components {
         FinanzasOwnerAttributionBody: {
             /** Format: uuid */
             owner_id: string;
+        };
+        FinanzasTaxRoles: {
+            tax_year: number;
+            tax_years: number[];
+            roles: {
+                role: components["schemas"]["FinanzasTaxRole"] & string;
+                label_es: string;
+                /** @enum {string} */
+                section: "income" | "outlay" | "non_result";
+                hint_es: string;
+                /** @description The F22 code this role feeds in each regime for the tax year; null = no code of that regime takes it. */
+                codes: {
+                    "14A": {
+                        code: number;
+                        /** @description The twin code for documents of an earlier year paid in this one (14 D); null when the form has none. */
+                        earlier: number | null;
+                    } | null;
+                    "14D3": {
+                        code: number;
+                        /** @description The twin code for documents of an earlier year paid in this one (14 D); null when the form has none. */
+                        earlier: number | null;
+                    } | null;
+                    "14D8": {
+                        code: number;
+                        /** @description The twin code for documents of an earlier year paid in this one (14 D); null when the form has none. */
+                        earlier: number | null;
+                    } | null;
+                };
+            }[];
+            outcomes: {
+                outcome: components["schemas"]["FinanzasNonDeductibleOutcome"];
+                label_es: string;
+                hint_es: string;
+                regimes: ("14A" | "14D3" | "14D8")[];
+            }[];
+            default_reasons: {
+                /** @enum {string} */
+                reason: "fine" | "prior_year_income_tax";
+                label_es: string;
+            }[];
+        };
+        FinanzasAccountTaxList: {
+            tax_year: number;
+            /** @description Accounts with no role: «sin significado tributario». */
+            without_tax_meaning: number;
+            accounts: {
+                /** Format: uuid */
+                account_id: string;
+                name: string;
+                path: string;
+                /** @enum {string} */
+                kind: "ingreso" | "costo" | "gasto" | "no_operacional";
+                archived: boolean;
+                seeded: boolean;
+                tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
+                tax_role_label: string | null;
+                without_tax_meaning: boolean;
+                /** @description The F22 code this role feeds in each regime for the tax year; null = no code of that regime takes it. */
+                codes: {
+                    "14A": {
+                        code: number;
+                        /** @description The twin code for documents of an earlier year paid in this one (14 D); null when the form has none. */
+                        earlier: number | null;
+                    } | null;
+                    "14D3": {
+                        code: number;
+                        /** @description The twin code for documents of an earlier year paid in this one (14 D); null when the form has none. */
+                        earlier: number | null;
+                    } | null;
+                    "14D8": {
+                        code: number;
+                        /** @description The twin code for documents of an earlier year paid in this one (14 D); null when the form has none. */
+                        earlier: number | null;
+                    } | null;
+                };
+                /** @description For an account with no role: a proposal from its name (nothing is stored until a person sets it). */
+                suggestion: {
+                    role: components["schemas"]["FinanzasTaxRole"] & string;
+                    label_es: string;
+                    /** @enum {string} */
+                    section: "income" | "outlay" | "non_result";
+                    /** @enum {string} */
+                    reason: "name" | "parent" | "kind";
+                } | null;
+            }[];
+        };
+        FinanzasAccountTaxBody: {
+            tax_role: components["schemas"]["FinanzasTaxRole"] & unknown;
+        };
+        FinanzasNonDeductibleList: {
+            year: number;
+            items: {
+                /** @enum {string} */
+                target: "document" | "movement";
+                /** Format: uuid */
+                id: string;
+                date: string;
+                amount_clp: number;
+                label: string | null;
+                non_deductible: components["schemas"]["FinanzasNonDeductible"];
+                /** @description A person said «deductible» over a default. */
+                overrides_default: boolean;
+            }[];
+            defaults: {
+                /** Format: uuid */
+                movement_id: string;
+                non_deductible: components["schemas"]["FinanzasNonDeductible"] & Record<string, never>;
+            }[];
+        };
+        FinanzasNonDeductibleResult: {
+            /** @enum {string} */
+            target: "document" | "movement";
+            /** Format: uuid */
+            id: string;
+            non_deductible: components["schemas"]["FinanzasNonDeductible"] & unknown;
+        };
+        FinanzasNonDeductibleBody: {
+            /**
+             * @description `tax_40`, `owner` (needs `owner_id`), `left_out`, or `deductible` to override a default (a fine or income-tax payment a person says is deductible).
+             * @enum {string}
+             */
+            outcome: "tax_40" | "owner" | "left_out" | "deductible";
+            /**
+             * Format: uuid
+             * @description Required with `owner`, refused otherwise.
+             */
+            owner_id?: string | null;
+            note?: string | null;
         };
         FinanzasResumenCash: {
             /** @description «Caja hoy»: today’s balance of the operating accounts (savings apart) = the Flujo de caja opening. */

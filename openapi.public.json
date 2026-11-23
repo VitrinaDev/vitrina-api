@@ -12851,6 +12851,35 @@
           "variable"
         ]
       },
+      "FinanzasTaxRole": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "business_income",
+          "other_income",
+          "interest_income",
+          "goods_and_inputs",
+          "business_services",
+          "remunerations",
+          "honorarios",
+          "rent",
+          "interest",
+          "financial_charges",
+          "donations",
+          "related_party_expenses",
+          "income_tax",
+          "other_deductible",
+          "withdrawal",
+          "fixed_asset",
+          "loan",
+          "capital",
+          "own_funds",
+          "other_non_result"
+        ],
+        "description": "What the account's money is for the tax return (#8104); null = «sin significado tributario». Set it with `PUT /finanzas/tax-tags/accounts/{accountId}`."
+      },
       "FinanzasAccountUsage": {
         "type": "object",
         "properties": {
@@ -12921,6 +12950,9 @@
             "type": "boolean",
             "description": "«No lleva documento»: money out classified here never has a legal document. It opens no «Falta documento» case and is not counted in «Egresos sin documento»."
           },
+          "tax_role": {
+            "$ref": "#/components/schemas/FinanzasTaxRole"
+          },
           "position": {
             "type": "integer"
           },
@@ -12961,6 +12993,7 @@
           "kind",
           "behavior",
           "no_document",
+          "tax_role",
           "position",
           "depth",
           "path",
@@ -24242,6 +24275,22 @@
               },
               "has_children": {
                 "type": "boolean"
+              },
+              "tax_role": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/FinanzasTaxRole"
+                  },
+                  {
+                    "description": "What the account's money is for the tax return (#8104); null = «sin significado tributario»."
+                  }
+                ]
+              },
+              "tax_role_label": {
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "required": [
@@ -24249,7 +24298,9 @@
               "kind",
               "path",
               "archived",
-              "has_children"
+              "has_children",
+              "tax_role",
+              "tax_role_label"
             ]
           },
           "sign": {
@@ -24535,6 +24586,75 @@
               "$ref": "#/components/schemas/FinanzasResultadoRow"
             }
           },
+          "by_role": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tax_role": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/FinanzasTaxRole"
+                    },
+                    {
+                      "description": "What an account's money is for the tax return. The F22 code per regime and tax year derives from it (`GET /finanzas/tax-tags/roles`). Income: `business_income`, `other_income`, `interest_income`. Outlays: `goods_and_inputs`, `business_services`, `remunerations`, `honorarios`, `rent`, `interest`, `financial_charges`, `donations`, `related_party_expenses`, `income_tax`, `other_deductible`. Outside the result: `withdrawal`, `fixed_asset`, `loan`, `capital`, `own_funds`, `other_non_result`."
+                    }
+                  ]
+                },
+                "tax_role_label": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "section": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "income",
+                    "outlay",
+                    "non_result"
+                  ]
+                },
+                "total": {
+                  "type": "integer"
+                },
+                "count": {
+                  "type": "integer"
+                },
+                "non_deductible": {
+                  "type": "object",
+                  "properties": {
+                    "tax_40": {
+                      "type": "integer"
+                    },
+                    "owner": {
+                      "type": "integer"
+                    },
+                    "left_out": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "tax_40",
+                    "owner",
+                    "left_out"
+                  ]
+                }
+              },
+              "required": [
+                "tax_role",
+                "tax_role_label",
+                "section",
+                "total",
+                "count",
+                "non_deductible"
+              ]
+            },
+            "description": "The range by tax role (#8104), same sign and basis as the account rows: `total` of the accounts with the role, and the part marked non-deductible by art. 21 outcome (a fine or income-tax payment counts by default). `tax_role` null gathers the accounts without tax meaning, apart."
+          },
           "summary": {
             "type": "object",
             "properties": {
@@ -24632,6 +24752,7 @@
           "currency",
           "months",
           "rows",
+          "by_role",
           "summary",
           "waterfall"
         ]
@@ -24899,6 +25020,88 @@
           "contraparte_id"
         ]
       },
+      "FinanzasNonDeductibleOutcome": {
+        "type": "string",
+        "enum": [
+          "tax_40",
+          "owner",
+          "left_out"
+        ],
+        "description": "Art. 21 outcome: `tax_40` (the company pays the 40 % single tax), `owner` (taxed on an owner), `left_out` (only left out of the base). 14 D N°8 has no 40 % tax: only `left_out` applies there; the regime field does not exist yet (#8087), so the value a person chose is stored as is and consumers apply the regime rule (`outcomes[].regimes`)."
+      },
+      "FinanzasNonDeductible": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/FinanzasNonDeductibleOutcome"
+          },
+          "outcome_label": {
+            "type": "string"
+          },
+          "owner": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "person",
+              "default"
+            ],
+            "description": "`person`: someone marked it. `default`: a fine or an income-tax payment (`idpc` tax-payment kind), non-deductible until a person says otherwise."
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "fine",
+              "prior_year_income_tax"
+            ]
+          },
+          "reason_label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "outcome",
+          "outcome_label",
+          "owner",
+          "note",
+          "source",
+          "reason",
+          "reason_label"
+        ],
+        "description": "The non-deductible mark of the line's document (document lines) or bank movement (movement lines), a person's or a default (a fine, an income-tax payment); null = deductible. Consumers apply the regime rule (14 D N°8: only `left_out`)."
+      },
       "FinanzasCashLine": {
         "type": "object",
         "properties": {
@@ -25164,13 +25367,24 @@
               "no_document": {
                 "type": "boolean",
                 "description": "«No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros)."
+              },
+              "tax_role": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/FinanzasTaxRole"
+                  },
+                  {
+                    "description": "What the account's money is for the tax return (#8104); null = «sin significado tributario»."
+                  }
+                ]
               }
             },
             "required": [
               "id",
               "name",
               "kind",
-              "no_document"
+              "no_document",
+              "tax_role"
             ],
             "description": "The account this share is classified to; null = the part not classified."
           },
@@ -25196,6 +25410,29 @@
               "other"
             ],
             "description": "Set on the lines of `non_result` only."
+          },
+          "tax_role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasTaxRole"
+              },
+              {
+                "description": "The line's tax role (#8104): its account's role; a clinic payment (no account) is `business_income`. Null = without tax meaning: shown apart, never dropped."
+              }
+            ]
+          },
+          "tax_role_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "account",
+              "clinic_payment"
+            ]
+          },
+          "non_deductible": {
+            "$ref": "#/components/schemas/FinanzasNonDeductible"
           },
           "settled_clp": {
             "type": "integer",
@@ -25240,6 +25477,9 @@
           "no_vat_breakdown",
           "undocumented",
           "non_result_kind",
+          "tax_role",
+          "tax_role_source",
+          "non_deductible",
           "settled_clp",
           "gross_clp",
           "base_clp",
@@ -25525,13 +25765,24 @@
                 "no_document": {
                   "type": "boolean",
                   "description": "«No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros)."
+                },
+                "tax_role": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/FinanzasTaxRole"
+                    },
+                    {
+                      "description": "What the account's money is for the tax return (#8104); null = «sin significado tributario»."
+                    }
+                  ]
                 }
               },
               "required": [
                 "id",
                 "name",
                 "kind",
-                "no_document"
+                "no_document",
+                "tax_role"
               ]
             }
           },
@@ -26716,13 +26967,24 @@
                         "no_document": {
                           "type": "boolean",
                           "description": "«No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros)."
+                        },
+                        "tax_role": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/FinanzasTaxRole"
+                            },
+                            {
+                              "description": "What the account's money is for the tax return (#8104); null = «sin significado tributario»."
+                            }
+                          ]
                         }
                       },
                       "required": [
                         "id",
                         "name",
                         "kind",
-                        "no_document"
+                        "no_document",
+                        "tax_role"
                       ]
                     },
                     "undocumented": {
@@ -26792,6 +27054,139 @@
                   ]
                 },
                 "description": "Always returned (also with `detail=false`): one subtotal per (side, account, document year, documented or not), over `collections`, `payments` and `non_result`. `account` null = the part not classified, clinic payments, and fees with no commission account."
+              },
+              "by_role": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "collection",
+                        "payment"
+                      ]
+                    },
+                    "document_year": {
+                      "type": "string",
+                      "enum": [
+                        "current",
+                        "earlier",
+                        "later"
+                      ],
+                      "description": "`current` = issued in the year asked (F22 1400 / 1409…); `earlier` = issued in an earlier year (1817 / 1818…); `later` = issued after the year (paid in advance)."
+                    },
+                    "tax_role": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/FinanzasTaxRole"
+                        },
+                        {
+                          "description": "What an account's money is for the tax return. The F22 code per regime and tax year derives from it (`GET /finanzas/tax-tags/roles`). Income: `business_income`, `other_income`, `interest_income`. Outlays: `goods_and_inputs`, `business_services`, `remunerations`, `honorarios`, `rent`, `interest`, `financial_charges`, `donations`, `related_party_expenses`, `income_tax`, `other_deductible`. Outside the result: `withdrawal`, `fixed_asset`, `loan`, `capital`, `own_funds`, `other_non_result`."
+                        }
+                      ]
+                    },
+                    "tax_role_label": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "section": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "income",
+                        "outlay",
+                        "non_result"
+                      ]
+                    },
+                    "non_result": {
+                      "type": "boolean"
+                    },
+                    "non_deductible": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "tax_40",
+                        "owner",
+                        "left_out"
+                      ]
+                    },
+                    "owner": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
+                    },
+                    "lines": {
+                      "type": "integer"
+                    },
+                    "settled_clp": {
+                      "type": "integer",
+                      "description": "What this line settles of the document (link amount + rounding), signed: a refund is negative."
+                    },
+                    "gross_clp": {
+                      "type": "integer",
+                      "description": "Its share of the document total after credit notes; honorarios: GROSS."
+                    },
+                    "base_clp": {
+                      "type": "integer",
+                      "description": "What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full."
+                    },
+                    "net_clp": {
+                      "type": "integer",
+                      "description": "Its share of the document's neto."
+                    },
+                    "exempt_clp": {
+                      "type": "integer",
+                      "description": "Its share of the document's exento."
+                    },
+                    "vat_excluded_clp": {
+                      "type": "integer",
+                      "description": "`gross_clp − base_clp`: IVA and specific taxes left out."
+                    },
+                    "retention_clp": {
+                      "type": "integer",
+                      "description": "Honorarios: the retención (gross − settled), shown apart; 0 otherwise."
+                    }
+                  },
+                  "required": [
+                    "side",
+                    "document_year",
+                    "tax_role",
+                    "tax_role_label",
+                    "section",
+                    "non_result",
+                    "non_deductible",
+                    "owner",
+                    "lines",
+                    "settled_clp",
+                    "gross_clp",
+                    "base_clp",
+                    "net_clp",
+                    "exempt_clp",
+                    "vat_excluded_clp",
+                    "retention_clp"
+                  ]
+                },
+                "description": "Always returned: one subtotal per (side, document year, tax role, non-deductible outcome and owner) over `collections`, `payments` and `non_result`, so the F22 draft maps roles to codes (`GET /finanzas/tax-tags/roles`) without re-reading accounts. `tax_role` null = without tax meaning, apart. Lines marked non-deductible are subtotalled apart from the deductible ones."
               },
               "by_kind": {
                 "type": "array",
@@ -26873,6 +27268,7 @@
               "undated",
               "non_result",
               "by_account",
+              "by_role",
               "by_kind"
             ]
           },
@@ -30572,6 +30968,574 @@
         },
         "required": [
           "owner_id"
+        ],
+        "additionalProperties": false
+      },
+      "FinanzasTaxRoles": {
+        "type": "object",
+        "properties": {
+          "tax_year": {
+            "type": "integer"
+          },
+          "tax_years": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/FinanzasTaxRole"
+                    },
+                    {
+                      "type": "string",
+                      "description": "What an account's money is for the tax return. The F22 code per regime and tax year derives from it (`GET /finanzas/tax-tags/roles`). Income: `business_income`, `other_income`, `interest_income`. Outlays: `goods_and_inputs`, `business_services`, `remunerations`, `honorarios`, `rent`, `interest`, `financial_charges`, `donations`, `related_party_expenses`, `income_tax`, `other_deductible`. Outside the result: `withdrawal`, `fixed_asset`, `loan`, `capital`, `own_funds`, `other_non_result`."
+                    }
+                  ]
+                },
+                "label_es": {
+                  "type": "string"
+                },
+                "section": {
+                  "type": "string",
+                  "enum": [
+                    "income",
+                    "outlay",
+                    "non_result"
+                  ]
+                },
+                "hint_es": {
+                  "type": "string"
+                },
+                "codes": {
+                  "type": "object",
+                  "properties": {
+                    "14A": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "earlier": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "The twin code for documents of an earlier year paid in this one (14 D); null when the form has none."
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "earlier"
+                      ]
+                    },
+                    "14D3": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "earlier": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "The twin code for documents of an earlier year paid in this one (14 D); null when the form has none."
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "earlier"
+                      ]
+                    },
+                    "14D8": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "earlier": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "The twin code for documents of an earlier year paid in this one (14 D); null when the form has none."
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "earlier"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "14A",
+                    "14D3",
+                    "14D8"
+                  ],
+                  "description": "The F22 code this role feeds in each regime for the tax year; null = no code of that regime takes it."
+                }
+              },
+              "required": [
+                "role",
+                "label_es",
+                "section",
+                "hint_es",
+                "codes"
+              ]
+            }
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "outcome": {
+                  "$ref": "#/components/schemas/FinanzasNonDeductibleOutcome"
+                },
+                "label_es": {
+                  "type": "string"
+                },
+                "hint_es": {
+                  "type": "string"
+                },
+                "regimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "14A",
+                      "14D3",
+                      "14D8"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "outcome",
+                "label_es",
+                "hint_es",
+                "regimes"
+              ]
+            }
+          },
+          "default_reasons": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "fine",
+                    "prior_year_income_tax"
+                  ]
+                },
+                "label_es": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "reason",
+                "label_es"
+              ]
+            }
+          }
+        },
+        "required": [
+          "tax_year",
+          "tax_years",
+          "roles",
+          "outcomes",
+          "default_reasons"
+        ]
+      },
+      "FinanzasAccountTaxList": {
+        "type": "object",
+        "properties": {
+          "tax_year": {
+            "type": "integer"
+          },
+          "without_tax_meaning": {
+            "type": "integer",
+            "description": "Accounts with no role: «sin significado tributario»."
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "account_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "ingreso",
+                    "costo",
+                    "gasto",
+                    "no_operacional"
+                  ]
+                },
+                "archived": {
+                  "type": "boolean"
+                },
+                "seeded": {
+                  "type": "boolean"
+                },
+                "tax_role": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/FinanzasTaxRole"
+                    },
+                    {
+                      "description": "What an account's money is for the tax return. The F22 code per regime and tax year derives from it (`GET /finanzas/tax-tags/roles`). Income: `business_income`, `other_income`, `interest_income`. Outlays: `goods_and_inputs`, `business_services`, `remunerations`, `honorarios`, `rent`, `interest`, `financial_charges`, `donations`, `related_party_expenses`, `income_tax`, `other_deductible`. Outside the result: `withdrawal`, `fixed_asset`, `loan`, `capital`, `own_funds`, `other_non_result`."
+                    }
+                  ]
+                },
+                "tax_role_label": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "without_tax_meaning": {
+                  "type": "boolean"
+                },
+                "codes": {
+                  "type": "object",
+                  "properties": {
+                    "14A": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "earlier": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "The twin code for documents of an earlier year paid in this one (14 D); null when the form has none."
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "earlier"
+                      ]
+                    },
+                    "14D3": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "earlier": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "The twin code for documents of an earlier year paid in this one (14 D); null when the form has none."
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "earlier"
+                      ]
+                    },
+                    "14D8": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "earlier": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "The twin code for documents of an earlier year paid in this one (14 D); null when the form has none."
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "earlier"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "14A",
+                    "14D3",
+                    "14D8"
+                  ],
+                  "description": "The F22 code this role feeds in each regime for the tax year; null = no code of that regime takes it."
+                },
+                "suggestion": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "role": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/FinanzasTaxRole"
+                        },
+                        {
+                          "type": "string",
+                          "description": "What an account's money is for the tax return. The F22 code per regime and tax year derives from it (`GET /finanzas/tax-tags/roles`). Income: `business_income`, `other_income`, `interest_income`. Outlays: `goods_and_inputs`, `business_services`, `remunerations`, `honorarios`, `rent`, `interest`, `financial_charges`, `donations`, `related_party_expenses`, `income_tax`, `other_deductible`. Outside the result: `withdrawal`, `fixed_asset`, `loan`, `capital`, `own_funds`, `other_non_result`."
+                        }
+                      ]
+                    },
+                    "label_es": {
+                      "type": "string"
+                    },
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "income",
+                        "outlay",
+                        "non_result"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "name",
+                        "parent",
+                        "kind"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "role",
+                    "label_es",
+                    "section",
+                    "reason"
+                  ],
+                  "description": "For an account with no role: a proposal from its name (nothing is stored until a person sets it)."
+                }
+              },
+              "required": [
+                "account_id",
+                "name",
+                "path",
+                "kind",
+                "archived",
+                "seeded",
+                "tax_role",
+                "tax_role_label",
+                "without_tax_meaning",
+                "codes",
+                "suggestion"
+              ]
+            }
+          }
+        },
+        "required": [
+          "tax_year",
+          "without_tax_meaning",
+          "accounts"
+        ]
+      },
+      "FinanzasAccountTaxBody": {
+        "type": "object",
+        "properties": {
+          "tax_role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasTaxRole"
+              },
+              {
+                "description": "The role, or null to clear it. It must fit the account's type (an ingreso takes an income role, a costo or gasto an outlay role, a no_operacional account an outside-the-result role)."
+              }
+            ]
+          }
+        },
+        "required": [
+          "tax_role"
+        ],
+        "additionalProperties": false
+      },
+      "FinanzasNonDeductibleList": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "integer"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "enum": [
+                    "document",
+                    "movement"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "amount_clp": {
+                  "type": "integer"
+                },
+                "label": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "non_deductible": {
+                  "$ref": "#/components/schemas/FinanzasNonDeductible"
+                },
+                "overrides_default": {
+                  "type": "boolean",
+                  "description": "A person said «deductible» over a default."
+                }
+              },
+              "required": [
+                "target",
+                "id",
+                "date",
+                "amount_clp",
+                "label",
+                "non_deductible",
+                "overrides_default"
+              ]
+            }
+          },
+          "defaults": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "movement_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "non_deductible": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/FinanzasNonDeductible"
+                    },
+                    {
+                      "type": "object"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "movement_id",
+                "non_deductible"
+              ]
+            }
+          }
+        },
+        "required": [
+          "year",
+          "items",
+          "defaults"
+        ]
+      },
+      "FinanzasNonDeductibleResult": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "enum": [
+              "document",
+              "movement"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "non_deductible": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasNonDeductible"
+              },
+              {
+                "description": "What the item reads as now; null = deductible. After a DELETE it is the default, if any."
+              }
+            ]
+          }
+        },
+        "required": [
+          "target",
+          "id",
+          "non_deductible"
+        ]
+      },
+      "FinanzasNonDeductibleBody": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "tax_40",
+              "owner",
+              "left_out",
+              "deductible"
+            ],
+            "description": "`tax_40`, `owner` (needs `owner_id`), `left_out`, or `deductible` to override a default (a fine or income-tax payment a person says is deductible)."
+          },
+          "owner_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Required with `owner`, refused otherwise."
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "outcome"
         ],
         "additionalProperties": false
       },
@@ -192442,6 +193406,7 @@
                         "kind": "gasto",
                         "behavior": "fijo",
                         "no_document": false,
+                        "tax_role": "other_deductible",
                         "position": 2,
                         "depth": 1,
                         "path": "Gastos de administración",
@@ -192459,6 +193424,7 @@
                         "kind": "gasto",
                         "behavior": "fijo",
                         "no_document": false,
+                        "tax_role": "rent",
                         "position": 0,
                         "depth": 2,
                         "path": "Gastos de administración > Arriendo de oficina",
@@ -192587,6 +193553,7 @@
                     "kind": "gasto",
                     "behavior": "fijo",
                     "no_document": false,
+                    "tax_role": "rent",
                     "position": 0,
                     "depth": 2,
                     "path": "Gastos de administración > Arriendo de oficina",
@@ -193116,6 +194083,7 @@
                     "kind": "gasto",
                     "behavior": "fijo",
                     "no_document": false,
+                    "tax_role": "rent",
                     "position": 1,
                     "depth": 2,
                     "path": "Gastos de administración > Arriendo de oficina",
@@ -193253,6 +194221,7 @@
                     "kind": "gasto",
                     "behavior": "fijo",
                     "no_document": false,
+                    "tax_role": "rent",
                     "position": 0,
                     "depth": 2,
                     "path": "Gastos de administración > Arriendo de oficina",
@@ -193390,6 +194359,7 @@
                     "kind": "gasto",
                     "behavior": "fijo",
                     "no_document": false,
+                    "tax_role": "rent",
                     "position": 0,
                     "depth": 2,
                     "path": "Gastos de administración > Arriendo de oficina",
@@ -215970,7 +216940,9 @@
                           "kind": "ingreso",
                           "path": "Ingresos › Ingresos de explotación",
                           "archived": false,
-                          "has_children": true
+                          "has_children": true,
+                          "tax_role": null,
+                          "tax_role_label": null
                         },
                         "sign": 1,
                         "values": [
@@ -215999,7 +216971,9 @@
                           "kind": "ingreso",
                           "path": "Ingresos › Ingresos de explotación › Atención odontológica",
                           "archived": false,
-                          "has_children": false
+                          "has_children": false,
+                          "tax_role": null,
+                          "tax_role_label": null
                         },
                         "sign": 1,
                         "values": [
@@ -216077,7 +217051,9 @@
                           "kind": "costo",
                           "path": "Costos de explotación",
                           "archived": false,
-                          "has_children": true
+                          "has_children": true,
+                          "tax_role": null,
+                          "tax_role_label": null
                         },
                         "sign": -1,
                         "values": [
@@ -216106,7 +217082,9 @@
                           "kind": "costo",
                           "path": "Costos de explotación › Laboratorios",
                           "archived": false,
-                          "has_children": false
+                          "has_children": false,
+                          "tax_role": null,
+                          "tax_role_label": null
                         },
                         "sign": -1,
                         "values": [
@@ -216184,7 +217162,9 @@
                           "kind": "gasto",
                           "path": "Gastos de administración y venta",
                           "archived": false,
-                          "has_children": true
+                          "has_children": true,
+                          "tax_role": null,
+                          "tax_role_label": null
                         },
                         "sign": -1,
                         "values": [
@@ -216213,7 +217193,9 @@
                           "kind": "gasto",
                           "path": "Gastos de administración y venta › Gastos generales › Arriendo",
                           "archived": false,
-                          "has_children": false
+                          "has_children": false,
+                          "tax_role": null,
+                          "tax_role_label": null
                         },
                         "sign": -1,
                         "values": [
@@ -216350,6 +217332,20 @@
                         },
                         "by_account": null,
                         "drillable": true
+                      }
+                    ],
+                    "by_role": [
+                      {
+                        "tax_role": null,
+                        "tax_role_label": null,
+                        "section": null,
+                        "total": 0,
+                        "count": 0,
+                        "non_deductible": {
+                          "tax_40": 0,
+                          "owner": 0,
+                          "left_out": 0
+                        }
                       }
                     ],
                     "summary": {
@@ -216960,11 +217956,15 @@
                           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8102",
                           "name": "Atención odontológica",
                           "kind": "ingreso",
-                          "no_document": false
+                          "no_document": false,
+                          "tax_role": "business_income"
                         },
                         "no_vat_breakdown": false,
                         "undocumented": false,
                         "non_result_kind": null,
+                        "tax_role": "business_income",
+                        "tax_role_source": "account",
+                        "non_deductible": null,
                         "settled_clp": 1190000,
                         "gross_clp": 1190000,
                         "base_clp": 1000000,
@@ -217007,11 +218007,15 @@
                           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8108",
                           "name": "Sueldos",
                           "kind": "gasto",
-                          "no_document": true
+                          "no_document": true,
+                          "tax_role": "remunerations"
                         },
                         "no_vat_breakdown": false,
                         "undocumented": false,
                         "non_result_kind": null,
+                        "tax_role": "remunerations",
+                        "tax_role_source": "account",
+                        "non_deductible": null,
                         "settled_clp": 850000,
                         "gross_clp": 850000,
                         "base_clp": 850000,
@@ -217252,7 +218256,8 @@
                             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8102",
                             "name": "Atención odontológica",
                             "kind": "ingreso",
-                            "no_document": false
+                            "no_document": false,
+                            "tax_role": "business_income"
                           },
                           "undocumented": false,
                           "non_result_kind": null,
@@ -217272,10 +218277,49 @@
                             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8108",
                             "name": "Sueldos",
                             "kind": "gasto",
-                            "no_document": true
+                            "no_document": true,
+                            "tax_role": "remunerations"
                           },
                           "undocumented": false,
                           "non_result_kind": null,
+                          "lines": 1,
+                          "settled_clp": 850000,
+                          "gross_clp": 850000,
+                          "base_clp": 850000,
+                          "net_clp": 0,
+                          "exempt_clp": 0,
+                          "vat_excluded_clp": 0,
+                          "retention_clp": 0
+                        }
+                      ],
+                      "by_role": [
+                        {
+                          "side": "collection",
+                          "document_year": "earlier",
+                          "tax_role": "business_income",
+                          "tax_role_label": "Ingresos del giro",
+                          "section": "income",
+                          "non_result": false,
+                          "non_deductible": null,
+                          "owner": null,
+                          "lines": 1,
+                          "settled_clp": 1190000,
+                          "gross_clp": 1190000,
+                          "base_clp": 1000000,
+                          "net_clp": 1000000,
+                          "exempt_clp": 0,
+                          "vat_excluded_clp": 190000,
+                          "retention_clp": 0
+                        },
+                        {
+                          "side": "payment",
+                          "document_year": "current",
+                          "tax_role": "remunerations",
+                          "tax_role_label": "Remuneraciones",
+                          "section": "outlay",
+                          "non_result": false,
+                          "non_deductible": null,
+                          "owner": null,
                           "lines": 1,
                           "settled_clp": 850000,
                           "gross_clp": 850000,
@@ -225918,6 +226962,1126 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/finanzas/tax-tags/roles": {
+      "get": {
+        "summary": "Tax roles of accounts, the F22 codes they feed, and art. 21 outcomes",
+        "description": "The vocabulary an account's tax meaning is chosen from, and, for the tax year, the F22 code each role feeds in 14 A, 14 D N°3 and 14 D N°8 (`earlier` is the twin code for documents of an earlier year paid in this one). A role names what the money is for in plain words; the code derives from it, so a new tax year re-tags nothing. Also the art. 21 outcomes of a non-deductible mark and the regimes where each applies (14 D N°8 has only `left_out`), and the reasons a movement is non-deductible by default. 404 for a tax year with no code table. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_reports:read` (owner, admin, Contador seat).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100,
+              "default": 2026,
+              "description": "The tax year (año tributario): 2026 declares commercial year 2025. 404 for a year with no code table."
+            },
+            "required": false,
+            "name": "tax_year",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Roles and outcomes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasTaxRoles"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "tax_year": 2026,
+                    "tax_years": [
+                      2026
+                    ],
+                    "roles": [
+                      {
+                        "role": "rent",
+                        "label_es": "Arriendos",
+                        "section": "outlay",
+                        "hint_es": "Arriendo del local, oficina o equipos.",
+                        "codes": {
+                          "14A": {
+                            "code": 1140,
+                            "earlier": null
+                          },
+                          "14D3": {
+                            "code": 1415,
+                            "earlier": null
+                          },
+                          "14D8": {
+                            "code": 1620,
+                            "earlier": null
+                          }
+                        }
+                      }
+                    ],
+                    "outcomes": [
+                      {
+                        "outcome": "left_out",
+                        "label_es": "Solo se excluye de la base",
+                        "hint_es": "No se descuenta de la base y no paga impuesto aparte.",
+                        "regimes": [
+                          "14A",
+                          "14D3",
+                          "14D8"
+                        ]
+                      }
+                    ],
+                    "default_reasons": [
+                      {
+                        "reason": "fine",
+                        "label_es": "Multa"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/tax-tags/accounts": {
+      "get": {
+        "summary": "Every account with its tax meaning",
+        "description": "The plan de cuentas with each account's role (`tax_role`), the F22 code it feeds per regime for `tax_year`, and, for an account with none (`without_tax_meaning`), a `suggestion` from its name. The accounts of the starter charts carry their role; a tenant-created or imported account is «sin significado tributario» until an owner sets one: consumers show its amounts apart, never drop them. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_reports:read` (owner, admin, Contador seat).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100,
+              "default": 2026,
+              "description": "The tax year (año tributario): 2026 declares commercial year 2025. 404 for a year with no code table."
+            },
+            "required": false,
+            "name": "tax_year",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "Default `false`."
+            },
+            "required": false,
+            "name": "include_archived",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accounts with their tax meaning",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasAccountTaxList"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "tax_year": 2026,
+                    "without_tax_meaning": 1,
+                    "accounts": [
+                      {
+                        "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8201",
+                        "name": "Arriendo",
+                        "path": "Gastos de administración y venta › Gastos generales › Arriendo",
+                        "kind": "gasto",
+                        "archived": false,
+                        "seeded": true,
+                        "tax_role": "rent",
+                        "tax_role_label": "Arriendos",
+                        "without_tax_meaning": false,
+                        "codes": {
+                          "14A": {
+                            "code": 1140,
+                            "earlier": null
+                          },
+                          "14D3": {
+                            "code": 1415,
+                            "earlier": null
+                          },
+                          "14D8": {
+                            "code": 1620,
+                            "earlier": null
+                          }
+                        },
+                        "suggestion": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/tax-tags/accounts/{accountId}": {
+      "put": {
+        "summary": "Set or clear an account's tax role",
+        "description": "Sets the role of an account (null clears it). The role must fit the account's type: 422 `FINANZAS_ACCOUNT_INVALID` (`tax_role_kind_mismatch`) otherwise. Sub-accounts do not inherit it: set each one. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write` (owner, admin). Audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "accountId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanzasAccountTaxBody"
+              },
+              "example": {
+                "tax_role": "rent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The account's role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "account_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "tax_role": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/FinanzasTaxRole"
+                            },
+                            {
+                              "description": "What an account's money is for the tax return. The F22 code per regime and tax year derives from it (`GET /finanzas/tax-tags/roles`). Income: `business_income`, `other_income`, `interest_income`. Outlays: `goods_and_inputs`, `business_services`, `remunerations`, `honorarios`, `rent`, `interest`, `financial_charges`, `donations`, `related_party_expenses`, `income_tax`, `other_deductible`. Outside the result: `withdrawal`, `fixed_asset`, `loan`, `capital`, `own_funds`, `other_non_result`."
+                            }
+                          ]
+                        },
+                        "tax_role_label": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "account_id",
+                        "tax_role",
+                        "tax_role_label"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8201",
+                    "tax_role": "rent",
+                    "tax_role_label": "Arriendos"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/tax-tags/non-deductible": {
+      "get": {
+        "summary": "Non-deductible marks of a year",
+        "description": "The documents (by issue date) and bank movements (by day) of the commercial year that a person marked, and `defaults`: the fines and income-tax payments (`idpc` kind of `GET /finanzas/tax/payments`) that are non-deductible until a person says otherwise. A mark whose `overrides_default` is true says «deductible» over a default. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_reports:read` (owner, admin, Contador seat).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100,
+              "description": "Commercial year: documents by issue date, movements by their day."
+            },
+            "required": true,
+            "name": "year",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Marks and defaults",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasNonDeductibleList"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "year": 2025,
+                    "items": [
+                      {
+                        "target": "document",
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8202",
+                        "date": "2025-06-12",
+                        "amount_clp": 119000,
+                        "label": "Restaurante X",
+                        "non_deductible": {
+                          "outcome": "tax_40",
+                          "outcome_label": "Paga impuesto único de 40 % la empresa",
+                          "owner": null,
+                          "note": null,
+                          "source": "person",
+                          "reason": null,
+                          "reason_label": null
+                        },
+                        "overrides_default": false
+                      }
+                    ],
+                    "defaults": []
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/tax-tags/non-deductible/documents/{id}": {
+      "put": {
+        "summary": "Mark a document as not deductible",
+        "description": "Marks the document (whole) as not deductible with its art. 21 outcome: `tax_40` (the company pays the 40 % single tax), `owner` (taxed on the owner named by `owner_id`, one of the workspace's owners) or `left_out` (only left out of the base). `deductible` overrides a default (a fine, an income-tax payment). Replaces a previous mark. The regime field does not exist yet (#8087): the outcome is stored as chosen and the draft applies the regime rule (14 D N°8: only `left_out`). 422 `FINANZAS_OWNER_INVALID` for `owner` without a valid owner. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write` (owner, admin). Audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanzasNonDeductibleBody"
+              },
+              "example": {
+                "outcome": "left_out",
+                "note": "Multa del banco"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The mark",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasNonDeductibleResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "target": "document",
+                    "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8202",
+                    "non_deductible": {
+                      "outcome": "tax_40",
+                      "outcome_label": "Paga impuesto único de 40 % la empresa",
+                      "owner": null,
+                      "note": null,
+                      "source": "person",
+                      "reason": null,
+                      "reason_label": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Remove the non-deductible mark of a document",
+        "description": "Removes the person's mark: the document goes back to its default (deductible, unless it is a fine or an income-tax payment). `removed` is false when there was none. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write` (owner, admin). Audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The mark removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/FinanzasNonDeductibleResult"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "removed": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "removed"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "target": "document",
+                    "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8202",
+                    "non_deductible": null,
+                    "removed": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/tax-tags/non-deductible/movements/{id}": {
+      "put": {
+        "summary": "Mark a bank movement as not deductible",
+        "description": "Marks the bank movement (whole) as not deductible with its art. 21 outcome: `tax_40` (the company pays the 40 % single tax), `owner` (taxed on the owner named by `owner_id`, one of the workspace's owners) or `left_out` (only left out of the base). `deductible` overrides a default (a fine, an income-tax payment). Replaces a previous mark. The regime field does not exist yet (#8087): the outcome is stored as chosen and the draft applies the regime rule (14 D N°8: only `left_out`). 422 `FINANZAS_OWNER_INVALID` for `owner` without a valid owner. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write` (owner, admin). Audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanzasNonDeductibleBody"
+              },
+              "example": {
+                "outcome": "left_out",
+                "note": "Multa del banco"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The mark",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasNonDeductibleResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "target": "movement",
+                    "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8203",
+                    "non_deductible": {
+                      "outcome": "tax_40",
+                      "outcome_label": "Paga impuesto único de 40 % la empresa",
+                      "owner": null,
+                      "note": null,
+                      "source": "person",
+                      "reason": null,
+                      "reason_label": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Remove the non-deductible mark of a bank movement",
+        "description": "Removes the person's mark: the bank movement goes back to its default (deductible, unless it is a fine or an income-tax payment). `removed` is false when there was none. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write` (owner, admin). Audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The mark removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/FinanzasNonDeductibleResult"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "removed": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "removed"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "target": "movement",
+                    "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8203",
+                    "non_deductible": null,
+                    "removed": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/finanzas/resumen": {
       "get": {
         "summary": "Resumen: the Finanzas home, three answers and the context",
@@ -226504,8 +228668,8 @@
     },
     "/finanzas/contador-export": {
       "get": {
-        "summary": "Download the Contador package for a month (zip)",
-        "description": "One zip, `paquete-contador-<period>.zip`, with seven xlsx: `01-libro-de-compras`, `02-libro-de-ventas`, `03-honorarios`, `04-movimientos-por-cuenta` (one sheet per bank account), `05-clasificaciones-por-cuenta` (net, as the Resultado counts), `06-resultado` and `07-ajustes-posteriores-al-cierre`, each `<name>-<period>.xlsx`, built by the same code as each screen and its export. Read-only. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).",
+        "summary": "Download the Contador package for a month or a year (zip)",
+        "description": "One zip, `paquete-contador-<period>.zip`, with seven xlsx: `01-libro-de-compras`, `02-libro-de-ventas`, `03-honorarios`, `04-movimientos-por-cuenta` (one sheet per bank account), `05-clasificaciones-por-cuenta` (net, as the Resultado counts), `06-resultado` and `07-ajustes-posteriores-al-cierre`, each `<name>-<period>.xlsx`, built by the same code as each screen and its export. With `year=YYYY` (instead of `period`) it is the Paquete anual of that commercial year: `paquete-contador-<year>.zip`, eight xlsx: `00-estado-del-ano` (what makes the year incomplete), `01-resultado-por-cuenta` (a column per month and the total), `02-base-de-caja` (collected and paid by account, `no_operacional` money apart, undated items listed), `03-iva-y-ppm` (each F29, proposal or filed), `04-honorarios-y-retenciones` (with the comparison against F29 code 151), `05-libro-de-compras`, `06-libro-de-ventas` and `07-pagos-de-impuestos`, each `<name>-<year>.xlsx`. The year is never summed silently as complete: the estado file and the manifest name the months not closed, not read by the SII sync, with unclassified movements or documents, F29 periods with no filing, undated collections and payments and money out nothing explains. A future year answers 400, and so does the current year until a month of it has closed; a workspace with more than one sociedad answers 409. Read-only. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).",
         "security": [
           {
             "BearerAuth": []
@@ -226519,10 +228683,21 @@
             "schema": {
               "type": "string",
               "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
-              "description": "The month, `YYYY-MM` (default: the month before the current one, America/Santiago). Up to the current month; a future month answers 400."
+              "description": "The month, `YYYY-MM` (default: the month before the current one, America/Santiago). Up to the current month; a future month answers 400. Not together with `year`."
             },
             "required": false,
             "name": "period",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2999,
+              "description": "The commercial year (January to December, America/Santiago): asks for the Paquete anual instead of the month. A future year answers 400; the current year answers 400 until a month of it has closed, then comes «en curso» with the manifest naming the months missing. A workspace with more than one sociedad answers 409. Not together with `period`."
+            },
+            "required": false,
+            "name": "year",
             "in": "query"
           }
         ],
@@ -226605,7 +228780,7 @@
     "/finanzas/contador-export/manifest": {
       "get": {
         "summary": "What the Contador package for a month holds",
-        "description": "The same package as the download, without the bytes: the period, the zip name and each file (key, label, name, rows, size). Over MCP this is the read that generates and checks the package; the zip itself downloads over HTTPS. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).",
+        "description": "The same package as the download, without the bytes: the period, the zip name and each file (key, label, name, rows, size). For a year, see `GET /finanzas/contador-export/annual-manifest`. Over MCP this is the read that generates and checks the package; the zip itself downloads over HTTPS. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).",
         "security": [
           {
             "BearerAuth": []
@@ -226751,6 +228926,590 @@
                         "filename": "07-ajustes-posteriores-al-cierre-2026-09.xlsx",
                         "rows": 3,
                         "size_bytes": 6920
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/contador-export/annual-manifest": {
+      "get": {
+        "summary": "What the Paquete anual of a year holds and what it is missing",
+        "description": "The Paquete anual's manifest, without the bytes: the files (key, label, name, rows, size), `complete` (true only when nothing is missing), `incomplete` (the months not closed, not read by the SII sync, with unclassified movements or documents, F29 periods with no filing, undated collections and payments, money out nothing explains: Spanish sentences, ready to show), `warnings` (retention declared versus the boletas) and one row per month. The zip downloads from `GET /finanzas/contador-export?year=`. `00-estado-del-ano` (what makes the year incomplete), `01-resultado-por-cuenta` (a column per month and the total), `02-base-de-caja` (collected and paid by account, `no_operacional` money apart, undated items listed), `03-iva-y-ppm` (each F29, proposal or filed), `04-honorarios-y-retenciones` (with the comparison against F29 code 151), `05-libro-de-compras`, `06-libro-de-ventas` and `07-pagos-de-impuestos`, each `<name>-<year>.xlsx`. A future year answers 400, and so does the current year until a month of it has closed; a workspace with more than one sociedad answers 409. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2999,
+              "description": "The commercial year (January to December, America/Santiago). A future year answers 400; the current year answers 400 until a month of it has closed, then comes «en curso». A workspace with more than one sociedad answers 409."
+            },
+            "required": true,
+            "name": "year",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The annual manifest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "annual"
+                          ]
+                        },
+                        "year": {
+                          "type": "integer"
+                        },
+                        "filename": {
+                          "type": "string",
+                          "description": "The zip the download serves."
+                        },
+                        "in_progress": {
+                          "type": "boolean",
+                          "description": "The current year: figures still moving, future months missing."
+                        },
+                        "complete": {
+                          "type": "boolean",
+                          "description": "True only when `incomplete` is empty. Anything else: the year is NOT complete and nothing in it should be read as final."
+                        },
+                        "sociedad": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "connection_id": {
+                              "type": "string"
+                            },
+                            "rut": {
+                              "type": "string"
+                            },
+                            "legal_name": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "connection_id",
+                            "rut",
+                            "legal_name"
+                          ]
+                        },
+                        "incomplete": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "month_not_closed",
+                                  "month_in_progress",
+                                  "month_not_started",
+                                  "sii_not_connected",
+                                  "sii_backfill_pending",
+                                  "sii_not_read",
+                                  "sii_not_read_previous_year",
+                                  "unclassified",
+                                  "incomplete_month",
+                                  "f29_missing",
+                                  "f29_not_filed",
+                                  "undated_collections",
+                                  "undated_payments",
+                                  "unexplained_outflows",
+                                  "rows_truncated"
+                                ]
+                              },
+                              "month": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "`YYYY-MM`, or null for an item about the whole year."
+                              },
+                              "message": {
+                                "type": "string",
+                                "description": "Spanish, ready to show."
+                              }
+                            },
+                            "required": [
+                              "code",
+                              "month",
+                              "message"
+                            ]
+                          }
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "honorarios_retention_differs",
+                                  "honorarios_no_declared_code"
+                                ]
+                              },
+                              "month": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "code",
+                              "month",
+                              "message"
+                            ]
+                          }
+                        },
+                        "months": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "month": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "open",
+                                  "ready_to_close",
+                                  "closed",
+                                  "closed_imported",
+                                  "upcoming"
+                                ]
+                              },
+                              "state_label": {
+                                "type": "string"
+                              },
+                              "in_progress": {
+                                "type": "boolean"
+                              },
+                              "open_cases": {
+                                "type": "integer"
+                              },
+                              "sii_read": {
+                                "type": "boolean"
+                              },
+                              "f29": {
+                                "type": "string",
+                                "enum": [
+                                  "filed",
+                                  "proposal",
+                                  "missing",
+                                  "not_due"
+                                ]
+                              },
+                              "f29_label": {
+                                "type": "string"
+                              },
+                              "issues": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "month_not_closed",
+                                    "month_in_progress",
+                                    "month_not_started",
+                                    "sii_not_connected",
+                                    "sii_backfill_pending",
+                                    "sii_not_read",
+                                    "sii_not_read_previous_year",
+                                    "unclassified",
+                                    "incomplete_month",
+                                    "f29_missing",
+                                    "f29_not_filed",
+                                    "undated_collections",
+                                    "undated_payments",
+                                    "unexplained_outflows",
+                                    "rows_truncated"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "month",
+                              "label",
+                              "state",
+                              "state_label",
+                              "in_progress",
+                              "open_cases",
+                              "sii_read",
+                              "f29",
+                              "f29_label",
+                              "issues"
+                            ]
+                          }
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string",
+                                "enum": [
+                                  "estado",
+                                  "resultado",
+                                  "base_caja",
+                                  "iva_ppm",
+                                  "honorarios",
+                                  "libro_compras",
+                                  "libro_ventas",
+                                  "pagos_impuestos"
+                                ]
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "filename": {
+                                "type": "string"
+                              },
+                              "rows": {
+                                "type": "integer"
+                              },
+                              "size_bytes": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "label",
+                              "filename",
+                              "rows",
+                              "size_bytes"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "year",
+                        "filename",
+                        "in_progress",
+                        "complete",
+                        "sociedad",
+                        "incomplete",
+                        "warnings",
+                        "months",
+                        "files"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "kind": "annual",
+                    "year": 2025,
+                    "filename": "paquete-contador-2025.zip",
+                    "in_progress": false,
+                    "complete": true,
+                    "sociedad": {
+                      "connection_id": "0194f3a0-7c1e-7a52-9d1b-3c5e8f2a6b41",
+                      "rut": "76.123.456-7",
+                      "legal_name": "Clínica Ejemplo SpA"
+                    },
+                    "incomplete": [],
+                    "warnings": [],
+                    "months": [
+                      {
+                        "month": "2025-01",
+                        "label": "Enero 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-02",
+                        "label": "Febrero 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-03",
+                        "label": "Marzo 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-04",
+                        "label": "Abril 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-05",
+                        "label": "Mayo 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-06",
+                        "label": "Junio 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-07",
+                        "label": "Julio 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-08",
+                        "label": "Agosto 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-09",
+                        "label": "Septiembre 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-10",
+                        "label": "Octubre 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-11",
+                        "label": "Noviembre 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      },
+                      {
+                        "month": "2025-12",
+                        "label": "Diciembre 2025",
+                        "state": "closed",
+                        "state_label": "Cerrado",
+                        "in_progress": false,
+                        "open_cases": 0,
+                        "sii_read": true,
+                        "f29": "filed",
+                        "f29_label": "Presentado",
+                        "issues": []
+                      }
+                    ],
+                    "files": [
+                      {
+                        "key": "estado",
+                        "label": "Estado del año",
+                        "filename": "00-estado-del-ano-2025.xlsx",
+                        "rows": 0,
+                        "size_bytes": 7904
+                      },
+                      {
+                        "key": "resultado",
+                        "label": "Resultado por cuenta",
+                        "filename": "01-resultado-por-cuenta-2025.xlsx",
+                        "rows": 96,
+                        "size_bytes": 21350
+                      },
+                      {
+                        "key": "base_caja",
+                        "label": "Base de caja",
+                        "filename": "02-base-de-caja-2025.xlsx",
+                        "rows": 7412,
+                        "size_bytes": 412880
+                      },
+                      {
+                        "key": "iva_ppm",
+                        "label": "IVA y PPM",
+                        "filename": "03-iva-y-ppm-2025.xlsx",
+                        "rows": 12,
+                        "size_bytes": 8120
+                      },
+                      {
+                        "key": "honorarios",
+                        "label": "Honorarios y retenciones",
+                        "filename": "04-honorarios-y-retenciones-2025.xlsx",
+                        "rows": 148,
+                        "size_bytes": 15660
+                      },
+                      {
+                        "key": "libro_compras",
+                        "label": "Libro de compras",
+                        "filename": "05-libro-de-compras-2025.xlsx",
+                        "rows": 1004,
+                        "size_bytes": 88410
+                      },
+                      {
+                        "key": "libro_ventas",
+                        "label": "Libro de ventas",
+                        "filename": "06-libro-de-ventas-2025.xlsx",
+                        "rows": 14820,
+                        "size_bytes": 702330
+                      },
+                      {
+                        "key": "pagos_impuestos",
+                        "label": "Pagos de impuestos",
+                        "filename": "07-pagos-de-impuestos-2025.xlsx",
+                        "rows": 24,
+                        "size_bytes": 9240
                       }
                     ]
                   }
