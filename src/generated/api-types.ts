@@ -315408,7 +315408,7 @@ export interface paths {
         put?: never;
         /**
          * Create an automation trigger
-         * @description Each condition’s `op` must fit its `field`’s type — an operator that does not belong to that field is a **400** naming it. `event: "conversation_idle"` requires `duration_hours` (1–720); every other event ignores it. `enabled` defaults to `true`.
+         * @description Each condition’s `op` must fit its `field`’s type — an operator that does not belong to that field is a **400** naming it. `event: "conversation_idle"` requires `duration_hours` (1–720); every other event ignores it. `enabled` defaults to `true`. An action of type `send_file` takes `{asset_id, caption}` (caption up to 1024 characters, sent exactly as written); a library file that cannot be sent is a **400** naming `actions.<n>.value.asset_id`.
          */
         post: {
             parameters: {
@@ -315459,7 +315459,7 @@ export interface paths {
                         actions?: {
                             id?: string;
                             /** @enum {string} */
-                            type: "send_message" | "add_private_note" | "assign_agent" | "assign_team" | "move_to_stage" | "add_tag" | "change_status" | "snooze_until" | "run_webhook";
+                            type: "send_message" | "send_file" | "add_private_note" | "assign_agent" | "assign_team" | "move_to_stage" | "add_tag" | "change_status" | "snooze_until" | "run_webhook";
                             value?: unknown;
                         }[];
                         enabled?: boolean;
@@ -315752,7 +315752,7 @@ export interface paths {
                         actions?: {
                             id?: string;
                             /** @enum {string} */
-                            type: "send_message" | "add_private_note" | "assign_agent" | "assign_team" | "move_to_stage" | "add_tag" | "change_status" | "snooze_until" | "run_webhook";
+                            type: "send_message" | "send_file" | "add_private_note" | "assign_agent" | "assign_team" | "move_to_stage" | "add_tag" | "change_status" | "snooze_until" | "run_webhook";
                             value?: unknown;
                         }[];
                         enabled?: boolean;
