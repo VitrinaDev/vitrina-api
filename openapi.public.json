@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.123.0",
+    "version": "17.123.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -94215,6 +94215,130 @@
                         "default_step_key": null
                       }
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/pipelines/{id}/qualifying-stage": {
+      "post": {
+        "summary": "Add the qualifying stage to a clinic board",
+        "description": "«Agregar etapa calificadora» (ADR 0163, vitrina-app#8081): gives a clinic's selling board its Etapa calificadora in one step: an open stage «Calificado» right after the entry stage, marked `qualifies_lead`, driver `conversation`, Paso del embudo «Sin cita» on the clinic board, with its standard description. The board's transition whitelist is opened for it (from the entry stage, and from whatever reaches the entry stage); an EMPTY whitelist stays unrestricted. `outcome`: `created`; `marked_existing` (an unmarked open stage already named «Calificado» was marked instead of adding a second); `already_marked` (the board marks one already; nothing written). While the board marks it, the clinic's AI agent may move a lead there when its own instructions define filter questions and the patient's answers pass them; un-marking the stage (`PUT /stages/{id}` `{ \"qualifies_lead\": false }`) turns that off. 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED` outside clinics or on a board that does not sell.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Pipelines"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Qualifying stage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "pipeline_id": "44444444-0000-4000-8000-000000000001",
+                    "stage_id": "9b2f6c1e-4d7a-4f3b-8c2e-1a5d7e9f0b34",
+                    "outcome": "created"
                   }
                 }
               }

@@ -7065,6 +7065,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/pipelines/{id}/qualifying-stage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add the qualifying stage to a clinic board
+         * @description «Agregar etapa calificadora» (ADR 0163, vitrina-app#8081): gives a clinic's selling board its Etapa calificadora in one step: an open stage «Calificado» right after the entry stage, marked `qualifies_lead`, driver `conversation`, Paso del embudo «Sin cita» on the clinic board, with its standard description. The board's transition whitelist is opened for it (from the entry stage, and from whatever reaches the entry stage); an EMPTY whitelist stays unrestricted. `outcome`: `created`; `marked_existing` (an unmarked open stage already named «Calificado» was marked instead of adding a second); `already_marked` (the board marks one already; nothing written). While the board marks it, the clinic's AI agent may move a lead there when its own instructions define filter questions and the patient's answers pass them; un-marking the stage (`PUT /stages/{id}` `{ "qualifies_lead": false }`) turns that off. 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED` outside clinics or on a board that does not sell.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Qualifying stage */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pipeline_id": "44444444-0000-4000-8000-000000000001",
+                         *         "stage_id": "9b2f6c1e-4d7a-4f3b-8c2e-1a5d7e9f0b34",
+                         *         "outcome": "created"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/pipelines/{id}": {
         parameters: {
             query?: never;
