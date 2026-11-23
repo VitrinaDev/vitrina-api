@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.122.0",
+    "version": "17.122.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -7290,6 +7290,25 @@
         ],
         "additionalProperties": false
       },
+      "SaleNoteDiscountInput": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "amount_clp": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "description",
+          "amount_clp"
+        ],
+        "additionalProperties": false
+      },
       "SaleNoteFieldChange": {
         "type": "object",
         "properties": {
@@ -7565,6 +7584,21 @@
           },
           "issued_at": {
             "type": "string"
+          },
+          "discount": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "amount_clp": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "description",
+              "amount_clp"
+            ]
           }
         }
       },
@@ -7790,6 +7824,105 @@
           "adjustments"
         ]
       },
+      "SaleNoteOwnerPayment": {
+        "type": "object",
+        "properties": {
+          "consignment_contract_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dueno_contact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "dueno_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "settled": {
+            "type": "boolean"
+          },
+          "estimated_amount_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "amount_paid_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "paid_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "paid_at_stated": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "liquidacion_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "consignment_contract_id",
+          "dueno_contact_id",
+          "dueno_name",
+          "settled",
+          "estimated_amount_clp",
+          "amount_paid_clp",
+          "paid_at",
+          "paid_at_stated",
+          "liquidacion_id"
+        ]
+      },
+      "SaleNoteDiscount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount_clp": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "created_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "amount_clp",
+          "created_at",
+          "created_by"
+        ]
+      },
       "SaleNoteRead": {
         "type": "object",
         "properties": {
@@ -7918,6 +8051,40 @@
                 "type": "null"
               }
             ]
+          },
+          "owner_payment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SaleNoteOwnerPayment"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "discounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleNoteDiscount"
+            }
+          },
+          "discounts_total_clp": {
+            "type": "integer"
+          },
+          "price_before_discounts_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "price_after_discounts": {
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         },
         "required": [
@@ -7936,7 +8103,12 @@
           "compraventa_outdated",
           "pending_price_change",
           "transfer_tax",
-          "settlement_difference"
+          "settlement_difference",
+          "owner_payment",
+          "discounts",
+          "discounts_total_clp",
+          "price_before_discounts_clp",
+          "price_after_discounts"
         ],
         "additionalProperties": {}
       },
@@ -8483,7 +8655,15 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ConsignmentContractMissingField"
-            }
+            },
+            "description": "What still holds the print: the dealership’s Datos legales and the owner’s name."
+          },
+          "blank_fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsignmentContractMissingField"
+            },
+            "description": "The owner’s facts that print as a line to complete by hand (app#8132): `owner.tax_id`, `owner.address_street`, `owner.comuna_code`. Never holds the print; `legal_data` still saves them."
           },
           "blocked": {
             "type": [
@@ -8508,6 +8688,7 @@
           "consignment_contract_id",
           "ready",
           "missing_fields",
+          "blank_fields",
           "blocked"
         ]
       },
@@ -8782,6 +8963,119 @@
           "derived_tenencia",
           "invoice_includes_iva",
           "amount_paid_clp"
+        ]
+      },
+      "DealerDocumentVehicleRef": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "make": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "model": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "year": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "registration_number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "make",
+          "model",
+          "version",
+          "year",
+          "registration_number",
+          "deleted"
+        ]
+      },
+      "ContactDealerDocument": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "sale_note",
+              "purchase_note",
+              "consignment",
+              "reservation"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "display_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "voided": {
+            "type": "boolean"
+          },
+          "amount_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "vehicle_ref": {
+            "$ref": "#/components/schemas/DealerDocumentVehicleRef"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "display_id",
+          "date",
+          "status",
+          "voided",
+          "amount_clp",
+          "vehicle_ref"
         ]
       },
       "GatewayPaymentRef": {
@@ -46247,6 +46541,158 @@
           "instrument",
           "required_fields"
         ]
+      },
+      "LastConsignmentTerms": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "consignment_contract_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "comision_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "percentage",
+              "fixed"
+            ]
+          },
+          "comision_value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "comision_mas_iva": {
+            "type": "boolean"
+          },
+          "comision_minima_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "comision_minima_mas_iva": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "consignment_contract_id",
+          "created_at",
+          "comision_type",
+          "comision_value",
+          "comision_mas_iva",
+          "comision_minima_clp",
+          "comision_minima_mas_iva"
+        ]
+      },
+      "TakeConsignmentVehicle": {
+        "type": "object",
+        "properties": {
+          "registration_number": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Patente, como la escribió el usuario (con guion o espacios está bien; se guarda limpia).",
+            "example": "KZTL-12"
+          },
+          "make": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "example": "Toyota"
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "example": "Yaris"
+          },
+          "year": {
+            "type": "integer",
+            "minimum": 1900,
+            "maximum": 2100,
+            "example": 2019
+          },
+          "price_amount": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "description": "Precio de venta publicado, en pesos. Obligatorio.",
+            "example": 8990000
+          },
+          "vehicle_type": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "camion",
+              "maquinaria",
+              "nautico",
+              "moto"
+            ],
+            "description": "Tipo de vehículo. Por defecto `auto`."
+          }
+        },
+        "required": [
+          "registration_number",
+          "make",
+          "model",
+          "year",
+          "price_amount"
+        ],
+        "description": "Un auto nuevo. Uno de `vehicle_id` o `vehicle`."
+      },
+      "TakeConsignmentOwner": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Rosa Pérez"
+          },
+          "tax_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64,
+            "description": "RUT del dueño, opcional. Sin RUT el contrato imprime una línea en blanco."
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50
+          },
+          "address_street": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200,
+            "description": "Calle y número, opcional. Necesita `comuna_code` (una dirección sin comuna no se guarda)."
+          },
+          "comuna_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{5}$"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "description": "Un dueño nuevo. Uno de `owner_contact_id` o `owner`."
       },
       "AdOrigin": {
         "type": [
@@ -135084,7 +135530,7 @@
     "/sale-notes": {
       "get": {
         "summary": "List notas de venta",
-        "description": "**Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.\n\n**Every row carries `contact_ref`, the person it names** (the buyer of a nota de venta or cotización, the holder of a reserva, the owner of a consignación), read in ONE tenant-scoped batch for the page so a client never fetches the contacts one by one: `{ id, name, tax_id, tax_id_kind, archived }`. `name` is the display name; `archived: true` = archived or merged away (the name is kept). `tax_id` / `tax_id_kind` (the RUT) are `null` unless the caller also holds `contacts:read`. `null` only when the row names nobody or the contact row is gone.\n\n**`price_approval` (app#7589).** Every nota de venta read (this list, `GET /sale-notes/{id}`, the create and approve answers) carries `price_approval: { id, status: pending|approved|rejected, is_correction, requested_at } | null`: the price approval the note waits on (a pending one wins), else its last one; `null` when it never needed one. Readable with `sale_notes:read` alone. An issued note with `status: pending` (and `is_correction: false`) is «Esperando aprobación del precio»; an issued note without is «Venta sin cerrar».\n\nFilter with `price_approval=pending|none`.\n\nThe dealership’s sale documents, newest first by `issued_at`. **Voided documents are INCLUDED by default** — a voided nota de venta keeps its folio and stays listable so \"where is nota de venta #47?\" has an answer (ADR 0058 §10). Pass `exclude_voided=true` to see only live ones; only the literal string `true` opts in, so `exclude_voided=false` does not hide them.\n\n**`lead_id` answers \"which nota de venta closed this deal?\"** (ERP S15-16) — a lead UUID or its folio (`L-89`); a foreign or unknown lead is a 404. It does NOT imply `exclude_voided`, deliberately: a voided document must stay reachable from the deal it closed, or the void becomes the one event that erases the answer. So a deal that was closed, voided and re-issued returns both documents here, and the live one is the row whose `status` is `issued`.\n\n**Every row carries `totals`** — the SAME object `GET /sale-notes/{id}` embeds, computed by the same roll-up: `total_a_pagar_clp` (price + IVA + Σ statutory add-ons), `total_pagos_clp`, `saldo_clp`, `payment_count`, `complete` and `gaps`. ⚠ **A POSITIVE `saldo_clp` means the customer has OVERPAID; a NEGATIVE one is what they still owe** (BR-245 — it is the sign the printed document uses). `total_a_pagar_clp` and `saldo_clp` are both **`null`** when `tax_clp` was never recorded, with `gaps` naming it: that is \"not computable\", never zero, and a client must render it as such rather than treating the unrecorded IVA as 0. Voided rows are totalled like any other — the money against them was really taken, and `status` is what says the document is dead. Do not sum the payments client-side; there is one definition of this balance and this is it.\n\n**`economics` — only for callers holding `dealership_economics:read`** (absent, not null, for everyone else): `margen_bruto_clp` (Margen bruto), `margen_neto_clp` (Utilidad del negocio), `comisiones_vendedores_clp` (Comisión) and `canal` (where the buyer came from), each the SAME figure `GET /margin` serves — one definition, computed in batch for the page. A figure that is not computable is `null`, never zero, and `gaps` names the missing input (`cost_rollup` = Falta el costo de compra, `liquidacion` = Falta liquidar). A participation with no recorded commission counts as zero, so `comisiones_vendedores_clp` is always a number. A voided row has `economics: null`.\n\n**`status`** narrows to one derived status; `status=issued` is the «Por aprobar» list (emitted, waiting for its approval — ADR 0114 §4).\n\nUnknown query parameters are a **400**, not a silent drop: a filter the caller believes is being applied, returning a full unfiltered list with a 200, is a worse answer than a refusal.",
+        "description": "**Every row carries `vehicle_ref`, the car it names**, read in ONE tenant-scoped batch for the page so a client never fetches the cars one by one: `{ id, title, make, model, version, year, registration_number, deleted }` (`registration_number` is the patente). It is served whatever the car’s state — sold, inactive, merged away or removed from Stock (`deleted: true`, last known name and plate kept) — and to any caller who may read the list, without `marketplace:read` and whatever sucursal the car sits at. `null` only when the row names no car or the car row is gone.\n\n**Every row carries `contact_ref`, the person it names** (the buyer of a nota de venta or cotización, the holder of a reserva, the owner of a consignación), read in ONE tenant-scoped batch for the page so a client never fetches the contacts one by one: `{ id, name, tax_id, tax_id_kind, archived }`. `name` is the display name; `archived: true` = archived or merged away (the name is kept). `tax_id` / `tax_id_kind` (the RUT) are `null` unless the caller also holds `contacts:read`. `null` only when the row names nobody or the contact row is gone.\n\n**`price_approval` (app#7589).** Every nota de venta read (this list, `GET /sale-notes/{id}`, the create and approve answers) carries `price_approval: { id, status: pending|approved|rejected, is_correction, requested_at } | null`: the price approval the note waits on (a pending one wins), else its last one; `null` when it never needed one. Readable with `sale_notes:read` alone. An issued note with `status: pending` (and `is_correction: false`) is «Esperando aprobación del precio»; an issued note without is «Venta sin cerrar».\n\nFilter with `price_approval=pending|none`.\n\nThe dealership’s sale documents, newest first by `issued_at`. **Voided documents are INCLUDED by default** — a voided nota de venta keeps its folio and stays listable so \"where is nota de venta #47?\" has an answer (ADR 0058 §10). Pass `exclude_voided=true` to see only live ones; only the literal string `true` opts in, so `exclude_voided=false` does not hide them.\n\n**`lead_id` answers \"which nota de venta closed this deal?\"** (ERP S15-16) — a lead UUID or its folio (`L-89`); a foreign or unknown lead is a 404. It does NOT imply `exclude_voided`, deliberately: a voided document must stay reachable from the deal it closed, or the void becomes the one event that erases the answer. So a deal that was closed, voided and re-issued returns both documents here, and the live one is the row whose `status` is `issued`.\n\n**Every row carries `totals`** — the SAME object `GET /sale-notes/{id}` embeds, computed by the same roll-up: `total_a_pagar_clp` (price + IVA + Σ statutory add-ons), `total_pagos_clp`, `saldo_clp`, `payment_count`, `complete` and `gaps`. `saldo_clp` counts the payments, the cars taken in part payment (`precio_toma_clp`) and the live credit, the same sum `funding` weighs on `GET /sale-notes/{id}`. ⚠ **A POSITIVE `saldo_clp` means the customer has OVERPAID; a NEGATIVE one is what they still owe** (BR-245 — it is the sign the printed document uses). `total_a_pagar_clp` and `saldo_clp` are both **`null`** when `tax_clp` was never recorded, with `gaps` naming it: that is \"not computable\", never zero, and a client must render it as such rather than treating the unrecorded IVA as 0. Voided rows are totalled like any other — the money against them was really taken, and `status` is what says the document is dead. Do not sum the payments client-side; there is one definition of this balance and this is it.\n\n**`economics` — only for callers holding `dealership_economics:read`** (absent, not null, for everyone else): `margen_bruto_clp` (Margen bruto), `margen_neto_clp` (Utilidad del negocio), `comisiones_vendedores_clp` (Comisión) and `canal` (where the buyer came from), each the SAME figure `GET /margin` serves — one definition, computed in batch for the page. A figure that is not computable is `null`, never zero, and `gaps` names the missing input (`cost_rollup` = Falta el costo de compra, `liquidacion` = Falta liquidar). A participation with no recorded commission counts as zero, so `comisiones_vendedores_clp` is always a number. A voided row has `economics: null`.\n\n**`status`** narrows to one derived status; `status=issued` is the «Por aprobar» list (emitted, waiting for its approval — ADR 0114 §4).\n\nUnknown query parameters are a **400**, not a silent drop: a filter the caller believes is being applied, returning a full unfiltered list with a 200, is a worse answer than a refusal.",
         "security": [
           {
             "BearerAuth": []
@@ -135727,6 +136173,13 @@
                       ]
                     },
                     "maxItems": 50
+                  },
+                  "discounts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/SaleNoteDiscountInput"
+                    },
+                    "maxItems": 20
                   }
                 },
                 "required": [
@@ -135877,7 +136330,7 @@
     "/sale-notes/{id}": {
       "get": {
         "summary": "Fetch one nota de venta",
-        "description": "**`price_approval` (app#7589).** Every nota de venta read (this list, `GET /sale-notes/{id}`, the create and approve answers) carries `price_approval: { id, status: pending|approved|rejected, is_correction, requested_at } | null`: the price approval the note waits on (a pending one wins), else its last one; `null` when it never needed one. Readable with `sale_notes:read` alone. An issued note with `status: pending` (and `is_correction: false`) is «Esperando aprobación del precio»; an issued note without is «Venta sin cerrar».\n\nAccepts the UUID **or the folio** (`V-47`) — the folio is the form a dealer actually has in hand. Only the `V-` series resolves here; another entity’s display id (`T-1247`) is not a nota de venta.\n\nA document belonging to another workspace is a 404, indistinguishable from one that does not exist.\n\n**It answers the money too.** `payments` is every amount received against this note with the instrument it arrived as; `totals` carries `total_a_pagar_clp` / `total_pagos_clp` / `saldo_clp` (a POSITIVE saldo is an over-payment, a NEGATIVE one is what the customer still owes); and since ERP S9-5 `funding` carries **BR-418’s verdict** — `standing` is `funded`, `overfunded` (with `saldo_a_favor_del_cliente_clp`), `short` (with `gap_clp`) or `not_computable`, plus the five `terms` it was reached from. `total_a_pagar_clp` INCLUDES the statutory add-ons charged beside the price (BR-243).\n\nNothing here is stored: the standing is DERIVED from the rows on every read, there is no `funding_standing` column, and there is nothing to write. A document issued without a funding plan reads `short`, which is the honest state and not an error.\n\n**`timeline` says who did what, by name** (ADR 0114 §4): one entry per step that happened, in the order the document lives them — `emitted` (`issued_at`, `emitted_by`), `approved`, `printed` (the compraventa in force) and `voided` — each with its instant and its `actor` (`{ id, name, kind }`, `kind` = `member` or `api_key`). `actor` is `null` when the document does not record who did it (a note emitted before `emitted_by` existed); `actor.name` is `null` when that person has no name on file. Show either in words — never as an anonymous teammate. Approval is a separate step under `sale_notes:write`, so the emitter and the approver are often different people.\n\n**`receivable_obligation_id`** is the open ledger receivable this note settles — pass it as `obligation_id` to `POST /payments` to apply a payment to this note. `null` once the note is voided (the void releases its money) or when it has no receivable.\n\n**`print_missing_fields`** is always `[]` (deprecated, app#7582): the nota de venta always prints. Kept for older screens.\n\n**`history`** lists every correction (app#7317), oldest first: `{ id, kind (terms | buyer | add_on | payment), changes: { field: { from, to } }, at, actor, on_approved_note, price_approval_id, authorised_by }`. A `payment` entry with `changes.payment.from: null` is money a staff member put on the note: `changes.payment.to.origin` is `recorded` (a new payment) or `applied` (an existing payment on the client’s account, applied to the note). **`compraventa_outdated`** is `true` when the compraventa in force was printed before a later price or buyer correction (reprint with `POST /sale-notes/{id}/compraventa`). **`pending_price_change`** is a below-floor correction waiting for a manager: `{ price_approval_id, requested_at, requested_by, requested_price_clp, proposed_terms }`, or `null`.\n\n**`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn. `delivered_by` (`{ contact_id, name }`) names who handed the car in when it is not the current buyer (after a buyer change the retoma stays the original person’s); `null` = the current buyer.\n\n**`credit` is the LIVE brokered credit, or `null`** (ERP S9-7) — the `institution` that is lending (BR-464 makes the financiera the credit’s identity on the document), the `amount_clp`, and its OWN `state`: `committed` (the bank has promised) or `disbursed` (the money has arrived, with `disbursed_at` / `disbursed_by` beside it). ⚠ **Both count the same in `funding`** (BR-463), so never read `funded` as \"the cash is in\" — read `credit.state` for that. The committed-vs-collected gap is exactly this pair of fields read side by side. ⚠ **The credit’s state is INDEPENDENT of the document’s `status`**: a voided nota de venta keeps its credit row untouched, and a disbursed credit does not make the document anything. Credits that were REPLACED or REMOVED are tombstoned and are deliberately not served here — they are history, not funding, and listing them beside the live one would invite a client to add them up. `credit.holder` (`{ contact_id, name }`) names whose name the credit is in when it is not the current buyer (after a buyer change it stays the original person’s); `null` = the current buyer.",
+        "description": "**`price_approval` (app#7589).** Every nota de venta read (this list, `GET /sale-notes/{id}`, the create and approve answers) carries `price_approval: { id, status: pending|approved|rejected, is_correction, requested_at } | null`: the price approval the note waits on (a pending one wins), else its last one; `null` when it never needed one. Readable with `sale_notes:read` alone. An issued note with `status: pending` (and `is_correction: false`) is «Esperando aprobación del precio»; an issued note without is «Venta sin cerrar».\n\nAccepts the UUID **or the folio** (`V-47`) — the folio is the form a dealer actually has in hand. Only the `V-` series resolves here; another entity’s display id (`T-1247`) is not a nota de venta.\n\nA document belonging to another workspace is a 404, indistinguishable from one that does not exist.\n\n**It answers the money too.** `payments` is every amount received against this note with the instrument it arrived as (and `instrument_stated`: `false` when the instrument is the default `transferencia` nobody chose, so a screen shows no medio, like the paper; `null` on a payment recorded before app#8130); `totals` carries `total_a_pagar_clp` / `total_pagos_clp` / `saldo_clp` (a POSITIVE saldo is an over-payment, a NEGATIVE one is what the customer still owes; it counts the cars taken in part payment and the live credit, so it always equals `funding.saldo_clp`); and since ERP S9-5 `funding` carries **BR-418’s verdict** — `standing` is `funded`, `overfunded` (with `saldo_a_favor_del_cliente_clp`), `short` (with `gap_clp`) or `not_computable`, plus the five `terms` it was reached from. `total_a_pagar_clp` INCLUDES the statutory add-ons charged beside the price (BR-243).\n\nNothing here is stored: the standing is DERIVED from the rows on every read, there is no `funding_standing` column, and there is nothing to write. A document issued without a funding plan reads `short`, which is the honest state and not an error.\n\n**`timeline` says who did what, by name** (ADR 0114 §4): one entry per step that happened, in the order the document lives them — `emitted` (`issued_at`, `emitted_by`), `approved`, `printed` (the compraventa in force) and `voided` — each with its instant and its `actor` (`{ id, name, kind }`, `kind` = `member` or `api_key`). `actor` is `null` when the document does not record who did it (a note emitted before `emitted_by` existed); `actor.name` is `null` when that person has no name on file. Show either in words — never as an anonymous teammate. Approval is a separate step under `sale_notes:write`, so the emitter and the approver are often different people.\n\n**`receivable_obligation_id`** is the open ledger receivable this note settles — pass it as `obligation_id` to `POST /payments` to apply a payment to this note. `null` once the note is voided (the void releases its money) or when it has no receivable.\n\n**`print_missing_fields`** is always `[]` (deprecated, app#7582): the nota de venta always prints. Kept for older screens.\n\n**`history`** lists every correction (app#7317), oldest first: `{ id, kind (terms | buyer | add_on | payment), changes: { field: { from, to } }, at, actor, on_approved_note, price_approval_id, authorised_by }`. A `payment` entry with `changes.payment.from: null` is money a staff member put on the note: `changes.payment.to.origin` is `recorded` (a new payment) or `applied` (an existing payment on the client’s account, applied to the note). **`compraventa_outdated`** is `true` when the compraventa in force was printed before a later price or buyer correction (reprint with `POST /sale-notes/{id}/compraventa`). **`pending_price_change`** is a below-floor correction waiting for a manager: `{ price_approval_id, requested_at, requested_by, requested_price_clp, proposed_terms }`, or `null`.\n\n**`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn. `delivered_by` (`{ contact_id, name }`) names who handed the car in when it is not the current buyer (after a buyer change the retoma stays the original person’s); `null` = the current buyer.\n\n**`credit` is the LIVE brokered credit, or `null`** (ERP S9-7) — the `institution` that is lending (BR-464 makes the financiera the credit’s identity on the document), the `amount_clp`, and its OWN `state`: `committed` (the bank has promised) or `disbursed` (the money has arrived, with `disbursed_at` / `disbursed_by` beside it). ⚠ **Both count the same in `funding`** (BR-463), so never read `funded` as \"the cash is in\" — read `credit.state` for that. The committed-vs-collected gap is exactly this pair of fields read side by side. ⚠ **The credit’s state is INDEPENDENT of the document’s `status`**: a voided nota de venta keeps its credit row untouched, and a disbursed credit does not make the document anything. Credits that were REPLACED or REMOVED are tombstoned and are deliberately not served here — they are history, not funding, and listing them beside the live one would invite a client to add them up. `credit.holder` (`{ contact_id, name }`) names whose name the credit is in when it is not the current buyer (after a buyer change it stays the original person’s); `null` = the current buyer.",
         "security": [
           {
             "BearerAuth": []
@@ -135963,6 +136416,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -136006,6 +136460,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -136087,7 +136545,7 @@
       },
       "patch": {
         "summary": "Correct the price terms of a nota de venta (issued or approved)",
-        "description": "Corrects `net_clp`, `tax_clp` (null = not recorded, 0 = no tax), `tax_treatment`, `issued_at` and/or the precio de toma (`trade_ins`) on a nota de venta that is ISSUED or APPROVED and not voided, with no cutoff. All optional, at least one; unknown keys are a 400. In one transaction the edit re-derives what issuing at the new terms would have: the buyer’s receivable (the sale note’s open obligation, re-stated from price + IVA + charged add-ons) and the participations’ DEFAULTED commissions (the margin basis and, when the sale’s day moves, the scheme rate); `discount_clp` follows. Payments already recorded, add-on lines, trade-ins, the credit and `list_price_clp` are kept; on an approved note the car stays sold and the deal stays won. Every correction writes a `history` entry (actor, instant, each field `{ from, to }`); a compraventa printed before it reads `compraventa_outdated: true` until it is reprinted. Responds with the same read as `GET /sale-notes/{id}` plus `correction: { outcome, price_approval_id, change_id }`, `outcome` = `applied` | `unchanged` (sending the values it already has is a no-op 200) | `pending_approval`.\n\n**202 `pending_approval`**: on an APPROVED note, a correction that lowers the price below the floor (the price-approval policy, tolerance included) by a caller WITHOUT `price_approval:approve` is not applied. It is filed as a price approval on the note carrying the proposed terms (`proposed_terms` on `GET /price-approvals`), shown as `pending_price_change` on the note; granting it (`POST /price-approvals/{id}/decision`) applies the correction in the same transaction, rejecting it leaves the note as it was. A caller holding `price_approval:approve`, a grant on this note that covers the price, a raise, or a pending (unapproved) note applies directly.\n\n**409** with `details.blocked_reason` = `sale_note_voided`, or `sale_note_approved` only when a PENDING note was approved while the edit ran (nothing changed; retry, it now applies the approved-note rule), and a Spanish message. Requires `sale_notes:write`.\n\n**`observaciones`** (app#7581) rides the same body: a string sets the text printed on the nota de venta (trimmed, up to 2000 characters), `null` or blank clears it. It is not a money fact: it applies on an issued or approved note with no price approval, no `history` entry and no `compraventa_outdated` (audited as `sale_notes.set_observaciones`). Sent alone it answers 200 with `correction.outcome` `applied` (or `unchanged`) and `change_id: null`; on a voided note it is the same **409** `sale_note_voided`.\n\n**`trade_ins`** (vitrina-app#7725): `[{ vehicle_id, precio_toma_clp }]` changes the precio de toma of cars this sale already took in part payment (cars are neither added nor removed here), on an issued or approved note. In one transaction, per car that moved: the trade-in line (the credit: the saldo follows on the next read), the car’s `retoma` cost (so its Ganancia follows when it sells), its live nota de compra’s amount (stamped as corrected) and a `history` entry (`kind: terms`, field `precio_toma_clp`). `correction.trade_ins` lists what moved: `{ vehicle_id, from_clp, to_clp, purchase_note_id, purchase_note_display_id, change_id }` (`[]` when nothing moved). 400 for a car the sale did not take, and `discounts_exceed_price` when the new price is below the nota de compra’s «Descuentos».",
+        "description": "Corrects `net_clp`, `tax_clp` (null = not recorded, 0 = no tax), `tax_treatment`, `issued_at` and/or the precio de toma (`trade_ins`) on a nota de venta that is ISSUED or APPROVED and not voided, with no cutoff. All optional, at least one; unknown keys are a 400. In one transaction the edit re-derives what issuing at the new terms would have: the buyer’s receivable (the sale note’s open obligation, re-stated from price + IVA + charged add-ons) and the participations’ DEFAULTED commissions (the margin basis and, when the sale’s day moves, the scheme rate); `discount_clp` follows. Payments already recorded, add-on lines, trade-ins, the credit and `list_price_clp` are kept; on an approved note the car stays sold and the deal stays won. Every correction writes a `history` entry (actor, instant, each field `{ from, to }`); a compraventa printed before it reads `compraventa_outdated: true` until it is reprinted. Responds with the same read as `GET /sale-notes/{id}` plus `correction: { outcome, price_approval_id, change_id }`, `outcome` = `applied` | `unchanged` (sending the values it already has is a no-op 200) | `pending_approval`.\n\n**202 `pending_approval`**: on an APPROVED note, a correction that lowers the price below the floor (the price-approval policy, tolerance included) by a caller WITHOUT `price_approval:approve` is not applied. It is filed as a price approval on the note carrying the proposed terms (`proposed_terms` on `GET /price-approvals`), shown as `pending_price_change` on the note; granting it (`POST /price-approvals/{id}/decision`) applies the correction in the same transaction, rejecting it leaves the note as it was. A caller holding `price_approval:approve`, a grant on this note that covers the price, a raise, or a pending (unapproved) note applies directly.\n\n**409** with `details.blocked_reason` = `sale_note_voided`, or `sale_note_approved` only when a PENDING note was approved while the edit ran (nothing changed; retry, it now applies the approved-note rule), and a Spanish message. Requires `sale_notes:write`.\n\n**`observaciones`** (app#7581) rides the same body: a string sets the text printed on the nota de venta (trimmed, up to 2000 characters), `null` or blank clears it. It is not a money fact: it applies on an issued or approved note with no price approval, no `history` entry and no `compraventa_outdated` (audited as `sale_notes.set_observaciones`). Sent alone it answers 200 with `correction.outcome` `applied` (or `unchanged`) and `change_id: null`; on a voided note it is the same **409** `sale_note_voided`.\n\n**`trade_ins`** (vitrina-app#7725): `[{ vehicle_id, precio_toma_clp }]` changes the precio de toma of cars this sale already took in part payment (cars are neither added nor removed here), on an issued or approved note. In one transaction, per car that moved: the trade-in line (the credit: the saldo follows on the next read), the car’s `retoma` cost (so its Ganancia follows when it sells), its live nota de compra’s amount (stamped as corrected) and a `history` entry (`kind: terms`, field `precio_toma_clp`). `correction.trade_ins` lists what moved: `{ vehicle_id, from_clp, to_clp, purchase_note_id, purchase_note_display_id, change_id }` (`[]` when nothing moved). 400 for a car the sale did not take, and `discounts_exceed_price` when the new price is below the nota de compra’s «Descuentos».\n\n**«Descuento» lines** (app#8131): `net_clp` / `tax_clp` are the note’s amounts AFTER its Descuentos, as `GET` serves them. **`sale_price_clp`** is «Corregir precio» in the dealer’s terms: the Precio de venta as typed (IVA included when afecto), before the Descuentos, which the server subtracts (not combinable with `net_clp` / `tax_clp`; 400 `discounts_exceed_price` when they reach it). When the price moves, a «Gastos de transferencia» line that was never typed by hand follows the new price after Descuentos (a `history` entry `kind: add_on` with `to.estimated: true`); a typed one is left alone.",
         "security": [
           {
             "BearerAuth": []
@@ -136122,6 +136580,11 @@
                 "type": "object",
                 "properties": {
                   "net_clp": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999999
+                  },
+                  "sale_price_clp": {
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 999999999999
@@ -136247,6 +136710,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -136290,6 +136754,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -136363,6 +136831,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -136406,6 +136875,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -137285,6 +137758,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -137328,6 +137802,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -137523,6 +138001,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -137566,6 +138045,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -137884,6 +138367,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -137927,6 +138411,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -138115,6 +138603,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -138158,6 +138647,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -138387,6 +138880,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -138430,6 +138924,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -138549,6 +139047,630 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/sale-notes/{id}/discounts": {
+      "post": {
+        "summary": "Add a «Descuento» line to a nota de venta",
+        "description": "Adds a «Descuento» (app#8131, ADR 0166 decision 7): `{ description, amount_clp }`, the detail the paper prints and what it takes off what the buyer pays for the car (IVA included when afecto). On a note that is ISSUED or APPROVED and not voided, with `sale_notes:write`, like an add-on. The Precio de venta stays as typed (`price_before_discounts_clp` on the read); the note’s `net_clp` / `tax_clp` become the price after every Descuento (`price_after_discounts`), so `totals`, `funding`, Ganancias, the defaulted commissions, the receivable and a consigned car’s liquidación use the net. In one transaction, through the same path as `PATCH /sale-notes/{id}`: the line, the amounts, the defaulted commissions, the «Gastos de transferencia» estimate when it was never typed by hand, the receivable and a `history` entry (`kind: terms`, `changes.discount: { from: null, to: { discount_id, description, amount_clp } }` beside `net_clp` / `tax_clp`). Responds with the read of `GET /sale-notes/{id}` plus `correction`.\n\n**201** applied. **202** `correction.outcome = pending_approval`: on an APPROVED note, a price after Descuentos below the floor by a caller without `price_approval:approve` is filed as a price approval whose `proposed_terms.discount` carries the line; granting it adds the line. **400** `details.reason = discounts_exceed_price` when the Descuentos would equal or exceed the Precio de venta, or a blank detail / a non-positive amount. **409** `details.blocked_reason` = `sale_note_voided`, or `tax_not_recorded` (an afecto note with no IVA recorded).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Sale Notes"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^V-\\d+$"
+                }
+              ]
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaleNoteDiscountInput"
+              },
+              "example": {
+                "description": "Por pago al contado",
+                "amount_clp": 200000
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The nota de venta, as GET /sale-notes/{id} reads it, plus correction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SaleNoteRead"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                    "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                    "display_id": "V-118",
+                    "display_seq": 118,
+                    "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                    "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                    "lead_id": null,
+                    "converted_from_reservation_id": null,
+                    "observaciones": "Se entrega con dos llaves y la mantención al día.",
+                    "seller_of_record": "automotora",
+                    "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                    "net_clp": 8300000,
+                    "list_price_clp": 12490000,
+                    "discount_clp": 590000,
+                    "tax_clp": 0,
+                    "tax_treatment": "exento",
+                    "status": "issued",
+                    "issued_at": "2026-09-19T13:00:00.000Z",
+                    "emitted_by": "11111111-0000-4000-8000-000000000001",
+                    "approved_by": null,
+                    "approved_at": null,
+                    "voided_at": null,
+                    "void_reason": null,
+                    "voided_by": null,
+                    "created_at": "2026-09-19T13:00:00.000Z",
+                    "updated_at": "2026-09-19T13:00:00.000Z",
+                    "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                    "print_missing_fields": [],
+                    "payments": [
+                      {
+                        "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                        "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                        "reservation_id": null,
+                        "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                        "carried_from_reservation_id": null,
+                        "instrument": "transferencia",
+                        "instrument_stated": true,
+                        "amount_clp": 13800000,
+                        "paid_on": "2026-09-19",
+                        "bank": "Banco de Chile",
+                        "account_number": null,
+                        "document_number": null,
+                        "note": null,
+                        "card_fee_bps": null,
+                        "card_surcharge_clp": null,
+                        "card_surcharge_source": null,
+                        "created_at": "2026-09-19T13:05:00.000Z"
+                      }
+                    ],
+                    "totals": {
+                      "total_a_pagar_clp": 13800000,
+                      "total_pagos_clp": 13800000,
+                      "saldo_clp": 0,
+                      "recargo_tarjeta_clp": 0,
+                      "total_a_cobrar_clp": 13800000,
+                      "payment_count": 1,
+                      "complete": true,
+                      "gaps": []
+                    },
+                    "funding": {
+                      "standing": "funded",
+                      "balanced": true,
+                      "terms": {
+                        "price_clp": 13800000,
+                        "add_on_charges_clp": 0,
+                        "payments_clp": 13800000,
+                        "retoma_clp": 0,
+                        "credit_clp": 0
+                      },
+                      "total_a_pagar_clp": 13800000,
+                      "total_consideration_clp": 13800000,
+                      "saldo_clp": 0,
+                      "gap_clp": null,
+                      "saldo_a_favor_del_cliente_clp": null,
+                      "payment_count": 1,
+                      "complete": true,
+                      "gaps": []
+                    },
+                    "trade_ins": [],
+                    "credit": null,
+                    "discounts": [
+                      {
+                        "id": "01a1c1df-a6ea-779f-9310-bdbb2eadd201",
+                        "description": "Por pago al contado",
+                        "amount_clp": 200000,
+                        "created_at": "2026-11-22T15:00:00.000Z",
+                        "created_by": "11111111-0000-4000-8000-000000000001"
+                      }
+                    ],
+                    "discounts_total_clp": 200000,
+                    "price_before_discounts_clp": 8500000,
+                    "price_after_discounts": 8300000,
+                    "timeline": [
+                      {
+                        "step": "emitted",
+                        "at": "2026-09-19T13:00:00.000Z",
+                        "actor": {
+                          "id": "11111111-0000-4000-8000-000000000001",
+                          "name": "Martina Reyes",
+                          "kind": "member"
+                        }
+                      }
+                    ],
+                    "correction": {
+                      "outcome": "applied",
+                      "price_approval_id": null,
+                      "change_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd202",
+                      "trade_ins": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Waiting for a manager: the price approval carries the line",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SaleNoteRead"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                    "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                    "display_id": "V-118",
+                    "display_seq": 118,
+                    "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                    "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                    "lead_id": null,
+                    "converted_from_reservation_id": null,
+                    "observaciones": "Se entrega con dos llaves y la mantención al día.",
+                    "seller_of_record": "automotora",
+                    "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                    "net_clp": 8300000,
+                    "list_price_clp": 12490000,
+                    "discount_clp": 590000,
+                    "tax_clp": 0,
+                    "tax_treatment": "exento",
+                    "status": "issued",
+                    "issued_at": "2026-09-19T13:00:00.000Z",
+                    "emitted_by": "11111111-0000-4000-8000-000000000001",
+                    "approved_by": null,
+                    "approved_at": null,
+                    "voided_at": null,
+                    "void_reason": null,
+                    "voided_by": null,
+                    "created_at": "2026-09-19T13:00:00.000Z",
+                    "updated_at": "2026-09-19T13:00:00.000Z",
+                    "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                    "print_missing_fields": [],
+                    "payments": [
+                      {
+                        "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                        "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                        "reservation_id": null,
+                        "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                        "carried_from_reservation_id": null,
+                        "instrument": "transferencia",
+                        "instrument_stated": true,
+                        "amount_clp": 13800000,
+                        "paid_on": "2026-09-19",
+                        "bank": "Banco de Chile",
+                        "account_number": null,
+                        "document_number": null,
+                        "note": null,
+                        "card_fee_bps": null,
+                        "card_surcharge_clp": null,
+                        "card_surcharge_source": null,
+                        "created_at": "2026-09-19T13:05:00.000Z"
+                      }
+                    ],
+                    "totals": {
+                      "total_a_pagar_clp": 13800000,
+                      "total_pagos_clp": 13800000,
+                      "saldo_clp": 0,
+                      "recargo_tarjeta_clp": 0,
+                      "total_a_cobrar_clp": 13800000,
+                      "payment_count": 1,
+                      "complete": true,
+                      "gaps": []
+                    },
+                    "funding": {
+                      "standing": "funded",
+                      "balanced": true,
+                      "terms": {
+                        "price_clp": 13800000,
+                        "add_on_charges_clp": 0,
+                        "payments_clp": 13800000,
+                        "retoma_clp": 0,
+                        "credit_clp": 0
+                      },
+                      "total_a_pagar_clp": 13800000,
+                      "total_consideration_clp": 13800000,
+                      "saldo_clp": 0,
+                      "gap_clp": null,
+                      "saldo_a_favor_del_cliente_clp": null,
+                      "payment_count": 1,
+                      "complete": true,
+                      "gaps": []
+                    },
+                    "trade_ins": [],
+                    "credit": null,
+                    "discounts": [
+                      {
+                        "id": "01a1c1df-a6ea-779f-9310-bdbb2eadd201",
+                        "description": "Por pago al contado",
+                        "amount_clp": 200000,
+                        "created_at": "2026-11-22T15:00:00.000Z",
+                        "created_by": "11111111-0000-4000-8000-000000000001"
+                      }
+                    ],
+                    "discounts_total_clp": 200000,
+                    "price_before_discounts_clp": 8500000,
+                    "price_after_discounts": 8300000,
+                    "timeline": [
+                      {
+                        "step": "emitted",
+                        "at": "2026-09-19T13:00:00.000Z",
+                        "actor": {
+                          "id": "11111111-0000-4000-8000-000000000001",
+                          "name": "Martina Reyes",
+                          "kind": "member"
+                        }
+                      }
+                    ],
+                    "correction": {
+                      "outcome": "applied",
+                      "price_approval_id": null,
+                      "change_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd202",
+                      "trade_ins": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/sale-notes/{id}/discounts/{discountId}": {
+      "delete": {
+        "summary": "Remove a «Descuento» line from a nota de venta",
+        "description": "Removes one «Descuento» (app#8131) from a nota de venta that is ISSUED or APPROVED and not voided: the price after Descuentos goes back up by its amount (never a price approval). Same transaction and same `history` entry as adding one (`changes.discount: { from: <the line>, to: null }`). Responds with the read of `GET /sale-notes/{id}` plus `correction`. **404** when `discountId` is not a Descuento of this note; **409** `sale_note_voided`. Requires `sale_notes:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Sale Notes"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "discountId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The nota de venta, as GET /sale-notes/{id} reads it, plus correction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SaleNoteRead"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                    "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                    "display_id": "V-118",
+                    "display_seq": 118,
+                    "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                    "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                    "lead_id": null,
+                    "converted_from_reservation_id": null,
+                    "observaciones": "Se entrega con dos llaves y la mantención al día.",
+                    "seller_of_record": "automotora",
+                    "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                    "net_clp": 8300000,
+                    "list_price_clp": 12490000,
+                    "discount_clp": 590000,
+                    "tax_clp": 0,
+                    "tax_treatment": "exento",
+                    "status": "issued",
+                    "issued_at": "2026-09-19T13:00:00.000Z",
+                    "emitted_by": "11111111-0000-4000-8000-000000000001",
+                    "approved_by": null,
+                    "approved_at": null,
+                    "voided_at": null,
+                    "void_reason": null,
+                    "voided_by": null,
+                    "created_at": "2026-09-19T13:00:00.000Z",
+                    "updated_at": "2026-09-19T13:00:00.000Z",
+                    "receivable_obligation_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd184",
+                    "print_missing_fields": [],
+                    "payments": [
+                      {
+                        "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                        "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                        "reservation_id": null,
+                        "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                        "carried_from_reservation_id": null,
+                        "instrument": "transferencia",
+                        "instrument_stated": true,
+                        "amount_clp": 13800000,
+                        "paid_on": "2026-09-19",
+                        "bank": "Banco de Chile",
+                        "account_number": null,
+                        "document_number": null,
+                        "note": null,
+                        "card_fee_bps": null,
+                        "card_surcharge_clp": null,
+                        "card_surcharge_source": null,
+                        "created_at": "2026-09-19T13:05:00.000Z"
+                      }
+                    ],
+                    "totals": {
+                      "total_a_pagar_clp": 13800000,
+                      "total_pagos_clp": 13800000,
+                      "saldo_clp": 0,
+                      "recargo_tarjeta_clp": 0,
+                      "total_a_cobrar_clp": 13800000,
+                      "payment_count": 1,
+                      "complete": true,
+                      "gaps": []
+                    },
+                    "funding": {
+                      "standing": "funded",
+                      "balanced": true,
+                      "terms": {
+                        "price_clp": 13800000,
+                        "add_on_charges_clp": 0,
+                        "payments_clp": 13800000,
+                        "retoma_clp": 0,
+                        "credit_clp": 0
+                      },
+                      "total_a_pagar_clp": 13800000,
+                      "total_consideration_clp": 13800000,
+                      "saldo_clp": 0,
+                      "gap_clp": null,
+                      "saldo_a_favor_del_cliente_clp": null,
+                      "payment_count": 1,
+                      "complete": true,
+                      "gaps": []
+                    },
+                    "trade_ins": [],
+                    "credit": null,
+                    "discounts": [
+                      {
+                        "id": "01a1c1df-a6ea-779f-9310-bdbb2eadd201",
+                        "description": "Por pago al contado",
+                        "amount_clp": 200000,
+                        "created_at": "2026-11-22T15:00:00.000Z",
+                        "created_by": "11111111-0000-4000-8000-000000000001"
+                      }
+                    ],
+                    "discounts_total_clp": 200000,
+                    "price_before_discounts_clp": 8500000,
+                    "price_after_discounts": 8300000,
+                    "timeline": [
+                      {
+                        "step": "emitted",
+                        "at": "2026-09-19T13:00:00.000Z",
+                        "actor": {
+                          "id": "11111111-0000-4000-8000-000000000001",
+                          "name": "Martina Reyes",
+                          "kind": "member"
+                        }
+                      }
+                    ],
+                    "correction": {
+                      "outcome": "applied",
+                      "price_approval_id": null,
+                      "change_id": "01a1c1df-a6ea-779f-9310-bdbb2eadd202",
+                      "trade_ins": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      }
+    },
     "/sale-notes/{id}/add-ons/{lineId}/recalculate": {
       "post": {
         "summary": "Recalculate the transfer tax at the note’s current price",
@@ -138659,6 +139781,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 13800000,
                         "paid_on": "2026-09-19",
                         "bank": "Banco de Chile",
@@ -138702,6 +139825,10 @@
                     },
                     "trade_ins": [],
                     "credit": null,
+                    "discounts": [],
+                    "discounts_total_clp": 0,
+                    "price_before_discounts_clp": 13800000,
+                    "price_after_discounts": 13800000,
                     "timeline": [
                       {
                         "step": "emitted",
@@ -144466,7 +145593,7 @@
     "/consignments/{id}/contract": {
       "post": {
         "summary": "Print and freeze the contrato de consignación (mandato)",
-        "description": "Produces the **signed mandato con representación** for a contract and freezes it as an immutable `rendered_document` (ADR 0057) carrying both the clause version it was drafted under (`template_version`, S5-1) and the `consignment_revision` its mínimo was read from (`terms_version`, S5-2).\n\n**It is a write, and the scope is `consignments:write`.** The call brings a binding legal instrument into existence — BR-823 calls it \"the only instrument permitting a dealer to sell a car it does not own\" — storing bytes and appending an append-only row a court may later read.\n\n**There is no body and nothing is caller-supplied.** The parties, the vehicle, the comisión, the vencimiento and the clause prose are all read off the rows. A **409** names whichever fact the instrument cannot state without: no MANDANTE linked, no nombre/RUT/domicilio on the mandante (tipo de persona only for a foreign tax id; a RUT says it), no patente on the vehicle, or an unconfigured or ambiguous dealership identity. A missing Precio cliente or commission is not a gap (the sentences that state them are left out).\n\n**Legal data on request (app#7589).** The mandato asks for the data it prints only here: `GET /consignments/{id}/contract/requirements` lists it as one form, and this call may carry it as the optional body `{ legal_data: { \"<missing_fields[].key>\": \"<value>\" } }`: each value is saved where it belongs (the dealership’s Datos legales, created when the workspace has none, needs `organization_legal:write`; the owner’s contact needs `contacts:write`, else **403**; an unknown key is a **400**) and the contract prints in the same call. Still missing → **409** `details.blocked_reason: consignment_contract_data_missing` with `details.missing` (labels), `details.missing_fields` (the same shape as the requirements) and `details.legacy_blocked_reason` (`automotora_identity_missing` | `mandante_incomplete`, the code this refusal had before). The tipo de persona is never asked.\n\n**RE-PRINTING IS NOT A NEW INSTRUMENT.** The rendered bytes are a pure function of the contract — the printed date comes from the contract itself and the PDF `creationDate` is pinned to it, never a print-time clock (BR-501 corrected) — so a second call on an unchanged contract returns the **same artefact id and the same `sha256`** with `frozen: true` and a **200**, having written nothing. When an input genuinely changed — a renegotiated mínimo (a new `terms_version`), a corrected RUT, an edited comisión, a new template version — a **201** carries a NEW artefact whose `supersedes_id` names the previous one; the previous bytes are never edited, because `rendered_document` refuses an UPDATE outright.\n\n**THE WORDS ARE THE WORKSPACE’S (app#7586).** The text is the workspace’s `consignment` document template (Plantillas: its default, else its only one), else the platform’s standard text; `template_version` is `<key>-v<n>` or `mandato-de-consignacion-estandar`. Passages written `{{#NOMBRE}}…{{/NOMBRE}}` print only when the value exists (`{{^NOMBRE}}…{{/NOMBRE}}` only when it does not). A template that names a value this contract lacks outside such a passage prints the standard text instead of refusing. A template carrying a sin-representación formulation is a **400** with `error.details.blocked_reason = \"consignment_template_wording\"`. Re-posting on a contract already printed under another text (an older standard text or template version) issues a new artefact under the current one.",
+        "description": "Produces the **signed mandato con representación** for a contract and freezes it as an immutable `rendered_document` (ADR 0057) carrying both the clause version it was drafted under (`template_version`, S5-1) and the `consignment_revision` its mínimo was read from (`terms_version`, S5-2).\n\n**It is a write, and the scope is `consignments:write`.** The call brings a binding legal instrument into existence — BR-823 calls it \"the only instrument permitting a dealer to sell a car it does not own\" — storing bytes and appending an append-only row a court may later read.\n\n**There is no body and nothing is caller-supplied.** The parties, the vehicle, the comisión, the vencimiento and the clause prose are all read off the rows. A **409** names whichever fact the instrument cannot state without: no MANDANTE linked, no name on the mandante, no patente on the vehicle, or an unconfigured or ambiguous dealership identity. The owner’s RUT and domicilio are not gaps (app#8132): missing, they print as a line to complete by hand («RUT N° __________», «con domicilio en __________»), worded for a person when there is no RUT; printing again once they are on file gives the full text (company wording for a RUT of 50.000.000 or more; a tipo de persona set by hand wins). A missing Precio cliente or commission is not a gap (the sentences that state them are left out). The standard text also prints «Si se vende en $X, el dueño recibe $Y» at the car’s published price after the commission of a sale (the higher of the percentage and the Comisión mínima) and its IVA, when the car has a price and the contract a commission (variables `EJEMPLO_PRECIO_VENTA`, `EJEMPLO_MONTO_DUENO`).\n\n**Legal data on request (app#7589).** The mandato asks for the data it prints only here: `GET /consignments/{id}/contract/requirements` lists it as one form, and this call may carry it as the optional body `{ legal_data: { \"<missing_fields[].key | blank_fields[].key>\": \"<value>\" } }`: each value is saved where it belongs (the dealership’s Datos legales, created when the workspace has none, needs `organization_legal:write`; the owner’s contact needs `contacts:write`, else **403**; an unknown key is a **400**) and the contract prints in the same call. Still missing → **409** `details.blocked_reason: consignment_contract_data_missing` with `details.missing` (labels), `details.missing_fields` (the same shape as the requirements) and `details.legacy_blocked_reason` (`automotora_identity_missing` | `mandante_incomplete`, the code this refusal had before). The tipo de persona is never asked.\n\n**RE-PRINTING IS NOT A NEW INSTRUMENT.** The rendered bytes are a pure function of the contract — the printed date comes from the contract itself and the PDF `creationDate` is pinned to it, never a print-time clock (BR-501 corrected) — so a second call on an unchanged contract returns the **same artefact id and the same `sha256`** with `frozen: true` and a **200**, having written nothing. When an input genuinely changed — a renegotiated mínimo (a new `terms_version`), a corrected RUT, an edited comisión, a new template version — a **201** carries a NEW artefact whose `supersedes_id` names the previous one; the previous bytes are never edited, because `rendered_document` refuses an UPDATE outright.\n\n**THE WORDS ARE THE WORKSPACE’S (app#7586).** The text is the workspace’s `consignment` document template (Plantillas: its default, else its only one), else the platform’s standard text; `template_version` is `<key>-v<n>` or `mandato-de-consignacion-estandar`. Passages written `{{#NOMBRE}}…{{/NOMBRE}}` print only when the value exists (`{{^NOMBRE}}…{{/NOMBRE}}` only when it does not). A template that names a value this contract lacks outside such a passage prints the standard text instead of refusing. A template carrying a sin-representación formulation is a **400** with `error.details.blocked_reason = \"consignment_template_wording\"`. Re-posting on a contract already printed under another text (an older standard text or template version) issues a new artefact under the current one.",
         "security": [
           {
             "BearerAuth": []
@@ -144511,7 +145638,7 @@
                       "type": "string",
                       "maxLength": 500
                     },
-                    "description": "Values keyed by `missing_fields[].key` (e.g. `{\"owner.tax_id\": \"12.345.678-5\", \"house.comuna_code\": \"13123\"}`). Comunas are CUT codes. Blank values are ignored."
+                    "description": "Values keyed by `missing_fields[].key` or `blank_fields[].key` (e.g. `{\"owner.tax_id\": \"12.345.678-5\", \"house.comuna_code\": \"13123\"}`). Comunas are CUT codes. Blank values are ignored."
                   }
                 }
               },
@@ -144664,7 +145791,7 @@
     "/consignments/{id}/contract/requirements": {
       "get": {
         "summary": "What the contrato de consignación still needs",
-        "description": "The data the mandato prints and this consignment does not have yet, as ONE short form (app#7589). Asked only when the dealer requests the contract.\n\n`ready: true` = it prints now. `missing_fields[]` = `{ key, label, input, saved_to: { resource, id, field } }`: `key` is what `POST /consignments/{id}/contract` takes in `legal_data`; `label` is Spanish; `input` is `text` | `rut` | `comuna` (CUT code); `saved_to.resource` is `organization_legal` (the dealership’s Datos legales; `id: null` = created on save) or `contact` (the owner). Keys: `house.legal_name|tax_id|address_street|comuna_code` (what the mandato prints), plus `house.giro|representative_name` only when the workspace has no Datos legales yet (the record cannot exist without them); `owner.name|tax_id|address_street|comuna_code`. The tipo de persona, the escritura and the representative’s RUT are never asked. `blocked` (`{ reason, message }`, else `null`) is a state no form fixes: `owner_missing` (no owner linked), `vehicle_plate_missing`, `automotora_identity_ambiguous`.",
+        "description": "The data the mandato prints and this consignment does not have yet, as ONE short form (app#7589). Asked only when the dealer requests the contract.\n\n`ready: true` = it prints now. `missing_fields[]` = `{ key, label, input, saved_to: { resource, id, field } }`: `key` is what `POST /consignments/{id}/contract` takes in `legal_data`; `label` is Spanish; `input` is `text` | `rut` | `comuna` (CUT code); `saved_to.resource` is `organization_legal` (the dealership’s Datos legales; `id: null` = created on save) or `contact` (the owner). Keys: `house.legal_name|tax_id|address_street|comuna_code` (what the mandato prints), plus `house.giro|representative_name` only when the workspace has no Datos legales yet (the record cannot exist without them); `owner.name`. The tipo de persona, the escritura and the representative’s RUT are never asked. The owner’s RUT, calle and comuna never hold the print (app#8132): missing, they print as a line to complete by hand («RUT N° __________», «con domicilio en __________», worded for a person when there is no RUT) and are listed in `blank_fields[]` (same item shape, keys `owner.tax_id|address_street|comuna_code`) with `ready: true`; `legal_data` still saves them. `blocked` (`{ reason, message }`, else `null`) is a state no form fixes: `owner_missing` (no owner linked), `vehicle_plate_missing`, `automotora_identity_ambiguous`.",
         "security": [
           {
             "BearerAuth": []
@@ -144703,8 +145830,9 @@
                 "example": {
                   "data": {
                     "consignment_contract_id": "d7d7d7d7-0000-4000-8000-000000000001",
-                    "ready": false,
-                    "missing_fields": [
+                    "ready": true,
+                    "missing_fields": [],
+                    "blank_fields": [
                       {
                         "key": "owner.tax_id",
                         "label": "RUT del dueño",
@@ -146642,6 +147770,7 @@
                         "sale_note_id": null,
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 300000,
                         "paid_on": "2026-09-18",
                         "bank": "Banco Estado",
@@ -146941,6 +148070,7 @@
                         "sale_note_id": null,
                         "carried_from_reservation_id": null,
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 300000,
                         "paid_on": "2026-09-18",
                         "bank": "Banco Estado",
@@ -148106,6 +149236,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": "d3d3d3d3-0000-4000-8000-000000000001",
                         "instrument": "transferencia",
+                        "instrument_stated": true,
                         "amount_clp": 300000,
                         "paid_on": "2026-09-18",
                         "bank": "Banco Estado",
@@ -148261,6 +149392,7 @@
                         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
                         "carried_from_reservation_id": "d3d3d3d3-0000-4000-8000-000000000001",
                         "instrument": "tarjeta_credito",
+                        "instrument_stated": true,
                         "amount_clp": 8900000,
                         "paid_on": "2026-09-24",
                         "bank": null,
@@ -148408,7 +149540,7 @@
                       "tarjeta_credito",
                       "otro"
                     ],
-                    "description": "Medio de pago. Opcional: si se omite queda `transferencia` (ADR 0159: un pago pide solo su monto)."
+                    "description": "Medio de pago. Opcional: si se omite queda `transferencia` (ADR 0159: un pago pide solo su monto) con `instrument_stated: false`, y la nota de venta, la reserva y el contrato no nombran el medio (app#8130)."
                   },
                   "amount_clp": {
                     "type": "integer",
@@ -148492,6 +149624,7 @@
                     "sale_note_id": null,
                     "carried_from_reservation_id": null,
                     "instrument": "transferencia",
+                    "instrument_stated": true,
                     "amount_clp": 300000,
                     "paid_on": "2026-09-18",
                     "bank": "Banco Estado",
@@ -150096,6 +151229,151 @@
         },
         "x-vitrina-tier": "beta",
         "x-vitrina-destructive": true
+      }
+    },
+    "/contacts/{id}/dealer-documents": {
+      "get": {
+        "summary": "A contact’s dealer documents",
+        "description": "Automotive workspaces only (any other vertical gets the not-found answer of the vertical gate). Notas de venta where the contact is the buyer, notas de compra where they are the seller, consignments where they are the owner and reservas where they are the client, newest first, voided ones included with `voided: true`. Each row carries `kind`, `id` to open it, `display_id` (the folio; null for a consignment), `date`, `status`, `amount_clp` and `vehicle_ref`. Each kind is returned only if the caller holds the scope of its own list: `sale_notes:read`, `purchase_notes:read`, `consignments:read`, `reservations:read`. `limit` defaults to 50 (max 200); `meta.total` is the number of rows returned.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Contacts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The contact’s dealer documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ContactDealerDocument"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "kind": "sale_note",
+                      "id": "5b1f6e0e-2c0a-4d57-9a55-3f2f3a7c9d10",
+                      "display_id": "V-47",
+                      "date": "2026-11-05T15:00:00.000Z",
+                      "status": "approved",
+                      "voided": false,
+                      "amount_clp": 7000000,
+                      "vehicle_ref": {
+                        "id": "0a3c1d52-8a6e-4f0e-b2c1-6d5f2b9e7a11",
+                        "title": "Kia Rio 2019",
+                        "make": "Kia",
+                        "model": "Rio",
+                        "version": null,
+                        "year": 2019,
+                        "registration_number": "KJHG12",
+                        "deleted": false
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
       }
     },
     "/vehicles/kanban": {
@@ -331364,10 +332642,116 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/consignments/terms/last": {
+      "get": {
+        "summary": "The workspace’s last consignment terms",
+        "description": "What a new consignment form arrives with (app#8134): the commission of the most recent contract created in this workspace that states a commission or a Comisión mínima, whatever its estado (a returned, settled or expired contract counts; a consignment has no voided state; a contract with neither is skipped). Not a setting: nothing is stored, the last contract is the memory.\n\n`data` is `null` when the workspace has no such contract (200, never an error). Otherwise `{ consignment_contract_id, created_at, comision_type, comision_value, comision_mas_iva, comision_minima_clp, comision_minima_mas_iva }`: `comision_value` is percentage points (5 = 5 %) for `percentage` and whole CLP for `fixed`; `comision_type`/`comision_value` are both null when only a minimum was agreed. Precio cliente, plazo, cobro por retiro anticipado and observaciones are per car and are not returned.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Consignments"
+        ],
+        "responses": {
+          "200": {
+            "description": "The last terms, or null",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/LastConsignmentTerms"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "consignment_contract_id": "d7d7d7d7-0000-4000-8000-000000000001",
+                    "created_at": "2026-11-20T15:04:05.000Z",
+                    "comision_type": "percentage",
+                    "comision_value": 5,
+                    "comision_mas_iva": true,
+                    "comision_minima_clp": 500000,
+                    "comision_minima_mas_iva": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/consignments/{id}": {
       "get": {
         "summary": "Fetch one contract",
-        "description": "The contract as stored, whatever its state.",
+        "description": "The contract as stored, whatever its state, plus two read-only additions (app#8132). `worked_example`: `null`, or `{ sale_price_clp, owner_amount_clp }` at the car’s price, computed with the liquidación’s own formula (the higher of the percentage and the Comisión mínima, each with its own «más IVA»); `null` when the car has no price or the contract has neither commission nor minimum, exactly as the printed sentence. `sale_note`: `null`, or `{ id, display_id, status }` of the sale that closed the car (live approved nota de venta; `null` while there is none). `owner_payment`: `null` with no closed sale, otherwise what is owed to the owner, the same block as `owner_payment` on `GET /sale-notes/{id}` (`settled`, `estimated_amount_clp` or `amount_paid_clp`, `paid_at`, `paid_at_stated`, `liquidacion_id`, the owner). The same three fields sit on `data.consignment` of `POST /consignments/take`.",
         "security": [
           {
             "BearerAuth": []
@@ -331429,7 +332813,13 @@
                     "observaciones": "Se entrega con dos llaves.",
                     "returned_at": null,
                     "return_deactivated_vehicle": null,
-                    "not_on_lot": false
+                    "not_on_lot": false,
+                    "worked_example": {
+                      "sale_price_clp": 8990000,
+                      "owner_amount_clp": 7920190
+                    },
+                    "sale_note": null,
+                    "owner_payment": null
                   }
                 }
               }
@@ -331811,6 +333201,399 @@
           }
         },
         "x-vitrina-tier": "beta"
+      }
+    },
+    "/consignments/take": {
+      "post": {
+        "summary": "Take a car in consignment in one call",
+        "description": "«Guardar e imprimir contrato» (app#8133, ADR 0166 decision 2): the car, the owner and the consignment are saved together, or nothing is; then the contract is printed.\n\n**The car:** `vehicle_id` (a car already in Stock) OR `vehicle` with the five facts of «Agregar vehículo» (`registration_number`, `make`, `model`, `year`, `price_amount`; `vehicle_type` defaults to `auto`). A new car is created exactly as `POST /vehicles` creates it (plate stored clean, same plate checks) and needs `marketplace:write`.\n\n**The owner:** `owner_contact_id` OR `owner` with a `name` and, optionally, `tax_id`, `phone`, `address_street` (with `comuna_code`) and `comuna_code`. A new owner is created as `POST /contacts` creates it and needs `contacts:write`.\n\n**The terms:** at the top level, exactly as `POST /consignments` takes them; `modalidad` defaults to `en_local`. `generate_contract` (default true) prints the contract after saving.\n\n**All or nothing.** A refusal (a plate already in Stock, a car already consigned, a RUT that belongs to another contact, and with `generate_contract` a car with no patente or an owner with no name) saves nothing and answers with `error.field_errors` keyed by the request’s dot paths (`vehicle.registration_number`, `owner.tax_id`, `vehicle_id`, `owner_contact_id`, `comision_value`, …). The same webhooks as the separate calls fire once, after the commit (`vehicle.created`, `contact.created`, `consignment.created`).\n\n**The contract** (`data.contract`): `status: ready` with `document` (the same artefact `GET /consignments/{id}/contract` lists) and `pdf_path` (`GET /consignments/{id}/contract/pdf`); `status: pending` when the car and the consignment were saved but the contract could not be printed for a reason of the dealership’s own (`pending.reason`: `house_legal_data_missing` with the fields in `pending.missing_fields`, `automotora_identity_ambiguous`, `consignment_template_wording`, `contract_not_issued`), printable later with `POST /consignments/{id}/contract`; `status: not_requested` with `generate_contract: false`. A consignment whose contract printed here counts as emitted for the sale (ADR 0114 §5). Answers 201.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Consignments"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "vehicle_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Un auto que ya está en Stock. Uno de `vehicle_id` o `vehicle`."
+                  },
+                  "vehicle": {
+                    "$ref": "#/components/schemas/TakeConsignmentVehicle"
+                  },
+                  "owner_contact_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Un contacto que ya existe como dueño. Uno de `owner_contact_id` o `owner`."
+                  },
+                  "owner": {
+                    "$ref": "#/components/schemas/TakeConsignmentOwner"
+                  },
+                  "modalidad": {
+                    "type": "string",
+                    "enum": [
+                      "en_local",
+                      "virtual"
+                    ],
+                    "description": "Dónde está el auto. Por defecto `en_local`."
+                  },
+                  "comision_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "percentage",
+                      "fixed"
+                    ]
+                  },
+                  "comision_value": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "comision_mas_iva": {
+                    "type": "boolean"
+                  },
+                  "minimo_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0
+                  },
+                  "minimo_effective_on": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "vencimiento": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "sale_iva_regime": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "afecto",
+                      "exento"
+                    ]
+                  },
+                  "notes": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 4000,
+                    "description": "Internal free-text notes. Never printed on the document. Blank clears them."
+                  },
+                  "precio_cliente_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0,
+                    "description": "Precio cliente: lo que el dueño espera recibir por el auto, en pesos. Opcional: vacío, el contrato no menciona precio del dueño y la venta no tiene piso. Mismo dato que `minimo_clp` (nombre anterior, que se sigue aceptando); si se envían ambos deben coincidir. Cuando existe es el piso del vigilante de precios del auto."
+                  },
+                  "comision_minima_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0,
+                    "description": "Comisión mínima en pesos. La comisión de una venta es la mayor entre el porcentaje y este mínimo. No es un piso del precio de venta."
+                  },
+                  "comision_minima_mas_iva": {
+                    "type": "boolean",
+                    "description": "«más IVA» de la Comisión mínima, aparte del de la comisión porcentual. Por defecto true."
+                  },
+                  "cobro_retiro_anticipado_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "exclusiveMinimum": 0,
+                    "description": "Cobro por retiro anticipado en pesos: lo que paga el dueño si retira el auto antes de la venta. Se imprime en el contrato."
+                  },
+                  "observaciones": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 4000,
+                    "description": "Observaciones que se imprimen en el contrato. Distintas de `notes`, que es interno y no se imprime."
+                  },
+                  "generate_contract": {
+                    "type": "boolean",
+                    "description": "Imprimir el contrato al guardar. Por defecto true."
+                  }
+                }
+              },
+              "example": {
+                "vehicle": {
+                  "registration_number": "kztl-12",
+                  "make": "Toyota",
+                  "model": "Yaris",
+                  "year": 2019,
+                  "price_amount": 8990000
+                },
+                "owner": {
+                  "name": "Rosa Pérez"
+                },
+                "comision_type": "percentage",
+                "comision_value": 5,
+                "comision_mas_iva": true,
+                "comision_minima_clp": 500000,
+                "comision_minima_mas_iva": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The car, the owner, the consignment and the contract",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "data": {
+                    "vehicle": {
+                      "id": "e1e1e1e1-0000-4000-8000-000000000001",
+                      "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                      "origin_integration_id": null,
+                      "source": "manual",
+                      "make": "Toyota",
+                      "model": "Yaris",
+                      "version": "1.8 XEI CVT",
+                      "year": 2019,
+                      "title": null,
+                      "short_title": null,
+                      "price_amount": 8990000,
+                      "price_clp": 13990000,
+                      "watch_enabled": false,
+                      "floor_price_clp": null,
+                      "target_position": null,
+                      "abono_amount_clp": 300000,
+                      "merged_into": null,
+                      "deleted_at": null,
+                      "price_currency": "CLP",
+                      "odometer_value": 42500,
+                      "odometer_unit": "KM",
+                      "fuel_type": "Bencina",
+                      "gear_type": "Automática",
+                      "body_style": "Sedán",
+                      "color": "Gris",
+                      "doors": 4,
+                      "registration_number": "KZTL12",
+                      "vin": "9BWZZZ377NP004512",
+                      "plate_normalized": "FGXY21",
+                      "listing_type": "Usado",
+                      "record_type": null,
+                      "type": "Car",
+                      "merch_label": null,
+                      "featured_at": null,
+                      "vehicle_type": "auto",
+                      "sale_status": null,
+                      "status": "disponible",
+                      "reserved_at": null,
+                      "reserved_by_name": null,
+                      "sold_at": null,
+                      "location_id": "b1b1b1b1-0000-4000-8000-000000000001",
+                      "estacionamiento": null,
+                      "description": "Mantenimientos al día en concesionario.",
+                      "photos": [
+                        {
+                          "url": "https://images.example.cl/corolla-2022-1.jpg",
+                          "order": 0
+                        }
+                      ],
+                      "attributes": {},
+                      "tags": [],
+                      "searchable_text": "toyota corolla 1.8 xei cvt sedán bencina automática gris 2022",
+                      "active": true,
+                      "protected_fields": [],
+                      "deactivated_by": null,
+                      "tenencia": "consignacion",
+                      "tenencia_source": "default",
+                      "tenencia_declared_by": null,
+                      "tenencia_declared_at": null,
+                      "not_dealership_owned": false,
+                      "not_dealership_owned_at": null,
+                      "not_dealership_owned_by": null,
+                      "iva_regime": null,
+                      "keys_count": null,
+                      "municipalidad_comuna_code": null,
+                      "last_service_date": null,
+                      "service_odometer_km": null,
+                      "published_at": null,
+                      "last_seen_at": null,
+                      "created_at": "2026-09-15T18:34:48.575Z",
+                      "updated_at": "2026-09-15T18:34:48.575Z",
+                      "live_sale_note": null,
+                      "active_reservation": null,
+                      "sin_costo": true,
+                      "not_on_lot": false
+                    },
+                    "vehicle_created": true,
+                    "plate_released_from": [],
+                    "owner": {
+                      "id": "22222222-0000-4000-8000-000000000004",
+                      "name": "Rosa Pérez"
+                    },
+                    "owner_created": true,
+                    "consignment": {
+                      "id": "d7d7d7d7-0000-4000-8000-000000000001",
+                      "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                      "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                      "dueno_contact_id": "22222222-0000-4000-8000-000000000004",
+                      "modalidad": "en_local",
+                      "contract_structure": "mandato_con_representacion",
+                      "comision_type": "percentage",
+                      "comision_value": 5,
+                      "comision_mas_iva": true,
+                      "comision_minima_clp": 500000,
+                      "comision_minima_mas_iva": true,
+                      "cobro_retiro_anticipado_clp": null,
+                      "minimo_clp": null,
+                      "precio_cliente_clp": null,
+                      "vencimiento": null,
+                      "estado": "activo",
+                      "vencimiento_reminded_at": null,
+                      "liquidacion_due_notified_at": null,
+                      "created_at": "2026-08-20T10:00:00.000Z",
+                      "updated_at": "2026-08-20T10:00:00.000Z",
+                      "sale_iva_regime": "exento",
+                      "notes": null,
+                      "observaciones": null,
+                      "returned_at": null,
+                      "return_deactivated_vehicle": null,
+                      "not_on_lot": false,
+                      "worked_example": {
+                        "sale_price_clp": 8990000,
+                        "owner_amount_clp": 8395000
+                      },
+                      "sale_note": null,
+                      "owner_payment": null
+                    },
+                    "contract": {
+                      "status": "ready",
+                      "document": {
+                        "id": "ddddddd0-0000-4000-8000-000000000001",
+                        "subject_kind": "consignment_contract",
+                        "subject_id": "d7d7d7d7-0000-4000-8000-000000000001",
+                        "template_key": "mandato-de-consignacion",
+                        "template_version": "mandato-de-consignacion-estandar",
+                        "terms_version": 1,
+                        "sha256": "9f2c4e1a7b3d5f6081a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708",
+                        "byte_size": 41872,
+                        "rendered_at": "2026-09-19T15:10:00.000Z",
+                        "rendered_by": "11111111-0000-4000-8000-000000000001",
+                        "supersedes_id": null,
+                        "superseded_by_id": null
+                      },
+                      "pending": null,
+                      "pdf_path": "/api/v1/consignments/d7d7d7d7-0000-4000-8000-000000000001/contract/pdf"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
       }
     },
     "/consignments/{id}/return": {
@@ -332276,7 +334059,7 @@
     "/consignments/{id}/sell": {
       "post": {
         "summary": "Sell the car and settle with the owner",
-        "description": "One atomic action doing two things: moves the contract to `vendido`, and produces the **Liquidación** — sale price minus commission equals the amount owed to the owner, minus every retained cost line the owner bears (derived from the car's cost ledger, never sent; a 409 if they exceed the payout), plus the payment record. Requires `amount_venta_clp`; `paid_at` records when the owner was actually paid.\n\n**No payout detail is required** (ADR 0159): `payout_method` (transferencia, vale_vista or cheque) defaults to `transferencia`. `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace; defaults to whoever registers it) are optional. What was recorded prints on the liquidación with the payment and registration dates.\n\n**The commission can be set for this sale**: `comision_amount_clp` (net of IVA) replaces what the contract’s terms would compute — a minimum commission, a figure renegotiated at closing. The liquidación then records a fixed commission of that amount; the contract keeps its terms. To charge the owner an additional cost, record it on the car’s cost ledger with a `dueno` share before settling.\n\nLegal only from `activo`; anything else is a 409. Answers 201 with the contract and the Liquidación.\n\nIt does NOT close the vehicle’s side — the estadía close belongs to the vehicle lifecycle, so mark the vehicle sold separately.",
+        "description": "One atomic action doing two things: moves the contract to `vendido`, and produces the **Liquidación** — sale price minus commission equals the amount owed to the owner, minus every retained cost line the owner bears (derived from the car's cost ledger, never sent; a 409 if they exceed the payout), plus the payment record. Requires `amount_venta_clp`; `paid_at` records when the owner was actually paid.\n\n**No payout detail is required** (ADR 0159): `payout_method` (transferencia, vale_vista or cheque) defaults to `transferencia`, stored with `payout_method_stated: false` so the liquidación does not name a medio nobody chose; an omitted `paid_at` stores the registration instant with `paid_at_stated: false`, and the paper then reads «Monto a pagar al dueño» with no «pagado el» and no payment sentence (app#8130). `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace; defaults to whoever registers it) are optional. What was recorded prints on the liquidación with the payment and registration dates.\n\n**The commission can be set for this sale**: `comision_amount_clp` (net of IVA) replaces what the contract’s terms would compute — a minimum commission, a figure renegotiated at closing. The liquidación then records a fixed commission of that amount; the contract keeps its terms. To charge the owner an additional cost, record it on the car’s cost ledger with a `dueno` share before settling.\n\nLegal only from `activo`; anything else is a 409. Answers 201 with the contract and the Liquidación.\n\nIt does NOT close the vehicle’s side — the estadía close belongs to the vehicle lifecycle, so mark the vehicle sold separately.",
         "security": [
           {
             "BearerAuth": []
@@ -332334,7 +334117,7 @@
                       "vale_vista",
                       "cheque"
                     ],
-                    "description": "Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`. Opcional: si se omite queda `transferencia` (ADR 0159: un pago pide solo su monto)."
+                    "description": "Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`. Opcional: si se omite queda `transferencia` (ADR 0159: un pago pide solo su monto) con `payout_method_stated: false`, y la liquidación no nombra el medio."
                   },
                   "payout_bank": {
                     "type": "string",
@@ -332513,7 +334296,7 @@
     "/consignments/{id}/liquidacion": {
       "get": {
         "summary": "Fetch the settlement record",
-        "description": "The persisted Liquidación for a contract. It only exists once the contract has been sold — this is a read of a record, not a projection computed on demand, so the figures are what was agreed at settlement even if the terms changed afterwards.\n\n`comision_minima_applied: true` when the Comisión mínima won over the percentage (stored as a fixed commission of the minimum): the commission reads «Comisión mínima», as on the PDF (app#7589).\n\nIt carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields existed they are all `null`; since then `payout_method` is always set and each of the others is `null` when it was not recorded.\n\n`deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.\n\n`sends` is the log of `POST /consignments/{id}/liquidacion/send`, newest first (last 10): `channel` (`email` | `whatsapp` | `whatsapp_link`), `status` (`sent`, or `opened` for `whatsapp_link`: «abierto en WhatsApp», nothing was delivered by us), `to`, `sent_at`, `by` (member or API key id) and `by_name`. `whatsapp_send_enabled` says whether the workspace may send it through the WhatsApp API (its staff-WhatsApp switch is on). `owner_whatsapp: { phone_digits, window_open }`: the owner’s phone in E.164 digits for `https://wa.me/<digits>` (`null` = no dialable phone: offer email only) and whether their 24 h window is open on this workspace’s WhatsApp. Send through the API when `whatsapp_send_enabled && owner_whatsapp.window_open`; otherwise offer «Abrir WhatsApp» (`channel: whatsapp_link`) when `phone_digits` is set.\n\n`settlement_difference` (app#7320): `null` unless the sale’s price was corrected after this liquidación was paid (or adjustments exist). The record above is never rewritten; this says `paid_with_price_clp`, `current_price_clp`, `paid_to_owner_clp`, `due_to_owner_clp` (the owner’s share at the current price with this liquidación’s own terms and deductions), `adjusted_clp`, `difference_clp` (positive: the dealer owes the owner; negative: the owner owes the dealer), `status` and the `adjustments`. Close it with `POST /consignments/{id}/liquidacion/adjustments`.",
+        "description": "The persisted Liquidación for a contract. It only exists once the contract has been sold — this is a read of a record, not a projection computed on demand, so the figures are what was agreed at settlement even if the terms changed afterwards.\n\n`comision_minima_applied: true` when the Comisión mínima won over the percentage (stored as a fixed commission of the minimum): the commission reads «Comisión mínima», as on the PDF (app#7589).\n\nIt carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields existed they are all `null`; since then `payout_method` is always set and each of the others is `null` when it was not recorded.\n\n**What the dealer entered (app#8130).** `payout_method_stated` is `false` when `payout_method` is the default `transferencia` rather than a choice, and `paid_at_stated` is `false` when no payment date was entered (`paid_at` is then the registration instant). Show the medio and the payment date only when their mark is not `false`; while `paid_at_stated` is `false` the liquidación reads «Monto a pagar al dueño». Both are `null` on a liquidación registered before the marks existed: show it as before.\n\n`deducciones_clp` is the Σ of the dueño share of every retained cost line the settlement discharged, and `deductions` lists them one by one (`cost_entry_id`, `label`, `entry_date`, `dueno_clp`). Selling a consigned car deducts them all: `monto_owner_clp` is `amount_venta_clp` minus the comisión minus `deducciones_clp`.\n\n`sends` is the log of `POST /consignments/{id}/liquidacion/send`, newest first (last 10): `channel` (`email` | `whatsapp` | `whatsapp_link`), `status` (`sent`, or `opened` for `whatsapp_link`: «abierto en WhatsApp», nothing was delivered by us), `to`, `sent_at`, `by` (member or API key id) and `by_name`. `whatsapp_send_enabled` says whether the workspace may send it through the WhatsApp API (its staff-WhatsApp switch is on). `owner_whatsapp: { phone_digits, window_open }`: the owner’s phone in E.164 digits for `https://wa.me/<digits>` (`null` = no dialable phone: offer email only) and whether their 24 h window is open on this workspace’s WhatsApp. Send through the API when `whatsapp_send_enabled && owner_whatsapp.window_open`; otherwise offer «Abrir WhatsApp» (`channel: whatsapp_link`) when `phone_digits` is set.\n\n`settlement_difference` (app#7320): `null` unless the sale’s price was corrected after this liquidación was paid (or adjustments exist). The record above is never rewritten; this says `paid_with_price_clp`, `current_price_clp`, `paid_to_owner_clp`, `due_to_owner_clp` (the owner’s share at the current price with this liquidación’s own terms and deductions), `adjusted_clp`, `difference_clp` (positive: the dealer owes the owner; negative: the owner owes the dealer), `status` and the `adjustments`. Close it with `POST /consignments/{id}/liquidacion/adjustments`.",
         "security": [
           {
             "BearerAuth": []
@@ -332533,6 +334316,221 @@
             "in": "path"
           }
         ],
+        "responses": {
+          "200": {
+            "description": "The Liquidación record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "d8d8d8d8-0000-4000-8000-000000000001",
+                    "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                    "consignment_contract_id": "d7d7d7d7-0000-4000-8000-000000000001",
+                    "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                    "settlement_mode": "stated_commission",
+                    "amount_venta_clp": 8900000,
+                    "comision_type": "percentage",
+                    "comision_value": 10,
+                    "comision_amount_clp": 890000,
+                    "monto_owner_clp": 8010000,
+                    "owner_floor_clp": null,
+                    "deducciones_clp": 0,
+                    "deductions": [],
+                    "retiro_motivo": null,
+                    "retiro_by": null,
+                    "payout_method": "transferencia",
+                    "payout_bank": "Banco de Chile",
+                    "payout_account_last4": "5821",
+                    "payout_operation_number": "99887766",
+                    "payout_paid_by": "11111111-0000-4000-8000-000000000001",
+                    "payout_paid_by_name": "Ana Pérez",
+                    "paid_at": "2026-09-18T15:00:00.000Z",
+                    "created_at": "2026-09-18T15:00:05.000Z",
+                    "updated_at": "2026-09-18T15:00:05.000Z",
+                    "comision_minima_applied": false,
+                    "sends": [
+                      {
+                        "channel": "email",
+                        "to": "dueno@example.com",
+                        "status": "sent",
+                        "sent_at": "2026-11-14T15:20:00.000Z",
+                        "by": "11111111-0000-4000-8000-000000000001",
+                        "by_name": "Camila Rojas"
+                      }
+                    ],
+                    "whatsapp_send_enabled": false,
+                    "owner_whatsapp": {
+                      "phone_digits": "56912345678",
+                      "window_open": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/consignments/{id}/liquidacion/payment": {
+      "post": {
+        "summary": "Record the payment of a liquidación registered without one",
+        "description": "A liquidación registered with no payment date (`paid_at_stated: false`, it reads «Monto a pagar al dueño») receives its payment facts once the owner is paid (app#8130, ADR 0166 decision 6): `paid_at` (required, not in the future) and, optionally, `payout_method`, `payout_bank`, `payout_account` (last 4 digits kept), `payout_operation_number` and `payout_paid_by` (default: the caller, when the liquidación names nobody). Only what is sent is stored; an omitted medio stays as it was (an unchosen one is still not printed). From then on `paid_at_stated` is `true` and the liquidación and its PDF state the payment. ONCE: no money figure (venta, comisión, deducciones, monto al dueño) and no contract state moves. Responds with the same read as `GET /consignments/{id}/liquidacion`.\n\n**404** when the contract has no liquidación. **409** `details.blocked_reason` = `payment_already_recorded` (it already has a payment date, including one registered before the mark existed) or `not_a_sale_settlement` (an early withdrawal). **400** for a future date or a malformed detail. Requires `consignments:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Consignments"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paid_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Cuándo se le pagó al dueño (ISO 8601). Requerido; no puede ser futura."
+                  },
+                  "payout_method": {
+                    "type": "string",
+                    "enum": [
+                      "transferencia",
+                      "vale_vista",
+                      "cheque"
+                    ],
+                    "description": "Medio de pago, cuando se eligió: `transferencia`, `vale_vista` o `cheque`. Omitido = queda el que tenía, y la liquidación no lo nombra si no se había elegido."
+                  },
+                  "payout_bank": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Banco por el que se pagó. Opcional."
+                  },
+                  "payout_account": {
+                    "type": "string",
+                    "maxLength": 40,
+                    "description": "Cuenta de destino. Opcional; se guardan sus últimos 4 dígitos."
+                  },
+                  "payout_operation_number": {
+                    "type": "string",
+                    "maxLength": 60,
+                    "description": "Número de operación del pago. Opcional."
+                  },
+                  "payout_paid_by": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "«Pagado por»: id de un miembro activo del equipo. Omitido = quien registra el pago, si la liquidación no tenía a nadie."
+                  }
+                },
+                "required": [
+                  "paid_at"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "paid_at": "2026-11-25T15:00:00.000Z",
+                "payout_method": "transferencia",
+                "payout_bank": "Banco de Chile"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "The Liquidación record",
@@ -482786,6 +484784,189 @@
                       "consignacion_sin_contrato": 0,
                       "propio_sin_clasificar": 7,
                       "not_dealership_owned": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/vehicles/plate-check": {
+      "get": {
+        "summary": "Which car already has this plate",
+        "description": "Asks, before anything is saved, whether a car of this workspace already holds a plate, so a form can offer that car instead of a second one. Read-only. The answer is the same rule `POST /vehicles` applies when it saves: an active car, or a hidden car still in stock, holds the plate; a car that left the dealership (sold, or returned to its owner) does not, so its plate is free. The plate is read the way `POST /vehicles` reads it («kztl-12» is `KZTL12`). `vehicle` is null for a free plate, an empty plate, a placeholder («en trámite») and a type with no plate. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicles"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60,
+              "description": "La patente tal como la escribió el usuario (con guion, espacios o minúsculas está bien).",
+              "example": "kztl-12"
+            },
+            "required": true,
+            "name": "plate",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "camion",
+                "maquinaria",
+                "nautico",
+                "moto"
+              ],
+              "description": "Tipo de vehículo del auto que se está agregando. Opcional, por defecto `auto`. Un tipo sin patente (maquinaria, náutico) siempre responde sin auto."
+            },
+            "required": false,
+            "name": "vehicle_type",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The car holding the plate, or null",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "plate": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "La patente limpia (sin guion ni espacios, en mayúsculas), o null si lo escrito no es una patente chilena.",
+                          "example": "KZTL12"
+                        },
+                        "vehicle": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "example": "Toyota Yaris 2019"
+                            },
+                            "status": {
+                              "type": "string",
+                              "example": "disponible"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "status",
+                            "active"
+                          ],
+                          "description": "El auto del workspace que ya tiene esa patente en el stock (activo, u oculto pero todavía en el stock). null si la patente está libre. Un auto que ya salió (vendido, o devuelto a su dueño) no la retiene."
+                        }
+                      },
+                      "required": [
+                        "plate",
+                        "vehicle"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "plate": "KZTL12",
+                    "vehicle": {
+                      "id": "11111111-0000-4000-8000-000000000001",
+                      "name": "Toyota Yaris 2019",
+                      "status": "disponible",
+                      "active": true
                     }
                   }
                 }
