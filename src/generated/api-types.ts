@@ -183125,7 +183125,8 @@ export interface paths {
                          *         "checked_at": "2026-09-25T10:40:00.000Z",
                          *         "stale": false,
                          *         "sample": false,
-                         *         "ad_set_goals": null
+                         *         "ad_set_goals": null,
+                         *         "engaged_visit": null
                          *       }
                          *     }
                          */
@@ -225212,14 +225213,14 @@ export interface paths {
                          *           "review": {
                          *             "language": "es",
                          *             "category": "MARKETING",
-                         *             "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de tus mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
+                         *             "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de los mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
                          *             "price_per_send": {
                          *               "market": "CL",
                          *               "currency": "USD",
                          *               "category": "marketing",
                          *               "amount": 0.0889,
                          *               "as_of": "2026-11-01",
-                         *               "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a tu cuenta de WhatsApp."
+                         *               "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a la cuenta de WhatsApp."
                          *             },
                          *             "header": {
                          *               "format": "VIDEO",
@@ -225228,8 +225229,8 @@ export interface paths {
                          *               "mime_type": "video/mp4",
                          *               "byte_size": 4200000
                          *             },
-                         *             "body_text": "Hola {{nombre}}, mira cómo es tu primera visita.",
-                         *             "body_preview": "Hola María, mira cómo es tu primera visita.",
+                         *             "body_text": "Hola {{nombre}}, así es la primera visita.",
+                         *             "body_preview": "Hola María, así es la primera visita.",
                          *             "variables": [
                          *               {
                          *                 "name": "nombre",
@@ -225361,14 +225362,14 @@ export interface paths {
                          *           "review": {
                          *             "language": "es",
                          *             "category": "MARKETING",
-                         *             "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de tus mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
+                         *             "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de los mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
                          *             "price_per_send": {
                          *               "market": "CL",
                          *               "currency": "USD",
                          *               "category": "marketing",
                          *               "amount": 0.0889,
                          *               "as_of": "2026-11-01",
-                         *               "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a tu cuenta de WhatsApp."
+                         *               "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a la cuenta de WhatsApp."
                          *             },
                          *             "header": {
                          *               "format": "VIDEO",
@@ -225377,8 +225378,8 @@ export interface paths {
                          *               "mime_type": "video/mp4",
                          *               "byte_size": 4200000
                          *             },
-                         *             "body_text": "Hola {{nombre}}, mira cómo es tu primera visita.",
-                         *             "body_preview": "Hola María, mira cómo es tu primera visita.",
+                         *             "body_text": "Hola {{nombre}}, así es la primera visita.",
+                         *             "body_preview": "Hola María, así es la primera visita.",
                          *             "variables": [
                          *               {
                          *                 "name": "nombre",
@@ -225521,14 +225522,14 @@ export interface paths {
                          *         "review": {
                          *           "language": "es",
                          *           "category": "MARKETING",
-                         *           "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de tus mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
+                         *           "category_note": "Marketing. Los mensajes de una secuencia se envían como marketing, así que la plantilla se pide en esa categoría y solo le llega a quien no se haya dado de baja de los mensajes. Meta puede cambiar la categoría al revisarla; si la aprueba en otra, Vitrina no la envía.",
                          *           "price_per_send": {
                          *             "market": "CL",
                          *             "currency": "USD",
                          *             "category": "marketing",
                          *             "amount": 0.0889,
                          *             "as_of": "2026-11-01",
-                         *             "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a tu cuenta de WhatsApp."
+                         *             "label": "Cada envío de esta plantilla cuesta cerca de US$0,0889, la tarifa de Meta para una plantilla de marketing a un número de Chile. Meta lo cobra a la cuenta de WhatsApp."
                          *           },
                          *           "header": {
                          *             "format": "VIDEO",
@@ -225537,8 +225538,8 @@ export interface paths {
                          *             "mime_type": "video/mp4",
                          *             "byte_size": 4200000
                          *           },
-                         *           "body_text": "Hola {{nombre}}, mira cómo es tu primera visita.",
-                         *           "body_preview": "Hola María, mira cómo es tu primera visita.",
+                         *           "body_text": "Hola {{nombre}}, así es la primera visita.",
+                         *           "body_preview": "Hola María, así es la primera visita.",
                          *           "variables": [
                          *             {
                          *               "name": "nombre",
@@ -247704,6 +247705,309 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/engaged-visit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The «Se quedó 15 segundos» signal: state read back
+         * @description Clinics (healthcare workspaces) with Vitrina Ads usable. The signal sends Meta an event when a person has had the page open and visible for `seconds` (15). It measures time on the PAGE, not video play time. Off by default. The state is read back from the measurement engine on every call: `enabled`, `seconds` (read-only), `export_ready` and, when it is not ready, the `export_blocker` with `blocker_text`. It is a signal sent to Meta, not an optimisation target (see `meta_note`). A workspace that is a guest on its agency’s profile reads the state (`can_write: false`). After the setting changes the install snippet must be copied again (`install`, `recopy_note`). Admin-scoped (`ads:read`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The signal’s state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "state": "off",
+                         *         "enabled": false,
+                         *         "seconds": 15,
+                         *         "export_ready": false,
+                         *         "export_blocker": null,
+                         *         "blocker_text": null,
+                         *         "can_write": true,
+                         *         "managed_by_agency": false,
+                         *         "title": "Se quedó 15 segundos",
+                         *         "summary": "Apagada. No se envía nada a Meta sobre cuánto tiempo se queda la gente en la página.",
+                         *         "measures": "Mide el tiempo que la página estuvo abierta y a la vista, no cuánto del video se reprodujo.",
+                         *         "meta_note": "Es una señal que se envía a Meta, no un objetivo de optimización: todavía no está comprobado que un conjunto de anuncios pueda optimizar con ella.",
+                         *         "recopy_note": "Después de encender o apagar esta señal, hay que copiar de nuevo el código de instalación en la página. Si no, la página sigue como estaba.",
+                         *         "agency_note": null,
+                         *         "install": {
+                         *           "path": "/ads/tracking/key",
+                         *           "field": "snippet"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsEngagedVisit"] & Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Turn the «Se quedó 15 segundos» signal on or off
+         * @description Sets `enabled` at the measurement engine and answers the state the engine now reports (never an echo of the request). Audited. Turning it on while `export_ready` is false is accepted: the answer says why nothing is sent. 403 `ATTRIBUTION_LINKED_READ_ONLY` for a workspace that is a guest on its agency’s profile (the agency manages it); 403 `vertical_not_enabled` outside clinics; 409 `ADS_KEY_NEEDS_REMINT` while the credential catches up with the add-on (one automatic re-mint is tried first). The install snippet must be copied again after the change. Admin-scoped (`ads:write`).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "enabled": true
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsEngagedVisitPatch"];
+                };
+            };
+            responses: {
+                /** @description The signal’s state after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "state": "not_sending",
+                         *         "enabled": true,
+                         *         "seconds": 15,
+                         *         "export_ready": false,
+                         *         "export_blocker": "no_clean_dataset_destination",
+                         *         "blocker_text": "todavía no hay un conjunto de datos protegido de Meta conectado",
+                         *         "can_write": true,
+                         *         "managed_by_agency": false,
+                         *         "title": "Se quedó 15 segundos",
+                         *         "summary": "Encendida, pero por ahora no se envía nada a Meta: todavía no hay un conjunto de datos protegido de Meta conectado.",
+                         *         "measures": "Mide el tiempo que la página estuvo abierta y a la vista, no cuánto del video se reprodujo.",
+                         *         "meta_note": "Es una señal que se envía a Meta, no un objetivo de optimización: todavía no está comprobado que un conjunto de anuncios pueda optimizar con ella.",
+                         *         "recopy_note": "Después de encender o apagar esta señal, hay que copiar de nuevo el código de instalación en la página. Si no, la página sigue como estaba.",
+                         *         "agency_note": null,
+                         *         "install": {
+                         *           "path": "/ads/tracking/key",
+                         *           "field": "snippet"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsEngagedVisit"] & Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/ads/tracking/gtm": {
@@ -342425,6 +342729,46 @@ export interface components {
             ttl_ms: number;
             privacy?: components["schemas"]["AdsPrivacyCheck"];
         };
+        /** @description Clinics: the «Se quedó 15 segundos» step, a signal sent to Meta (never an optimisation target). Off by default; when on but not reaching Meta it says why. `null` outside clinics. */
+        AdsEngagedVisit: {
+            /**
+             * @description `off` = nothing is sent. `sending` = on, and the setup lets it reach Meta. `not_sending` = on, but `export_blocker` keeps it from Meta. `unavailable` = the state could not be read (only inside the send status).
+             * @enum {string}
+             */
+            state: "off" | "sending" | "not_sending" | "unavailable";
+            /** @description The signal is on. Off by default. */
+            enabled: boolean;
+            /** @description Visible seconds before the event fires. Read-only: 15 unless the platform changes it. */
+            seconds: number;
+            /** @description Read back from the measurement engine: an engaged visit would reach the clinic’s protected Meta dataset. Computed whether or not the signal is on; it does not evaluate consent or the engine’s kill switches. */
+            export_ready: boolean;
+            /**
+             * @description Why `export_ready` is false; `null` when ready or not named.
+             * @enum {string|null}
+             */
+            export_blocker: "not_platform_safe" | "platform_safe_target_not_clean" | "meta_export_disabled" | "no_clean_dataset_destination" | null;
+            /** @description `export_blocker` in plain Spanish; only when `not_sending`. */
+            blocker_text: string | null;
+            /** @description False for a workspace that is a guest on its agency’s profile. */
+            can_write: boolean;
+            managed_by_agency: boolean;
+            /** @description «Se quedó 15 segundos». */
+            title: string;
+            /** @description The state in one Spanish sentence. */
+            summary: string;
+            /** @description Time on the PAGE, not video play time (Spanish). */
+            measures: string;
+            /** @description A signal sent to Meta, never an optimisation target: it is not verified that an ad set can optimise on it (Spanish). */
+            meta_note: string;
+            /** @description The install snippet must be copied again after the setting changes (Spanish). */
+            recopy_note: string;
+            agency_note: string | null;
+            /** @description Where the snippet is: `GET {path}` (the existing tracking key read), field `field`. */
+            install: {
+                path: string;
+                field: string;
+            };
+        } | null;
         AdsSendStatus: {
             /**
              * @description `blocked` = only Meta or the owner outside Vitrina can fix it (`blocked_reason`). `off` = set up once and every stage stopped. `measure_only` = the owner chose «Solo medir, no enviar a Meta» (reversible with `send_setup`).
@@ -342685,6 +343029,7 @@ export interface components {
                 /** @description Distinct active ad sets that optimise on an event Vitrina sends (the wiring verdicts). */
                 on_sent_events: number;
             } | null;
+            engaged_visit: components["schemas"]["AdsEngagedVisit"];
         };
         AdsSendPreviewEvent: {
             /** @enum {string} */
@@ -347599,6 +347944,9 @@ export interface components {
                     last_seen_at: string;
                 }[];
             } | null;
+        };
+        AdsEngagedVisitPatch: {
+            enabled: boolean;
         };
         /**
          * @example {
