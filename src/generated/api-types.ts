@@ -182308,6 +182308,8 @@ export interface paths {
                          *           "rate": 0.33490566037735847
                          *         },
                          *         "purchase_stage": "first_payment",
+                         *         "clinic_matrix": "booking_qualifies",
+                         *         "clinic_matrix_outlook": null,
                          *         "purchase_switch_available": false,
                          *         "grant": "full",
                          *         "protection_required": true,
@@ -341321,17 +341323,17 @@ export interface components {
                 /** @description A clinic’s first payment before the switch: Meta does not receive it yet (its Purchase is still the accepted presupuesto). `send_stage:first_payment:on` makes the switch, with consent. */
                 awaiting_switch: boolean;
                 /**
-                 * @description `definition_missing` heals on its own (no user step); `no_payments_source` = no payments recorded to send yet.
+                 * @description `definition_missing` heals on its own (no user step); `no_payments_source` = no payments recorded to send yet; `no_qualifying_stage` (clinics, ADR 0163, `lead_qualified` only) = a board that sells marks no qualifying stage, so no lead can be qualified until the owner marks one.
                  * @enum {string}
                  */
-                source: "available" | "no_payments_source" | "definition_missing";
+                source: "available" | "no_payments_source" | "definition_missing" | "no_qualifying_stage";
                 /** @description If the stage happened now, it would reach Meta: switched on and its source has what it needs. */
                 ready: boolean;
                 /**
-                 * @description Why it would not reach Meta now; `null` when `ready`. Precedence: `installments` > `awaiting_switch` > `definition_missing` > `no_payments_yet` > `off`.
+                 * @description Why it would not reach Meta now; `null` when `ready`. Precedence: `installments` > `awaiting_switch` > `definition_missing` > `no_payments_yet` > `no_qualifying_stage` > `off`.
                  * @enum {string|null}
                  */
-                ready_reason: "installments" | "awaiting_switch" | "definition_missing" | "no_payments_yet" | "off" | null;
+                ready_reason: "installments" | "awaiting_switch" | "definition_missing" | "no_payments_yet" | "no_qualifying_stage" | "off" | null;
                 /** @description Outcomes of the stage that happened in Vitrina over the page’s window — the last 30 days (`window_days`; the field name predates it), the same days the dataset preview counts — sent or not. `first_payment`: `first_payment_candidates.count_28d` (first payments of accepted plans, or — a clinic without plans — persons’ first payments), before the switch too. */
                 count_28d: number;
                 /** @description «Por semana», one decimal: the mean of the last 4 COMPLETE weeks (Monday–Sunday, Santiago) in which the stage was being measured — a week before its first recorded outcome is left out, never counted as zero. With no complete measured week yet: the days measured so far × 7 (divisor floor of 7 days). The dataset preview’s `weekly` for the same stage is the same figure. */
@@ -341447,6 +341449,21 @@ export interface components {
              * @enum {string|null}
              */
             purchase_stage: "closed_won" | "first_payment" | null;
+            /** @description Clinics (ADR 0163): which matrix the clinic is on, or would get at its first Ads provisioning, and why. Read BEFORE connecting so the owner can mark a qualifying stage first. `null` outside clinics or when it could not be read. */
+            clinic_matrix_outlook: {
+                /** @description The clinic is on (`stamped`) or will get at its first Ads provisioning (`eligible`) the qualifying-stage matrix. */
+                qualifying_stage: boolean;
+                /**
+                 * @description `stamped` = on the qualifying-stage matrix; `eligible` = will get it when it first connects Ads; `no_qualifying_stage` = would get it, but a board that sells marks no qualifying stage: connecting now gives today's matrix for good; `connected_before` = connected Ads before ADR 0163 (or reconnected, or Ads facts already recorded): today's matrix; `linked` = a guest on its agency's profile.
+                 * @enum {string}
+                 */
+                reason: "stamped" | "eligible" | "no_qualifying_stage" | "connected_before" | "linked";
+            } | null;
+            /**
+             * @description Clinics: which clinic export matrix the workspace is on (ADR 0163), a stored fact written once when its Ads rules were first provisioned. `qualifying_stage` (clinics that connected Ads after 2026-11-22): the Etapa calificadora sends `lead_qualified` (WhatsApp `QualifiedLead`, website a neutral custom event) and the booked evaluation goes to WhatsApp as `AddToCart`. `booking_qualifies` (every clinic connected before): no `lead_qualified` lane, the booked evaluation is WhatsApp `QualifiedLead`; it never changes. `null` outside clinics.
+             * @enum {string|null}
+             */
+            clinic_matrix: "booking_qualifies" | "qualifying_stage" | null;
             /** @description The switch of the Purchase to the first payment can be made now. */
             purchase_switch_available: boolean;
             /** @description Advice only — Vitrina never changes an ad set’s goal: the earliest stage reached by 1–40 % of new contacts over 28 days, once there are ≥ 50 (what Meta learns best from with this volume); `default` = not enough data yet, the usual answer for the business type. Never a standard event on a health-restricted dataset. */
