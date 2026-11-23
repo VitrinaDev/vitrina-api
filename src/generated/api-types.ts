@@ -49206,7 +49206,7 @@ export interface paths {
         };
         /**
          * Fetch one reservation, with its payments and totals
-         * @description Accepts the UUID or the folio (`R-12`).
+         * @description Accepts the UUID or the folio (`R-12`). `totals` is over the agreed price alone; `outstanding_clp` is what the holder still owes: agreed price + `transfer_cost_clp` − payments, never below 0 (`null` without an agreed price), the «Saldo por pagar» the comprobante prints.
          */
         get: {
             parameters: {
@@ -49287,15 +49287,16 @@ export interface paths {
                          *           }
                          *         ],
                          *         "totals": {
-                         *           "total_a_pagar_clp": 300000,
+                         *           "total_a_pagar_clp": 11900000,
                          *           "total_pagos_clp": 300000,
-                         *           "saldo_clp": 0,
+                         *           "saldo_clp": -11600000,
                          *           "recargo_tarjeta_clp": 0,
-                         *           "total_a_cobrar_clp": 300000,
+                         *           "total_a_cobrar_clp": 11900000,
                          *           "payment_count": 1,
                          *           "complete": true,
                          *           "gaps": []
                          *         },
+                         *         "outstanding_clp": 11817740,
                          *         "converted_to_sale_note": null,
                          *         "holder": {
                          *           "id": "22222222-0000-4000-8000-000000000002",
@@ -49500,15 +49501,16 @@ export interface paths {
                          *           }
                          *         ],
                          *         "totals": {
-                         *           "total_a_pagar_clp": 300000,
+                         *           "total_a_pagar_clp": 11900000,
                          *           "total_pagos_clp": 300000,
-                         *           "saldo_clp": 0,
+                         *           "saldo_clp": -11600000,
                          *           "recargo_tarjeta_clp": 0,
-                         *           "total_a_cobrar_clp": 300000,
+                         *           "total_a_cobrar_clp": 11900000,
                          *           "payment_count": 1,
                          *           "complete": true,
                          *           "gaps": []
                          *         },
+                         *         "outstanding_clp": 11817740,
                          *         "converted_to_sale_note": null,
                          *         "holder": {
                          *           "id": "22222222-0000-4000-8000-000000000002",
