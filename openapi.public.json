@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.124.0",
+    "version": "17.126.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -31600,9 +31600,10 @@
           "needs_prior_year",
           "sii_only",
           "not_held",
-          "not_evaluable"
+          "not_evaluable",
+          "adjustment"
         ],
-        "description": "Exactly one per line. `books` computed from the books (with `built_from`); `formula` derived with the SII formula (with `inputs`); `formula_incomplete` a formula whose inputs are missing (`missing`, amount null); `entered` a person typed it (`entered`); `needs_input` a datum only a person has; `needs_prior_year` from last year's F22, not readable yet; `sii_only` held by the SII (may carry a `reference_amount_clp` that is NOT the amount); `not_held` Vitrina does not record it (or it belongs to an owner's own return); `not_evaluable` derived with no formula in the mapping."
+        "description": "Exactly one per line. `adjustment` (14 A only, #8089): a tax adjustment of the financial result (Recuadro 12) that the person filing completes; amount null, may carry a `reference_amount_clp` from Vitrina's non-deductible marks that is NOT the amount. `books` computed from the books (with `built_from`); `formula` derived with the SII formula (with `inputs`); `formula_incomplete` a formula whose inputs are missing (`missing`, amount null); `entered` a person typed it (`entered`); `needs_input` a datum only a person has; `needs_prior_year` from last year's F22, not readable yet; `sii_only` held by the SII (may carry a `reference_amount_clp` that is NOT the amount); `not_held` Vitrina does not record it (or it belongs to an owner's own return); `not_evaluable` derived with no formula in the mapping."
       },
       "FinanzasF22BuiltFrom": {
         "type": [
@@ -31916,6 +31917,130 @@
           "counts_for_completeness"
         ]
       },
+      "FinanzasF22Accrual": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "statement": {
+            "type": "string",
+            "description": "Spanish, always shown on a 14 A draft."
+          },
+          "books_result_clp": {
+            "type": "integer"
+          },
+          "financial_result": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "label": {
+                "type": "string"
+              },
+              "amount_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "state": {
+                "$ref": "#/components/schemas/FinanzasF22LineState"
+              }
+            },
+            "required": [
+              "code",
+              "label",
+              "amount_clp",
+              "state"
+            ]
+          },
+          "taxable_income": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "label": {
+                "type": "string"
+              },
+              "amount_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "state": {
+                "$ref": "#/components/schemas/FinanzasF22LineState"
+              }
+            },
+            "required": [
+              "code",
+              "label",
+              "amount_clp",
+              "state"
+            ]
+          },
+          "tax": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "label": {
+                "type": "string"
+              },
+              "amount_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "state": {
+                "$ref": "#/components/schemas/FinanzasF22LineState"
+              }
+            },
+            "required": [
+              "code",
+              "label",
+              "amount_clp",
+              "state"
+            ]
+          },
+          "pending_adjustments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "label"
+              ]
+            }
+          },
+          "undocumented_expenses_clp": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "statement",
+          "books_result_clp",
+          "financial_result",
+          "taxable_income",
+          "tax",
+          "pending_adjustments",
+          "undocumented_expenses_clp"
+        ],
+        "description": "14 A only (#8089): the accrual result and what stands between it and the tax. `taxable_income` (1690) and `tax` (1113) stay null («no determinado») while an adjustment is blank; the draft never presents a tax computed without them. Null in Pro Pyme."
+      },
       "FinanzasF22Draft": {
         "type": [
           "object",
@@ -31972,7 +32097,8 @@
                 "type": "string",
                 "enum": [
                   "14D3",
-                  "14D8"
+                  "14D8",
+                  "14A"
                 ]
               },
               "name": {
@@ -32363,8 +32489,21 @@
           "base": {
             "type": "object",
             "properties": {
+              "basis": {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "accrual"
+                ],
+                "description": "`cash` in Pro Pyme; `accrual` in 14 A, where `untagged` holds income (`collection`) and costs or expenses (`payment`) by document date, and `excluded` is empty."
+              },
+              "books_result_clp": {
+                "type": "integer",
+                "description": "The figure the draft puts on its codes: the cash base (Pro Pyme) or the accrual result of Recuadro 12 (14 A)."
+              },
               "cash_base_from_books_clp": {
-                "type": "integer"
+                "type": "integer",
+                "description": "Pro Pyme: the cash base. 14 A: equals `books_result_clp`; read `basis`."
               },
               "untagged": {
                 "type": "array",
@@ -32587,6 +32726,8 @@
               }
             },
             "required": [
+              "basis",
+              "books_result_clp",
               "cash_base_from_books_clp",
               "untagged",
               "untagged_total",
@@ -32598,6 +32739,17 @@
           "reconciliation": {
             "type": "object",
             "properties": {
+              "basis": {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "accrual"
+                ],
+                "description": "`cash`: accrual Resultado → cash base (Pro Pyme). `accrual` (14 A): Resultado → accounts without tax meaning → the accrual result on the codes; the cash result is a reference line."
+              },
+              "books_result_clp": {
+                "type": "integer"
+              },
               "accrual_result_clp": {
                 "type": "integer"
               },
@@ -32707,6 +32859,8 @@
               }
             },
             "required": [
+              "basis",
+              "books_result_clp",
               "accrual_result_clp",
               "cash_result_clp",
               "cash_base_from_books_clp",
@@ -32891,6 +33045,9 @@
               "income_check"
             ]
           },
+          "accrual": {
+            "$ref": "#/components/schemas/FinanzasF22Accrual"
+          },
           "warnings": {
             "type": "array",
             "items": {
@@ -32926,6 +33083,7 @@
           "base",
           "reconciliation",
           "credits",
+          "accrual",
           "warnings"
         ]
       },
@@ -32966,7 +33124,7 @@
               "code",
               "message"
             ],
-            "description": "Why there is no draft (Spanish message ready to show); null when `available`."
+            "description": "Why there is no draft (Spanish message ready to show); null when `available`. `regime_14a` is no longer produced since #8089 (14 A has its draft)."
           },
           "draft": {
             "$ref": "#/components/schemas/FinanzasF22Draft"
@@ -230874,7 +231032,7 @@
     "/finanzas/f22-draft": {
       "get": {
         "summary": "The Borrador de F22 of a sociedad for a commercial year",
-        "description": "A draft FOR THE ACCOUNTANT, by the sociedad's tax regime, on the cash basis of the Pro Pyme regimes (14 D N°3, 14 D N°8). Vitrina never files it. Every code of the regime's mapping is a line with exactly one `state` and what it was built from; an amount Vitrina cannot determine is `null`, never 0. Also: the cash base from the books and what stays outside it (accounts without tax meaning, non-deductible items, undated items), the reconciliation with the accrual Resultado, PPM by month brought to year end (with a warning while they come from SII proposals), the IDPC rate, the Pro Pyme income check, and for 14 D N°8 the attribution to owners (no owner's tax is computed). `available: false` with a `refusal` (no sociedad, more than one sociedad, no regime, regime 14 A, no mapping or no tax tables for the year). A future year answers 400. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_reports:read` (owner, admin, Contador seat).",
+        "description": "A draft FOR THE ACCOUNTANT, by the sociedad's tax regime, on the cash basis of the Pro Pyme regimes (14 D N°3, 14 D N°8) or on the accrual result of the general regime (14 A), whose tax adjustments are left blank for the person filing (state `adjustment`) so the taxable income and the tax stay null until a person completes them. Vitrina never files it. Every code of the regime's mapping is a line with exactly one `state` and what it was built from; an amount Vitrina cannot determine is `null`, never 0. Also: the figure on the codes (`base.basis`: the cash base, or the accrual result in 14 A) and what stays outside it (accounts without tax meaning, non-deductible items, undated items), the reconciliation with the accrual Resultado, PPM by month brought to year end (with a warning while they come from SII proposals), the IDPC rate, the Pro Pyme income check, and for 14 D N°8 the attribution to owners (no owner's tax is computed). `available: false` with a `refusal` (no sociedad, more than one sociedad, no regime, no mapping or no tax tables for the year). A future year answers 400. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_reports:read` (owner, admin, Contador seat).",
         "security": [
           {
             "BearerAuth": []
@@ -233755,7 +233913,7 @@
                           "properties": {
                             "available": {
                               "type": "boolean",
-                              "description": "True when the zip carries `08-borrador-f22-<year>.xlsx` (#8088): only for a sociedad in a Pro Pyme regime that year."
+                              "description": "True when the zip carries `08-borrador-f22-<year>.xlsx` (#8088, #8089): for a sociedad with a tax regime set for that year (Pro Pyme or 14 A)."
                             },
                             "complete": {
                               "type": [
@@ -233780,7 +233938,7 @@
                                 "code",
                                 "message"
                               ],
-                              "description": "Why there is no draft: `no_sociedad`, `multi_sociedad`, `no_regime`, `regime_14a`, `no_mapping`, `no_tax_tables`. Spanish message ready to show."
+                              "description": "Why there is no draft: `no_sociedad`, `multi_sociedad`, `no_regime`, `no_mapping`, `no_tax_tables`. Spanish message ready to show."
                             }
                           },
                           "required": [
@@ -233788,7 +233946,7 @@
                             "complete",
                             "refusal"
                           ],
-                          "description": "The Borrador de F22 (#8088). Its full read is `GET /finanzas/f22-draft?year=`."
+                          "description": "The Borrador de F22 (#8088, #8089). Its full read is `GET /finanzas/f22-draft?year=`."
                         }
                       },
                       "required": [
