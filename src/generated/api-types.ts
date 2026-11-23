@@ -115649,7 +115649,7 @@ export interface paths {
         };
         /**
          * What the Paquete anual of a year holds and what it is missing
-         * @description The Paquete anual's manifest, without the bytes: the files (key, label, name, rows, size), `complete` (true only when nothing is missing), `incomplete` (the months not closed, not read by the SII sync, with unclassified movements or documents, F29 periods with no filing, undated collections and payments, money out nothing explains: Spanish sentences, ready to show), `warnings` (retention declared versus the boletas) and one row per month. The zip downloads from `GET /finanzas/contador-export?year=`. `00-estado-del-ano` (what makes the year incomplete), `01-resultado-por-cuenta` (a column per month and the total), `02-base-de-caja` (collected and paid by account, `no_operacional` money apart, undated items listed), `03-iva-y-ppm` (each F29, proposal or filed), `04-honorarios-y-retenciones` (with the comparison against F29 code 151), `05-libro-de-compras`, `06-libro-de-ventas` and `07-pagos-de-impuestos`, each `<name>-<year>.xlsx`. A future year answers 400, and so does the current year until a month of it has closed; a workspace with more than one sociedad answers 409. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
+         * @description The Paquete anual's manifest, without the bytes: the files (key, label, name, rows, size), `complete` (the year is over and nothing a person can do is missing; `limits`, what Vitrina does not hold, do not count), `status`, `has_limits`, `limits` (one sentence per kind: the SII window, F29 filed elsewhere, payments marked paid before Vitrina...), `incomplete` (every reason with `actionable`: the months not closed, not read by the SII sync, with unclassified movements or documents, F29 periods with no filing, undated collections and payments, money out nothing explains: Spanish sentences, ready to show), `warnings` (retention declared versus the boletas) and one row per month. The zip downloads from `GET /finanzas/contador-export?year=`. `00-estado-del-ano` (what makes the year incomplete), `01-resultado-por-cuenta` (a column per month and the total), `02-base-de-caja` (collected and paid by account, `no_operacional` money apart, undated items listed), `03-iva-y-ppm` (each F29, proposal or filed), `04-honorarios-y-retenciones` (with the comparison against F29 code 151), `05-libro-de-compras`, `06-libro-de-ventas` and `07-pagos-de-impuestos`, each `<name>-<year>.xlsx`. A future year answers 400, and so does the current year until a month of it has closed; a workspace with more than one sociedad answers 409. It writes nothing: the open cases are read as stored (they are rebuilt after every sync and change). A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
          */
         get: {
             parameters: {
@@ -115676,6 +115676,11 @@ export interface paths {
                          *         "filename": "paquete-contador-2025.zip",
                          *         "in_progress": false,
                          *         "complete": true,
+                         *         "has_limits": false,
+                         *         "status": "complete",
+                         *         "status_label": "Completo",
+                         *         "actionable_count": 0,
+                         *         "limits": [],
                          *         "sociedad": {
                          *           "connection_id": "0194f3a0-7c1e-7a52-9d1b-3c5e8f2a6b41",
                          *           "rut": "76.123.456-7",
@@ -115694,7 +115699,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-02",
@@ -115706,7 +115713,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-03",
@@ -115718,7 +115727,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-04",
@@ -115730,7 +115741,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-05",
@@ -115742,7 +115755,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-06",
@@ -115754,7 +115769,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-07",
@@ -115766,7 +115783,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-08",
@@ -115778,7 +115797,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-09",
@@ -115790,7 +115811,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-10",
@@ -115802,7 +115825,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-11",
@@ -115814,7 +115839,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           },
                          *           {
                          *             "month": "2025-12",
@@ -115826,7 +115853,9 @@ export interface paths {
                          *             "sii_read": true,
                          *             "f29": "filed",
                          *             "f29_label": "Presentado",
-                         *             "issues": []
+                         *             "issues": [],
+                         *             "actionable_issues": [],
+                         *             "complete": true
                          *           }
                          *         ],
                          *         "files": [
@@ -115899,13 +115928,40 @@ export interface paths {
                                 filename: string;
                                 /** @description The current year: figures still moving, future months missing. */
                                 in_progress: boolean;
-                                /** @description True only when `incomplete` is empty. Anything else: the year is NOT complete and nothing in it should be read as final. */
+                                /** @description True when the year is over and no ACTIONABLE reason remains (`actionable_count` is 0). `limits` (what Vitrina does not hold) do not count: see `has_limits`. False for the current year. A year that is not complete is not final. */
                                 complete: boolean;
+                                /** @description The year has limits: things the package does not contain or cannot confirm and no action in Vitrina can fix. A complete year can have limits («Completo, con límites»). */
+                                has_limits: boolean;
+                                /**
+                                 * @description `complete` and not `has_limits`: «Completo»; `complete_with_limits`: «Completo, con límites»; `incomplete`: «Incompleto»; `in_progress` (the current year): «En curso: incompleto».
+                                 * @enum {string}
+                                 */
+                                status: "complete" | "complete_with_limits" | "incomplete" | "in_progress";
+                                /** @description The Spanish label of `status`. */
+                                status_label: string;
+                                /** @description How many `incomplete` items have `actionable: true`. */
+                                actionable_count: number;
+                                /** @description The non-actionable reasons, ONE entry per kind for the year (not one per month). Nothing a person does in Vitrina clears them. */
+                                limits: {
+                                    /** @enum {string} */
+                                    kind: "sii_not_read_previous_year" | "sii_not_read" | "f29_not_readable" | "undated_collections_before_vitrina" | "undated_payments_before_vitrina" | "month_in_progress" | "month_not_started" | "rows_truncated";
+                                    /** @description The reason codes collapsed into this limit. */
+                                    codes: ("month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated")[];
+                                    /** @description Spanish, neutral register: what the package does not contain or cannot confirm. */
+                                    message: string;
+                                    /** @description Months for the month kinds, documents for the undated kinds, files for `rows_truncated`. */
+                                    count: number;
+                                    /** @description In base de caja, for the undated kinds; null otherwise. */
+                                    amount_clp: number | null;
+                                    /** @description `YYYY-MM` months it covers; empty for a year-wide limit. */
+                                    months: string[];
+                                }[];
                                 sociedad: {
                                     connection_id: string;
                                     rut: string;
                                     legal_name: string | null;
                                 } | null;
+                                /** @description Every reason, actionable or not. Group by `actionable` to render «Por revisar» and «Lo que este paquete no trae». */
                                 incomplete: {
                                     /** @enum {string} */
                                     code: "month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated";
@@ -115913,6 +115969,8 @@ export interface paths {
                                     month: string | null;
                                     /** @description Spanish, ready to show. */
                                     message: string;
+                                    /** @description A person can clear it in Vitrina. False: Vitrina does not hold the data or it only needs time; it is also summarised in `limits`. An undated-payments or undated-collections reason is split into an actionable item and a non-actionable one (documents marked paid before Vitrina have no date to give). */
+                                    actionable: boolean;
                                 }[];
                                 warnings: {
                                     /** @enum {string} */
@@ -115932,7 +115990,12 @@ export interface paths {
                                     /** @enum {string} */
                                     f29: "filed" | "proposal" | "missing" | "not_due";
                                     f29_label: string;
+                                    /** @description Every reason code of the month, actionable or not. */
                                     issues: ("month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated")[];
+                                    /** @description The subset of `issues` a person can clear. */
+                                    actionable_issues: ("month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated")[];
+                                    /** @description The month has ended and no actionable reason remains. False for the current month and for months that have not begun. */
+                                    complete: boolean;
                                 }[];
                                 files: {
                                     /** @enum {string} */
