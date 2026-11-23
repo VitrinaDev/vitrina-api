@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.118.0",
+    "version": "17.119.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -30968,6 +30968,1744 @@
         },
         "required": [
           "owner_id"
+        ],
+        "additionalProperties": false
+      },
+      "FinanzasTaxRegimeCode": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "14D3",
+          "14D8",
+          "14A"
+        ],
+        "description": "The regime in force for `commercial_year`; null when none was ever set (never a default)."
+      },
+      "FinanzasTaxRegimeRow": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dte_connection_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "regime": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasTaxRegimeCode"
+              },
+              {
+                "type": "string",
+                "description": "The F22 mapping identifiers: `14D3` Pro Pyme General (art. 14 D N°3), `14D8` Pro Pyme Transparente (14 D N°8), `14A` general semi-integrated (14 A)."
+              }
+            ]
+          },
+          "applies_from_year": {
+            "type": "integer"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "person",
+              "sii"
+            ],
+            "description": "`person` today. `sii` is reserved for an automatic read (none exists yet); a person-set row always outranks an `sii` row of the same year."
+          },
+          "set_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "set_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "dte_connection_id",
+          "regime",
+          "applies_from_year",
+          "source",
+          "set_by",
+          "set_at"
+        ]
+      },
+      "FinanzasTaxRegimeIncomeCheck": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "ceiling_uf": {
+            "type": "integer"
+          },
+          "single_year_cap_uf": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "above",
+              "no_data"
+            ]
+          },
+          "years_used": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "years_missing": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "integer"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "no_tax_tables",
+                    "no_income_in_finanzas",
+                    "not_split_by_sociedad"
+                  ]
+                }
+              },
+              "required": [
+                "year",
+                "reason"
+              ]
+            }
+          },
+          "income_uf_by_year": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "average_uf": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ceiling_uf",
+          "single_year_cap_uf",
+          "status",
+          "years_used",
+          "years_missing",
+          "income_uf_by_year",
+          "average_uf",
+          "message"
+        ],
+        "description": "Only for the two Pro Pyme regimes."
+      },
+      "FinanzasTaxRegimeWarning": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "owners_not_final_taxpayers",
+              "owners_unknown",
+              "income_average_above_ceiling",
+              "income_year_above_cap"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "facts": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "facts"
+        ]
+      },
+      "FinanzasTaxRegimeView": {
+        "type": "object",
+        "properties": {
+          "dte_connection_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "legal_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tax_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "commercial_year": {
+            "type": "integer"
+          },
+          "regime": {
+            "$ref": "#/components/schemas/FinanzasTaxRegimeCode"
+          },
+          "regime_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "regime_article": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "regime_label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "in_force": {
+            "$ref": "#/components/schemas/FinanzasTaxRegimeRow"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/FinanzasTaxRegimeRow"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          "income_check": {
+            "$ref": "#/components/schemas/FinanzasTaxRegimeIncomeCheck"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FinanzasTaxRegimeWarning"
+            }
+          }
+        },
+        "required": [
+          "dte_connection_id",
+          "legal_name",
+          "tax_id",
+          "commercial_year",
+          "regime",
+          "regime_name",
+          "regime_article",
+          "regime_label",
+          "in_force",
+          "history",
+          "income_check",
+          "warnings"
+        ]
+      },
+      "FinanzasTaxRegimeList": {
+        "type": "object",
+        "properties": {
+          "sociedades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FinanzasTaxRegimeView"
+            }
+          }
+        },
+        "required": [
+          "sociedades"
+        ]
+      },
+      "FinanzasTaxRegimeSetResult": {
+        "type": "object",
+        "properties": {
+          "row": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasTaxRegimeRow"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          },
+          "view": {
+            "$ref": "#/components/schemas/FinanzasTaxRegimeView"
+          }
+        },
+        "required": [
+          "row",
+          "view"
+        ]
+      },
+      "FinanzasTaxRegimeSetBody": {
+        "type": "object",
+        "properties": {
+          "dte_connection_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The sociedad: the id of its DTE connection (`clinic_dte_connection.id`), as on the owners register."
+          },
+          "regime": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasTaxRegimeCode"
+              },
+              {
+                "type": "string",
+                "description": "The F22 mapping identifiers: `14D3` Pro Pyme General (art. 14 D N°3), `14D8` Pro Pyme Transparente (14 D N°8), `14A` general semi-integrated (14 A)."
+              }
+            ]
+          },
+          "applies_from_year": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2100,
+            "description": "Commercial year the regime applies from (a change of regime takes effect on 1 January). Applies until a later row says otherwise. Setting the same year again corrects it; the earlier row stays in the history."
+          }
+        },
+        "required": [
+          "dte_connection_id",
+          "regime",
+          "applies_from_year"
+        ]
+      },
+      "FinanzasF22LineState": {
+        "type": "string",
+        "enum": [
+          "books",
+          "formula",
+          "formula_incomplete",
+          "entered",
+          "needs_input",
+          "needs_prior_year",
+          "sii_only",
+          "not_held",
+          "not_evaluable"
+        ],
+        "description": "Exactly one per line. `books` computed from the books (with `built_from`); `formula` derived with the SII formula (with `inputs`); `formula_incomplete` a formula whose inputs are missing (`missing`, amount null); `entered` a person typed it (`entered`); `needs_input` a datum only a person has; `needs_prior_year` from last year's F22, not readable yet; `sii_only` held by the SII (may carry a `reference_amount_clp` that is NOT the amount); `not_held` Vitrina does not record it (or it belongs to an owner's own return); `not_evaluable` derived with no formula in the mapping."
+      },
+      "FinanzasF22BuiltFrom": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Spanish, ready to show."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "role",
+                "label"
+              ]
+            }
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "amount_clp": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "amount_clp"
+              ]
+            }
+          },
+          "documents": {
+            "type": "integer"
+          },
+          "payments": {
+            "type": "integer"
+          },
+          "lines": {
+            "type": "integer"
+          },
+          "months": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "`YYYY-MM`, oldest first."
+          }
+        },
+        "required": [
+          "description",
+          "roles",
+          "accounts",
+          "documents",
+          "payments",
+          "lines",
+          "months"
+        ]
+      },
+      "FinanzasF22DraftLine": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "company",
+              "owner"
+            ]
+          },
+          "owner_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "code": {
+            "type": "integer"
+          },
+          "recuadro": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "form_line": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "sign": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "input",
+              "subtotal",
+              "total",
+              "info"
+            ]
+          },
+          "amount_clp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Whole CLP; null = «no determinado» (never a silent 0)."
+          },
+          "text_value": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "$ref": "#/components/schemas/FinanzasF22LineState"
+          },
+          "state_label": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Spanish: what it was built from, what to enter, or why there is nothing."
+          },
+          "verified": {
+            "type": "boolean",
+            "description": "False: the mapping lists the code as unverified; show «sin confirmar»."
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "formula": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "inputs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "amount_clp": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "code",
+                "amount_clp"
+              ]
+            }
+          },
+          "missing": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "codes": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "variables": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "codes",
+              "variables"
+            ]
+          },
+          "built_from": {
+            "$ref": "#/components/schemas/FinanzasF22BuiltFrom"
+          },
+          "entered": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "by": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "by_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "at": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "person",
+                  "sii_filed_f22"
+                ]
+              },
+              "note": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "by",
+              "by_name",
+              "at",
+              "source",
+              "note"
+            ]
+          },
+          "replaces_amount_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "reference_amount_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mapping_status": {
+            "type": "string"
+          },
+          "counts_for_completeness": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "scope",
+          "owner_id",
+          "code",
+          "recuadro",
+          "form_line",
+          "label",
+          "sign",
+          "role",
+          "amount_clp",
+          "text_value",
+          "state",
+          "state_label",
+          "explanation",
+          "verified",
+          "sources",
+          "formula",
+          "inputs",
+          "missing",
+          "built_from",
+          "entered",
+          "replaces_amount_clp",
+          "reference_amount_clp",
+          "notes",
+          "mapping_status",
+          "counts_for_completeness"
+        ]
+      },
+      "FinanzasF22Draft": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "audience": {
+            "type": "string"
+          },
+          "disclaimer": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "tax_year": {
+            "type": "integer"
+          },
+          "in_progress": {
+            "type": "boolean"
+          },
+          "sociedad": {
+            "type": "object",
+            "properties": {
+              "dte_connection_id": {
+                "type": "string"
+              },
+              "legal_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tax_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "dte_connection_id",
+              "legal_name",
+              "tax_id"
+            ]
+          },
+          "regime": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "14D3",
+                  "14D8"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "article": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "applies_from_year": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "set_by": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "set_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "name",
+              "article",
+              "label",
+              "applies_from_year",
+              "set_by",
+              "set_at"
+            ]
+          },
+          "mapping": {
+            "type": "object",
+            "properties": {
+              "tax_year": {
+                "type": "integer"
+              },
+              "commercial_year": {
+                "type": "integer"
+              },
+              "regime_name": {
+                "type": "string"
+              },
+              "basis": {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "accrual"
+                ]
+              },
+              "recuadros": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "number",
+                    "title"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "tax_year",
+              "commercial_year",
+              "regime_name",
+              "basis",
+              "recuadros"
+            ]
+          },
+          "status": {
+            "type": "object",
+            "properties": {
+              "complete": {
+                "type": "boolean",
+                "description": "True only when the year has nothing missing (`incomplete` empty) AND no line that counts is in a «needs» state."
+              },
+              "label": {
+                "type": "string"
+              },
+              "incomplete": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "month": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "month",
+                    "message"
+                  ]
+                }
+              },
+              "blocking_lines": {
+                "type": "integer"
+              },
+              "state_counts": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              }
+            },
+            "required": [
+              "complete",
+              "label",
+              "incomplete",
+              "blocking_lines",
+              "state_counts"
+            ]
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FinanzasF22DraftLine"
+            }
+          },
+          "owners": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "as_of": {
+                "type": "string"
+              },
+              "rule": {
+                "type": "string",
+                "enum": [
+                  "statute_profit_share",
+                  "paid_in_capital",
+                  "subscribed_capital",
+                  "none"
+                ]
+              },
+              "rule_label": {
+                "type": "string"
+              },
+              "determined": {
+                "type": "boolean"
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "statement": {
+                "type": "string"
+              },
+              "owners": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "owner_id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "tax_id": {
+                      "type": "string"
+                    },
+                    "person_kind": {
+                      "type": "string"
+                    },
+                    "tax_residence_country": {
+                      "type": "string"
+                    },
+                    "resident": {
+                      "type": "boolean"
+                    },
+                    "share_pct": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "attributed_base_clp": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "ppm_clp": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "lines": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/FinanzasF22DraftLine"
+                      }
+                    }
+                  },
+                  "required": [
+                    "owner_id",
+                    "name",
+                    "tax_id",
+                    "person_kind",
+                    "tax_residence_country",
+                    "resident",
+                    "share_pct",
+                    "attributed_base_clp",
+                    "ppm_clp",
+                    "lines"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "as_of",
+              "rule",
+              "rule_label",
+              "determined",
+              "reason",
+              "statement",
+              "owners"
+            ],
+            "description": "14 D N°8 only: the attribution to the owners; null in 14 D N°3."
+          },
+          "base": {
+            "type": "object",
+            "properties": {
+              "cash_base_from_books_clp": {
+                "type": "integer"
+              },
+              "untagged": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "collection",
+                        "payment"
+                      ]
+                    },
+                    "account": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
+                    },
+                    "amount_clp": {
+                      "type": "integer"
+                    },
+                    "lines": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "side",
+                    "account",
+                    "amount_clp",
+                    "lines"
+                  ]
+                }
+              },
+              "untagged_total": {
+                "type": "object",
+                "properties": {
+                  "collections_clp": {
+                    "type": "integer"
+                  },
+                  "payments_clp": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "collections_clp",
+                  "payments_clp"
+                ]
+              },
+              "excluded": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "reason": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "outcome": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "tax_40",
+                        "owner",
+                        "left_out"
+                      ]
+                    },
+                    "amount_clp": {
+                      "type": "integer"
+                    },
+                    "lines": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "reason",
+                    "label",
+                    "outcome",
+                    "amount_clp",
+                    "lines"
+                  ]
+                }
+              },
+              "undated": {
+                "type": "object",
+                "properties": {
+                  "collections": {
+                    "type": "object",
+                    "properties": {
+                      "lines": {
+                        "type": "integer"
+                      },
+                      "base_clp": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "lines",
+                      "base_clp"
+                    ]
+                  },
+                  "payments": {
+                    "type": "object",
+                    "properties": {
+                      "lines": {
+                        "type": "integer"
+                      },
+                      "base_clp": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "lines",
+                      "base_clp"
+                    ]
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "side": {
+                          "type": "string",
+                          "enum": [
+                            "collection",
+                            "payment"
+                          ]
+                        },
+                        "document": {
+                          "type": "string"
+                        },
+                        "counterparty": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "base_clp": {
+                          "type": "integer"
+                        },
+                        "reason": {
+                          "type": "string"
+                        },
+                        "paid_no_later_than": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "side",
+                        "document",
+                        "counterparty",
+                        "base_clp",
+                        "reason",
+                        "paid_no_later_than"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "collections",
+                  "payments",
+                  "items"
+                ]
+              },
+              "non_result": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "collected_clp": {
+                      "type": "integer"
+                    },
+                    "paid_clp": {
+                      "type": "integer"
+                    },
+                    "lines": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "role",
+                    "label",
+                    "collected_clp",
+                    "paid_clp",
+                    "lines",
+                    "code"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "cash_base_from_books_clp",
+              "untagged",
+              "untagged_total",
+              "excluded",
+              "undated",
+              "non_result"
+            ]
+          },
+          "reconciliation": {
+            "type": "object",
+            "properties": {
+              "accrual_result_clp": {
+                "type": "integer"
+              },
+              "cash_result_clp": {
+                "type": "integer"
+              },
+              "cash_base_from_books_clp": {
+                "type": "integer"
+              },
+              "unexplained_clp": {
+                "type": "integer"
+              },
+              "reconciles": {
+                "type": "boolean"
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "amount_clp": {
+                      "type": "integer"
+                    },
+                    "effect": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "enum": [
+                            1
+                          ]
+                        },
+                        {
+                          "type": "number",
+                          "enum": [
+                            -1
+                          ]
+                        },
+                        {
+                          "type": "number",
+                          "enum": [
+                            0
+                          ]
+                        }
+                      ]
+                    },
+                    "detail": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "label",
+                    "amount_clp",
+                    "effect",
+                    "detail"
+                  ]
+                }
+              },
+              "outside_both": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "collected_clp": {
+                      "type": "integer"
+                    },
+                    "paid_clp": {
+                      "type": "integer"
+                    },
+                    "lines": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "role",
+                    "label",
+                    "collected_clp",
+                    "paid_clp",
+                    "lines",
+                    "code"
+                  ]
+                }
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "accrual_result_clp",
+              "cash_result_clp",
+              "cash_base_from_books_clp",
+              "unexplained_clp",
+              "reconciles",
+              "lines",
+              "outside_both",
+              "note"
+            ]
+          },
+          "credits": {
+            "type": "object",
+            "properties": {
+              "idpc": {
+                "type": "object",
+                "properties": {
+                  "applies": {
+                    "type": "boolean"
+                  },
+                  "rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "rate_label": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "source": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "applies",
+                  "rate",
+                  "rate_label",
+                  "source",
+                  "message"
+                ]
+              },
+              "ppm": {
+                "type": "object",
+                "properties": {
+                  "months": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "period": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "filed",
+                            "proposal",
+                            "missing"
+                          ]
+                        },
+                        "ppm_clp": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "payment_date": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "adjusted_by_month": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "adjusted_clp": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "note": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "period",
+                        "status",
+                        "ppm_clp",
+                        "payment_date",
+                        "adjusted_by_month",
+                        "adjusted_clp",
+                        "note"
+                      ]
+                    }
+                  },
+                  "total_nominal_clp": {
+                    "type": "integer"
+                  },
+                  "total_adjusted_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "all_filed": {
+                    "type": "boolean"
+                  },
+                  "from_proposals": {
+                    "type": "boolean"
+                  },
+                  "warning": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Show prominently while any month comes from an SII proposal."
+                  }
+                },
+                "required": [
+                  "months",
+                  "total_nominal_clp",
+                  "total_adjusted_clp",
+                  "all_filed",
+                  "from_proposals",
+                  "warning"
+                ]
+              },
+              "retentions": {
+                "type": "object",
+                "properties": {
+                  "boletas_retention_clp": {
+                    "type": "integer"
+                  },
+                  "declared_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "months_with_difference": {
+                    "type": "integer"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "boletas_retention_clp",
+                  "declared_clp",
+                  "months_with_difference",
+                  "message"
+                ]
+              },
+              "income_check": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {},
+                "description": "The regime read's `income_check` (FinanzasTaxRegimeIncomeCheck)."
+              }
+            },
+            "required": [
+              "idpc",
+              "ppm",
+              "retentions",
+              "income_check"
+            ]
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "message"
+              ]
+            }
+          }
+        },
+        "required": [
+          "title",
+          "audience",
+          "disclaimer",
+          "year",
+          "tax_year",
+          "in_progress",
+          "sociedad",
+          "regime",
+          "mapping",
+          "status",
+          "lines",
+          "owners",
+          "base",
+          "reconciliation",
+          "credits",
+          "warnings"
+        ]
+      },
+      "FinanzasF22DraftResult": {
+        "type": "object",
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "tax_year": {
+            "type": "integer"
+          },
+          "refusal": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "no_sociedad",
+                  "multi_sociedad",
+                  "no_regime",
+                  "regime_14a",
+                  "no_mapping",
+                  "no_tax_tables"
+                ]
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "description": "Why there is no draft (Spanish message ready to show); null when `available`."
+          },
+          "draft": {
+            "$ref": "#/components/schemas/FinanzasF22Draft"
+          }
+        },
+        "required": [
+          "available",
+          "year",
+          "tax_year",
+          "refusal",
+          "draft"
+        ]
+      },
+      "FinanzasF22EnteredValue": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "dte_connection_id": {
+            "type": "string"
+          },
+          "tax_year": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "integer"
+          },
+          "owner_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "amount_clp": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "text_value": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "person",
+              "sii_filed_f22"
+            ]
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "entered_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "entered_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "dte_connection_id",
+          "tax_year",
+          "code",
+          "owner_id",
+          "amount_clp",
+          "text_value",
+          "source",
+          "note",
+          "entered_by",
+          "entered_at"
+        ]
+      },
+      "FinanzasF22DraftValuesResult": {
+        "type": "object",
+        "properties": {
+          "tax_year": {
+            "type": "integer"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FinanzasF22EnteredValue"
+            }
+          }
+        },
+        "required": [
+          "tax_year",
+          "values"
+        ]
+      },
+      "FinanzasF22DraftValuesBody": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2100,
+            "description": "The commercial year of the draft."
+          },
+          "dte_connection_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 99999
+                },
+                "owner_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid",
+                  "description": "For a code of the owners' side (14 D N°8): the owner."
+                },
+                "amount_clp": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Whole CLP, signed. 0 is a real answer («no aplica»). Exactly one of amount_clp / text_value."
+                },
+                "text_value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "description": "For identification codes (giro, domicilio, banco)."
+                },
+                "note": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "code"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "year",
+          "values"
         ],
         "additionalProperties": false
       },
@@ -227005,6 +228743,894 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/finanzas/tax-regime": {
+      "get": {
+        "summary": "The tax regime of each sociedad for a commercial year",
+        "description": "Régimen tributario per sociedad: the regime in force for `year` (default this year), or `null` when none was ever set (never a default), plus the history. The regime is set by a person today (`source: person`); the SII backend has no reader for it, `sii` is reserved. Pro Pyme regimes carry an `income_check` (average annual income of the 3 prior years against 75.000 UF, from Finanzas’ accrual income, or `no_data`), and 14 D N°8 a warning when an owner is a legal person. Warnings are facts with their numbers and never block a write. 422 `FINANZAS_TAX_REGIME_INVALID` with `details.reason` (`sociedad_not_found`, `regime_not_found`). Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_reports:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The sociedad: the id of its DTE connection (`clinic_dte_connection.id`), as on the owners register."
+            },
+            "required": false,
+            "name": "dte_connection_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100,
+              "description": "Commercial year the regime in force is read for (default: this year)."
+            },
+            "required": false,
+            "name": "year",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Regimes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasTaxRegimeList"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "sociedades": [
+                      {
+                        "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                        "legal_name": "Clínica Sonrisa SpA",
+                        "tax_id": "76123456-0",
+                        "commercial_year": 2026,
+                        "regime": "14D3",
+                        "regime_name": "Pro Pyme General",
+                        "regime_article": "14 D N°3",
+                        "regime_label": "Pro Pyme General (14 D N°3)",
+                        "in_force": {
+                          "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7101",
+                          "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                          "regime": "14D3",
+                          "applies_from_year": 2025,
+                          "source": "person",
+                          "set_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7102",
+                          "set_at": "2026-11-22T12:00:00.000Z"
+                        },
+                        "history": [
+                          {
+                            "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7101",
+                            "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                            "regime": "14D3",
+                            "applies_from_year": 2025,
+                            "source": "person",
+                            "set_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7102",
+                            "set_at": "2026-11-22T12:00:00.000Z"
+                          }
+                        ],
+                        "income_check": {
+                          "ceiling_uf": 75000,
+                          "single_year_cap_uf": 85000,
+                          "status": "ok",
+                          "years_used": [
+                            2025
+                          ],
+                          "years_missing": [
+                            {
+                              "year": 2023,
+                              "reason": "no_tax_tables"
+                            },
+                            {
+                              "year": 2024,
+                              "reason": "no_tax_tables"
+                            }
+                          ],
+                          "income_uf_by_year": {
+                            "2025": 9800
+                          },
+                          "average_uf": 9800,
+                          "message": "Ingreso bruto promedio 9.800 UF (2025), límite 75.000 UF. Faltan 2023 y 2024 en Finanzas."
+                        },
+                        "warnings": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Set or correct the tax regime of a sociedad from a commercial year",
+        "description": "Adds a row to the history; the regime applies from `applies_from_year` until a later row says otherwise, so a change on 1 January is a new row. Setting the same year again corrects it (the earlier row stays in the history). The write is accepted whatever the warnings say. 422 `FINANZAS_TAX_REGIME_INVALID` with `details.reason` (`sociedad_not_found`, `regime_not_found`). Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat is read-only); audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanzasTaxRegimeSetBody"
+              },
+              "example": {
+                "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                "regime": "14D3",
+                "applies_from_year": 2025
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The row and the view for that year",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasTaxRegimeSetResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "row": {
+                      "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7101",
+                      "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                      "regime": "14D3",
+                      "applies_from_year": 2025,
+                      "source": "person",
+                      "set_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7102",
+                      "set_at": "2026-11-22T12:00:00.000Z"
+                    },
+                    "view": {
+                      "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                      "legal_name": "Clínica Sonrisa SpA",
+                      "tax_id": "76123456-0",
+                      "commercial_year": 2026,
+                      "regime": "14D3",
+                      "regime_name": "Pro Pyme General",
+                      "regime_article": "14 D N°3",
+                      "regime_label": "Pro Pyme General (14 D N°3)",
+                      "in_force": {
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7101",
+                        "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                        "regime": "14D3",
+                        "applies_from_year": 2025,
+                        "source": "person",
+                        "set_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7102",
+                        "set_at": "2026-11-22T12:00:00.000Z"
+                      },
+                      "history": [
+                        {
+                          "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7101",
+                          "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                          "regime": "14D3",
+                          "applies_from_year": 2025,
+                          "source": "person",
+                          "set_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7102",
+                          "set_at": "2026-11-22T12:00:00.000Z"
+                        }
+                      ],
+                      "income_check": {
+                        "ceiling_uf": 75000,
+                        "single_year_cap_uf": 85000,
+                        "status": "ok",
+                        "years_used": [
+                          2025
+                        ],
+                        "years_missing": [
+                          {
+                            "year": 2023,
+                            "reason": "no_tax_tables"
+                          },
+                          {
+                            "year": 2024,
+                            "reason": "no_tax_tables"
+                          }
+                        ],
+                        "income_uf_by_year": {
+                          "2025": 9800
+                        },
+                        "average_uf": 9800,
+                        "message": "Ingreso bruto promedio 9.800 UF (2025), límite 75.000 UF. Faltan 2023 y 2024 en Finanzas."
+                      },
+                      "warnings": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/finanzas/tax-regime/{id}": {
+      "delete": {
+        "summary": "Remove a mistaken tax-regime row",
+        "description": "Only a row a person set. Prefer correcting with a new row, which keeps the history. 422 `FINANZAS_TAX_REGIME_INVALID` with `details.reason` (`sociedad_not_found`, `regime_not_found`). Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat is read-only); audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      }
+    },
+    "/finanzas/f22-draft": {
+      "get": {
+        "summary": "The Borrador de F22 of a sociedad for a commercial year",
+        "description": "A draft FOR THE ACCOUNTANT, by the sociedad's tax regime, on the cash basis of the Pro Pyme regimes (14 D N°3, 14 D N°8). Vitrina never files it. Every code of the regime's mapping is a line with exactly one `state` and what it was built from; an amount Vitrina cannot determine is `null`, never 0. Also: the cash base from the books and what stays outside it (accounts without tax meaning, non-deductible items, undated items), the reconciliation with the accrual Resultado, PPM by month brought to year end (with a warning while they come from SII proposals), the IDPC rate, the Pro Pyme income check, and for 14 D N°8 the attribution to owners (no owner's tax is computed). `available: false` with a `refusal` (no sociedad, more than one sociedad, no regime, regime 14 A, no mapping or no tax tables for the year). A future year answers 400. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_reports:read` (owner, admin, Contador seat).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100,
+              "description": "The commercial year (default: last year). The draft is for the tax year after it (año tributario = year + 1). A future year answers 400."
+            },
+            "required": false,
+            "name": "year",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The sociedad: the id of its DTE connection (`clinic_dte_connection.id`), as on the owners register and the tax regime. Optional: today a workspace has one."
+            },
+            "required": false,
+            "name": "dte_connection_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The draft, or why there is none",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasF22DraftResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "available": false,
+                    "year": 2025,
+                    "tax_year": 2026,
+                    "refusal": {
+                      "code": "no_regime",
+                      "message": "La sociedad no tiene régimen tributario definido para 2025: defínelo en Finanzas para armar el borrador de F22."
+                    },
+                    "draft": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/f22-draft/values": {
+      "put": {
+        "summary": "Enter values on the F22 draft",
+        "description": "A person enters the codes Vitrina cannot build (last year's return, decisions, data it does not hold), per sociedad, tax year and code; an owner-side code (14 D N°8) names the owner. Each code must be in the regime's mapping for the year. Re-entering a code keeps the previous value in the history. The draft labels the line «Ingresado por una persona» with who and when; a value entered wins over one Vitrina computed. 422 `FINANZAS_F22_DRAFT_INVALID` with `details.reason` (`sociedad_not_found`, `draft_unavailable` + `refusal`, `code_not_in_mapping`, `owner_not_found`, `value_required`, `duplicate_code`, `value_not_found`). Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat is read-only); audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanzasF22DraftValuesBody"
+              },
+              "example": {
+                "year": 2025,
+                "values": [
+                  {
+                    "code": 1426,
+                    "amount_clp": 0,
+                    "note": "Sin pérdida en el AT 2025"
+                  },
+                  {
+                    "code": 1432,
+                    "amount_clp": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The values entered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasF22DraftValuesResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "tax_year": 2026,
+                    "values": [
+                      {
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7201",
+                        "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                        "tax_year": 2026,
+                        "code": 1426,
+                        "owner_id": null,
+                        "amount_clp": 0,
+                        "text_value": null,
+                        "source": "person",
+                        "note": "Sin pérdida en el AT 2025",
+                        "entered_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7102",
+                        "entered_at": "2026-03-02T12:00:00.000Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/f22-draft/values/{code}": {
+      "delete": {
+        "summary": "Remove a value a person entered on the F22 draft",
+        "description": "The line goes back to what Vitrina knows (or to «falta»). The history keeps the removed value. 422 `FINANZAS_F22_DRAFT_INVALID` with `details.reason` (`sociedad_not_found`, `draft_unavailable` + `refusal`, `code_not_in_mapping`, `owner_not_found`, `value_required`, `duplicate_code`, `value_not_found`). Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat is read-only); audited.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99999
+            },
+            "required": true,
+            "name": "code",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100,
+              "description": "The commercial year of the draft."
+            },
+            "required": true,
+            "name": "year",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "owner_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "dte_connection_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The removed value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "removed": {
+                          "$ref": "#/components/schemas/FinanzasF22EnteredValue"
+                        }
+                      },
+                      "required": [
+                        "removed"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "removed": {
+                      "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7201",
+                      "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                      "tax_year": 2026,
+                      "code": 1426,
+                      "owner_id": null,
+                      "amount_clp": 0,
+                      "text_value": null,
+                      "source": "person",
+                      "note": "Sin pérdida en el AT 2025",
+                      "entered_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7102",
+                      "entered_at": "2026-03-02T12:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      }
+    },
     "/finanzas/tax-tags/roles": {
       "get": {
         "summary": "Tax roles of accounts, the F22 codes they feed, and art. 21 outcomes",
@@ -229293,7 +231919,8 @@
                                   "honorarios",
                                   "libro_compras",
                                   "libro_ventas",
-                                  "pagos_impuestos"
+                                  "pagos_impuestos",
+                                  "borrador_f22"
                                 ]
                               },
                               "label": {
@@ -229317,6 +231944,46 @@
                               "size_bytes"
                             ]
                           }
+                        },
+                        "f22_draft": {
+                          "type": "object",
+                          "properties": {
+                            "available": {
+                              "type": "boolean",
+                              "description": "True when the zip carries `08-borrador-f22-<year>.xlsx` (#8088): only for a sociedad in a Pro Pyme regime that year."
+                            },
+                            "complete": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "refusal": {
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "properties": {
+                                "code": {
+                                  "type": "string"
+                                },
+                                "message": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "code",
+                                "message"
+                              ],
+                              "description": "Why there is no draft: `no_sociedad`, `multi_sociedad`, `no_regime`, `regime_14a`, `no_mapping`, `no_tax_tables`. Spanish message ready to show."
+                            }
+                          },
+                          "required": [
+                            "available",
+                            "complete",
+                            "refusal"
+                          ],
+                          "description": "The Borrador de F22 (#8088). Its full read is `GET /finanzas/f22-draft?year=`."
                         }
                       },
                       "required": [
@@ -229329,7 +231996,8 @@
                         "incomplete",
                         "warnings",
                         "months",
-                        "files"
+                        "files",
+                        "f22_draft"
                       ]
                     }
                   },
