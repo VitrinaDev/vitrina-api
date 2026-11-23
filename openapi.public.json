@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.123.1",
+    "version": "17.124.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -32064,10 +32064,37 @@
             "properties": {
               "complete": {
                 "type": "boolean",
-                "description": "True only when the year has nothing missing (`incomplete` empty) AND no line that counts is in a «needs» state."
+                "description": "The DRAFT is done: the year is ready (`year_complete`) AND no line that counts waits on a person (`blocking_lines` is 0). Limits do not stop it: see `has_limits`. Two separate notions: YEAR READINESS (`year_*`, `incomplete`, `limits`: the same rule and the same sentences as the Paquete anual) and DRAFT LINES PENDING (`blocking_lines`, `state_counts`)."
               },
               "label": {
-                "type": "string"
+                "type": "string",
+                "description": "«Completo», «Completo, con límites» (complete, and `has_limits`), «Incompleto» or «Año en curso: incompleto». Render as is; an unknown value gets a neutral badge."
+              },
+              "year_complete": {
+                "type": "boolean",
+                "description": "YEAR READINESS: the year is over and no ACTIONABLE reason remains (`actionable_count` is 0). Same rule as the Paquete anual `complete`. Says nothing about the lines."
+              },
+              "year_status": {
+                "type": "string",
+                "enum": [
+                  "complete",
+                  "complete_with_limits",
+                  "incomplete",
+                  "in_progress"
+                ],
+                "description": "YEAR READINESS, the Paquete anual `status`: «Completo», «Completo, con límites», «Incompleto», «En curso: incompleto»."
+              },
+              "year_status_label": {
+                "type": "string",
+                "description": "The Spanish label of `year_status`."
+              },
+              "has_limits": {
+                "type": "boolean",
+                "description": "The year has limits: things Vitrina does not hold or cannot confirm, and no action in Vitrina clears. They never keep the year or the draft from being complete."
+              },
+              "actionable_count": {
+                "type": "integer",
+                "description": "How many `incomplete` items have `actionable: true`."
               },
               "incomplete": {
                 "type": "array",
@@ -32075,27 +32102,129 @@
                   "type": "object",
                   "properties": {
                     "code": {
-                      "type": "string"
+                      "type": "string",
+                      "enum": [
+                        "month_not_closed",
+                        "month_in_progress",
+                        "month_not_started",
+                        "sii_not_connected",
+                        "sii_backfill_pending",
+                        "sii_not_read",
+                        "sii_not_read_previous_year",
+                        "unclassified",
+                        "incomplete_month",
+                        "f29_missing",
+                        "f29_not_filed",
+                        "undated_collections",
+                        "undated_payments",
+                        "unexplained_outflows",
+                        "rows_truncated"
+                      ]
                     },
                     "month": {
                       "type": [
                         "string",
                         "null"
-                      ]
+                      ],
+                      "description": "`YYYY-MM`, or null for an item about the whole year."
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Spanish, ready to show."
+                    },
+                    "actionable": {
+                      "type": "boolean",
+                      "description": "A person can clear it in Vitrina. False: Vitrina does not hold the data or it only needs time; it is also summarised in `limits`. An undated-payments or undated-collections reason is split into an actionable item and a non-actionable one (documents marked paid before Vitrina have no date to give)."
                     }
                   },
                   "required": [
                     "code",
                     "month",
-                    "message"
+                    "message",
+                    "actionable"
                   ]
-                }
+                },
+                "description": "Every reason, actionable or not. Group by `actionable` to render «Por revisar» and «Lo que este paquete no trae»."
+              },
+              "limits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "sii_not_read_previous_year",
+                        "sii_not_read",
+                        "f29_not_readable",
+                        "undated_collections_before_vitrina",
+                        "undated_payments_before_vitrina",
+                        "month_in_progress",
+                        "month_not_started",
+                        "rows_truncated"
+                      ]
+                    },
+                    "codes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "month_not_closed",
+                          "month_in_progress",
+                          "month_not_started",
+                          "sii_not_connected",
+                          "sii_backfill_pending",
+                          "sii_not_read",
+                          "sii_not_read_previous_year",
+                          "unclassified",
+                          "incomplete_month",
+                          "f29_missing",
+                          "f29_not_filed",
+                          "undated_collections",
+                          "undated_payments",
+                          "unexplained_outflows",
+                          "rows_truncated"
+                        ]
+                      },
+                      "description": "The reason codes collapsed into this limit."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Spanish, neutral register: what the package does not contain or cannot confirm."
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Months for the month kinds, documents for the undated kinds, files for `rows_truncated`."
+                    },
+                    "amount_clp": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "description": "In base de caja, for the undated kinds; null otherwise."
+                    },
+                    "months": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "`YYYY-MM` months it covers; empty for a year-wide limit."
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "codes",
+                    "message",
+                    "count",
+                    "amount_clp",
+                    "months"
+                  ]
+                },
+                "description": "The non-actionable reasons, ONE entry per kind for the year (not one per month). Nothing a person does in Vitrina clears them."
               },
               "blocking_lines": {
-                "type": "integer"
+                "type": "integer",
+                "description": "DRAFT LINES PENDING: lines that count for completeness and still wait on a person (a «needs» state, an incomplete formula, a figure only the SII holds)."
               },
               "state_counts": {
                 "type": "object",
@@ -32107,7 +32236,13 @@
             "required": [
               "complete",
               "label",
+              "year_complete",
+              "year_status",
+              "year_status_label",
+              "has_limits",
+              "actionable_count",
               "incomplete",
+              "limits",
               "blocking_lines",
               "state_counts"
             ]

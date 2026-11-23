@@ -341610,14 +341610,50 @@ export interface components {
                 }[];
             };
             status: {
-                /** @description True only when the year has nothing missing (`incomplete` empty) AND no line that counts is in a «needs» state. */
+                /** @description The DRAFT is done: the year is ready (`year_complete`) AND no line that counts waits on a person (`blocking_lines` is 0). Limits do not stop it: see `has_limits`. Two separate notions: YEAR READINESS (`year_*`, `incomplete`, `limits`: the same rule and the same sentences as the Paquete anual) and DRAFT LINES PENDING (`blocking_lines`, `state_counts`). */
                 complete: boolean;
+                /** @description «Completo», «Completo, con límites» (complete, and `has_limits`), «Incompleto» or «Año en curso: incompleto». Render as is; an unknown value gets a neutral badge. */
                 label: string;
+                /** @description YEAR READINESS: the year is over and no ACTIONABLE reason remains (`actionable_count` is 0). Same rule as the Paquete anual `complete`. Says nothing about the lines. */
+                year_complete: boolean;
+                /**
+                 * @description YEAR READINESS, the Paquete anual `status`: «Completo», «Completo, con límites», «Incompleto», «En curso: incompleto».
+                 * @enum {string}
+                 */
+                year_status: "complete" | "complete_with_limits" | "incomplete" | "in_progress";
+                /** @description The Spanish label of `year_status`. */
+                year_status_label: string;
+                /** @description The year has limits: things Vitrina does not hold or cannot confirm, and no action in Vitrina clears. They never keep the year or the draft from being complete. */
+                has_limits: boolean;
+                /** @description How many `incomplete` items have `actionable: true`. */
+                actionable_count: number;
+                /** @description Every reason, actionable or not. Group by `actionable` to render «Por revisar» and «Lo que este paquete no trae». */
                 incomplete: {
-                    code: string;
+                    /** @enum {string} */
+                    code: "month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated";
+                    /** @description `YYYY-MM`, or null for an item about the whole year. */
                     month: string | null;
+                    /** @description Spanish, ready to show. */
                     message: string;
+                    /** @description A person can clear it in Vitrina. False: Vitrina does not hold the data or it only needs time; it is also summarised in `limits`. An undated-payments or undated-collections reason is split into an actionable item and a non-actionable one (documents marked paid before Vitrina have no date to give). */
+                    actionable: boolean;
                 }[];
+                /** @description The non-actionable reasons, ONE entry per kind for the year (not one per month). Nothing a person does in Vitrina clears them. */
+                limits: {
+                    /** @enum {string} */
+                    kind: "sii_not_read_previous_year" | "sii_not_read" | "f29_not_readable" | "undated_collections_before_vitrina" | "undated_payments_before_vitrina" | "month_in_progress" | "month_not_started" | "rows_truncated";
+                    /** @description The reason codes collapsed into this limit. */
+                    codes: ("month_not_closed" | "month_in_progress" | "month_not_started" | "sii_not_connected" | "sii_backfill_pending" | "sii_not_read" | "sii_not_read_previous_year" | "unclassified" | "incomplete_month" | "f29_missing" | "f29_not_filed" | "undated_collections" | "undated_payments" | "unexplained_outflows" | "rows_truncated")[];
+                    /** @description Spanish, neutral register: what the package does not contain or cannot confirm. */
+                    message: string;
+                    /** @description Months for the month kinds, documents for the undated kinds, files for `rows_truncated`. */
+                    count: number;
+                    /** @description In base de caja, for the undated kinds; null otherwise. */
+                    amount_clp: number | null;
+                    /** @description `YYYY-MM` months it covers; empty for a year-wide limit. */
+                    months: string[];
+                }[];
+                /** @description DRAFT LINES PENDING: lines that count for completeness and still wait on a person (a «needs» state, an incomplete formula, a figure only the SII holds). */
                 blocking_lines: number;
                 state_counts: {
                     [key: string]: number;
