@@ -13306,7 +13306,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url?: string;
-                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.return_undone" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
                         enabled?: boolean;
                         description?: string | null;
                         /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
@@ -16461,7 +16461,7 @@ export interface paths {
         };
         /**
          * Patch tenant-level settings
-         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. On a clinic workspace that already has prices, presupuestos, deposit rules or payments, a write that would change the effective currency (an explicit `currency`, or a `country` whose default currency differs while none is stored) is refused with 422 `WORKSPACE_CURRENCY_LOCKED` (`details.reason` `workspace_currency_locked`, `currency`, `requested_currency`) and nothing is written; Vitrina support changes it. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, the AI agent's banned terms under `agent_language`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state), and when the assigned seller is notified (`staff_notice_schedule`), and whether the chats the AI answers are assigned to the lead owner (`chat_follows_lead_owner`). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice`, `agent_language`, `notifications`, `staff_notice_schedule` and `chat_follows_lead_owner` (among others documented here): any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
+         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. `billing_owner_only` (boolean, default `false`): when `true` only the workspace owner holds `billing:write`, admins lose it; only an owner may change it (403 otherwise). It is read back by the Vitrina app session on `GET /tenant/settings`, never by an API credential. On a clinic workspace that already has prices, presupuestos, deposit rules or payments, a write that would change the effective currency (an explicit `currency`, or a `country` whose default currency differs while none is stored) is refused with 422 `WORKSPACE_CURRENCY_LOCKED` (`details.reason` `workspace_currency_locked`, `currency`, `requested_currency`) and nothing is written; Vitrina support changes it. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, the AI agent's banned terms under `agent_language`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state), and when the assigned seller is notified (`staff_notice_schedule`), and whether the chats the AI answers are assigned to the lead owner (`chat_follows_lead_owner`). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice`, `agent_language`, `notifications`, `staff_notice_schedule` and `chat_follows_lead_owner` (among others documented here): any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
          */
         put: {
             parameters: {
@@ -17033,7 +17033,7 @@ export interface paths {
         };
         /**
          * List the add-on catalog, this workspace's entitlements, and live usage
-         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price). A row may also carry a time-boxed waiver: `waiver_until` is the last free calendar day (America/Santiago) and `waiver_active` says whether it covers the add-on right now; once it lapses the add-on bills normally with no further action. `complimentary` and `covered_by` say when the add-on carries no price on the invoice at all (granted free, or covered by the workspace's fixed contract / not-billed contract): a client then shows it as included and never the catalog price. `offers` says, per add-on, whether THIS workspace can buy it (`available`) and if not why (`sandbox`: a demonstration workspace; `vertical`: not sold to this type of business) — the same rule the activate route enforces with a 409 `ADDON_NOT_OFFERED`. `activators` names the active owners and admins a member without `tenant:write` can ask to activate one.
+         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price). A row may also carry a time-boxed waiver: `waiver_until` is the last free calendar day (America/Santiago) and `waiver_active` says whether it covers the add-on right now; once it lapses the add-on bills normally with no further action. `complimentary` and `covered_by` say when the add-on carries no price on the invoice at all (granted free, or covered by the workspace's fixed contract / not-billed contract): a client then shows it as included and never the catalog price. `offers` says, per add-on, whether THIS workspace can buy it (`available`) and if not why (`sandbox`: a demonstration workspace; `vertical`: not sold to this type of business) — the same rule the activate route enforces with a 409 `ADDON_NOT_OFFERED`. `activators` names the active owners and admins a member without `billing:write` can ask to activate one (admins are listed unless the owner kept billing owner-only).
          */
         get: {
             parameters: {
@@ -17094,7 +17094,9 @@ export interface paths {
                          *                 "transfer",
                          *                 "card"
                          *               ],
-                         *               "pendingPurchase": null
+                         *               "pendingPurchase": null,
+                         *               "renewal_charge_on": "2027-11-18",
+                         *               "renewalCobro": null
                          *             }
                          *           }
                          *         ],
@@ -17213,6 +17215,19 @@ export interface paths {
                                             /** @description The Santiago day (`YYYY-MM-DD`) it is voided if still unpaid (the plan read's `purchase_expires_on`). */
                                             expiresOn: string | null;
                                         } | null;
+                                        /** @description The Santiago day (`YYYY-MM-DD`) the card will be charged for the upcoming annual renewal, before its cobro exists (a late renewal waits 7 days from its notice). Null when the renewal is not paid by card, the term is not annual, is cancelling or goes back to monthly, or a renewal cobro is already out (`renewalCobro`). */
+                                        renewal_charge_on: string | null;
+                                        /** @description The unpaid annual RENEWAL cobro (the one behind the `renewal_payment_pending` 409 of `PUT /entitlements/finanzas/interval`); null when none is out. */
+                                        renewalCobro: {
+                                            /** @description The unpaid renewal cobro. */
+                                            invoiceId: string;
+                                            /** @description The cobro number (`INV-…-AF…`). */
+                                            invoiceNumber: string;
+                                            /** @description The cobro total, whole CLP. */
+                                            clpTotal: number | null;
+                                            /** @description The Santiago day (`YYYY-MM-DD`) it falls due (the held charge day for a card, the transfer term otherwise). */
+                                            dueOn: string | null;
+                                        } | null;
                                     };
                                     /** @description The business types (`tenant.vertical`) this add-on is sold to. Omitted = every vertical. Read `offers` for the per-workspace answer. */
                                     verticals?: string[];
@@ -17300,7 +17315,7 @@ export interface paths {
                                         reason: "sandbox" | "vertical" | null;
                                     };
                                 };
-                                /** @description Active owners and admins with a display name: who a member without `tenant:write` should ask to activate an add-on. Can be empty. */
+                                /** @description Active owners and admins with a display name: who a member without `billing:write` should ask to activate an add-on (admins are left out while the owner keeps billing owner-only). Can be empty. */
                                 activators: {
                                     user_id: string;
                                     /** @description The member's display name. */
@@ -17385,7 +17400,7 @@ export interface paths {
         put?: never;
         /**
          * Self-serve activate an add-on (returns needs_enrollment without a payment mandate)
-         * @description Grants `feature` to the workspace once an active payment mandate exists (`{ status: "active", entitlement }`); with none, answers `{ status: "needs_enrollment" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. An add-on this workspace cannot buy answers 409 `ADDON_NOT_OFFERED` (`details.reason`: `sandbox` or `vertical`, the same answer `GET /entitlements` publishes in `offers`); reactivating an add-on the workspace still holds is never refused for that. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring). ANNUAL (Vitrina Finanzas only, needs `billing:write`; monthly activation keeps `tenant:write`): body `{ "billing_interval": "annual", "payment": "card" | "transfer" }` issues ONE cobro for the base, 12 months at 20 % off (14.4 UF neto at the UF of the issue day, number `INV-{tenant}-AF{YYYYMM}`), with no payment method required, and answers `{ status: "awaiting_payment" | "active", billing_interval: "annual", invoice_id, invoice_number, uf_total, clp_total, due_at, purchase_expires_on, next_step, term_start, term_end }`. Finanzas opens (or turns annual) only when that cobro is paid; its year starts at the payment instant (after a running waiver). Unpaid, the cobro is voided 30 days after issue and nothing changes. Extra banks keep billing monthly. 409 `ANNUAL_NOT_AVAILABLE` (`details.reason`: `not_annual_feature`, `complimentary`, `billed_elsewhere`, `suspended`, `term_running`); 409 `ANNUAL_PURCHASE_PENDING` while an unpaid purchase is out (`details.invoice_id`).
+         * @description Grants `feature` to the workspace once an active payment mandate exists (`{ status: "active", entitlement }`); with none, answers `{ status: "needs_enrollment" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. An add-on this workspace cannot buy answers 409 `ADDON_NOT_OFFERED` (`details.reason`: `sandbox` or `vertical`, the same answer `GET /entitlements` publishes in `offers`); reactivating an add-on the workspace still holds is never refused for that. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring). Requires `billing:write` (the owner and, by default, the built-in admin; monthly and annual alike). When an admin (not an owner) activates, each workspace owner is emailed who did it. ANNUAL (Vitrina Finanzas only): body `{ "billing_interval": "annual", "payment": "card" | "transfer" }` issues ONE cobro for the base, 12 months at 20 % off (14.4 UF neto at the UF of the issue day, number `INV-{tenant}-AF{YYYYMM}`), with no payment method required, and answers `{ status: "awaiting_payment" | "active", billing_interval: "annual", invoice_id, invoice_number, uf_total, clp_total, due_at, purchase_expires_on, next_step, term_start, term_end }`. Finanzas opens (or turns annual) only when that cobro is paid; its year starts at the payment instant (after a running waiver). Unpaid, the cobro is voided 30 days after issue and nothing changes. Extra banks keep billing monthly. 409 `ANNUAL_NOT_AVAILABLE` (`details.reason`: `not_annual_feature`, `complimentary`, `billed_elsewhere`, `suspended`, `term_running`); 409 `ANNUAL_PURCHASE_PENDING` while an unpaid purchase is out (`details.invoice_id`).
          */
         post: {
             parameters: {
@@ -17523,7 +17538,7 @@ export interface paths {
         put?: never;
         /**
          * Cancel an add-on at period end
-         * @description Flags the workspace’s `feature` row `cancel_at_period_end: true` — the add-on stays active through the period already paid for and turns off at rollover, never immediately. 404 when the workspace holds no entitlement for `feature` to cancel.
+         * @description Flags the workspace’s `feature` row `cancel_at_period_end: true` — the add-on stays active through the period already paid for and turns off at rollover, never immediately. 404 when the workspace holds no entitlement for `feature` to cancel. Requires `billing:write`; when an admin (not an owner) cancels, each workspace owner is emailed who did it.
          */
         post: {
             parameters: {
@@ -18600,17 +18615,23 @@ export interface paths {
          * Search the tenant vehicle stock (filters + free text)
          * @description FIELD-LEVEL COST OMISSION (ERP S3-6): the per-unit money position — `floor_price_clp` (precio piso) — is withheld unless the caller holds `dealership_economics:read`. The key is ABSENT from the response object, not null: a caller who checks `'floor_price_clp' in body` sees it was never offered. `price_clp` (the asking price) is unaffected — it is the one money figure about a unit that is meant to be seen. The scope is NOT an alternative to `marketplace:read` (requireScope ORs its varargs, which would widen this route rather than narrow the field); it is an addition.
          *
+         *     **`left_dealership` (app#7893).** Booleano: `true` cuando el auto ya salió de la automotora: vendido, o un auto en consignación devuelto a su dueño (su último contrato terminó `devuelto`) que la automotora no volvió a comprar ni a recibir en parte de pago. Es la misma regla con la que `POST /vehicles` libera la patente: escribir la patente de un auto con `left_dealership: true` crea un auto nuevo. Un auto devuelto sigue `disponible`, así que este campo es lo que lo distingue de uno en stock. Lo calcula la misma consulta de la página, nunca una lectura por fila.
+         *
+         *     **`returned_to_owner` (app#7958).** Booleano: `true` cuando el auto es un auto en consignación devuelto a su dueño (el caso de `left_dealership` que no es una venta). La devolución lo deja inactivo y sigue en Stock como historial; mientras siga así no se puede activar ni publicar (409, `details.reason: vehicle_returned_to_owner`). Lo calcula la misma consulta.
+         *
+         *     **«No es de la automotora» (app#7892).** Every vehicle row carries `not_dealership_owned` (boolean) with `not_dealership_owned_at` and `not_dealership_owned_by` (when and who marked it). The mark is set and removed with `not_dealership_owned: true|false` on `PUT /vehicles/{id}`; the database clears it when the car gets a consignment contract or a Costo de compra. `not_dealership_owned=true|false` filters the list (and the export). The car’s `tenencia` stays `propio`.
+         *
          *     TENENCIA (ADR 0025). `tenencia` filters the vehicle-level discriminator (`propio` | `consignacion`); `consignacion_modalidad` narrows a consignación by its ACTIVE contract — `en_local`, `virtual` (the car stays with its dueño) or `sin_contrato` (consigned with no contract in `estado=activo` on file). `consignacion_modalidad` is REFUSED with 400 unless `tenencia=consignacion` came with it: it names a kind of consignación, so it is only answerable about one.
          *
          *     Every row carries `tenencia` and `not_on_lot` — the latter true iff an ACTIVE contract with `modalidad=virtual` exists, resolved in ONE batched query for the page (never per row). `not_on_lot` is the flag a test-drive or walking-sheet surface acts on; `tenencia` alone cannot answer it, because the modalidad lives on the contract.
          *
          *     POSIBLE DUPLICADO. Every row carries `possible_duplicate`: true when an open duplicate candidate names the car (same photos and specs as another car, plates one character apart or an implausible VIN). The pairs are at `GET /vehicles/{id}/duplicate-candidates`.
          *
-         *     ⚠ `tenencia=propio` IS THE COLUMN DEFAULT, not a recorded decision: that cohort includes every unit nobody has classified yet. Do not word it as "comprado".
+         *     OWN BY DEFAULT (app#7891). A car with no consignment contract is the dealership's own: `tenencia=propio` returns every own car, whether or not anybody declared it, and that is the filter a «Propio» view sends. It becomes `consignacion` when a consignment contract is created for it, and goes back to `propio` when that contract ends with the car returned to its owner (`devuelto`).
          *
-         *     Phase 2 (tenencia_source): `tenencia_source` COMPOSES with `tenencia` rather than narrowing it — `?tenencia=propio&tenencia_source=decided` is "propio, and a person or a document actually settled that" (`decided` ⇒ `tenencia_source <> 'default'`); `document` / `declared` / `default` match the column exactly. See `POST /vehicles/tenencia` for how a `declared` row is produced.
+         *     `tenencia_source` (`document` | `declared` | `default` | `decided`) stays for existing clients and COMPOSES with `tenencia` (ANDed): it says how the tenencia was recorded, never whether the car is own. `default` is not something the dealer must resolve, so a dealer-facing view does not send it.
          *
-         *     SIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the ones still on the floor — active, not vendido, no acquisition — as a filter the dealer may choose. Nothing flags these cars while they are in stock (ADR 0162): no alert, and the `sin_costo` count on `GET /vehicles/stats` is always 0. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.
+         *     SIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the ones still on the floor — active, not vendido, no acquisition, not marked «No es de la automotora» — as a filter the dealer may choose. A marked car keeps `sin_costo: true` on its row (it has no cost basis) but is not a car missing its cost: show the mark, not «Sin costo». Nothing flags these cars while they are in stock (ADR 0162): no alert, and the `sin_costo` count on `GET /vehicles/stats` is always 0. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.
          *
          *     MANDATO SIN FIRMAR (ADR 0114 §5). `view=mandato_sin_firmar` lists the cars whose consignación (activa or vendida) has an emitted mandato and no signed copy filed in the expediente — the SAME predicate as the `mandato_sin_firmar` count on `GET /vehicles/stats`. Never a gate, and no longer a dealer alert (retired 2026-11-10: it is a filter you open, not a to-do).
          */
@@ -18642,6 +18663,7 @@ export interface paths {
                     tenencia?: "propio" | "consignacion";
                     consignacion_modalidad?: "en_local" | "virtual" | "sin_contrato";
                     tenencia_source?: "document" | "declared" | "default" | "decided";
+                    not_dealership_owned?: boolean;
                     without_acquisition?: boolean | string;
                     view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo" | "mandato_sin_firmar";
                     active?: boolean | string;
@@ -18724,6 +18746,9 @@ export interface paths {
                          *           "tenencia_source": "default",
                          *           "tenencia_declared_by": null,
                          *           "tenencia_declared_at": null,
+                         *           "not_dealership_owned": false,
+                         *           "not_dealership_owned_at": null,
+                         *           "not_dealership_owned_by": null,
                          *           "iva_regime": null,
                          *           "keys_count": null,
                          *           "municipalidad_comuna_code": null,
@@ -18736,7 +18761,9 @@ export interface paths {
                          *           "live_sale_note": null,
                          *           "active_reservation": null,
                          *           "sin_costo": true,
-                         *           "not_on_lot": false
+                         *           "not_on_lot": false,
+                         *           "left_dealership": false,
+                         *           "returned_to_owner": false
                          *         }
                          *       ],
                          *       "meta": {
@@ -18749,7 +18776,14 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: ({
+                                /** @description The car left the dealership: sold, or returned to its owner and not bought back since. It no longer holds its plate. */
+                                left_dealership?: boolean;
+                                /** @description The car was returned to its owner (its latest consignment is `devuelto`, not bought back since). It cannot be activated or published until the return is undone (`POST /consignments/{id}/undo-return`). */
+                                returned_to_owner?: boolean;
+                            } & {
+                                [key: string]: unknown;
+                            })[];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -18823,7 +18857,9 @@ export interface paths {
          *
          *     **Costo de compra in the same call (`purchase_cost_clp`).** Optional (vitrina-app#7719). The amount the dealership paid, recorded as the car’s Costo de compra exactly as `POST /vehicle-acquisitions` with `kind: "compra"` would; `invoice_includes_iva: true` says it includes IVA («Compra con factura»). Needs `dealership_economics:write`: without it the call is a **403 and nothing is saved**. The response then carries `acquisition` (the recorded row, the same shape `POST /vehicle-acquisitions` returns, shown only to callers holding `dealership_economics:read`); `acquisition: null` means the car was saved but its cost was not, and it can be typed on the car’s page. Both fields are create-only.
          *
-         *     **Creating a car by its plate alone.** Every field is optional: a form that creates the car from inside another document (the nota de compra, the «Auto en parte de pago» of a sale) sends `registration_number` plus whatever marca, modelo and año the dealer has (`GET /pricing/decode-plate` fills them when it knows the plate; its 404 means it does not). Without `publish_to` the car is on no portal. A plate another active car of the workspace already has is a **409 `CONFLICT`** whose `error.details` names that car: `vehicle_id` (the one to offer instead), `vehicle_ids` (every holder, newest first) and `vehicle_status` (its Estado comercial; `vendido` is a sold car still holding the plate, not one a document can take). A hidden car (`active: false`, not sold, not deleted) holding the plate answers the same 409 with `reason: "plate_inactive_holder"` and the same three fields: offer that car (it is made public again with `PUT /vehicles/{id} { active: true }`) instead of creating a second one. A sold car never blocks: a returning plate is a new car. Nothing is created on a 409.
+         *     **Creating a car by its plate alone.** Every field is optional: a form that creates the car from inside another document (the nota de compra, the «Auto en parte de pago» of a sale) sends `registration_number` plus whatever marca, modelo and año the dealer has (`GET /pricing/decode-plate` fills them when it knows the plate; its 404 means it does not). Without `publish_to` the car is on no portal.
+         *
+         *     **A plate is taken only by a car still in stock.** A car that left the dealership (sold, `vendido`, or a consigned car whose latest contract ended `devuelto`, returned to its owner, and that the dealership has not bought or taken in part payment since) never blocks its plate: a returning plate is a new car. This rule is for a plate typed here only; portal sync keeps its own. If such a car is still active, it is set inactive in the same transaction as the insert (recorded as a dealer «Desactivar», so portal sync never wakes it; its sale, documents, costs and history are untouched), and the 201 carries `plate_released_from`: `[{ vehicle_id, vehicle_status }]`, the cars deactivated (absent when none was). A plate held by a car still in stock answers **409 `CONFLICT`** whose `error.details` names it: `vehicle_id` (the one to offer instead), `vehicle_ids` (every holder, newest first) and `vehicle_status` (its Estado comercial). An active holder gives `reason: "plate_backstop"`; a hidden one (`active: false`, not deleted) gives `reason: "plate_inactive_holder"`: offer that car (it is made public again with `PUT /vehicles/{id} { active: true }`) instead of creating a second one. Two simultaneous creates of one plate are serialised: the second gets the 409. Nothing is created on a 409.
          *
          *     **Sanity range.** A price fans out to every connected portal, so a typo is stopped here. `price_amount` must be between 100.000 and 2.000.000.000 CLP (a UF price is bounded at the day's UF; other currencies are not bounded) and `odometer_value` between 0 and 2.000.000; `null` clears either and is always accepted. Outside the range: **422 `VEHICLE_VALUE_OUT_OF_RANGE`**, with a Spanish `message`, `field_errors.<field>` and `details.violations[]` (`field`, `reason` = `price_out_of_range` | `km_out_of_range`, `value`, `min`, `max`, `currency`). A price change beyond 10x up or down from the current price answers **422 `PRICE_CHANGE_CONFIRMATION_REQUIRED`** (`details.reason` = `large_price_change`, `current_price`, `requested_price`, `currency`, `factor`, `confirm_flag`) unless the body carries `confirm_large_price_change: true`; ask the user, then resend the same body with it. Nothing is written on either 422.
          *
@@ -18943,7 +18979,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Vehicle. Carries `publications` only when `publish_to` was sent. */
+                /** @description Vehicle. Carries `publications` only when `publish_to` was sent, and `plate_released_from` only when cars that left the dealership were deactivated to free the plate. */
                 201: {
                     headers: {
                         [name: string]: unknown;
@@ -19011,6 +19047,9 @@ export interface paths {
                          *         "tenencia_source": "default",
                          *         "tenencia_declared_by": null,
                          *         "tenencia_declared_at": null,
+                         *         "not_dealership_owned": false,
+                         *         "not_dealership_owned_at": null,
+                         *         "not_dealership_owned_by": null,
                          *         "iva_regime": null,
                          *         "keys_count": null,
                          *         "municipalidad_comuna_code": null,
@@ -19112,7 +19151,24 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: {
+                                /**
+                                 * @description Solo cuando la patente escrita era de un auto que ya salió de la automotora (vendido, o devuelto a su dueño y no recomprado) y que seguía activo: ese auto quedó inactivo en la misma operación (como un «Desactivar» de la automotora; su venta, documentos y costos no cambian). Uno por auto desactivado, con su id y su Estado comercial. Ausente si no se desactivó ninguno.
+                                 * @example [
+                                 *       {
+                                 *         "vehicle_id": "11111111-0000-4000-8000-000000000001",
+                                 *         "vehicle_status": "vendido"
+                                 *       }
+                                 *     ]
+                                 */
+                                plate_released_from?: {
+                                    /** Format: uuid */
+                                    vehicle_id: string;
+                                    vehicle_status: string;
+                                }[];
+                            } & {
+                                [key: string]: unknown;
+                            };
                         };
                     };
                 };
@@ -19216,6 +19272,7 @@ export interface paths {
                     tenencia?: "propio" | "consignacion";
                     consignacion_modalidad?: "en_local" | "virtual" | "sin_contrato";
                     tenencia_source?: "document" | "declared" | "default" | "decided";
+                    not_dealership_owned?: boolean | string;
                     sort?: "price_asc" | "price_desc" | "year_desc" | "year_asc" | "km_asc" | "km_desc" | "recent" | "published_asc" | "published_desc" | "created_asc" | "created_desc" | "days_desc" | "interest_desc" | "estacionamiento" | "name_asc" | "name_desc";
                     ids?: string;
                     include_inactive?: boolean | null;
@@ -19323,6 +19380,10 @@ export interface paths {
          * Get a vehicle
          * @description FIELD-LEVEL COST OMISSION (ERP S3-6): the per-unit money position — `floor_price_clp` (precio piso) — is withheld unless the caller holds `dealership_economics:read`. The key is ABSENT from the response object, not null: a caller who checks `'floor_price_clp' in body` sees it was never offered. `price_clp` (the asking price) is unaffected — it is the one money figure about a unit that is meant to be seen. The scope is NOT an alternative to `marketplace:read` (requireScope ORs its varargs, which would widen this route rather than narrow the field); it is an addition.
          *
+         *     **`left_dealership` (app#7893).** Booleano: `true` cuando el auto ya salió de la automotora: vendido, o un auto en consignación devuelto a su dueño (su último contrato terminó `devuelto`) que la automotora no volvió a comprar ni a recibir en parte de pago. Es la misma regla con la que `POST /vehicles` libera la patente: escribir la patente de un auto con `left_dealership: true` crea un auto nuevo. Un auto devuelto sigue `disponible`, así que este campo es lo que lo distingue de uno en stock. Mismo cálculo que la fila del listado de Stock.
+         *
+         *     **`returned_to_owner` (app#7958).** Booleano: `true` cuando el auto es un auto en consignación devuelto a su dueño (el caso de `left_dealership` que no es una venta). La devolución lo deja inactivo y sigue en Stock como historial; mientras siga así no se puede activar ni publicar (409, `details.reason: vehicle_returned_to_owner`). Lo calcula la misma consulta.
+         *
          *     TENENCIA (ADR 0025): the response carries `tenencia` and `not_on_lot` — the SAME two signals the Stock list row carries (composeStockRows), resolved the SAME way (`consignmentRepo.listActiveModalidadByVehicleIds` + `isOffLot`), so the ficha can never disagree with the list about which cars are off the lot. `not_on_lot` is true iff an ACTIVE contract with `modalidad=virtual` exists; `tenencia` alone cannot answer it, because the modalidad lives on the contract.
          *
          *     **Normalization and `catalog_match`.** On create and update, `make` and `model` that equal an entry of GET /vehicles/catalog/brands and /catalog/models up to case, accents, spaces and hyphens are stored in the catalog's spelling ("toyota" → "Toyota", "mercedes benz" → "Mercedes-Benz", "rav 4" → "RAV4"); `fuel_type`, `gear_type` and `body_style` are stored as vocabulary codes ("Bencina" → `gasolina`, "Automática" → `automatica`, "Station Wagon" → `wagon`; codes: fuel `gasolina|diesel|hibrido|electrico|gnc|glp|otro`, gear `mecanica|automatica|otro`, body `sedan|hatchback|suv|camioneta|coupe|wagon|furgon|convertible|minivan|otro`; for `vehicle_type: moto` body_style is the «Tipo de moto» instead: `moto_calle|moto_deportiva|moto_touring|moto_trail|moto_enduro|moto_scooter|moto_custom|moto_cuatrimoto|moto_otro`, and "Trail" / "BODY.MOTORCYCLE.TRAIL" snap to `moto_trail`). Nothing is invented: a value with no match is stored exactly as sent. The response (and GET /vehicles/{id}) carries `catalog_match`: `make` / `model` are `matched` | `unmatched` | `missing` (`not_applicable` for a non-`auto` vehicle_type); `version` adds `approximate` (word overlap with a catalog version, same displacement) and `catalog_version` names the catalog version it matched or most resembles; `fuel_type` / `gear_type` / `body_style` are `matched` | `unmatched` | `missing`; `warnings[]` lists `{ field, code, message }` for everything not matched, with a Spanish `message` ready to show (codes: `make_missing`, `make_not_in_catalog`, `model_missing`, `model_not_in_catalog`, `version_approximate`, `version_not_in_catalog`, `fuel_type_not_recognized`, `gear_type_not_recognized`, `body_style_not_recognized`). A make or model that is not matched still saves, but Chileautos publishes it without a technical sheet (ficha). `catalog_match` is null only when the catalog could not be loaded. Example of an unmatched push: {"make":"matched","model":"unmatched","version":"unmatched","catalog_version":null,"fuel_type":"unmatched","gear_type":"matched","body_style":"missing","warnings":[{"field":"model","code":"model_not_in_catalog","message":"Modelo 'Rav-4 xx' no está en el catálogo de Toyota (GET /vehicles/catalog/models); Chileautos lo publicará sin ficha."},{"field":"fuel_type","code":"fuel_type_not_recognized","message":"Combustible 'Hidrógeno' no se reconoce; valores aceptados: gasolina, diesel, hibrido, electrico, gnc, glp, otro."}]}
@@ -19406,6 +19467,9 @@ export interface paths {
                          *         "tenencia_source": "default",
                          *         "tenencia_declared_by": null,
                          *         "tenencia_declared_at": null,
+                         *         "not_dealership_owned": false,
+                         *         "not_dealership_owned_at": null,
+                         *         "not_dealership_owned_by": null,
                          *         "iva_regime": null,
                          *         "keys_count": null,
                          *         "municipalidad_comuna_code": null,
@@ -19434,12 +19498,21 @@ export interface paths {
                          *               "message": "Versión '1.8 XEI CVT full' no coincide exactamente con el catálogo; la más parecida es '1.8 XEI CVT'."
                          *             }
                          *           ]
-                         *         }
+                         *         },
+                         *         "left_dealership": false,
+                         *         "returned_to_owner": false
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: {
+                                /** @description The car left the dealership: sold, or returned to its owner and not bought back since. It no longer holds its plate. */
+                                left_dealership?: boolean;
+                                /** @description The car was returned to its owner (its latest consignment is `devuelto`, not bought back since). It cannot be activated or published until the return is undone (`POST /consignments/{id}/undo-return`). */
+                                returned_to_owner?: boolean;
+                            } & {
+                                [key: string]: unknown;
+                            };
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -19504,9 +19577,15 @@ export interface paths {
         };
         /**
          * Update a vehicle
-         * @description Updating registration_number re-derives plate_normalized; a collision with another ACTIVE vehicle of the tenant returns 409 (conflicto de patente). A CHANGED plate is held to the same Chilean formats as on POST /vehicles (400 `plate_format_invalid`); re-sending the stored value unchanged is never refused.
+         * @description **`cancelled_visits` (vitrina-app#7960)** — when the call takes the car out of stock (sold, or `active: false`), its future visits and test drives are cancelled right after the commit, as always, and the answer says what happened to them: `{ count, told: [{ appointment_id, starts_at, name, channel }], not_told: [{ appointment_id, starts_at, name, phone, reason }], hidden_count, message }`. `told` = the customer gets the cancellation notice through that conversation channel. `not_told` = call them: `reason` is `no_conversation` (typed by hand), `channel_unreachable` or `window_closed` (WhatsApp, Instagram or Messenger and the customer has not written in 24 hours; no template is sent, so the notice is not attempted). `phone` is the contact’s phone, `null` when none is on file. Visits in another salesperson’s agenda that the caller’s role does not see (the GET /appointments ceiling) are only counted, in `hidden_count`. `message` is one Spanish sentence (`null` when `count` is 0). The block is a prediction read a moment before the notices go out, from the rule they obey. ABSENT when the call did not take the car out of stock; `null` when the summary could not be read (the call still succeeded and the visits are still cancelled).
+         *
+         *     Updating registration_number re-derives plate_normalized; a collision with another ACTIVE vehicle of the tenant returns 409 (conflicto de patente). A CHANGED plate is held to the same Chilean formats as on POST /vehicles (400 `plate_format_invalid`); re-sending the stored value unchanged is never refused.
          *
          *     **`publish_to` only ADDS portals.** Same contract as on POST /vehicles (validated before the edit is written; 422 writes nothing; a portal failure is an `error` entry in `publications`, never a failed request). A portal where the vehicle is already live or has a queued publish is a no-op (`already_published`) — never a second ad, so an ERP may safely retry. A portal LEFT OUT of `publish_to` is NOT unpublished: removal is DELETE /vehicles/{id}/publications/{pubId}. A body with only `publish_to` publishes without editing the vehicle.
+         *
+         *     **A car returned to its owner** (`returned_to_owner: true`, app#7958) cannot be activated: `active: true` answers 409 with `details.reason: vehicle_returned_to_owner`, `details.consignment_id` and a Spanish sentence; `publish_to` on it answers the same 409 before the edit is written. Undoing the return on its consignment comes first. Since app#7961 `status: vendido` or `status: reservado` on it answers the same 409 (reason `vehicle_returned_to_owner`, `details.consignment_id`) with its own sentence; `status: disponible` is never refused.
+         *
+         *     **`not_dealership_owned`** sets (`true`) or removes (`false`) the «No es de la automotora» mark; the server stamps `not_dealership_owned_at` and `not_dealership_owned_by`. Removing always works. A car is in stock whether active or inactive (cars added by plate enter inactive). Setting it on a car that left the dealership (vendido, or returned to its owner and not re-acquired: the same rule as `left_dealership`) or already has a consignment contract, a nota de compra, a Parte de pago or a Costo de compra answers 409 `NOT_DEALERSHIP_OWNED_MARK_REFUSED` with `details.reason` (`not_in_stock` | `consignment_contract` | `purchase_note` | `trade_in` | `purchase_cost`), and nothing in the body is written. Re-sending `true` on a marked car changes nothing. The mark never joins Override local.
          *
          *     **Sanity range.** A price fans out to every connected portal, so a typo is stopped here. `price_amount` must be between 100.000 and 2.000.000.000 CLP (a UF price is bounded at the day's UF; other currencies are not bounded) and `odometer_value` between 0 and 2.000.000; `null` clears either and is always accepted. Outside the range: **422 `VEHICLE_VALUE_OUT_OF_RANGE`**, with a Spanish `message`, `field_errors.<field>` and `details.violations[]` (`field`, `reason` = `price_out_of_range` | `km_out_of_range`, `value`, `min`, `max`, `currency`). A price change beyond 10x up or down from the current price answers **422 `PRICE_CHANGE_CONFIRMATION_REQUIRED`** (`details.reason` = `large_price_change`, `current_price`, `requested_price`, `currency`, `factor`, `confirm_flag`) unless the body carries `confirm_large_price_change: true`; ask the user, then resend the same body with it. Nothing is written on either 422.
          *
@@ -19601,13 +19680,15 @@ export interface paths {
                          *     ]
                          */
                         publish_to?: string[];
+                        /** @description «No es de la automotora»: `true` marca el auto como mostrado por cuenta de otro (un socio, un amigo, otra automotora) sin contrato de consignación firmado todavía; `false` quita la marca. Solo se puede marcar un auto que sigue en stock (activo o inactivo; no vendido ni devuelto a su dueño), sin contrato de consignación, sin nota de compra, sin parte de pago y sin costo de compra; si no, responde 409 `NOT_DEALERSHIP_OWNED_MARK_REFUSED` con `details.reason` (`not_in_stock`, `consignment_contract`, `purchase_note`, `trade_in` o `purchase_cost`) y no guarda nada de la llamada. Reenviar `true` sobre un auto ya marcado no cambia nada. La marca se borra sola cuando el auto recibe un contrato de consignación o un costo de compra. Un auto marcado queda fuera del capital inmovilizado y de «Sin costo»; su venta en Ganancias queda fuera de los totales con el motivo `owner_unsettled`. */
+                        not_dealership_owned?: boolean;
                         /** @description Confirms a price change beyond 10x up or down from the current price. Without it such an edit answers 422 `PRICE_CHANGE_CONFIRMATION_REQUIRED`; resend the same body with `true` once the user confirmed. Not stored. */
                         confirm_large_price_change?: boolean;
                     };
                 };
             };
             responses: {
-                /** @description Vehicle. Carries `publications` only when `publish_to` was sent. */
+                /** @description Vehicle. Carries `publications` only when `publish_to` was sent, and `cancelled_visits` only when the write took the car out of stock. */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -19675,6 +19756,9 @@ export interface paths {
                          *         "tenencia_source": "default",
                          *         "tenencia_declared_by": null,
                          *         "tenencia_declared_at": null,
+                         *         "not_dealership_owned": false,
+                         *         "not_dealership_owned_at": null,
+                         *         "not_dealership_owned_by": null,
                          *         "iva_regime": null,
                          *         "keys_count": null,
                          *         "municipalidad_comuna_code": null,
@@ -19703,12 +19787,38 @@ export interface paths {
                          *               "message": "Versión '1.8 XEI CVT full' no coincide exactamente con el catálogo; la más parecida es '1.8 XEI CVT'."
                          *             }
                          *           ]
+                         *         },
+                         *         "cancelled_visits": {
+                         *           "count": 2,
+                         *           "told": [
+                         *             {
+                         *               "appointment_id": "dddddddd-0000-4000-8000-000000000001",
+                         *               "starts_at": "2026-09-20T14:00:00.000Z",
+                         *               "name": "Juan Pérez",
+                         *               "channel": "whatsapp"
+                         *             }
+                         *           ],
+                         *           "not_told": [
+                         *             {
+                         *               "appointment_id": "dddddddd-0000-4000-8000-000000000002",
+                         *               "starts_at": "2026-09-21T15:30:00.000Z",
+                         *               "name": "María Soto",
+                         *               "phone": "+56 9 1234 5678",
+                         *               "reason": "no_conversation"
+                         *             }
+                         *           ],
+                         *           "hidden_count": 0,
+                         *           "message": "Se cancelaron 2 visitas de este auto. A Juan Pérez se le avisó por WhatsApp. A María Soto no se le pudo avisar (la visita no tiene conversación): su teléfono es +56 9 1234 5678."
                          *         }
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: {
+                                cancelled_visits?: components["schemas"]["CancelledVisits"];
+                            } & {
+                                [key: string]: unknown;
+                            };
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -19972,6 +20082,9 @@ export interface paths {
                          *         "tenencia_source": "default",
                          *         "tenencia_declared_by": null,
                          *         "tenencia_declared_at": null,
+                         *         "not_dealership_owned": false,
+                         *         "not_dealership_owned_at": null,
+                         *         "not_dealership_owned_by": null,
                          *         "iva_regime": null,
                          *         "keys_count": null,
                          *         "municipalidad_comuna_code": null,
@@ -20166,6 +20279,9 @@ export interface paths {
                          *         "tenencia_source": "default",
                          *         "tenencia_declared_by": null,
                          *         "tenencia_declared_at": null,
+                         *         "not_dealership_owned": false,
+                         *         "not_dealership_owned_at": null,
+                         *         "not_dealership_owned_by": null,
                          *         "iva_regime": null,
                          *         "keys_count": null,
                          *         "municipalidad_comuna_code": null,
@@ -21529,6 +21645,8 @@ export interface paths {
          * Publish a vehicle to one or more connected marketplaces
          * @description One round trip per portal named in `integration_ids`, and the response is a per-integration outcome list — a 200 does not mean every portal accepted the ad. `status` is `published` (Vitrina pushed or updated the ad), `already_published` (the double-publish guard found a live ad on this (vehicle, integration) that Vitrina did not itself push — nothing was sent, nothing was duplicated) or `error` (`error` names why).
          *
+         *     **A car returned to its owner** (`returned_to_owner: true`, app#7958) is refused before any portal is touched: 409 with `details.reason: vehicle_returned_to_owner` and `details.consignment_id`. The same refusal applies to Instagram posts of that car.
+         *
          *     **Facebook Marketplace does not publish.** Vitrina only answers its buyers; naming a `facebook_marketplace` integration here answers `error`, and `facebook` is not a `publish_to` slug.
          *
          *     **Chileautos (Panel) (`chileautos_panel`) is asynchronous.** It is driven through a browser session on the dealer’s control panel, which only Vitrina’s scraper workers can run, so this call answers `status: "pending"` the instant the job is queued (the publication row reads `pending`, or `updating` when the ad already exists). Same polling and webhooks as above; the row turns `published` or `error` (with `last_error`), usually within a few minutes.
@@ -22108,7 +22226,7 @@ export interface paths {
         put?: never;
         /**
          * Declare a car propio — no paperwork required
-         * @description Phase 2 (tenencia_source): the half of the ownership model consignación already had a two-field path for (POST /consignments/bulk → contrato mínimo). `tenencia` accepts ONLY `"propio"` — consignación keeps going through its own contrato mínimo. Per-vehicle verdicts in request order, NEVER all-or-nothing: `declared` (now tenencia_source=declared), `skipped_active_contract` (an ACTIVE consignment contract stands — end it first via POST /consignments/{id}/return, a devolución, rather than flipping it here), or `error` (with the reason). Up to 200 vehicles per call, de-duplicated, sequential. Scoped on `consignments:write` — "the tenencia lifecycle" — not `marketplace:write`.
+         * @description Optional since app#7891: a car with no consignment contract is ALREADY the dealership's own, so nothing needs declaring for it to read, sell or report as own. Kept for existing clients: it records that a person said so (`tenencia_source=declared`, shown in the car's history) and nothing else changes. `tenencia` accepts ONLY `"propio"` — consignación keeps going through its own contrato mínimo. Per-vehicle verdicts in request order, NEVER all-or-nothing: `declared` (now tenencia_source=declared), `skipped_active_contract` (an ACTIVE consignment contract stands — end it first via POST /consignments/{id}/return, a devolución, rather than flipping it here), or `error` (with the reason). Up to 200 vehicles per call, de-duplicated, sequential. Scoped on `consignments:write` — "the tenencia lifecycle" — not `marketplace:write`.
          */
         post: {
             parameters: {
@@ -38506,7 +38624,7 @@ export interface paths {
         put?: never;
         /**
          * Connect a payment provider (Fintoc hosted PAC redirect, or MercadoPago tokenized card)
-         * @description Makes `provider` the workspace's single payment account and creates its mandate. Fintoc answers `status: "pending"` with a `setupUrl` to send the owner to (the hosted PAC setup, which returns to `returnUrl`); MercadoPago takes a `cardToken` minted client-side by MercadoPago's own SDK — never a raw card number — and answers `status: "active"` with `setupUrl: null`. `email` (the payer) is required by both providers; `rut` (optional) goes on the Fintoc customer. Requires `billing:write`, which only the workspace owner holds.
+         * @description Makes `provider` the workspace's single payment account and creates its mandate. Fintoc answers `status: "pending"` with a `setupUrl` to send the owner to (the hosted PAC setup, which returns to `returnUrl`); MercadoPago takes a `cardToken` minted client-side by MercadoPago's own SDK — never a raw card number — and answers `status: "active"` with `setupUrl: null`. `email` (the payer) is required by both providers; `rut` (optional) goes on the Fintoc customer. Requires `billing:write`, held by the workspace owner and by the built-in admin (unless the owner kept billing owner-only).
          */
         post: {
             parameters: {
@@ -38641,7 +38759,7 @@ export interface paths {
         };
         /**
          * The clinic banded plan: band, count, price, review, pause state
-         * @description Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to. On an annual plan a move up is charged once as the difference for the months of the paid year left, at the annual price (`announced_remaining_months`, `announced_difference_uf`, `announced_difference_clp_estimate`), and a move down only shows as `pending_down_band` until the renewal. `last_voided_purchase` names a first annual purchase voided unpaid at day 30 in the last 30 days with no plan cobro paid since (null otherwise).
+         * @description Band (S/M/L/XL or quoted), the 3-month average of professionals who attended patients that produced it, the UF/month price with the design-partner lock honoured, the next band review, any announced move, the payment mandate, the pause state and where the non-payment ladder has got to. On an annual plan a move up is charged once as the difference for the months of the paid year left, at the annual price (`announced_remaining_months`, `announced_difference_uf`, `announced_difference_clp_estimate`), and a move down only shows as `pending_down_band` until the renewal. `last_voided_purchase` names a first annual purchase voided unpaid at day 30 in the last 30 days with no plan cobro paid since (null otherwise). `renewal_charge_on` is the day the card is charged for the upcoming annual renewal before its cobro exists, `renewal_cobro` the unpaid renewal cobro once it does, and `deactivate_on` the day unpaid cobros deactivate the workspace (the same fact as `/me`'s `collection.deactivate_on`).
          */
         get: {
             parameters: {
@@ -38705,7 +38823,10 @@ export interface paths {
                          *           "uf_value": 39350,
                          *           "uf_value_date": "2026-11-18"
                          *         },
-                         *         "last_voided_purchase": null
+                         *         "last_voided_purchase": null,
+                         *         "renewal_charge_on": "2027-11-18",
+                         *         "renewal_cobro": null,
+                         *         "deactivate_on": null
                          *       }
                          *     }
                          */
@@ -38797,6 +38918,14 @@ export interface paths {
                                     /** @description Whole CLP that became Saldo a favor because of the void: what was paid on the cobro before it was voided plus transfers that named it afterwards and were not undone; 0 when nothing. A GROSS figure at the time of the void: it is NOT the available balance, because that saldo may since have been applied to another cobro. Never show it as «saldo disponible»: the current balance is `workspace.billing_credit_clp` on `GET /me` (owners and admins). */
                                     credited_clp: number;
                                 } | null;
+                                renewal_charge_on: string | null;
+                                renewal_cobro: {
+                                    invoice_id: string;
+                                    invoice_number: string;
+                                    clp_total: number | null;
+                                    due_on: string | null;
+                                } | null;
+                                deactivate_on: string | null;
                             };
                         };
                     };
@@ -39037,7 +39166,11 @@ export interface paths {
         put?: never;
         /**
          * Issue a nota de venta
-         * @description Issues the document and allocates its folio (`V-1`, `V-2`, …) inside the inserting transaction, so a failed issue RELEASES the number rather than burning it out of a legally accountable series.
+         * @description **`cancelled_visits` (vitrina-app#7960)** — when the call takes the car out of stock (sold, or `active: false`), its future visits and test drives are cancelled right after the commit, as always, and the answer says what happened to them: `{ count, told: [{ appointment_id, starts_at, name, channel }], not_told: [{ appointment_id, starts_at, name, phone, reason }], hidden_count, message }`. `told` = the customer gets the cancellation notice through that conversation channel. `not_told` = call them: `reason` is `no_conversation` (typed by hand), `channel_unreachable` or `window_closed` (WhatsApp, Instagram or Messenger and the customer has not written in 24 hours; no template is sent, so the notice is not attempted). `phone` is the contact’s phone, `null` when none is on file. Visits in another salesperson’s agenda that the caller’s role does not see (the GET /appointments ceiling) are only counted, in `hidden_count`. `message` is one Spanish sentence (`null` when `count` is 0). The block is a prediction read a moment before the notices go out, from the rule they obey. ABSENT when the call did not take the car out of stock; `null` when the summary could not be read (the call still succeeded and the visits are still cancelled).
+         *
+         *     **A car returned to its owner** (`returned_to_owner: true`, app#7961) is not sold or reserved: the call answers **409** with `details.reason: vehicle_returned_to_owner`, `details.vehicle_id`, `details.consignment_id` (the returned contract) and a Spanish sentence, before anything is written and before any folio is taken. The ways back are undoing the return (`POST /consignments/{id}/undo-return`) or a new consignment. Voiding a note or a reserva of that car is never refused.
+         *
+         *     Issues the document and allocates its folio (`V-1`, `V-2`, …) inside the inserting transaction, so a failed issue RELEASES the number rather than burning it out of a legally accountable series.
          *
          *     **`emitted_by` is the caller** (ADR 0114 §4): the member (also behind a personal token) or the API key that issued it, stamped from the credential — there is no body field for it.
          *
@@ -41923,7 +42056,11 @@ export interface paths {
         put?: never;
         /**
          * Approve a nota de venta (the sale fan-out)
-         * @description **Below the floor without `price_approval:approve` (app#7589):** **409** `details.reason: price_approval_required` with `details.price_approval_pending` and `details.price_approval_id`. When none was pending the call files one in the caller's name first, so the answer always says the approval is requested: «No puedes cerrar la venta V-41 todavía: el precio está bajo el mínimo y un administrador tiene que aprobarlo primero. La aprobación del precio ya está pedida.» The answer carries `price_approval` like every note read.
+         * @description **`cancelled_visits` (vitrina-app#7960)** — when the call takes the car out of stock (sold, or `active: false`), its future visits and test drives are cancelled right after the commit, as always, and the answer says what happened to them: `{ count, told: [{ appointment_id, starts_at, name, channel }], not_told: [{ appointment_id, starts_at, name, phone, reason }], hidden_count, message }`. `told` = the customer gets the cancellation notice through that conversation channel. `not_told` = call them: `reason` is `no_conversation` (typed by hand), `channel_unreachable` or `window_closed` (WhatsApp, Instagram or Messenger and the customer has not written in 24 hours; no template is sent, so the notice is not attempted). `phone` is the contact’s phone, `null` when none is on file. Visits in another salesperson’s agenda that the caller’s role does not see (the GET /appointments ceiling) are only counted, in `hidden_count`. `message` is one Spanish sentence (`null` when `count` is 0). The block is a prediction read a moment before the notices go out, from the rule they obey. ABSENT when the call did not take the car out of stock; `null` when the summary could not be read (the call still succeeded and the visits are still cancelled).
+         *
+         *     **A car returned to its owner** (`returned_to_owner: true`, app#7961) is not sold or reserved: the call answers **409** with `details.reason: vehicle_returned_to_owner`, `details.vehicle_id`, `details.consignment_id` (the returned contract) and a Spanish sentence, before anything is written and before any folio is taken. The ways back are undoing the return (`POST /consignments/{id}/undo-return`) or a new consignment. Voiding a note or a reserva of that car is never refused.
+         *
+         *     **Below the floor without `price_approval:approve` (app#7589):** **409** `details.reason: price_approval_required` with `details.price_approval_pending` and `details.price_approval_id`. When none was pending the call files one in the caller's name first, so the answer always says the approval is requested: «No puedes cerrar la venta V-41 todavía: el precio está bajo el mínimo y un administrador tiene que aprobarlo primero. La aprobación del precio ya está pedida.» The answer carries `price_approval` like every note read.
          *
          *     **Closed by a member holding `price_approval:approve` (app#7704):** the note’s pending price request (if any, and not filed by that same member) is resolved `approved` by them in the same transaction, audited as `price_approvals.decide`; it leaves the approval queue and its count.
          *
@@ -42003,7 +42140,29 @@ export interface paths {
                          *         "void_reason": null,
                          *         "voided_by": null,
                          *         "created_at": "2026-09-19T13:00:00.000Z",
-                         *         "updated_at": "2026-09-19T13:00:00.000Z"
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "cancelled_visits": {
+                         *           "count": 2,
+                         *           "told": [
+                         *             {
+                         *               "appointment_id": "dddddddd-0000-4000-8000-000000000001",
+                         *               "starts_at": "2026-09-20T14:00:00.000Z",
+                         *               "name": "Juan Pérez",
+                         *               "channel": "whatsapp"
+                         *             }
+                         *           ],
+                         *           "not_told": [
+                         *             {
+                         *               "appointment_id": "dddddddd-0000-4000-8000-000000000002",
+                         *               "starts_at": "2026-09-21T15:30:00.000Z",
+                         *               "name": "María Soto",
+                         *               "phone": "+56 9 1234 5678",
+                         *               "reason": "no_conversation"
+                         *             }
+                         *           ],
+                         *           "hidden_count": 0,
+                         *           "message": "Se cancelaron 2 visitas de este auto. A Juan Pérez se le avisó por WhatsApp. A María Soto no se le pudo avisar (la visita no tiene conversación): su teléfono es +56 9 1234 5678."
+                         *         }
                          *       }
                          *     }
                          */
@@ -48128,7 +48287,9 @@ export interface paths {
         put?: never;
         /**
          * Take a reservation
-         * @description Takes a hold on a unit — the ONLY thing on this wave that locks inventory (a cotización creates no hold). Born `activa`; there is no draft state and no `status` field to supply.
+         * @description **A car returned to its owner** (`returned_to_owner: true`, app#7961) is not sold or reserved: the call answers **409** with `details.reason: vehicle_returned_to_owner`, `details.vehicle_id`, `details.consignment_id` (the returned contract) and a Spanish sentence, before anything is written and before any folio is taken. The ways back are undoing the return (`POST /consignments/{id}/undo-return`) or a new consignment. Voiding a note or a reserva of that car is never refused.
+         *
+         *     Takes a hold on a unit — the ONLY thing on this wave that locks inventory (a cotización creates no hold). Born `activa`; there is no draft state and no `status` field to supply.
          *
          *     `vehicle_id` and `holder_contact_id` are required and must belong to the calling workspace; a foreign id and a nonexistent one answer identically (404), deliberately, because a difference between them is an existence oracle.
          *
@@ -49378,7 +49539,11 @@ export interface paths {
         put?: never;
         /**
          * Convert a reservation into a nota de venta
-         * @description Produces a NEW sale-note document — 201, the same as `POST /sale-notes`. Scoped `sale_notes:write`, borrowed rather than a fifth reservations scope. `net_clp` omitted = the sale inherits the hold’s `agreed_price_clp`; stated = the sale closes at that price. A hold with no agreed price needs `net_clp` (400 otherwise).
+         * @description **`cancelled_visits` (vitrina-app#7960)** — when the call takes the car out of stock (sold, or `active: false`), its future visits and test drives are cancelled right after the commit, as always, and the answer says what happened to them: `{ count, told: [{ appointment_id, starts_at, name, channel }], not_told: [{ appointment_id, starts_at, name, phone, reason }], hidden_count, message }`. `told` = the customer gets the cancellation notice through that conversation channel. `not_told` = call them: `reason` is `no_conversation` (typed by hand), `channel_unreachable` or `window_closed` (WhatsApp, Instagram or Messenger and the customer has not written in 24 hours; no template is sent, so the notice is not attempted). `phone` is the contact’s phone, `null` when none is on file. Visits in another salesperson’s agenda that the caller’s role does not see (the GET /appointments ceiling) are only counted, in `hidden_count`. `message` is one Spanish sentence (`null` when `count` is 0). The block is a prediction read a moment before the notices go out, from the rule they obey. ABSENT when the call did not take the car out of stock; `null` when the summary could not be read (the call still succeeded and the visits are still cancelled).
+         *
+         *     **A car returned to its owner** (`returned_to_owner: true`, app#7961) is not sold or reserved: the call answers **409** with `details.reason: vehicle_returned_to_owner`, `details.vehicle_id`, `details.consignment_id` (the returned contract) and a Spanish sentence, before anything is written and before any folio is taken. The ways back are undoing the return (`POST /consignments/{id}/undo-return`) or a new consignment. Voiding a note or a reserva of that car is never refused.
+         *
+         *     Produces a NEW sale-note document — 201, the same as `POST /sale-notes`. Scoped `sale_notes:write`, borrowed rather than a fifth reservations scope. `net_clp` omitted = the sale inherits the hold’s `agreed_price_clp`; stated = the sale closes at that price. A hold with no agreed price needs `net_clp` (400 otherwise).
          *
          *     **`approve: true`** is «Emitir y aprobar» (app#7316): the new nota de venta is approved in the same request with the same rules and the same `approval` outcome as `POST /sale-notes`; `sale_note` is then the approved row. **`registered_owner: { name, tax_id }`** is «compra para tercero» (app#7321), as on `POST /sale-notes`. **`observaciones`** (app#7581): the text printed on the new nota de venta, as on `POST /sale-notes`; the reserva has none of its own to carry.
          */
@@ -52788,7 +52953,7 @@ export interface paths {
         };
         /**
          * The last twelve months of the profit report
-         * @description One read, twelve months ending in `to` (default: the current month in the dealership’s calendar), oldest first; a month with no sale is present with zeros. Body: `as_of`, `from_period`, `to_period` and `months[]`, each `{ period, deal_count, complete_deal_count, incomplete_deal_count, incomplete_by_gap: { cost_rollup, liquidacion }, sales_ingresos_clp, sales_with_ingresos_count, sales_missing_ingresos_count, ingresos_clp, costo_venta_clp, margen_bruto_clp, comisiones_vendedores_clp, gastos_adicionales_clp, margen_neto_clp }` — the SAME walk `GET /margin?period=` serves for that month, figure for figure. Cars sold = `deal_count`; «Ganancia» = `margen_neto_clp` (the sales it could count, before fixed overhead); not counted = `incomplete_deal_count`, by reason in `incomplete_by_gap`. Same scope and the same 413 row cap as the single-month report, over the twelve months together.
+         * @description One read, twelve months ending in `to` (default: the current month in the dealership’s calendar), oldest first; a month with no sale is present with zeros. Body: `as_of`, `from_period`, `to_period` and `months[]`, each `{ period, deal_count, complete_deal_count, incomplete_deal_count, incomplete_by_gap: { cost_rollup, liquidacion, owner_unsettled }, sales_ingresos_clp, sales_with_ingresos_count, sales_missing_ingresos_count, ingresos_clp, costo_venta_clp, margen_bruto_clp, comisiones_vendedores_clp, gastos_adicionales_clp, margen_neto_clp }` — the SAME walk `GET /margin?period=` serves for that month, figure for figure. Cars sold = `deal_count`; «Ganancia» = `margen_neto_clp` (the sales it could count, before fixed overhead); not counted = `incomplete_deal_count`, by reason in `incomplete_by_gap`. Same scope and the same 413 row cap as the single-month report, over the twelve months together.
          */
         get: {
             parameters: {
@@ -52824,7 +52989,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52843,7 +53009,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52862,7 +53029,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52881,7 +53049,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52900,7 +53069,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52919,7 +53089,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52938,7 +53109,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52957,7 +53129,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 0,
                          *             "costo_venta_clp": 0,
@@ -52976,7 +53149,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 9000000,
                          *             "costo_venta_clp": 7800000,
@@ -52995,7 +53169,8 @@ export interface paths {
                          *             "incomplete_deal_count": 0,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 18000000,
                          *             "costo_venta_clp": 18300000,
@@ -53014,7 +53189,8 @@ export interface paths {
                          *             "incomplete_deal_count": 1,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 1,
-                         *               "liquidacion": 0
+                         *               "liquidacion": 0,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 18000000,
                          *             "costo_venta_clp": 15125000,
@@ -53033,7 +53209,8 @@ export interface paths {
                          *             "incomplete_deal_count": 1,
                          *             "incomplete_by_gap": {
                          *               "cost_rollup": 0,
-                         *               "liquidacion": 1
+                         *               "liquidacion": 1,
+                         *               "owner_unsettled": 0
                          *             },
                          *             "ingresos_clp": 9000000,
                          *             "costo_venta_clp": 7552028,
@@ -57355,6 +57532,1078 @@ export interface paths {
                          *           "rut": "76123456-0",
                          *           "rut_formatted": "76.123.456-0"
                          *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/tax-documents/facturas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Emit a factura (33 afecta · 34 exenta) to a company
+         * @description Emits a factura electrónica from a sociedad whose electronic emission is enabled — a clinic invoicing an insurer or an employer, or any workspace with a connected sociedad (Finanzas included). The register row is created and the emission QUEUED; the folio and the PDF arrive through the engine webhook / poll (read them with `GET /clinic/tax-documents/facturas/{id}`). `Idempotency-Key` is REQUIRED (400 `idempotency_key_required`): a retry with the same key returns the same factura (200), with a different body 409 `IDEMPOTENCY_KEY_CONFLICT`.
+         *
+         *     **Lines are NET** whole pesos (`amount_clp = round(quantity × unit_price_clp)`); `factura.totals` is what is asserted to the SII: a 33 carries `iva = round(net × 19 %)`, a 34 is all `exempt`. `document_type` omitted → 34 in a clinic (health services are exentas), 33 elsewhere. The caller writes every line: nothing is derived from a payment’s prestaciones.
+         *
+         *     **Refusals, all before any folio exists** (`error.details.reason`): 400 `receptor_incomplete` (`details.fields`: any of `rut`, `legal_name`, `giro`, `address`, `comuna`, `email` — missing, invalid or over the SII limit: razón social 100, giro 40, dirección 70); 400 `legal_entity_required` (more than one sociedad emits; name one); 400 `payment_not_found`; 400 `zero_total`; 409 `emission_not_enabled`; 409 `document_type_not_enabled` (the sociedad is not certified for that type); 409 `boleta_live` (a cited payment has an emitted boleta: annul it with its nota de crédito first — never automatic); 409 `boleta_in_flight` (its boleta is being sent right now); 409 `payment_already_invoiced`; 409 `payment_reversed`.
+         *
+         *     `payment_ids` are cited through the citation table, never as the payment’s own boleta. A cited payment whose boleta has not left yet (grace window, queued, or failed before reaching the SII) has that boleta CANCELLED in the same transaction (`cancelled_boleta_ids`): never both. Requires `clinic_admin:write` or `finanzas_admin:write` (owner/admin); audited. A nota de crédito on it is `POST /clinic/tax-documents/{id}/credit-note`.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "document_type": 34,
+                     *       "receptor": {
+                     *         "rut": "76086428-5",
+                     *         "legal_name": "Aseguradora Ejemplo S.A.",
+                     *         "giro": "Seguros de salud",
+                     *         "address": "Av. Ejemplo 1234, piso 4",
+                     *         "comuna": "Las Condes",
+                     *         "email": "facturas@aseguradora.example"
+                     *       },
+                     *       "lines": [
+                     *         {
+                     *           "description": "Convenio atenciones dentales octubre",
+                     *           "quantity": 1,
+                     *           "unit_price_clp": 120000
+                     *         },
+                     *         {
+                     *           "description": "Informe de auditoría",
+                     *           "quantity": 2,
+                     *           "unit_price_clp": 15500
+                     *         }
+                     *       ],
+                     *       "reference": {
+                     *         "document_type": 801,
+                     *         "folio": "4471",
+                     *         "date": "2026-11-01",
+                     *         "reason": "Orden de compra"
+                     *       },
+                     *       "payment_ids": [
+                     *         "9a9a9a9a-0000-4000-8000-000000000001"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        document_type?: 33 | 34;
+                        /** Format: uuid */
+                        legal_entity_id?: string | null;
+                        /** Format: uuid */
+                        location_id?: string | null;
+                        receptor: {
+                            rut?: string | null;
+                            legal_name?: string | null;
+                            giro?: string | null;
+                            address?: string | null;
+                            comuna?: string | null;
+                            email?: string | null;
+                        };
+                        lines: {
+                            description: string;
+                            detail?: string | null;
+                            quantity?: number | null;
+                            unit_price_clp: number;
+                            code?: string | null;
+                        }[];
+                        reference?: {
+                            document_type: number;
+                            folio: string;
+                            date: string;
+                            reason?: string | null;
+                        } | null;
+                        payment_ids?: string[];
+                        issue_date?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The factura this Idempotency-Key already created */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                document: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    source: string;
+                                    /** @enum {string} */
+                                    kind: "boleta" | "boleta_exenta" | "factura" | "factura_exenta" | "nota_credito" | "nota_debito";
+                                    folio: string | null;
+                                    issued_on: string;
+                                    /** Format: uuid */
+                                    legal_entity_id: string;
+                                    legal_entity_name: string | null;
+                                    legal_entity_tax_id: string | null;
+                                    /** Format: uuid */
+                                    location_id: string | null;
+                                    location_name: string | null;
+                                    /** Format: uuid */
+                                    contact_id: string | null;
+                                    contact_name: string | null;
+                                    total_clp: number;
+                                    /** @enum {string} */
+                                    tax_treatment: "afecto" | "exento" | "no_gravado";
+                                    /** @enum {string} */
+                                    status: "draft" | "issued" | "void";
+                                    voided_at: string | null;
+                                    void_reason: string | null;
+                                    pdf: {
+                                        key: string;
+                                        filename: string;
+                                        mime: string;
+                                        size: number;
+                                        uploaded_at: string;
+                                    } | null;
+                                    notes: string | null;
+                                    recorded_by: string | null;
+                                    payment_ids: string[];
+                                    cited_clp: number;
+                                    cited_payments_reversed: {
+                                        /** Format: uuid */
+                                        payment_id: string;
+                                        amount_clp: number;
+                                        reversed_at: string;
+                                    }[];
+                                    created_at: string;
+                                    updated_at: string;
+                                    /** Format: uuid */
+                                    clinic_patient_id: string | null;
+                                    /** Format: uuid */
+                                    payer_contact_id: string | null;
+                                    document_type: number | null;
+                                    /** @enum {string} */
+                                    issued_via: "engine" | "external";
+                                    /** @enum {string} */
+                                    emission_state: "not_applicable" | "scheduled" | "pending_emission" | "emitting" | "emitted" | "failed" | "voided" | "cancelled";
+                                    engine_document_id: string | null;
+                                    pdf_url: string | null;
+                                    xml_url: string | null;
+                                    emission_error: string | null;
+                                    attempts: number;
+                                    next_attempt_at: string | null;
+                                    last_attempt_at: string | null;
+                                    /** Format: uuid */
+                                    credit_note_of_id: string | null;
+                                    /** Format: uuid */
+                                    emitted_for_payment_id: string | null;
+                                    /** Format: uuid */
+                                    dte_connection_id: string | null;
+                                };
+                                factura: {
+                                    receptor: {
+                                        rut: string;
+                                        legal_name?: string;
+                                        giro?: string;
+                                        address?: {
+                                            street?: string;
+                                            comuna?: string;
+                                            city?: string;
+                                        };
+                                        email_document_to?: string[];
+                                    };
+                                    lines: {
+                                        description: string;
+                                        detail: string | null;
+                                        quantity: number;
+                                        unit_price_clp: number;
+                                        code: string | null;
+                                        amount_clp: number;
+                                    }[];
+                                    reference: {
+                                        document_type: number;
+                                        folio: string;
+                                        date: string;
+                                        reason: string | null;
+                                    } | null;
+                                    totals: {
+                                        net: number;
+                                        exempt: number;
+                                        iva: number;
+                                        total: number;
+                                    };
+                                } | null;
+                                cancelled_boleta_ids?: string[];
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Factura queued for emission */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "f4c7a001-0000-4000-8000-000000000001",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "source": "native",
+                         *           "external_id": "factura:factura-octubre-aseguradora",
+                         *           "kind": "factura_exenta",
+                         *           "folio": null,
+                         *           "issued_on": "2026-11-22",
+                         *           "legal_entity_id": "7e7e7e7e-0000-4000-8000-000000000001",
+                         *           "legal_entity_name": "Clínica Ejemplo SpA",
+                         *           "legal_entity_tax_id": null,
+                         *           "location_id": null,
+                         *           "location_name": null,
+                         *           "contact_id": null,
+                         *           "contact_name": null,
+                         *           "total_clp": 151000,
+                         *           "tax_treatment": "exento",
+                         *           "status": "draft",
+                         *           "voided_at": null,
+                         *           "void_reason": null,
+                         *           "pdf": null,
+                         *           "notes": null,
+                         *           "recorded_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *           "payment_ids": [
+                         *             "9a9a9a9a-0000-4000-8000-000000000001"
+                         *           ],
+                         *           "cited_clp": 40000,
+                         *           "cited_payments_reversed": [],
+                         *           "created_at": "2026-11-22T14:00:00.000Z",
+                         *           "updated_at": "2026-11-22T14:00:00.000Z",
+                         *           "clinic_patient_id": null,
+                         *           "payer_contact_id": null,
+                         *           "document_type": 34,
+                         *           "issued_via": "engine",
+                         *           "emission_state": "pending_emission",
+                         *           "engine_document_id": null,
+                         *           "pdf_url": null,
+                         *           "xml_url": null,
+                         *           "emission_error": null,
+                         *           "attempts": 0,
+                         *           "next_attempt_at": null,
+                         *           "last_attempt_at": null,
+                         *           "credit_note_of_id": null,
+                         *           "emitted_for_payment_id": null,
+                         *           "dte_connection_id": "6c6c6c6c-0000-4000-8000-000000000001"
+                         *         },
+                         *         "factura": {
+                         *           "receptor": {
+                         *             "rut": "76086428-5",
+                         *             "legal_name": "Aseguradora Ejemplo S.A.",
+                         *             "giro": "Seguros de salud",
+                         *             "address": {
+                         *               "street": "Av. Ejemplo 1234, piso 4",
+                         *               "comuna": "Las Condes",
+                         *               "city": "Las Condes"
+                         *             },
+                         *             "email_document_to": [
+                         *               "facturas@aseguradora.example"
+                         *             ]
+                         *           },
+                         *           "lines": [
+                         *             {
+                         *               "description": "Convenio atenciones dentales octubre",
+                         *               "detail": null,
+                         *               "quantity": 1,
+                         *               "unit_price_clp": 120000,
+                         *               "code": null,
+                         *               "amount_clp": 120000
+                         *             },
+                         *             {
+                         *               "description": "Informe de auditoría",
+                         *               "detail": null,
+                         *               "quantity": 2,
+                         *               "unit_price_clp": 15500,
+                         *               "code": null,
+                         *               "amount_clp": 31000
+                         *             }
+                         *           ],
+                         *           "reference": {
+                         *             "document_type": 801,
+                         *             "folio": "4471",
+                         *             "date": "2026-11-01",
+                         *             "reason": "Orden de compra"
+                         *           },
+                         *           "totals": {
+                         *             "net": 0,
+                         *             "exempt": 151000,
+                         *             "iva": 0,
+                         *             "total": 151000
+                         *           }
+                         *         },
+                         *         "cancelled_boleta_ids": [
+                         *           "b0b0b0b0-0000-4000-8000-000000000001"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                document: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    source: string;
+                                    /** @enum {string} */
+                                    kind: "boleta" | "boleta_exenta" | "factura" | "factura_exenta" | "nota_credito" | "nota_debito";
+                                    folio: string | null;
+                                    issued_on: string;
+                                    /** Format: uuid */
+                                    legal_entity_id: string;
+                                    legal_entity_name: string | null;
+                                    legal_entity_tax_id: string | null;
+                                    /** Format: uuid */
+                                    location_id: string | null;
+                                    location_name: string | null;
+                                    /** Format: uuid */
+                                    contact_id: string | null;
+                                    contact_name: string | null;
+                                    total_clp: number;
+                                    /** @enum {string} */
+                                    tax_treatment: "afecto" | "exento" | "no_gravado";
+                                    /** @enum {string} */
+                                    status: "draft" | "issued" | "void";
+                                    voided_at: string | null;
+                                    void_reason: string | null;
+                                    pdf: {
+                                        key: string;
+                                        filename: string;
+                                        mime: string;
+                                        size: number;
+                                        uploaded_at: string;
+                                    } | null;
+                                    notes: string | null;
+                                    recorded_by: string | null;
+                                    payment_ids: string[];
+                                    cited_clp: number;
+                                    cited_payments_reversed: {
+                                        /** Format: uuid */
+                                        payment_id: string;
+                                        amount_clp: number;
+                                        reversed_at: string;
+                                    }[];
+                                    created_at: string;
+                                    updated_at: string;
+                                    /** Format: uuid */
+                                    clinic_patient_id: string | null;
+                                    /** Format: uuid */
+                                    payer_contact_id: string | null;
+                                    document_type: number | null;
+                                    /** @enum {string} */
+                                    issued_via: "engine" | "external";
+                                    /** @enum {string} */
+                                    emission_state: "not_applicable" | "scheduled" | "pending_emission" | "emitting" | "emitted" | "failed" | "voided" | "cancelled";
+                                    engine_document_id: string | null;
+                                    pdf_url: string | null;
+                                    xml_url: string | null;
+                                    emission_error: string | null;
+                                    attempts: number;
+                                    next_attempt_at: string | null;
+                                    last_attempt_at: string | null;
+                                    /** Format: uuid */
+                                    credit_note_of_id: string | null;
+                                    /** Format: uuid */
+                                    emitted_for_payment_id: string | null;
+                                    /** Format: uuid */
+                                    dte_connection_id: string | null;
+                                };
+                                factura: {
+                                    receptor: {
+                                        rut: string;
+                                        legal_name?: string;
+                                        giro?: string;
+                                        address?: {
+                                            street?: string;
+                                            comuna?: string;
+                                            city?: string;
+                                        };
+                                        email_document_to?: string[];
+                                    };
+                                    lines: {
+                                        description: string;
+                                        detail: string | null;
+                                        quantity: number;
+                                        unit_price_clp: number;
+                                        code: string | null;
+                                        amount_clp: number;
+                                    }[];
+                                    reference: {
+                                        document_type: number;
+                                        folio: string;
+                                        date: string;
+                                        reason: string | null;
+                                    } | null;
+                                    totals: {
+                                        net: number;
+                                        exempt: number;
+                                        iva: number;
+                                        total: number;
+                                    };
+                                } | null;
+                                cancelled_boleta_ids?: string[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/tax-documents/facturas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a factura with its receptor, lines and totals
+         * @description One factura (33/34) from the register: its emission state, folio and PDF once the SII numbers it, and the receptor, lines and asserted totals it was emitted with. `document.cited_payments_reversed` lists the cited payments voided or reversed after it was issued (payment id, amount, when): the factura is NEVER annulled automatically — a nota de crédito to a company is decided with the client. The register (`GET /clinic/tax-documents?cites_reversed_payment=true`) filters on it. 404 on any other document. Requires `clinic_money:read` or `finanzas:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Factura */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "f4c7a001-0000-4000-8000-000000000001",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "source": "native",
+                         *           "external_id": "factura:factura-octubre-aseguradora",
+                         *           "kind": "factura_exenta",
+                         *           "folio": "1043",
+                         *           "issued_on": "2026-11-22",
+                         *           "legal_entity_id": "7e7e7e7e-0000-4000-8000-000000000001",
+                         *           "legal_entity_name": "Clínica Ejemplo SpA",
+                         *           "legal_entity_tax_id": null,
+                         *           "location_id": null,
+                         *           "location_name": null,
+                         *           "contact_id": null,
+                         *           "contact_name": null,
+                         *           "total_clp": 151000,
+                         *           "tax_treatment": "exento",
+                         *           "status": "issued",
+                         *           "voided_at": null,
+                         *           "void_reason": null,
+                         *           "pdf": null,
+                         *           "notes": null,
+                         *           "recorded_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *           "payment_ids": [
+                         *             "9a9a9a9a-0000-4000-8000-000000000001"
+                         *           ],
+                         *           "cited_clp": 40000,
+                         *           "cited_payments_reversed": [],
+                         *           "created_at": "2026-11-22T14:00:00.000Z",
+                         *           "updated_at": "2026-11-22T14:00:09.000Z",
+                         *           "clinic_patient_id": null,
+                         *           "payer_contact_id": null,
+                         *           "document_type": 34,
+                         *           "issued_via": "engine",
+                         *           "emission_state": "emitted",
+                         *           "engine_document_id": null,
+                         *           "pdf_url": "https://dte.example/documents/doc_ejemplo_1043.pdf",
+                         *           "xml_url": null,
+                         *           "emission_error": null,
+                         *           "attempts": 1,
+                         *           "next_attempt_at": null,
+                         *           "last_attempt_at": "2026-11-22T14:00:05.000Z",
+                         *           "credit_note_of_id": null,
+                         *           "emitted_for_payment_id": null,
+                         *           "dte_connection_id": "6c6c6c6c-0000-4000-8000-000000000001"
+                         *         },
+                         *         "factura": {
+                         *           "receptor": {
+                         *             "rut": "76086428-5",
+                         *             "legal_name": "Aseguradora Ejemplo S.A.",
+                         *             "giro": "Seguros de salud",
+                         *             "address": {
+                         *               "street": "Av. Ejemplo 1234, piso 4",
+                         *               "comuna": "Las Condes",
+                         *               "city": "Las Condes"
+                         *             },
+                         *             "email_document_to": [
+                         *               "facturas@aseguradora.example"
+                         *             ]
+                         *           },
+                         *           "lines": [
+                         *             {
+                         *               "description": "Convenio atenciones dentales octubre",
+                         *               "detail": null,
+                         *               "quantity": 1,
+                         *               "unit_price_clp": 120000,
+                         *               "code": null,
+                         *               "amount_clp": 120000
+                         *             },
+                         *             {
+                         *               "description": "Informe de auditoría",
+                         *               "detail": null,
+                         *               "quantity": 2,
+                         *               "unit_price_clp": 15500,
+                         *               "code": null,
+                         *               "amount_clp": 31000
+                         *             }
+                         *           ],
+                         *           "reference": {
+                         *             "document_type": 801,
+                         *             "folio": "4471",
+                         *             "date": "2026-11-01",
+                         *             "reason": "Orden de compra"
+                         *           },
+                         *           "totals": {
+                         *             "net": 0,
+                         *             "exempt": 151000,
+                         *             "iva": 0,
+                         *             "total": 151000
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                document: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    source: string;
+                                    /** @enum {string} */
+                                    kind: "boleta" | "boleta_exenta" | "factura" | "factura_exenta" | "nota_credito" | "nota_debito";
+                                    folio: string | null;
+                                    issued_on: string;
+                                    /** Format: uuid */
+                                    legal_entity_id: string;
+                                    legal_entity_name: string | null;
+                                    legal_entity_tax_id: string | null;
+                                    /** Format: uuid */
+                                    location_id: string | null;
+                                    location_name: string | null;
+                                    /** Format: uuid */
+                                    contact_id: string | null;
+                                    contact_name: string | null;
+                                    total_clp: number;
+                                    /** @enum {string} */
+                                    tax_treatment: "afecto" | "exento" | "no_gravado";
+                                    /** @enum {string} */
+                                    status: "draft" | "issued" | "void";
+                                    voided_at: string | null;
+                                    void_reason: string | null;
+                                    pdf: {
+                                        key: string;
+                                        filename: string;
+                                        mime: string;
+                                        size: number;
+                                        uploaded_at: string;
+                                    } | null;
+                                    notes: string | null;
+                                    recorded_by: string | null;
+                                    payment_ids: string[];
+                                    cited_clp: number;
+                                    cited_payments_reversed: {
+                                        /** Format: uuid */
+                                        payment_id: string;
+                                        amount_clp: number;
+                                        reversed_at: string;
+                                    }[];
+                                    created_at: string;
+                                    updated_at: string;
+                                    /** Format: uuid */
+                                    clinic_patient_id: string | null;
+                                    /** Format: uuid */
+                                    payer_contact_id: string | null;
+                                    document_type: number | null;
+                                    /** @enum {string} */
+                                    issued_via: "engine" | "external";
+                                    /** @enum {string} */
+                                    emission_state: "not_applicable" | "scheduled" | "pending_emission" | "emitting" | "emitted" | "failed" | "voided" | "cancelled";
+                                    engine_document_id: string | null;
+                                    pdf_url: string | null;
+                                    xml_url: string | null;
+                                    emission_error: string | null;
+                                    attempts: number;
+                                    next_attempt_at: string | null;
+                                    last_attempt_at: string | null;
+                                    /** Format: uuid */
+                                    credit_note_of_id: string | null;
+                                    /** Format: uuid */
+                                    emitted_for_payment_id: string | null;
+                                    /** Format: uuid */
+                                    dte_connection_id: string | null;
+                                };
+                                factura: {
+                                    receptor: {
+                                        rut: string;
+                                        legal_name?: string;
+                                        giro?: string;
+                                        address?: {
+                                            street?: string;
+                                            comuna?: string;
+                                            city?: string;
+                                        };
+                                        email_document_to?: string[];
+                                    };
+                                    lines: {
+                                        description: string;
+                                        detail: string | null;
+                                        quantity: number;
+                                        unit_price_clp: number;
+                                        code: string | null;
+                                        amount_clp: number;
+                                    }[];
+                                    reference: {
+                                        document_type: number;
+                                        folio: string;
+                                        date: string;
+                                        reason: string | null;
+                                    } | null;
+                                    totals: {
+                                        net: number;
+                                        exempt: number;
+                                        iva: number;
+                                        total: number;
+                                    };
+                                } | null;
+                                cancelled_boleta_ids?: string[];
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/dte-connections/{id}/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Turn on electronic emission
+         * @description THE ONLY DOOR TO EMISSION, and it refuses — naming the gate — unless the SII reports the sociedad emitting for its document type AND the workspace’s money module already belongs to Vitrina. The second gate is «one author per fact»: a clinic still on its previous system keeps emitting there and this platform only reads those documents. There is no force option.
+         *
+         *     **What it turns on depends on the workspace (#8084).** In a clinic (`healthcare`) it turns on the automatic boleta per payment AND allows facturas (`POST /clinic/tax-documents/facturas`); the SII gate checks the connection’s boleta type. Anywhere else it ONLY allows facturas — no payment ever gets an automatic boleta — and the SII gate checks that the sociedad emits a factura (33 or 34). Also Chile only (422 outside). The connection id is `sii.connection.id` in `GET /finanzas/connect-setup`. Requires `clinic_admin:write` or `finanzas_admin:write` (owner/admin); audited.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Connection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6c6c6c6c-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "legal_entity_id": "7e7e7e7e-0000-4000-8000-000000000001",
+                         *         "empresa_rut": "76543218-9",
+                         *         "engine_empresa_id": null,
+                         *         "api_key_preview": "sk_live_…4f2a",
+                         *         "api_key_origin": "minted",
+                         *         "has_api_key": true,
+                         *         "environment": "produccion",
+                         *         "onboarding_status": {
+                         *           "status": "emitting"
+                         *         },
+                         *         "onboarding_synced_at": "2026-11-22T13:58:00.000Z",
+                         *         "folios_status": [],
+                         *         "default_document_type": 41,
+                         *         "enabled_at": "2026-11-22T14:00:00.000Z",
+                         *         "enabled_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "disabled_reason": null,
+                         *         "received_documents_cursor": null,
+                         *         "received_documents_synced_at": null,
+                         *         "card_boletas_own_confirmed_at": null,
+                         *         "created_at": "2026-11-20T10:00:00.000Z",
+                         *         "updated_at": "2026-11-22T14:00:00.000Z",
+                         *         "legal_entity_name": "Empresa Ejemplo SpA",
+                         *         "legal_entity_tax_id": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/dte-connections/{id}/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Turn off electronic emission
+         * @description Clears the switch. A FAILING emission never reaches here — that is the document’s own retry ladder, not a connection state. Requires `clinic_admin:write` or `finanzas_admin:write`; audited.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "Dejamos de facturar desde Vitrina"
+                     *     }
+                     */
+                    "application/json": {
+                        reason?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Connection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6c6c6c6c-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "legal_entity_id": "7e7e7e7e-0000-4000-8000-000000000001",
+                         *         "empresa_rut": "76543218-9",
+                         *         "engine_empresa_id": null,
+                         *         "api_key_preview": "sk_live_…4f2a",
+                         *         "api_key_origin": "minted",
+                         *         "has_api_key": true,
+                         *         "environment": "produccion",
+                         *         "onboarding_status": {
+                         *           "status": "emitting"
+                         *         },
+                         *         "onboarding_synced_at": "2026-11-22T13:58:00.000Z",
+                         *         "folios_status": [],
+                         *         "default_document_type": 41,
+                         *         "enabled_at": null,
+                         *         "enabled_by": null,
+                         *         "disabled_reason": "Dejamos de facturar desde Vitrina",
+                         *         "received_documents_cursor": null,
+                         *         "received_documents_synced_at": null,
+                         *         "card_boletas_own_confirmed_at": null,
+                         *         "created_at": "2026-11-20T10:00:00.000Z",
+                         *         "updated_at": "2026-11-22T14:00:00.000Z",
+                         *         "legal_entity_name": "Empresa Ejemplo SpA",
+                         *         "legal_entity_tax_id": null
                          *       }
                          *     }
                          */
@@ -102247,6 +103496,586 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/tax/ppm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * PPM by month of a year, with its payment
+         * @description One row per month of `year` (and per sociedad with an F29 that month): the PPM (F29 code 62, else the summary figure), its base (code 563), the F29 state, the due date, and the payment date of the movement reconciled against the F29 (`payment_date`, `payment_month`). `ppm_paid_in_year_clp` adds the PPM paid during the year whatever its period (December's PPM paid in January counts in the next year), which is what the F22 credits. The F29 figures are the SII service's PROPOSAL (computed from the RCV) until the service passes the filed form's codes through: `is_proposal` is false only for an F29 the service reports as filed. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    year: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description PPM by month */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "year": 2026,
+                         *         "months": [
+                         *           {
+                         *             "period": "2026-03",
+                         *             "f29_document_id": "01930000-0000-7000-8000-0000000000d1",
+                         *             "issuer_rut": "77123456-7",
+                         *             "ppm_clp": 412000,
+                         *             "ppm_base_clp": 41200000,
+                         *             "source": "codes",
+                         *             "state": "proposal",
+                         *             "filed": false,
+                         *             "is_proposal": true,
+                         *             "due_date": "2026-04-20",
+                         *             "payment_date": "2026-04-17",
+                         *             "payment_month": "2026-04",
+                         *             "payment_state": "pagado"
+                         *           }
+                         *         ],
+                         *         "ppm_total_clp": 412000,
+                         *         "ppm_paid_in_year_clp": 412000,
+                         *         "codes_note": "PPM comes from the SII service F29 proposal."
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                year: number;
+                                months: {
+                                    /** @description Tax period, `YYYY-MM`. */
+                                    period: string;
+                                    /** Format: uuid */
+                                    f29_document_id: string | null;
+                                    issuer_rut: string | null;
+                                    /** @description F29 code 62 (else the summary PPM); null: no F29 or no figure. */
+                                    ppm_clp: number | null;
+                                    /** @description F29 code 563, the PPM base; null when the codes are not stored. */
+                                    ppm_base_clp: number | null;
+                                    /** @enum {string|null} */
+                                    source: "codes" | "summary" | null;
+                                    state: string | null;
+                                    filed: boolean;
+                                    /** @description True unless the SII service reports an accepted real filing for the period. */
+                                    is_proposal: boolean;
+                                    /** @description `YYYY-MM-DD`. */
+                                    due_date: string | null;
+                                    /** @description Day of the movement reconciled against the F29, null when unpaid. */
+                                    payment_date: string | null;
+                                    /** @description `YYYY-MM` of `payment_date`: the month the F22 credits it in. */
+                                    payment_month: string | null;
+                                    payment_state: string | null;
+                                }[];
+                                /** @description Whole CLP. */
+                                ppm_total_clp: number;
+                                /** @description PPM paid (reconciled movement) during the year, whatever its period; the F22 credits PPM by payment. */
+                                ppm_paid_in_year_clp: number;
+                                codes_note: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax/honorarios-retention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retention on honorarios: declared in the F29 versus the boletas
+         * @description Per month of `year`: the retention declared in the F29 (code 151) against the sum of `retention_clp` of the boletas de honorarios received that month (annulled excluded), the difference, and a `status`: `matches`, `differs`, `no_declared_code` (the F29 has no codes yet) or `no_f29` (boletas with retention in a month with no F29 stored). The F29 figures are the SII service's PROPOSAL (computed from the RCV) until the service passes the filed form's codes through: `is_proposal` is false only for an F29 the service reports as filed. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    year: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The retention by month */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "year": 2026,
+                         *         "months": [
+                         *           {
+                         *             "period": "2026-03",
+                         *             "issuer_rut": "77123456-7",
+                         *             "f29_document_id": "01930000-0000-7000-8000-0000000000d1",
+                         *             "declared_clp": 150000,
+                         *             "honorarios_clp": 142500,
+                         *             "honorarios_count": 4,
+                         *             "difference_clp": 7500,
+                         *             "status": "differs",
+                         *             "is_proposal": true
+                         *           }
+                         *         ],
+                         *         "months_with_difference": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                year: number;
+                                months: {
+                                    /** @description Tax period, `YYYY-MM`. */
+                                    period: string;
+                                    issuer_rut: string | null;
+                                    /** Format: uuid */
+                                    f29_document_id: string | null;
+                                    /** @description F29 code 151; null while the F29 has no codes. */
+                                    declared_clp: number | null;
+                                    /** @description Sum of `retention_clp` of the boletas de honorarios received in the month (annulled excluded). */
+                                    honorarios_clp: number;
+                                    honorarios_count: number;
+                                    /** @description declared − honorarios; null when there is nothing declared to compare. */
+                                    difference_clp: number | null;
+                                    /** @enum {string} */
+                                    status: "matches" | "differs" | "no_declared_code" | "no_f29";
+                                    is_proposal: boolean;
+                                }[];
+                                months_with_difference: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tax payments of a year by kind
+         * @description The money out of `year` paid to the SII or the Tesorería General de la República, by kind: `f29`, `idpc` (corporate income tax), `patente`, `contribuciones`, `other`. The kind is the person's choice when there is one (`kind_source: person`), else `f29` for a movement reconciled against an F29 (`document`), else read from the bank's text (`rule`: a payee naming the SII / TGR, with the words F29, patente, contribuciones, renta deciding the kind; a bare TGR payment is `other`). A transfer to an accountant that only mentions «F29» is not a tax payment. Change a kind with `PUT /finanzas/tax/payments/{movementId}/kind`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    year: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tax payments by kind */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "year": 2026,
+                         *         "total_clp": 4600,
+                         *         "count": 1,
+                         *         "by_kind": [
+                         *           {
+                         *             "kind": "f29",
+                         *             "label": "F29 (IVA, PPM y retenciones)",
+                         *             "count": 0,
+                         *             "total_clp": 0
+                         *           },
+                         *           {
+                         *             "kind": "other",
+                         *             "label": "Otros impuestos",
+                         *             "count": 1,
+                         *             "total_clp": 4600
+                         *           }
+                         *         ],
+                         *         "items": [
+                         *           {
+                         *             "movement_id": "01930000-0000-7000-8000-0000000000a1",
+                         *             "day": "2026-05-12",
+                         *             "amount_clp": 4600,
+                         *             "description": "Pago Bdp Tgr 23080852890",
+                         *             "counterparty_name": null,
+                         *             "bank_account_id": null,
+                         *             "kind": "other",
+                         *             "kind_label": "Otros impuestos",
+                         *             "kind_source": "rule",
+                         *             "f29_document_id": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                year: number;
+                                /** @description Whole CLP. */
+                                total_clp: number;
+                                count: number;
+                                by_kind: {
+                                    /** @enum {string} */
+                                    kind: "f29" | "idpc" | "patente" | "contribuciones" | "other";
+                                    label: string;
+                                    count: number;
+                                    /** @description Whole CLP. */
+                                    total_clp: number;
+                                }[];
+                                items: {
+                                    /** Format: uuid */
+                                    movement_id: string;
+                                    /** @description `YYYY-MM-DD`. */
+                                    day: string;
+                                    /** @description Whole CLP. */
+                                    amount_clp: number;
+                                    description: string;
+                                    counterparty_name: string | null;
+                                    /** Format: uuid */
+                                    bank_account_id: string | null;
+                                    /** @enum {string} */
+                                    kind: "f29" | "idpc" | "patente" | "contribuciones" | "other";
+                                    kind_label: string;
+                                    /** @enum {string} */
+                                    kind_source: "person" | "document" | "rule";
+                                    /** Format: uuid */
+                                    f29_document_id: string | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/tax/payments/{movementId}/kind": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the kind of a tax payment
+         * @description A person decides what kind of tax payment a bank movement is. It wins over the default. `kind: "none"` says it is not a tax payment; `kind: null` forgets the choice and returns to the default. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    movementId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "kind": "patente"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The kind of tax payment this movement is. `none`: it is not a tax payment (it leaves the list). `null`: forget the choice and go back to the default. */
+                        kind: ("f29" | "idpc" | "patente" | "contribuciones" | "other") | "none" | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The kind now in force */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "movement_id": "01930000-0000-7000-8000-0000000000a1",
+                         *         "kind": "patente"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                movement_id: string;
+                                kind: ("f29" | "idpc" | "patente" | "contribuciones" | "other") | "none" | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finanzas/chipax": {
         parameters: {
             query?: never;
@@ -103448,6 +105277,7 @@ export interface paths {
                 query?: {
                     from?: string;
                     to?: string;
+                    year?: number;
                 };
                 header?: never;
                 path?: never;
@@ -104070,6 +105900,7 @@ export interface paths {
                     month?: string;
                     from?: string;
                     to?: string;
+                    year?: number;
                     limit?: number;
                     offset?: number | null;
                 };
@@ -104214,6 +106045,7 @@ export interface paths {
                 query?: {
                     from?: string;
                     to?: string;
+                    year?: number;
                     format?: "xlsx" | "csv";
                 };
                 header?: never;
@@ -104291,6 +106123,987 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-basis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Base de caja: what was collected and paid in a year
+         * @description For a commercial year (`year`, default the current one): every collection (`collections`: money in on a sale or an issued boleta de honorarios) and every payment (`payments`: money out on a purchase, a received boleta, a gasto), one line per (payment, account). A payment is a live link between a document and a bank movement; its date is the movement's day; a partial payment counts for its part on its own date. Amounts are NET by the Resultado rule (`base_clp`), with `net_clp`, `exempt_clp` and `vat_excluded_clp` apart; each payment takes a share of the document's figures in proportion to what it settles, cumulatively rounded (half away from zero) so a fully paid document adds up to exactly its figures. Credit notes (DTE 60, 61, 112) reduce the document they adjust; money refunded on a note counts negative. Honorarios count GROSS on the day paid, the retención in `retention_clp`. A gasto with only a total is flagged `no_vat_breakdown`. `document_year` says whether the document is of the year (`current`) or an earlier one (`earlier`): the F22 codes differ. Documents settled with no movement («Pagado antes de Vitrina», marked paid by a person) are in `undated`, never dated by guess, until an owner gives them a date (`PUT …/payment-date`). `coverage` lists the months of the year before (and of the year) the SII sync never read, so collections on invoices issued then may be missing. A CLINIC (a clinic-system money mirror, or the healthcare vertical) counts patient collections from its payment ledger on the day the patient paid (`clinic_mirror_payment` on the days its clinic system owns the money, `customer_payment` otherwise), never the later bank deposit or processor payout: from `coverage.payment_ledger.from` a bank link on a boleta (39/41) does not count. Their VAT split comes from the boletas tied to the payment, else the month's boletas (`attribution`); a payment by a third party (convenio, seguro, bono, payer Empresa) is received the day its money arrives: a `payment` link from that movement, or a day an owner gives it (`PUT /finanzas/cash-basis/payments/{id}/payment-date`); until then it is in `undated`. Outlays paid WITHOUT a document are payments too (`kind = movement`): a movement classified straight to a costo or gasto account (salaries, Previred, bank fees, rent by transfer, taxes), on its day, flagged `undocumented` by the Resultado's «Egresos sin documento» rule; a movement linked to a document counts through that document only. A processor fee (`kind = processor_fee`: `fee_clp`, or a card batch commission) is an outlay on the payout day; the collection is not reduced. Money on `no_operacional` accounts (withdrawals, loans, fixed assets, capital, own funds) is never income or an outlay: it is in `non_result` by kind. F29 payments never count. A workspace with more than one sociedad is refused (409). `detail=false` leaves out the lines (`collections`, `payments`, `non_result`) and keeps `totals` (with the per-account `by_account` and per-kind `by_kind` subtotals), `coverage` and `undated`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` (the Contador seat holds it).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                    sociedad_id?: string;
+                    detail?: "true" | "false";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The year on a cash basis */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "year": 2026,
+                         *         "from": "2026-01-01",
+                         *         "to": "2026-12-31",
+                         *         "currency": "CLP",
+                         *         "sociedad": {
+                         *           "connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8105",
+                         *           "rut": "76123456-7",
+                         *           "legal_name": "Clínica Andes SpA"
+                         *         },
+                         *         "detail": true,
+                         *         "collections": [
+                         *           {
+                         *             "line_key": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8104:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8102",
+                         *             "kind": "document",
+                         *             "side": "collection",
+                         *             "document_year": "earlier",
+                         *             "payment": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8104",
+                         *               "source": "bank_movement",
+                         *               "bank_movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8103",
+                         *               "date": "2026-01-09",
+                         *               "amount_clp": 1190000,
+                         *               "rounding_clp": 0,
+                         *               "method_kind": null,
+                         *               "method_label": null,
+                         *               "payer_type": null,
+                         *               "payment_record": null
+                         *             },
+                         *             "document": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8101",
+                         *               "kind": "sale",
+                         *               "source": "sii",
+                         *               "dte_type": 33,
+                         *               "dte_type_label": "Factura electrónica",
+                         *               "folio": "1532",
+                         *               "issue_date": "2025-12-18",
+                         *               "counterparty_name": "Comercial Andes SpA",
+                         *               "contraparte_id": null,
+                         *               "is_credit_note": false,
+                         *               "adjusts_document_id": null,
+                         *               "total_clp": 1190000,
+                         *               "credit_notes_clp": 0,
+                         *               "retention_clp": 0
+                         *             },
+                         *             "movement": null,
+                         *             "document_ids": [
+                         *               "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8101"
+                         *             ],
+                         *             "attribution": "document",
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8102",
+                         *               "name": "Atención odontológica",
+                         *               "kind": "ingreso",
+                         *               "no_document": false
+                         *             },
+                         *             "no_vat_breakdown": false,
+                         *             "undocumented": false,
+                         *             "non_result_kind": null,
+                         *             "settled_clp": 1190000,
+                         *             "gross_clp": 1190000,
+                         *             "base_clp": 1000000,
+                         *             "net_clp": 1000000,
+                         *             "exempt_clp": 0,
+                         *             "vat_excluded_clp": 190000,
+                         *             "retention_clp": 0
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "line_key": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8107:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8108",
+                         *             "kind": "movement",
+                         *             "side": "payment",
+                         *             "document_year": "current",
+                         *             "payment": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8107",
+                         *               "source": "classified_movement",
+                         *               "bank_movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8107",
+                         *               "date": "2026-01-30",
+                         *               "amount_clp": 850000,
+                         *               "rounding_clp": 0,
+                         *               "method_kind": null,
+                         *               "method_label": null,
+                         *               "payer_type": null,
+                         *               "payment_record": null
+                         *             },
+                         *             "document": null,
+                         *             "movement": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8107",
+                         *               "date": "2026-01-30",
+                         *               "direction": "outbound",
+                         *               "amount_clp": 850000,
+                         *               "counterparty_name": "Asistente P.",
+                         *               "contraparte_id": null
+                         *             },
+                         *             "document_ids": [],
+                         *             "attribution": "none",
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8108",
+                         *               "name": "Sueldos",
+                         *               "kind": "gasto",
+                         *               "no_document": true
+                         *             },
+                         *             "no_vat_breakdown": false,
+                         *             "undocumented": false,
+                         *             "non_result_kind": null,
+                         *             "settled_clp": 850000,
+                         *             "gross_clp": 850000,
+                         *             "base_clp": 850000,
+                         *             "net_clp": 0,
+                         *             "exempt_clp": 0,
+                         *             "vat_excluded_clp": 0,
+                         *             "retention_clp": 0
+                         *           }
+                         *         ],
+                         *         "non_result": [],
+                         *         "undated": [],
+                         *         "totals": {
+                         *           "collections": {
+                         *             "current": {
+                         *               "lines": 0,
+                         *               "settled_clp": 0,
+                         *               "gross_clp": 0,
+                         *               "base_clp": 0,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             },
+                         *             "earlier": {
+                         *               "lines": 1,
+                         *               "settled_clp": 1190000,
+                         *               "gross_clp": 1190000,
+                         *               "base_clp": 1000000,
+                         *               "net_clp": 1000000,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 190000,
+                         *               "retention_clp": 0
+                         *             },
+                         *             "later": {
+                         *               "lines": 0,
+                         *               "settled_clp": 0,
+                         *               "gross_clp": 0,
+                         *               "base_clp": 0,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             }
+                         *           },
+                         *           "payments": {
+                         *             "current": {
+                         *               "lines": 1,
+                         *               "settled_clp": 850000,
+                         *               "gross_clp": 850000,
+                         *               "base_clp": 850000,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             },
+                         *             "earlier": {
+                         *               "lines": 0,
+                         *               "settled_clp": 0,
+                         *               "gross_clp": 0,
+                         *               "base_clp": 0,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             },
+                         *             "later": {
+                         *               "lines": 0,
+                         *               "settled_clp": 0,
+                         *               "gross_clp": 0,
+                         *               "base_clp": 0,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             }
+                         *           },
+                         *           "undated": {
+                         *             "collection": {
+                         *               "lines": 0,
+                         *               "settled_clp": 0,
+                         *               "gross_clp": 0,
+                         *               "base_clp": 0,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             },
+                         *             "payment": {
+                         *               "lines": 0,
+                         *               "settled_clp": 0,
+                         *               "gross_clp": 0,
+                         *               "base_clp": 0,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             }
+                         *           },
+                         *           "non_result": {
+                         *             "withdrawal": {
+                         *               "collection": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               },
+                         *               "payment": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               }
+                         *             },
+                         *             "loan": {
+                         *               "collection": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               },
+                         *               "payment": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               }
+                         *             },
+                         *             "fixed_asset": {
+                         *               "collection": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               },
+                         *               "payment": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               }
+                         *             },
+                         *             "capital": {
+                         *               "collection": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               },
+                         *               "payment": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               }
+                         *             },
+                         *             "own_funds": {
+                         *               "collection": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               },
+                         *               "payment": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               }
+                         *             },
+                         *             "other": {
+                         *               "collection": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               },
+                         *               "payment": {
+                         *                 "lines": 0,
+                         *                 "settled_clp": 0,
+                         *                 "gross_clp": 0,
+                         *                 "base_clp": 0,
+                         *                 "net_clp": 0,
+                         *                 "exempt_clp": 0,
+                         *                 "vat_excluded_clp": 0,
+                         *                 "retention_clp": 0
+                         *               }
+                         *             }
+                         *           },
+                         *           "by_account": [
+                         *             {
+                         *               "side": "collection",
+                         *               "document_year": "earlier",
+                         *               "account": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8102",
+                         *                 "name": "Atención odontológica",
+                         *                 "kind": "ingreso",
+                         *                 "no_document": false
+                         *               },
+                         *               "undocumented": false,
+                         *               "non_result_kind": null,
+                         *               "lines": 1,
+                         *               "settled_clp": 1190000,
+                         *               "gross_clp": 1190000,
+                         *               "base_clp": 1000000,
+                         *               "net_clp": 1000000,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 190000,
+                         *               "retention_clp": 0
+                         *             },
+                         *             {
+                         *               "side": "payment",
+                         *               "document_year": "current",
+                         *               "account": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8108",
+                         *                 "name": "Sueldos",
+                         *                 "kind": "gasto",
+                         *                 "no_document": true
+                         *               },
+                         *               "undocumented": false,
+                         *               "non_result_kind": null,
+                         *               "lines": 1,
+                         *               "settled_clp": 850000,
+                         *               "gross_clp": 850000,
+                         *               "base_clp": 850000,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             }
+                         *           ],
+                         *           "by_kind": [
+                         *             {
+                         *               "side": "collection",
+                         *               "kind": "document",
+                         *               "undocumented": false,
+                         *               "lines": 1,
+                         *               "settled_clp": 1190000,
+                         *               "gross_clp": 1190000,
+                         *               "base_clp": 1000000,
+                         *               "net_clp": 1000000,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 190000,
+                         *               "retention_clp": 0
+                         *             },
+                         *             {
+                         *               "side": "payment",
+                         *               "kind": "movement",
+                         *               "undocumented": false,
+                         *               "lines": 1,
+                         *               "settled_clp": 850000,
+                         *               "gross_clp": 850000,
+                         *               "base_clp": 850000,
+                         *               "net_clp": 0,
+                         *               "exempt_clp": 0,
+                         *               "vat_excluded_clp": 0,
+                         *               "retention_clp": 0
+                         *             }
+                         *           ]
+                         *         },
+                         *         "coverage": {
+                         *           "payment_ledger": null,
+                         *           "sii_connected": true,
+                         *           "sii_window_from": "2025-01",
+                         *           "backfill_done": true,
+                         *           "checked_from": "2025-01",
+                         *           "checked_to": "2026-11",
+                         *           "missing_months": [],
+                         *           "complete": true,
+                         *           "unexplained_outflows": {
+                         *             "movements": 0,
+                         *             "amount_clp": 0
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashBasis"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-basis/documents/{id}/payment-date": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Base de caja: give an undated document its payment date
+         * @description For a document in `undated` (settled with no bank movement): the day it was paid. The part no movement covers then counts as a payment on that day (`payment.source = manual`). Replaces a date given before (the old one is kept, stamped undone). Refused for a document a movement already dates, one not paid, a credit note, a future day, or a day after it was marked paid. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (owner or admin).
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "paid_on": "2026-03-14",
+                     *       "note": "Pagado en efectivo"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The day it was paid, `YYYY-MM-DD`. */
+                        paid_on: string;
+                        note?: string | null;
+                        /** Format: uuid */
+                        sociedad_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The date */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8101",
+                         *         "paid_on": "2026-03-14",
+                         *         "note": "Pagado en efectivo",
+                         *         "set_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8106",
+                         *         "set_at": "2026-11-22T14:03:00.000Z",
+                         *         "replaced_paid_on": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                document_id: string;
+                                /** @description A day, `YYYY-MM-DD`. */
+                                paid_on: string;
+                                note: string | null;
+                                set_by: string | null;
+                                set_at: string;
+                                /** @description A day, `YYYY-MM-DD`. */
+                                replaced_paid_on: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Base de caja: remove the payment date a person gave
+         * @description The document is undated again (the row is kept, stamped undone). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8101",
+                         *         "removed_paid_on": "2026-03-14"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                document_id: string;
+                                /** @description A day, `YYYY-MM-DD`. */
+                                removed_paid_on: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-basis/payments/{id}/payment-date": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Base de caja: the day a third party's money arrived
+         * @description For a clinic payment record a third party pays (an insurer, an employer agreement, a company; `undated` with reason `third_party_payer` or `unknown_payment_method`, `payment.id` = the `clinic_mirror_payment` id) whose money arrived with no bank movement linked to it: the day it arrived. The part no movement covers then counts as a collection on that day (`payment.source = manual`, `payment.payment_record` = the record). Linking the movement to the payment instead (Conciliar, target `payment`) dates it by the movement. Replaces a day given before (kept, stamped undone). Refused for a patient's own payment (it counts the day the patient paid), one movements already date in full, and a future day. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (owner or admin).
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "paid_on": "2026-04-30",
+                     *       "note": "Transferencia de la aseguradora"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The day it was paid, `YYYY-MM-DD`. */
+                        paid_on: string;
+                        note?: string | null;
+                        /** Format: uuid */
+                        sociedad_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The day */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "payment_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8109",
+                         *         "paid_on": "2026-04-30",
+                         *         "note": "Transferencia de la aseguradora",
+                         *         "set_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8106",
+                         *         "set_at": "2026-11-22T14:03:00.000Z",
+                         *         "replaced_paid_on": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                payment_id: string;
+                                /** @description A day, `YYYY-MM-DD`. */
+                                paid_on: string;
+                                note: string | null;
+                                set_by: string | null;
+                                set_at: string;
+                                /** @description A day, `YYYY-MM-DD`. */
+                                replaced_paid_on: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Base de caja: remove the day given to a clinic payment record
+         * @description The payment record is undated again (the row is kept, stamped undone). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "payment_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8109",
+                         *         "removed_paid_on": "2026-04-30"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                payment_id: string;
+                                /** @description A day, `YYYY-MM-DD`. */
+                                removed_paid_on: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -108654,6 +111467,1545 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/finanzas/owners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the owners of the sociedades, with their dated holdings
+         * @description Each owner carries `in_force` on `as_of` (default today) and every holding row (history). A legal-person owner in force raises a `legal_person_owner` warning. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Owner data is personal data: requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    dte_connection_id?: string;
+                    as_of?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Owners */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "as_of": "2026-11-22",
+                         *         "sociedades": [
+                         *           {
+                         *             "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *             "legal_name": "Clínica Sonrisa SpA",
+                         *             "tax_id": "76123456-0"
+                         *           }
+                         *         ],
+                         *         "owners": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *             "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *             "tax_id_kind": "rut",
+                         *             "tax_id": "12345678-5",
+                         *             "name": "Ana Pérez",
+                         *             "person_kind": "natural",
+                         *             "tax_residence_country": "CL",
+                         *             "created_at": "2026-11-22T12:00:00.000Z",
+                         *             "updated_at": "2026-11-22T12:00:00.000Z",
+                         *             "in_force": true,
+                         *             "holdings": [
+                         *               {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7005",
+                         *                 "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *                 "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *                 "effective_from": "2026-01-01",
+                         *                 "ended": false,
+                         *                 "profit_share_pct": 60,
+                         *                 "paid_in_capital_clp": 6000000,
+                         *                 "subscribed_capital_clp": 6000000,
+                         *                 "created_at": "2026-11-22T12:00:00.000Z"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "warnings": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnerList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add an owner to a sociedad
+         * @description The RUT is validated (módulo 11) and stored canonical; `person_kind` is read from the RUT when omitted. The shares come next, as a holding with an effective date. A legal person answers 201 with a `legal_person_owner` warning (never a refusal). 422 `FINANZAS_OWNER_INVALID` with `details.reason` (`invalid_tax_id`, `person_kind_required`, `sociedad_not_found`, `owner_not_found`, `owner_not_applicable`, `owner_not_in_force`, `movement_not_found`, `invalid_date`); 409 `FINANZAS_OWNER_CONFLICT` `owner_exists`. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                     *       "tax_id": "12.345.678-5",
+                     *       "name": "Ana Pérez",
+                     *       "tax_residence_country": "CL"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasOwnerCreateBody"];
+                };
+            };
+            responses: {
+                /** @description The owner */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "owner": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *           "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *           "tax_id_kind": "rut",
+                         *           "tax_id": "12345678-5",
+                         *           "name": "Ana Pérez",
+                         *           "person_kind": "natural",
+                         *           "tax_residence_country": "CL",
+                         *           "created_at": "2026-11-22T12:00:00.000Z",
+                         *           "updated_at": "2026-11-22T12:00:00.000Z"
+                         *         },
+                         *         "warnings": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnerWithWarnings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/owners/split": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Owners and shares at 31 December of a year (or a date)
+         * @description The split the F22 uses. `rule` says which was applied: `statute_profit_share` (shares in the statutes), else `paid_in_capital`, else `subscribed_capital`, else `none`. Shares in force that do not add up to 100 % say by how much (`shortfall_pct`, `shares_not_100` warning). Send `year` or `as_of`. 422 `FINANZAS_OWNER_INVALID` with `details.reason` (`invalid_tax_id`, `person_kind_required`, `sociedad_not_found`, `owner_not_found`, `owner_not_applicable`, `owner_not_in_force`, `movement_not_found`, `invalid_date`); 409 `FINANZAS_OWNER_CONFLICT` `owner_exists`. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Owner data is personal data: requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    dte_connection_id: string;
+                    year?: number;
+                    as_of?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The split */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *         "as_of": "2026-12-31",
+                         *         "rule": "statute_profit_share",
+                         *         "owners": [
+                         *           {
+                         *             "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *             "name": "Ana Pérez",
+                         *             "tax_id": "12345678-5",
+                         *             "tax_id_kind": "rut",
+                         *             "person_kind": "natural",
+                         *             "tax_residence_country": "CL",
+                         *             "effective_from": "2026-01-01",
+                         *             "profit_share_pct": 60,
+                         *             "paid_in_capital_clp": 6000000,
+                         *             "subscribed_capital_clp": 6000000,
+                         *             "share_pct": 60
+                         *           },
+                         *           {
+                         *             "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7003",
+                         *             "name": "Luis Soto",
+                         *             "tax_id": "9876543-3",
+                         *             "tax_id_kind": "rut",
+                         *             "person_kind": "natural",
+                         *             "tax_residence_country": "CL",
+                         *             "effective_from": "2026-01-01",
+                         *             "profit_share_pct": 40,
+                         *             "paid_in_capital_clp": 4000000,
+                         *             "subscribed_capital_clp": 4000000,
+                         *             "share_pct": 40
+                         *           }
+                         *         ],
+                         *         "total_pct": 100,
+                         *         "shares_add_up": true,
+                         *         "shortfall_pct": 0,
+                         *         "warnings": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnerSplit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/owners/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete an owner with their holdings, ledger entries and attributions
+         * @description Prefer ending the holding: deleting rewrites history. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Correct an owner’s name, person kind or tax residence
+         * @description The tax id never changes (add a new owner instead). Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "tax_residence_country": "US"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasOwnerUpdateBody"];
+                };
+            };
+            responses: {
+                /** @description The owner */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "owner": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *           "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *           "tax_id_kind": "rut",
+                         *           "tax_id": "12345678-5",
+                         *           "name": "Ana Pérez",
+                         *           "person_kind": "natural",
+                         *           "tax_residence_country": "CL",
+                         *           "created_at": "2026-11-22T12:00:00.000Z",
+                         *           "updated_at": "2026-11-22T12:00:00.000Z"
+                         *         },
+                         *         "warnings": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnerWithWarnings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/owners/{id}/holdings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set what an owner holds from a date
+         * @description History, not overwrite: the row applies from `effective_from` until the next one; `ended: true` ends the ownership on that date. Writing the same date again corrects it. `profit_share_pct` is the statute share (0-100); capital is whole CLP. 422 `FINANZAS_OWNER_INVALID` with `details.reason` (`invalid_tax_id`, `person_kind_required`, `sociedad_not_found`, `owner_not_found`, `owner_not_applicable`, `owner_not_in_force`, `movement_not_found`, `invalid_date`); 409 `FINANZAS_OWNER_CONFLICT` `owner_exists`. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "effective_from": "2026-01-01",
+                     *       "profit_share_pct": 60,
+                     *       "paid_in_capital_clp": 6000000,
+                     *       "subscribed_capital_clp": 6000000
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasOwnerHoldingBody"];
+                };
+            };
+            responses: {
+                /** @description The holding */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "holding": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7005",
+                         *           "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *           "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *           "effective_from": "2026-01-01",
+                         *           "ended": false,
+                         *           "profit_share_pct": 60,
+                         *           "paid_in_capital_clp": 6000000,
+                         *           "subscribed_capital_clp": 6000000,
+                         *           "created_at": "2026-11-22T12:00:00.000Z"
+                         *         },
+                         *         "warnings": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnerHoldingResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/owners/holdings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete one holding row
+         * @description Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/owners/capital-entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The capital ledger
+         * @description Contributions, increases and returns, oldest first. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Owner data is personal data: requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    dte_connection_id?: string;
+                    owner_id?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Entries */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "entries": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7006",
+                         *             "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *             "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *             "entry_date": "2026-03-01",
+                         *             "kind": "contribution",
+                         *             "capital_status": "paid_in",
+                         *             "amount_clp": 2000000,
+                         *             "bank_movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7004",
+                         *             "note": null,
+                         *             "created_at": "2026-11-22T12:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCapitalEntryList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a capital contribution, increase or return
+         * @description Dated, per owner, `paid_in` or only `subscribed`; `bank_movement_id` optionally links the movement classified to «Capital pagado». 422 `FINANZAS_OWNER_INVALID` with `details.reason` (`invalid_tax_id`, `person_kind_required`, `sociedad_not_found`, `owner_not_found`, `owner_not_applicable`, `owner_not_in_force`, `movement_not_found`, `invalid_date`); 409 `FINANZAS_OWNER_CONFLICT` `owner_exists`. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                     *       "entry_date": "2026-03-01",
+                     *       "kind": "contribution",
+                     *       "capital_status": "paid_in",
+                     *       "amount_clp": 2000000
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasCapitalEntryBody"];
+                };
+            };
+            responses: {
+                /** @description The entry */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7006",
+                         *         "dte_connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7001",
+                         *         "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002",
+                         *         "entry_date": "2026-03-01",
+                         *         "kind": "contribution",
+                         *         "capital_status": "paid_in",
+                         *         "amount_clp": 2000000,
+                         *         "bank_movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7004",
+                         *         "note": null,
+                         *         "created_at": "2026-11-22T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCapitalEntry"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/owners/capital-entries/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a capital ledger entry
+         * @description Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/owners/attributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retiros and capital contributions with the owner behind each
+         * @description Movements classified to a Retiros account (`retiro`) or «Capital pagado» (`capital`). `owner_id` null means unattributed; `only_unattributed=true` lists those for completion. The counts cover the list returned. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Owner data is personal data: requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    kind?: "retiro" | "capital";
+                    from?: string;
+                    to?: string;
+                    only_unattributed?: "true" | "false";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "movements": [
+                         *           {
+                         *             "bank_movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7004",
+                         *             "date": "2026-03-01",
+                         *             "amount_clp": 500000,
+                         *             "kind": "retiro",
+                         *             "owner_id": null
+                         *           }
+                         *         ],
+                         *         "unattributed_count": 1,
+                         *         "unattributed_clp": 500000
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasOwnerAttributionList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/owners/attributions/movements/{movementId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Does this movement need an owner, and which
+         * @description `applies_as` is null unless the movement has a line on a Retiros or «Capital pagado» account. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Owner data is personal data: requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    movementId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The attribution */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "bank_movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7004",
+                         *         "applies_as": "retiro",
+                         *         "owner_id": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementAttribution"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Name the owner who took a withdrawal or made a contribution
+         * @description The movement must be classified to a Retiros or «Capital pagado» account and the owner must be an owner of the sociedad on the movement's date. Also available as `owner_id` on the classify call. 422 `FINANZAS_OWNER_INVALID` with `details.reason` (`invalid_tax_id`, `person_kind_required`, `sociedad_not_found`, `owner_not_found`, `owner_not_applicable`, `owner_not_in_force`, `movement_not_found`, `invalid_date`); 409 `FINANZAS_OWNER_CONFLICT` `owner_exists`. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    movementId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasOwnerAttributionBody"];
+                };
+            };
+            responses: {
+                /** @description The attribution */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "bank_movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7004",
+                         *         "applies_as": "retiro",
+                         *         "owner_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7002"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementAttribution"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Remove the owner named on a movement
+         * @description The movement becomes unattributed again. Requires the `finanzas` add-on (otherwise `402 ENTITLEMENT_NOT_ACTIVE`). Requires `finanzas_admin:write` (the Contador seat never holds it); audited.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    movementId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/finanzas/resumen": {
@@ -185055,6 +189407,8 @@ export interface paths {
                          *           "sale_iva_regime": "exento",
                          *           "notes": null,
                          *           "observaciones": "Se entrega con dos llaves.",
+                         *           "returned_at": null,
+                         *           "return_deactivated_vehicle": null,
                          *           "not_on_lot": false,
                          *           "vehicle_ref": {
                          *             "id": "f2a1c3d4-5b6e-4f70-8a91-b2c3d4e5f6a7",
@@ -185252,6 +189606,8 @@ export interface paths {
                          *         "sale_iva_regime": "exento",
                          *         "notes": null,
                          *         "observaciones": "Se entrega con dos llaves.",
+                         *         "returned_at": null,
+                         *         "return_deactivated_vehicle": null,
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -185388,6 +189744,8 @@ export interface paths {
                          *           "sale_iva_regime": "exento",
                          *           "notes": null,
                          *           "observaciones": "Se entrega con dos llaves.",
+                         *           "returned_at": null,
+                         *           "return_deactivated_vehicle": null,
                          *           "not_on_lot": false
                          *         },
                          *         "mandato": {
@@ -185525,6 +189883,8 @@ export interface paths {
                          *         "sale_iva_regime": "exento",
                          *         "notes": null,
                          *         "observaciones": "Se entrega con dos llaves.",
+                         *         "returned_at": null,
+                         *         "return_deactivated_vehicle": null,
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -185602,6 +189962,8 @@ export interface paths {
          * Update a contract
          * @description Edits the terms, and can move `estado` — except to `vendido`, which is a **409** directing you to the sell action, so a sale can never be recorded without producing its Liquidación. Other transitions are checked against the state machine and an illegal one is also a 409.
          *
+         *     `estado: "devuelto"` is the return (`POST /consignments/{id}/return`, same effects): an active car is set inactive in the same transaction, and the 200 carries `return_outcome` and `cancelled_visits`.
+         *
          *     Moving `vencimiento` RE-ARMS the expiry reminder: the "already reminded" stamp is cleared, so a pushed-out date produces a fresh nudge rather than staying silent.
          *
          *     Supplying `minimo_clp` RENEGOTIATES the mínimo rather than editing a column: it appends an immutable revision to the contract’s terms history (`GET /consignments/{id}/terms`), dated `minimo_effective_on` or today. `precio_cliente_clp` is the same field under its new name. Sending the value already governing, with no `minimo_effective_on`, is a no-op (a form may resend every field). A different value on a date that already has a revision, today or later, CORRECTS it (app#7704): that revision is marked replaced and the new value governs the same date, so the date keeps one revision with the last value (the audit row keeps the previous one). A date already past is never rewritten: a second revision there is a **409**.
@@ -185654,7 +190016,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description The updated contract */
+                /** @description The updated contract. With `estado: devuelto` it is a return and also carries `return_outcome` and, when the car was set inactive, `cancelled_visits`. */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -185686,12 +190048,31 @@ export interface paths {
                          *         "sale_iva_regime": "exento",
                          *         "notes": null,
                          *         "observaciones": "Se entrega con dos llaves.",
+                         *         "returned_at": null,
+                         *         "return_deactivated_vehicle": null,
                          *         "not_on_lot": false
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: {
+                                /** @description When the return wrote `devuelto`. `null` on a contract that is not returned, and on an early withdrawal. */
+                                returned_at: string | null;
+                                /** @description `true` = this return set the car inactive; `false` = the car was already inactive; `null` = not recorded. */
+                                return_deactivated_vehicle: boolean | null;
+                                /** @description Present when this call returned the car: whether it set the car inactive, whether Cierre de avisos was queued, and one neutral Spanish sentence. */
+                                return_outcome?: {
+                                    /** Format: uuid */
+                                    vehicle_id: string;
+                                    vehicle_deactivated: boolean;
+                                    vehicle_was_inactive: boolean;
+                                    ads_closing: boolean;
+                                    message: string;
+                                };
+                                cancelled_visits?: components["schemas"]["CancelledVisits"] & unknown;
+                            } & {
+                                [key: string]: unknown;
+                            };
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -185767,7 +190148,11 @@ export interface paths {
         put?: never;
         /**
          * Return the car to its owner
-         * @description Moves the contract to `devuelto` and flips the vehicle’s `tenencia` back to `propio`. Exactly equivalent to `PATCH { estado: "devuelto" }` — it exists so the intent reads as a verb rather than a state assignment.
+         * @description Moves the contract to `devuelto`, flips the vehicle’s `tenencia` back to `propio` and, when the car is active, sets it INACTIVE as a dealer «Desactivar» (`deactivated_by: dealer`) in the same transaction (app#7958): it leaves the dealer’s site and the public stock, the AI agent stops offering it, its portal ads close through Cierre de avisos and its future visits are cancelled with the customer told, as for any deactivated car. A car that was already inactive stays inactive. The car stays in Stock as history, with `returned_to_owner: true`; while it is returned it cannot be activated or published (409, `details.reason: vehicle_returned_to_owner`). Exactly equivalent to `PATCH { estado: "devuelto" }` — it exists so the intent reads as a verb rather than a state assignment.
+         *
+         *     **`return_outcome`** (additive): `vehicle_id`, `vehicle_deactivated` (this return set the car inactive), `vehicle_was_inactive`, `ads_closing` (Cierre de avisos queued) and `message`, one neutral Spanish sentence. The contract also carries `returned_at` and `return_deactivated_vehicle`.
+         *
+         *     **`cancelled_visits`** (vitrina-app#7960, the same block as on `POST /sale-notes/{id}/approve`): when the return set the car inactive, its future visits are cancelled right after the commit and the answer says what happened to them: `{ count, told, not_told (name, phone, reason), hidden_count, message }`. ABSENT when the car was already inactive; `null` when the summary could not be read (the return still succeeded and the visits are still cancelled).
          *
          *     `devuelto` is the only terminal state that restores `propio`: a sold or expired contract KEEPS `tenencia: consignacion`, because the car was sold on consignment and the history should say so.
          */
@@ -185785,7 +190170,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The returned contract */
+                /** @description The returned contract, with `return_outcome` and, when the return set the car inactive, `cancelled_visits`. */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -185817,12 +190202,228 @@ export interface paths {
                          *         "sale_iva_regime": "exento",
                          *         "notes": null,
                          *         "observaciones": "Se entrega con dos llaves.",
-                         *         "not_on_lot": false
+                         *         "returned_at": "2026-09-15T09:00:00.000Z",
+                         *         "return_deactivated_vehicle": true,
+                         *         "not_on_lot": false,
+                         *         "return_outcome": {
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "vehicle_deactivated": true,
+                         *           "vehicle_was_inactive": false,
+                         *           "ads_closing": true,
+                         *           "message": "La consignación quedó devuelta. El auto quedó inactivo: ya no se ve en el sitio ni en los portales."
+                         *         },
+                         *         "cancelled_visits": {
+                         *           "count": 2,
+                         *           "told": [
+                         *             {
+                         *               "appointment_id": "dddddddd-0000-4000-8000-000000000001",
+                         *               "starts_at": "2026-09-20T14:00:00.000Z",
+                         *               "name": "Juan Pérez",
+                         *               "channel": "whatsapp"
+                         *             }
+                         *           ],
+                         *           "not_told": [
+                         *             {
+                         *               "appointment_id": "dddddddd-0000-4000-8000-000000000002",
+                         *               "starts_at": "2026-09-21T15:30:00.000Z",
+                         *               "name": "María Soto",
+                         *               "phone": "+56 9 1234 5678",
+                         *               "reason": "no_conversation"
+                         *             }
+                         *           ],
+                         *           "hidden_count": 0,
+                         *           "message": "Se cancelaron 2 visitas de este auto. A Juan Pérez se le avisó por WhatsApp. A María Soto no se le pudo avisar (la visita no tiene conversación): su teléfono es +56 9 1234 5678."
+                         *         }
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: {
+                                /** @description When the return wrote `devuelto`. `null` on a contract that is not returned, and on an early withdrawal. */
+                                returned_at: string | null;
+                                /** @description `true` = this return set the car inactive; `false` = the car was already inactive; `null` = not recorded. */
+                                return_deactivated_vehicle: boolean | null;
+                                /** @description Present when this call returned the car: whether it set the car inactive, whether Cierre de avisos was queued, and one neutral Spanish sentence. */
+                                return_outcome?: {
+                                    /** Format: uuid */
+                                    vehicle_id: string;
+                                    vehicle_deactivated: boolean;
+                                    vehicle_was_inactive: boolean;
+                                    ads_closing: boolean;
+                                    message: string;
+                                };
+                                cancelled_visits?: components["schemas"]["CancelledVisits"] & unknown;
+                            } & {
+                                [key: string]: unknown;
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/consignments/{id}/undo-return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Undo a return made by mistake
+         * @description «Deshacer devolución» (app#7959): the reverse of `POST /consignments/{id}/return`. In one transaction holding the car’s lock: the contract goes back to `activo` with the same terms (`returned_at` and `return_deactivated_vehicle` back to `null`); the car’s `tenencia` goes back to `consignacion`, labelled exactly as on a car whose contract was never returned (`tenencia_source: document` when the contract’s acquisition derives it); and, ONLY when the return was what set the car inactive, the car is active again and visible on the dealer’s site.
+         *
+         *     **Portal ads are NOT republished**: unlike a plain activation, the undo does not resume Mercado Libre ads nor re-list Chileautos ads the return closed (`undo_outcome.ads_not_republished`); the dealer publishes again by hand. It fires no «car in stock» automation (it is not a new arrival). Visits the return cancelled stay cancelled. A car that was already inactive before the return stays inactive (its `deactivated_by` stays `dealer`).
+         *
+         *     **Refusals** (409, `details.reason`, with a Spanish `message`): `return_undo_not_returned` (the contract is not a returned one, an early withdrawal included, which carries `details.early_withdrawal: true`; a second undo answers this too), `return_undo_settled` (a liquidación exists), `return_undo_car_gone` (the car was deleted or merged), `return_undo_car_sold`, `return_undo_newer_contract` (the car has a newer contract, `details.consignment_id`), `return_undo_car_acquired` (bought or taken in part payment after the return), `return_undo_plate_reused` (another car now holds its plate, `details.vehicle_ids`). Fires the `consignment.return_undone` webhook.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contract, active again, with `undo_outcome`. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d7d7d7d7-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *         "dueno_contact_id": "22222222-0000-4000-8000-000000000004",
+                         *         "modalidad": "en_local",
+                         *         "contract_structure": "mandato_con_representacion",
+                         *         "comision_type": "percentage",
+                         *         "comision_value": 10,
+                         *         "comision_mas_iva": true,
+                         *         "comision_minima_clp": 500000,
+                         *         "comision_minima_mas_iva": true,
+                         *         "cobro_retiro_anticipado_clp": null,
+                         *         "minimo_clp": 8000000,
+                         *         "precio_cliente_clp": 8000000,
+                         *         "vencimiento": "2026-12-31",
+                         *         "estado": "activo",
+                         *         "vencimiento_reminded_at": null,
+                         *         "liquidacion_due_notified_at": null,
+                         *         "created_at": "2026-08-20T10:00:00.000Z",
+                         *         "updated_at": "2026-09-15T09:20:00.000Z",
+                         *         "sale_iva_regime": "exento",
+                         *         "notes": null,
+                         *         "observaciones": "Se entrega con dos llaves.",
+                         *         "returned_at": null,
+                         *         "return_deactivated_vehicle": null,
+                         *         "not_on_lot": false,
+                         *         "undo_outcome": {
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "vehicle_reactivated": true,
+                         *           "ads_not_republished": true,
+                         *           "message": "La consignación volvió a estar activa y el auto volvió a verse en el sitio. Los avisos en los portales no se publican de nuevo por sí solos. Las visitas que se cancelaron con la devolución siguen canceladas."
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /**
+                                 * @description Always `activo`.
+                                 * @enum {string}
+                                 */
+                                estado: "activo" | "vendido" | "devuelto" | "vencido";
+                                /** @description Always `null`: the return was undone. */
+                                returned_at: string | null;
+                                /** @description Always `null`: the return was undone. */
+                                return_deactivated_vehicle: boolean | null;
+                                /** @description What the undo did to the car. */
+                                undo_outcome: {
+                                    /** Format: uuid */
+                                    vehicle_id: string;
+                                    /** @description The undo set the car active again (the return had hidden it). `false` when the car was already inactive before the return: it stays inactive until the dealer activates it. */
+                                    vehicle_reactivated: boolean;
+                                    /** @description The return closed portal ads of this car and the undo did NOT publish them again (no Mercado Libre resume, no Chileautos re-list): the dealer publishes again by hand. */
+                                    ads_not_republished: boolean;
+                                    /** @description One neutral Spanish sentence saying what happened, the portal ads and the cancelled visits included. */
+                                    message: string;
+                                };
+                            } & {
+                                [key: string]: unknown;
+                            };
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -185996,6 +190597,8 @@ export interface paths {
                          *           "sale_iva_regime": "exento",
                          *           "notes": null,
                          *           "observaciones": "Se entrega con dos llaves.",
+                         *           "returned_at": null,
+                         *           "return_deactivated_vehicle": null,
                          *           "not_on_lot": false
                          *         },
                          *         "liquidacion": {
@@ -208107,7 +212710,7 @@ export interface paths {
         put?: never;
         /**
          * Create a custom sequence
-         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage` or `tag`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
+         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage`, `tag` or, in clinic workspaces, `origin`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
          *
          *     Creates the sequence from `template` (a key from `GET /sequences/templates`; its suggested steps become the first draft) or from scratch (`blank`), as a DRAFT: `status: draft`, nothing runs until it is published. `name`, `entry` and `goal` override the template’s. It goes to the bottom of the priority list. Every suggested step starts as «Con tu OK» (`approval`). Requires `followups:write`.
          */
@@ -209963,7 +214566,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a custom sequence’s name, entry, goal or agent
-         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage` or `tag`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
+         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage`, `tag` or, in clinic workspaces, `origin`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
          *
          *     Writes `name`, `description`, `entry` and `goal` and `agent_id` (the AI agent that runs it; 400 unless it is an active agent of the workspace, `null` = the workspace’s current agent) into the draft (opening one from the published version when there is none), so who enters a running sequence changes only when it is published. Before the first publish the list shows the new name at once. Built-ins: 404 (edit them through their draft). Requires `followups:write`.
          */
@@ -218085,7 +222688,7 @@ export interface paths {
         };
         /**
          * List the templates for a new sequence
-         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage` or `tag`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
+         * @description A custom sequence is the workspace’s own: who enters (`entry`: an event — `lead_arrived`, `customer_went_quiet`, `stage_changed`, `quoted_not_booked`, `appointment_booked`; `signed_up_not_bought` and `installment_overdue` are accepted but cannot be published yet; or a `list`, enrolled with consent through `POST /sequences/{id}/enrollments/from-list` — with filters on `interest`, `source`, `stage`, `tag` or, in clinic workspaces, `origin`), the `goal` that makes a person leave when met (`reply`, `books_visit`, `books_demo`; `pays` cannot be published yet) and the steps, edited as a draft and run once published (`POST /sequences/{id}/publish`). A person is in ONE sequence at a time among «Si no responde» and the custom ones, and enters the highest-priority one they qualify for; «Al llegar» and «Avisos» stay outside that rule. The engine sends through the same guards as «Si no responde»: contact hours, per-person limits, opt-out, the 24 h WhatsApp window, pauses and «Con tu OK».
          *
          *     The «Nueva secuencia» catalogue: Seguimiento de cotización, Reactivar clientes, Se registró y no pagó, Cobranza de cuotas, Recordatorio de cita and Desde cero, each with its entry, goal and suggested steps (a step whose channel is not available yet is flagged by the draft validation, not hidden). Requires `followups:read`.
          */
@@ -260197,9 +264800,11 @@ export interface paths {
         };
         /**
          * List library files
-         * @description The workspace library, newest first (at most 500; deleted files never appear). Every file carries `sendable` / `unsendable_reason` (`expired`, `consent_required` — it shows a person whose consent is not confirmed) and a short-lived `thumb_url` (15 minutes; images and videos). Filters: `kind` and `tag` (comma-separated, any), `topic_id`, `q` (free text over name, «cuándo usarlo», tags and topic names), `ai_enabled`, `status` (`live` | `expired` | `all`, default all).
+         * @description The workspace library, newest first (at most 500; deleted files never appear). Every file carries `sendable` / `unsendable_reason` (`expired`, `scheduled`, `consent_required` — it shows a person whose consent is not confirmed) and a short-lived `thumb_url` (15 minutes; images and videos). Filters: `kind` and `tag` (comma-separated, any), `topic_id`, `q` (free text over name, «cuándo usarlo», tags and topic names), `ai_enabled`, `status` (`live` | `expired` | `all`, default all).
          *
          *     With `conversation_id` every file also carries `sent_in_conversation`, `suggested` (linked to a topic the conversation’s contact is about) and `channel_ok` (the conversation’s channel can carry it).
+         *
+         *     WINDOW AND STAND-INS. A file is sendable while `starts_at <= now < expires_at` (either may be null: already started / never ends; half-open). `state` is `scheduled` (before the start: nobody can send it, `unsendable_reason: "scheduled"`), `active` or `ended` (`unsendable_reason: "expired"`). With `price_promotion_id` the file follows that price promotion instead: its window is the promotion’s `starts_at` / `ends_at`, read at use time (ending the promotion early ends the file at once) and the file has no window of its own (400 `MEDIA_PROMOTION_OWN_WINDOW` when both are sent). `effective_starts_at` / `effective_ends_at` always show the window in force. With `replaces_asset_id` the file stands in for another one while it is active: the AI agent is offered it in the original’s place (the original leaves its list and `find_media`; `send_media` of the original is refused naming the replacement; a stand-in without topics, models, `when_to_use` or tags of its own is ranked and filtered like the original), and the original reads `replaced_by: {id, name, until}` while the replacement runs. PEOPLE can still send the original by hand from the inbox: the replacement is for the agent. Chains resolve to the last active file; a cycle is 400 `MEDIA_REPLACES_CYCLE`. The send history keeps the id of the file that was actually sent. A file with none of these fields behaves exactly as before.
          */
         get: {
             parameters: {
@@ -260263,6 +264868,13 @@ export interface paths {
                          *         "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *         "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *         "expires_at": null,
+                         *         "starts_at": null,
+                         *         "replaces_asset_id": null,
+                         *         "price_promotion_id": null,
+                         *         "effective_starts_at": null,
+                         *         "effective_ends_at": null,
+                         *         "state": "active",
+                         *         "replaced_by": null,
                          *         "expired": false,
                          *         "sendable": true,
                          *         "unsendable_reason": null,
@@ -260343,7 +264955,7 @@ export interface paths {
         put?: never;
         /**
          * Upload a file to the library
-         * @description Uploads `file` with its details. The kind (image, video, audio, document) is read from the bytes. Accepted files and caps: images JPG/PNG/WebP/HEIC/HEIF/AVIF ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG q92 4:4:4, or PNG when it has transparency, ≤ 5 MB; a light upright JPEG/PNG is kept as it came); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE`, 400 `details.reason: image_unreadable` (a damaged picture), 422 `MEDIA_EMPTY`. `name` defaults to the file name. `shows_person` defaults to true for images and videos in a healthcare workspace; while it is true and the consent is not confirmed nobody can send the file. A file identical to one already in the library is still created and the answer carries `duplicate_of: {id, name}`. 409 `MEDIA_LIBRARY_FULL` past 500 files; 422 for an unknown topic. Audio and video may name their `speaker` («Voz de», ≤ 80 characters; images and PDFs: 400 `MEDIA_SPEAKER_KIND`). An audio with a speaker may be that speaker’s `is_intro` («Presentación»): a short greeting the agent is never offered; the platform sends it once per conversation, right before the first audio of that speaker. 400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`; one live intro per speaker (case-insensitive): a second is 409 `MEDIA_INTRO_EXISTS` with `details.speaker`, `details.intro_id`, `details.intro_name`.
+         * @description Uploads `file` with its details. The kind (image, video, audio, document) is read from the bytes. Accepted files and caps: images JPG/PNG/WebP/HEIC/HEIF/AVIF ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG q92 4:4:4, or PNG when it has transparency, ≤ 5 MB; a light upright JPEG/PNG is kept as it came); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE`, 400 `details.reason: image_unreadable` (a damaged picture), 422 `MEDIA_EMPTY`. `name` defaults to the file name. `shows_person` defaults to true for images and videos in a healthcare workspace; while it is true and the consent is not confirmed nobody can send the file. A file identical to one already in the library is still created and the answer carries `duplicate_of: {id, name}`. 409 `MEDIA_LIBRARY_FULL` past 500 files; 422 for an unknown topic. WINDOW AND STAND-INS. A file is sendable while `starts_at <= now < expires_at` (either may be null: already started / never ends; half-open). `state` is `scheduled` (before the start: nobody can send it, `unsendable_reason: "scheduled"`), `active` or `ended` (`unsendable_reason: "expired"`). With `price_promotion_id` the file follows that price promotion instead: its window is the promotion’s `starts_at` / `ends_at`, read at use time (ending the promotion early ends the file at once) and the file has no window of its own (400 `MEDIA_PROMOTION_OWN_WINDOW` when both are sent). `effective_starts_at` / `effective_ends_at` always show the window in force. With `replaces_asset_id` the file stands in for another one while it is active: the AI agent is offered it in the original’s place (the original leaves its list and `find_media`; `send_media` of the original is refused naming the replacement; a stand-in without topics, models, `when_to_use` or tags of its own is ranked and filtered like the original), and the original reads `replaced_by: {id, name, until}` while the replacement runs. PEOPLE can still send the original by hand from the inbox: the replacement is for the agent. Chains resolve to the last active file; a cycle is 400 `MEDIA_REPLACES_CYCLE`. The send history keeps the id of the file that was actually sent. A file with none of these fields behaves exactly as before. Audio and video may name their `speaker` («Voz de», ≤ 80 characters; images and PDFs: 400 `MEDIA_SPEAKER_KIND`). An audio with a speaker may be that speaker’s `is_intro` («Presentación»): a short greeting the agent is never offered; the platform sends it once per conversation, right before the first audio of that speaker. 400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`; one live intro per speaker (case-insensitive): a second is 409 `MEDIA_INTRO_EXISTS` with `details.speaker`, `details.intro_id`, `details.intro_name`.
          *
          *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
          */
@@ -260389,6 +265001,12 @@ export interface paths {
                         consent_confirmed?: boolean;
                         /** Format: date-time */
                         expires_at?: string | null;
+                        /** Format: date-time */
+                        starts_at?: string | null;
+                        /** Format: uuid */
+                        replaces_asset_id?: string | null;
+                        /** Format: uuid */
+                        price_promotion_id?: string | null;
                         /** @description Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model. */
                         models?: string[];
                         /** @description Audio: what it says. When given, speech-to-text is skipped. */
@@ -260443,6 +265061,12 @@ export interface paths {
                         consent_confirmed?: boolean;
                         /** Format: date-time */
                         expires_at?: string | null;
+                        /** Format: date-time */
+                        starts_at?: string | null;
+                        /** Format: uuid */
+                        replaces_asset_id?: string | null;
+                        /** Format: uuid */
+                        price_promotion_id?: string | null;
                         /** @description Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model. */
                         models?: string[];
                         /** @description Audio: what it says. When given, speech-to-text is skipped. */
@@ -260494,6 +265118,13 @@ export interface paths {
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
+                         *       "starts_at": null,
+                         *       "replaces_asset_id": null,
+                         *       "price_promotion_id": null,
+                         *       "effective_starts_at": null,
+                         *       "effective_ends_at": null,
+                         *       "state": "active",
+                         *       "replaced_by": null,
                          *       "expired": false,
                          *       "sendable": true,
                          *       "unsendable_reason": null,
@@ -260691,6 +265322,8 @@ export interface paths {
         /**
          * Fetch one library file
          * @description The file with its details, topics, send counters and state. 404 for a deleted file or another workspace’s.
+         *
+         *     WINDOW AND STAND-INS. A file is sendable while `starts_at <= now < expires_at` (either may be null: already started / never ends; half-open). `state` is `scheduled` (before the start: nobody can send it, `unsendable_reason: "scheduled"`), `active` or `ended` (`unsendable_reason: "expired"`). With `price_promotion_id` the file follows that price promotion instead: its window is the promotion’s `starts_at` / `ends_at`, read at use time (ending the promotion early ends the file at once) and the file has no window of its own (400 `MEDIA_PROMOTION_OWN_WINDOW` when both are sent). `effective_starts_at` / `effective_ends_at` always show the window in force. With `replaces_asset_id` the file stands in for another one while it is active: the AI agent is offered it in the original’s place (the original leaves its list and `find_media`; `send_media` of the original is refused naming the replacement; a stand-in without topics, models, `when_to_use` or tags of its own is ranked and filtered like the original), and the original reads `replaced_by: {id, name, until}` while the replacement runs. PEOPLE can still send the original by hand from the inbox: the replacement is for the agent. Chains resolve to the last active file; a cycle is 400 `MEDIA_REPLACES_CYCLE`. The send history keeps the id of the file that was actually sent. A file with none of these fields behaves exactly as before.
          */
         get: {
             parameters: {
@@ -260742,6 +265375,13 @@ export interface paths {
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
+                         *       "starts_at": null,
+                         *       "replaces_asset_id": null,
+                         *       "price_promotion_id": null,
+                         *       "effective_starts_at": null,
+                         *       "effective_ends_at": null,
+                         *       "state": "active",
+                         *       "replaced_by": null,
                          *       "expired": false,
                          *       "sendable": true,
                          *       "unsendable_reason": null,
@@ -260902,7 +265542,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a library file
-         * @description Changes the details; the bytes are replaced with `POST /media-assets/{id}/file`. `tags`, `topic_ids` and `models` replace their sets. `caption: null` and `expires_at: null` clear them. `consent_confirmed: true` records the calling member and now as the consent confirmation (a member only; an API key gets 422), `false` clears it. At least one field is required; an unknown topic is 422. `speaker: null` (or empty) clears the speaker and with it `is_intro`. Audio and video may name their `speaker` («Voz de», ≤ 80 characters; images and PDFs: 400 `MEDIA_SPEAKER_KIND`). An audio with a speaker may be that speaker’s `is_intro` («Presentación»): a short greeting the agent is never offered; the platform sends it once per conversation, right before the first audio of that speaker. 400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`; one live intro per speaker (case-insensitive): a second is 409 `MEDIA_INTRO_EXISTS` with `details.speaker`, `details.intro_id`, `details.intro_name`.
+         * @description Changes the details; the bytes are replaced with `POST /media-assets/{id}/file`. `tags`, `topic_ids` and `models` replace their sets. `caption: null`, `expires_at: null`, `starts_at: null`, `replaces_asset_id: null` and `price_promotion_id: null` clear them. WINDOW AND STAND-INS. A file is sendable while `starts_at <= now < expires_at` (either may be null: already started / never ends; half-open). `state` is `scheduled` (before the start: nobody can send it, `unsendable_reason: "scheduled"`), `active` or `ended` (`unsendable_reason: "expired"`). With `price_promotion_id` the file follows that price promotion instead: its window is the promotion’s `starts_at` / `ends_at`, read at use time (ending the promotion early ends the file at once) and the file has no window of its own (400 `MEDIA_PROMOTION_OWN_WINDOW` when both are sent). `effective_starts_at` / `effective_ends_at` always show the window in force. With `replaces_asset_id` the file stands in for another one while it is active: the AI agent is offered it in the original’s place (the original leaves its list and `find_media`; `send_media` of the original is refused naming the replacement; a stand-in without topics, models, `when_to_use` or tags of its own is ranked and filtered like the original), and the original reads `replaced_by: {id, name, until}` while the replacement runs. PEOPLE can still send the original by hand from the inbox: the replacement is for the agent. Chains resolve to the last active file; a cycle is 400 `MEDIA_REPLACES_CYCLE`. The send history keeps the id of the file that was actually sent. A file with none of these fields behaves exactly as before. `consent_confirmed: true` records the calling member and now as the consent confirmation (a member only; an API key gets 422), `false` clears it. At least one field is required; an unknown topic is 422. `speaker: null` (or empty) clears the speaker and with it `is_intro`. Audio and video may name their `speaker` («Voz de», ≤ 80 characters; images and PDFs: 400 `MEDIA_SPEAKER_KIND`). An audio with a speaker may be that speaker’s `is_intro` («Presentación»): a short greeting the agent is never offered; the platform sends it once per conversation, right before the first audio of that speaker. 400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`; one live intro per speaker (case-insensitive): a second is 409 `MEDIA_INTRO_EXISTS` with `details.speaker`, `details.intro_id`, `details.intro_name`.
          */
         patch: {
             parameters: {
@@ -260942,9 +265582,24 @@ export interface paths {
                         consent_confirmed?: boolean;
                         /**
                          * Format: date-time
-                         * @description When the file stops being sendable (ISO 8601). Null = never. An expired file stays in the library, marked `expired`.
+                         * @description When the file stops being sendable (ISO 8601; half-open: sendable while now < expires_at). Null = never. An expired file stays in the library, marked `expired`. Ignored while `price_promotion_id` is set (then send null or omit it).
                          */
                         expires_at?: string | null;
+                        /**
+                         * Format: date-time
+                         * @description When the file starts being sendable (ISO 8601; sendable while starts_at <= now). Null = already started. Until then the file reads `state: "scheduled"` and nobody can send it. Must be before `expires_at`. Not together with `price_promotion_id`.
+                         */
+                        starts_at?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description The library file this one stands in for while it is active (its window: own, or the promotion's). During that time the AI agent is offered this file instead of the original: the original disappears from its list and from `find_media`, and `send_media` of the original is refused naming this one. A stand-in without topics, models, `when_to_use` or tags of its own is ranked and filtered like the original. People can still send the original by hand from the inbox: the replacement is for the agent. Chains (C replaces B replaces A) resolve to the last active file. 422 `MEDIA_UNKNOWN_REPLACED_ASSET` (not in this workspace library), 400 `MEDIA_REPLACES_SELF` / `MEDIA_REPLACES_CYCLE`. Null clears it.
+                         */
+                        replaces_asset_id?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description Follow a price promotion: the file starts and ends with it (its `starts_at` / `ends_at`, read at use time, so ending the promotion early ends the file at once). The file then has no window of its own: sending `starts_at` or `expires_at` too is 400 `MEDIA_PROMOTION_OWN_WINDOW`. 422 `MEDIA_UNKNOWN_PROMOTION`. If the promotion is deleted the link clears and the file has no window. Null clears it.
+                         */
+                        price_promotion_id?: string | null;
                         /** @description «Voz de»: who speaks in this audio or video (e.g. "Dra. Valentina"), ≤ 80 characters, trimmed; empty = nobody in particular. Images and PDFs: 400 `MEDIA_SPEAKER_KIND`. null or empty clears it, and with it `is_intro`. */
                         speaker?: string | null;
                         /** @description «Presentación»: this audio is the speaker’s short greeting ("Hola, soy …"). Never offered to the agent: the platform sends it once per conversation, right before the first audio of that speaker. Audio with a `speaker` only (400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`); one per speaker (409 `MEDIA_INTRO_EXISTS`). */
@@ -260992,6 +265647,13 @@ export interface paths {
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
+                         *       "starts_at": null,
+                         *       "replaces_asset_id": null,
+                         *       "price_promotion_id": null,
+                         *       "effective_starts_at": null,
+                         *       "effective_ends_at": null,
+                         *       "state": "active",
+                         *       "replaced_by": null,
                          *       "expired": false,
                          *       "sendable": true,
                          *       "unsendable_reason": null,
@@ -261173,6 +265835,13 @@ export interface paths {
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
+                         *       "starts_at": null,
+                         *       "replaces_asset_id": null,
+                         *       "price_promotion_id": null,
+                         *       "effective_starts_at": null,
+                         *       "effective_ends_at": null,
+                         *       "state": "active",
+                         *       "replaced_by": null,
                          *       "expired": false,
                          *       "sendable": true,
                          *       "unsendable_reason": null,
@@ -262742,6 +267411,8 @@ export interface paths {
          *
          *     Each row carries `origin` (`native` | `shopify` | `woocommerce`), `external_id`, and `variants[]` — every variant with its own `sku`, `price_clp` (null = the product’s price), `available_quantity`, `available` and a display `label`. A product’s `available_quantity` is the sum of its active variants’ stock when it has variants.
          *
+         *     **Price promotions** (`/price-promotions`). A variant’s `price_clp` is the price IN FORCE NOW: while a price promotion holding it runs, the promotional price; otherwise its stored price. `regular_price_clp` is always the stored price (null = the product’s price applies) and `promotion` is null, or `{ id, name, starts_at, ends_at }` while one runs. With no running promotion `price_clp` equals `regular_price_clp`. To edit a price, read `regular_price_clp`, never `price_clp`, or the promotional price would be saved as the regular one. The product-level `price_clp` and the `min_price` / `max_price` / `sort` filters stay on stored prices.
+         *
          *     Read `available_quantity` is what can be SOLD now: `on_hand_quantity` (the counted units, what a stock sync writes) minus `held_quantity` (units kept 15 minutes for unpaid storefront checkouts, `POST /orders/checkout`).
          *
          *     Two defaults worth stating because they differ. `active` defaults to **true** — inactive products are hidden unless you ask for them. `in_stock` defaults to **false**, so products with `available_quantity: 0` ARE included; pass `in_stock=true` for the sellable-today list. `sort` defaults to `price_asc`.
@@ -263759,6 +268430,8 @@ export interface paths {
                          *         "active": true,
                          *         "created_at": "2026-10-01T14:20:00.000Z",
                          *         "updated_at": "2026-10-01T14:20:00.000Z",
+                         *         "regular_price_clp": null,
+                         *         "promotion": null,
                          *         "available": true,
                          *         "label": "Negro / M"
                          *       }
@@ -263927,6 +268600,8 @@ export interface paths {
          * @description Applies only the fields present. `options` and `attributes` are replaced wholesale (send the full map; `{}` clears it). Setting `available_quantity` updates the product’s rolled-up stock in the same write. A synced product answers 409; a variant of another product answers 404.
          *
          *     `available_quantity` WRITTEN here is the ON-HAND count (the units you have). Units held for unpaid storefront checkouts are separate rows a write never erases: the response (and every read) returns `on_hand_quantity`, `held_quantity` and `available_quantity` = on hand − held.
+         *
+         *     `price_amount` sets the REGULAR price (`regular_price_clp`), during a price promotion too: the promotional price is not touched, and the response’s `price_clp` stays the promotional one until it ends.
          */
         patch: {
             parameters: {
@@ -264012,6 +268687,8 @@ export interface paths {
                          *         "active": true,
                          *         "created_at": "2026-10-01T14:20:00.000Z",
                          *         "updated_at": "2026-10-03T10:05:00.000Z",
+                         *         "regular_price_clp": null,
+                         *         "promotion": null,
                          *         "available": true,
                          *         "label": "Negro / M"
                          *       }
@@ -264474,6 +269151,1244 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-promotions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List price promotions
+         * @description The workspace’s price promotions, newest first, each with its `state`, `variant_count` and the smallest and largest discount (`min_discount_pct`, `max_discount_pct`: integer percent off the regular price in force, that is the variant’s stored price or, when it has none, the product’s; a variant with no regular price is left out of the range; null when nothing can be computed). Items are not included here; read one promotion for them.
+         *
+         *     `state` is derived from the window at the time of the read: `scheduled` (not started), `active` (running) or `ended`. There is no status to set: ending early moves `ends_at` to now.
+         *
+         *     Paginate with `limit` (default 50, max 200) and `offset`; there is no `total`, so ask for `limit + 1` to know whether more exist.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Price promotions, newest first */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "name": "Black Friday",
+                         *           "starts_at": "2026-11-27T03:00:00.000Z",
+                         *           "ends_at": "2026-12-01T03:00:00.000Z",
+                         *           "created_at": "2026-11-22T15:00:00.000Z",
+                         *           "updated_at": "2026-11-22T15:00:00.000Z",
+                         *           "state": "scheduled",
+                         *           "variant_count": 2,
+                         *           "min_discount_pct": 12,
+                         *           "max_discount_pct": 18
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a price promotion
+         * @description A name (1 to 80 characters), a window, and optionally the promotional prices of its variants in the same call (up to 500; add more with `PUT /price-promotions/{id}/items`). It is written in one transaction: if any item is refused, nothing is created.
+         *
+         *     `starts_at` / `ends_at` take an ISO instant WITH its offset (`2026-11-27T00:00:00-03:00`) or a plain date (`2026-11-27`). A plain date is read in the workspace timezone: as a start it is 00:00 of that day; as an end it is 00:00 of the NEXT day, so `ends_at: "2026-11-30"` includes all of the 30th. The window is half-open: the promotion runs while `starts_at <= now < ends_at`. `ends_at` must be after `starts_at` (400).
+         *
+         *     Each item is `{ variant_id, price_amount }`, the promotional price in whole CLP. Only variants of products created in Vitrina (`origin: "native"`) can be in a promotion: a product synced from Shopify or WooCommerce has its prices and checkout in the store and answers 409 (`details.reason: "source_owned"`). A variant id this workspace does not have answers 404 with `details.variant_ids`. A variant with no regular price of its own (`price_clp: null`, the product’s price applies) can still carry a promotional price.
+         *
+         *     **Overlap.** A variant can be in only one promotion at a time: two promotions whose windows overlap may not both hold it. A write that would do that answers **409 `PRICE_PROMOTION_OVERLAP`** and writes nothing; `details.conflicts[]` names each `{ variant_id, variant_title, promotion: { id, name, starts_at, ends_at } }`, and `message` is a Spanish sentence naming the first. Windows that only touch (one ends at 00:00, the next starts at 00:00) do not overlap.
+         *
+         *     While the promotion runs, `GET /products` and `GET /products/{id}` return, for each variant in it, `price_clp` = the promotional price, `regular_price_clp` = the stored price and `promotion: { id, name, starts_at, ends_at }`. The stored variant price is never changed. Answers 201 with the promotion and its items.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Black Friday",
+                     *       "starts_at": "2026-11-27",
+                     *       "ends_at": "2026-11-30",
+                     *       "items": [
+                     *         {
+                     *           "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                     *           "price_amount": 379990
+                     *         },
+                     *         {
+                     *           "variant_id": "7a7a7a7a-0000-4000-8000-000000000032",
+                     *           "price_amount": 369990
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        name: string;
+                        starts_at: string;
+                        ends_at: string;
+                        items?: {
+                            /** Format: uuid */
+                            variant_id: string;
+                            price_amount: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The created promotion with its items */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "name": "Black Friday",
+                         *         "starts_at": "2026-11-27T03:00:00.000Z",
+                         *         "ends_at": "2026-12-01T03:00:00.000Z",
+                         *         "created_at": "2026-11-22T15:00:00.000Z",
+                         *         "updated_at": "2026-11-22T15:00:00.000Z",
+                         *         "state": "scheduled",
+                         *         "items": [
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Medianoche / Batería 100%",
+                         *             "sku": "IP13-128-MN",
+                         *             "regular_price_clp": 429990,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 379990
+                         *           },
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000032",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Blanco estelar / Batería 90%",
+                         *             "sku": "IP13-128-BE",
+                         *             "regular_price_clp": null,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 369990
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-promotions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fetch one price promotion
+         * @description The promotion with its items: for each variant, `product_title`, `variant_label`, `sku`, `regular_price_clp` (the variant’s stored price; null when the product’s price applies), `product_price_clp` and the promotional `price_clp`.
+         *
+         *     `state` is derived from the window at the time of the read: `scheduled` (not started), `active` (running) or `ended`. There is no status to set: ending early moves `ends_at` to now.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The promotion with its items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "name": "Black Friday",
+                         *         "starts_at": "2026-11-27T03:00:00.000Z",
+                         *         "ends_at": "2026-12-01T03:00:00.000Z",
+                         *         "created_at": "2026-11-22T15:00:00.000Z",
+                         *         "updated_at": "2026-11-22T15:00:00.000Z",
+                         *         "state": "scheduled",
+                         *         "items": [
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Medianoche / Batería 100%",
+                         *             "sku": "IP13-128-MN",
+                         *             "regular_price_clp": 429990,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 379990
+                         *           },
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000032",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Blanco estelar / Batería 90%",
+                         *             "sku": "IP13-128-BE",
+                         *             "regular_price_clp": null,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 369990
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a price promotion
+         * @description Deletes the promotion and its items. Its variants read their regular price from then on; nothing else changes. To stop a running promotion but keep its record, use `POST /price-promotions/{id}/end`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a price promotion
+         * @description Changes `name`, `starts_at` and/or `ends_at`; at least one is required. Any promotion can be edited, including a running one: moving `ends_at` extends or shortens it from the next read on.
+         *
+         *     `starts_at` / `ends_at` take an ISO instant WITH its offset (`2026-11-27T00:00:00-03:00`) or a plain date (`2026-11-27`). A plain date is read in the workspace timezone: as a start it is 00:00 of that day; as an end it is 00:00 of the NEXT day, so `ends_at: "2026-11-30"` includes all of the 30th. The window is half-open: the promotion runs while `starts_at <= now < ends_at`. `ends_at` must be after `starts_at` (400).
+         *
+         *     **Overlap.** A variant can be in only one promotion at a time: two promotions whose windows overlap may not both hold it. A write that would do that answers **409 `PRICE_PROMOTION_OVERLAP`** and writes nothing; `details.conflicts[]` names each `{ variant_id, variant_title, promotion: { id, name, starts_at, ends_at } }`, and `message` is a Spanish sentence naming the first. Windows that only touch (one ends at 00:00, the next starts at 00:00) do not overlap. Moving the window is checked against every variant the promotion holds.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "ends_at": "2026-12-02T23:59:00-03:00"
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        starts_at?: string;
+                        ends_at?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The edited promotion with its items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "name": "Black Friday",
+                         *         "starts_at": "2026-11-27T03:00:00.000Z",
+                         *         "ends_at": "2026-12-03T02:59:00.000Z",
+                         *         "created_at": "2026-11-22T15:00:00.000Z",
+                         *         "updated_at": "2026-11-23T10:00:00.000Z",
+                         *         "state": "scheduled",
+                         *         "items": [
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Medianoche / Batería 100%",
+                         *             "sku": "IP13-128-MN",
+                         *             "regular_price_clp": 429990,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 379990
+                         *           },
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000032",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Blanco estelar / Batería 90%",
+                         *             "sku": "IP13-128-BE",
+                         *             "regular_price_clp": null,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 369990
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/price-promotions/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set promotional prices for variants
+         * @description Adds variants to the promotion or changes the promotional price of ones already in it (an upsert by `variant_id`; variants not named here are left as they are). Up to 500 per call, written in one transaction: if any item is refused, none is written. A variant may appear once per call (400 otherwise).
+         *
+         *     Each item is `{ variant_id, price_amount }`, the promotional price in whole CLP. Only variants of products created in Vitrina (`origin: "native"`) can be in a promotion: a product synced from Shopify or WooCommerce has its prices and checkout in the store and answers 409 (`details.reason: "source_owned"`). A variant id this workspace does not have answers 404 with `details.variant_ids`. A variant with no regular price of its own (`price_clp: null`, the product’s price applies) can still carry a promotional price.
+         *
+         *     **Overlap.** A variant can be in only one promotion at a time: two promotions whose windows overlap may not both hold it. A write that would do that answers **409 `PRICE_PROMOTION_OVERLAP`** and writes nothing; `details.conflicts[]` names each `{ variant_id, variant_title, promotion: { id, name, starts_at, ends_at } }`, and `message` is a Spanish sentence naming the first. Windows that only touch (one ends at 00:00, the next starts at 00:00) do not overlap.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                     *           "price_amount": 374990
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            variant_id: string;
+                            price_amount: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The promotion with all its items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "name": "Black Friday",
+                         *         "starts_at": "2026-11-27T03:00:00.000Z",
+                         *         "ends_at": "2026-12-01T03:00:00.000Z",
+                         *         "created_at": "2026-11-22T15:00:00.000Z",
+                         *         "updated_at": "2026-11-22T15:00:00.000Z",
+                         *         "state": "scheduled",
+                         *         "items": [
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Medianoche / Batería 100%",
+                         *             "sku": "IP13-128-MN",
+                         *             "regular_price_clp": 429990,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 374990
+                         *           },
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000032",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Blanco estelar / Batería 90%",
+                         *             "sku": "IP13-128-BE",
+                         *             "regular_price_clp": null,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 369990
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-promotions/{id}/items/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import a price list into a price promotion
+         * @description Takes the rows of a price list as JSON (parsing a pasted or uploaded sheet into rows is the caller’s job), matches each to catalog variants and, unless `dry_run` is true, writes every matched price in ONE transaction. **`dry_run` defaults to true**: send `dry_run: false` to write. A dry run writes nothing and returns the same report, so preview first, then confirm with the same body.
+         *
+         *     A row is `{ product, variant, price_amount }` or one line `{ title, price_amount }` (for example `iPhone 16 Pro Max 256 GB Seminuevo`), up to 500 rows per call. Matching uses the titles the catalog shows (the variant title, the product title + variant title, the product title + its option values) after folding case, accents and repeated spaces; nothing fuzzier. Only active variants are considered.
+         *
+         *     - **matched**: exactly one native variant has that name. When the row names the product plus a variant-title PREFIX and what the titles add after it is the value of one option the row leaves out (colour), the row prices that whole set: one entry with all its `variant_ids`.
+         *     - **ambiguous**: several variants fit (`candidates`, at most 20, with `candidate_count`), or two rows price the same variant differently. Never guessed, never written.
+         *     - **unmatched**: nothing fits (`reason: "no_match"`), or the variant belongs to a synced store, which owns its prices (`reason: "source_owned"`).
+         *
+         *     Every entry carries `row`, the 1-based position in `rows`. Unmatched and ambiguous rows never block the matched ones. `conflicts` lists matched variants another promotion already holds in an overlapping window; with `dry_run: false` such an overlap fails the whole write with **409 `PRICE_PROMOTION_OVERLAP`** and nothing is written. `written` is the number of variants written (0 on a dry run). Prices are upserted: variants already in the promotion and not in the list are left as they are.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "dry_run": true,
+                     *       "rows": [
+                     *         {
+                     *           "title": "iPhone 16 Pro Max 256 GB Seminuevo",
+                     *           "price_amount": 800000
+                     *         },
+                     *         {
+                     *           "product": "iPhone 13",
+                     *           "variant": "128 GB Seminuevo",
+                     *           "price_amount": 280000
+                     *         },
+                     *         {
+                     *           "title": "iPhone 13 128 GB",
+                     *           "price_amount": 270000
+                     *         },
+                     *         {
+                     *           "title": "iPhone 99",
+                     *           "price_amount": 1000000
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        rows: {
+                            product?: string;
+                            variant?: string;
+                            title?: string;
+                            price_amount: number;
+                        }[];
+                        /** @default true */
+                        dry_run?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The match report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dry_run": true,
+                         *         "written": 0,
+                         *         "matched": [
+                         *           {
+                         *             "row": 1,
+                         *             "input": {
+                         *               "title": "iPhone 16 Pro Max 256 GB Seminuevo"
+                         *             },
+                         *             "price_amount": 800000,
+                         *             "variant_ids": [
+                         *               "7a7a7a7a-0000-4000-8000-000000000031",
+                         *               "7a7a7a7a-0000-4000-8000-000000000032"
+                         *             ],
+                         *             "variants": [
+                         *               {
+                         *                 "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *                 "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *                 "product_title": "iPhone 16 Pro Max",
+                         *                 "variant_label": "iPhone 16 Pro Max 256 GB Seminuevo Titanio negro"
+                         *               },
+                         *               {
+                         *                 "variant_id": "7a7a7a7a-0000-4000-8000-000000000032",
+                         *                 "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *                 "product_title": "iPhone 16 Pro Max",
+                         *                 "variant_label": "iPhone 16 Pro Max 256 GB Seminuevo Titanio natural"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "ambiguous": [
+                         *           {
+                         *             "row": 3,
+                         *             "input": {
+                         *               "title": "iPhone 13 128 GB"
+                         *             },
+                         *             "price_amount": 270000,
+                         *             "reason": "several_variants",
+                         *             "candidates": [
+                         *               {
+                         *                 "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *                 "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *                 "product_title": "iPhone 13",
+                         *                 "variant_label": "iPhone 13 128 GB Open box"
+                         *               }
+                         *             ],
+                         *             "candidate_count": 2
+                         *           }
+                         *         ],
+                         *         "unmatched": [
+                         *           {
+                         *             "row": 4,
+                         *             "input": {
+                         *               "title": "iPhone 99"
+                         *             },
+                         *             "price_amount": 1000000,
+                         *             "reason": "no_match"
+                         *           }
+                         *         ],
+                         *         "conflicts": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-promotions/{id}/items/{variantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Take a variant out of a price promotion
+         * @description The variant reads its regular price from then on. 404 when the variant is not in this promotion.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    variantId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-promotions/{id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End a price promotion now
+         * @description Sets `ends_at` to now, so every variant in it reads its regular price from this instant; the promotion is kept, with `state: "ended"`. Only a running promotion can be ended: a scheduled or an already ended one answers 409 with `details.reason: "price_promotion_not_active"` and `details.state`. Takes no body.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The ended promotion with its items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "name": "Black Friday",
+                         *         "starts_at": "2026-11-27T03:00:00.000Z",
+                         *         "ends_at": "2026-11-29T18:42:10.000Z",
+                         *         "created_at": "2026-11-22T15:00:00.000Z",
+                         *         "updated_at": "2026-11-29T18:42:10.000Z",
+                         *         "state": "ended",
+                         *         "items": [
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Medianoche / Batería 100%",
+                         *             "sku": "IP13-128-MN",
+                         *             "regular_price_clp": 429990,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 379990
+                         *           },
+                         *           {
+                         *             "variant_id": "7a7a7a7a-0000-4000-8000-000000000032",
+                         *             "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *             "product_title": "iPhone 13 128 GB",
+                         *             "variant_label": "Blanco estelar / Batería 90%",
+                         *             "sku": "IP13-128-BE",
+                         *             "regular_price_clp": null,
+                         *             "product_price_clp": 449990,
+                         *             "price_clp": 369990
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -292210,7 +298125,9 @@ export interface paths {
                          *                 }
                          *               ],
                          *               "quantity": 1,
-                         *               "unit_price_clp": 459990
+                         *               "unit_price_clp": 459990,
+                         *               "regular_unit_price_clp": null,
+                         *               "price_promotion_name": null
                          *             }
                          *           ],
                          *           "delivery_method": "pickup",
@@ -292273,7 +298190,9 @@ export interface paths {
                          *                 }
                          *               ],
                          *               "quantity": 1,
-                         *               "unit_price_clp": 459990
+                         *               "unit_price_clp": 459990,
+                         *               "regular_unit_price_clp": null,
+                         *               "price_promotion_name": null
                          *             }
                          *           ],
                          *           "delivery_method": "pickup",
@@ -292531,7 +298450,9 @@ export interface paths {
                          *               }
                          *             ],
                          *             "quantity": 1,
-                         *             "unit_price_clp": 459990
+                         *             "unit_price_clp": 459990,
+                         *             "regular_unit_price_clp": null,
+                         *             "price_promotion_name": null
                          *           }
                          *         ],
                          *         "delivery_method": "pickup",
@@ -292710,6 +298631,9 @@ export interface paths {
                          *               ],
                          *               "sku": "POL-M-NEG",
                          *               "unit_price_clp": 9990,
+                         *               "regular_unit_price_clp": 12990,
+                         *               "price_promotion_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *               "price_promotion_name": "Cyber Monday",
                          *               "quantity": 2,
                          *               "line_total_clp": 19980,
                          *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
@@ -292733,6 +298657,9 @@ export interface paths {
                          *               ],
                          *               "sku": "POL-L-BLA",
                          *               "unit_price_clp": 20000,
+                         *               "regular_unit_price_clp": null,
+                         *               "price_promotion_id": null,
+                         *               "price_promotion_name": null,
                          *               "quantity": 1,
                          *               "line_total_clp": 20000,
                          *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
@@ -292970,6 +298897,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-M-NEG",
                          *             "unit_price_clp": 9990,
+                         *             "regular_unit_price_clp": 12990,
+                         *             "price_promotion_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *             "price_promotion_name": "Cyber Monday",
                          *             "quantity": 2,
                          *             "line_total_clp": 19980,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
@@ -292993,6 +298923,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-L-BLA",
                          *             "unit_price_clp": 20000,
+                         *             "regular_unit_price_clp": null,
+                         *             "price_promotion_id": null,
+                         *             "price_promotion_name": null,
                          *             "quantity": 1,
                          *             "line_total_clp": 20000,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
@@ -293157,6 +299090,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-M-NEG",
                          *             "unit_price_clp": 9990,
+                         *             "regular_unit_price_clp": 12990,
+                         *             "price_promotion_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *             "price_promotion_name": "Cyber Monday",
                          *             "quantity": 2,
                          *             "line_total_clp": 19980,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
@@ -293180,6 +299116,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-L-BLA",
                          *             "unit_price_clp": 20000,
+                         *             "regular_unit_price_clp": null,
+                         *             "price_promotion_id": null,
+                         *             "price_promotion_name": null,
                          *             "quantity": 1,
                          *             "line_total_clp": 20000,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
@@ -293363,6 +299302,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-M-NEG",
                          *             "unit_price_clp": 9990,
+                         *             "regular_unit_price_clp": 12990,
+                         *             "price_promotion_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *             "price_promotion_name": "Cyber Monday",
                          *             "quantity": 2,
                          *             "line_total_clp": 19980,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
@@ -293386,6 +299328,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-L-BLA",
                          *             "unit_price_clp": 20000,
+                         *             "regular_unit_price_clp": null,
+                         *             "price_promotion_id": null,
+                         *             "price_promotion_name": null,
                          *             "quantity": 1,
                          *             "line_total_clp": 20000,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
@@ -293694,6 +299639,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-M-NEG",
                          *             "unit_price_clp": 9990,
+                         *             "regular_unit_price_clp": 12990,
+                         *             "price_promotion_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *             "price_promotion_name": "Cyber Monday",
                          *             "quantity": 2,
                          *             "line_total_clp": 19980,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
@@ -293717,6 +299665,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-L-BLA",
                          *             "unit_price_clp": 20000,
+                         *             "regular_unit_price_clp": null,
+                         *             "price_promotion_id": null,
+                         *             "price_promotion_name": null,
                          *             "quantity": 1,
                          *             "line_total_clp": 20000,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
@@ -293898,6 +299849,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-M-NEG",
                          *             "unit_price_clp": 9990,
+                         *             "regular_unit_price_clp": 12990,
+                         *             "price_promotion_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *             "price_promotion_name": "Cyber Monday",
                          *             "quantity": 2,
                          *             "line_total_clp": 19980,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
@@ -293921,6 +299875,9 @@ export interface paths {
                          *             ],
                          *             "sku": "POL-L-BLA",
                          *             "unit_price_clp": 20000,
+                         *             "regular_unit_price_clp": null,
+                         *             "price_promotion_id": null,
+                         *             "price_promotion_name": null,
                          *             "quantity": 1,
                          *             "line_total_clp": 20000,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
@@ -294106,6 +300063,9 @@ export interface paths {
                          *               ],
                          *               "sku": "POL-M-NEG",
                          *               "unit_price_clp": 9990,
+                         *               "regular_unit_price_clp": 12990,
+                         *               "price_promotion_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *               "price_promotion_name": "Cyber Monday",
                          *               "quantity": 2,
                          *               "line_total_clp": 19980,
                          *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
@@ -294129,6 +300089,9 @@ export interface paths {
                          *               ],
                          *               "sku": "POL-L-BLA",
                          *               "unit_price_clp": 20000,
+                         *               "regular_unit_price_clp": null,
+                         *               "price_promotion_id": null,
+                         *               "price_promotion_name": null,
                          *               "quantity": 1,
                          *               "line_total_clp": 20000,
                          *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
@@ -297222,7 +303185,7 @@ export interface paths {
         put?: never;
         /**
          * Attach or replace the comprobante of a pending «Ya pagué»
-         * @description Adds the proof of the transfer to the cobro’s pending «Ya pagué por transferencia» claim, or replaces the one already there (the old file is deleted). A PDF, JPG or PNG of at most 10 MB; the type is read from the bytes, never from the request (415 `comprobante_type`; 413 `comprobante_too_large`; 400 `comprobante_empty` / `comprobante_missing`). It is a claim, not proof: it changes nothing on the cobro, its collection or its automatic charge; the Vitrina team checks the transfer. 409 `no_pending_claim` when the cobro has no pending claim (claim first, or attach the file to the claim itself); 409 `comprobante_frozen` when the claim’s file already went with a recorded payment; 404 for a cobro of another workspace. Requires `billing:write` (owners).
+         * @description Adds the proof of the transfer to the cobro’s pending «Ya pagué por transferencia» claim, or replaces the one already there (the old file is deleted). A PDF, JPG or PNG of at most 10 MB; the type is read from the bytes, never from the request (415 `comprobante_type`; 413 `comprobante_too_large`; 400 `comprobante_empty` / `comprobante_missing`). It is a claim, not proof: it changes nothing on the cobro, its collection or its automatic charge; the Vitrina team checks the transfer. 409 `no_pending_claim` when the cobro has no pending claim (claim first, or attach the file to the claim itself); 409 `comprobante_frozen` when the claim’s file already went with a recorded payment; 404 for a cobro of another workspace. Requires `billing:write` (owners and admins).
          *
          *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
          */
@@ -301425,9 +307388,11 @@ export interface paths {
          *
          *     `by_tenencia` (Tenencia, ADR 0025) splits the lot four ways: `propio`, `consignacion_en_local`, `consignacion_virtual` and `consignacion_sin_contrato` (consigned on the vehicle row with NO contract in `estado=activo`). The four PARTITION the lot — they sum to `total` — and each equals the length of the list its chip opens: `GET /vehicles?active=false&tenencia=…[&consignacion_modalidad=…]`, the same predicate builder serving both. Like `by_location` and `total`, they count the WHOLE lot rather than active stock only, which is what the Stock screen shows (it sends `active=false`).
          *
-         *     `propio_sin_clasificar` (Phase 2, tenencia_source, 20270903000000) is a SUB-COUNT of `propio`, NOT a fifth bucket — the four above still sum to `total`. It is the cars nobody has ever classified (`tenencia_source=default`), provably coextensive with "sin clasificar" (a consignación can never be `default`). Measured on production 2026-08-31: 903 of 967 vehicles carried `propio` with nobody having said so — that is what this number answers, rather than leaving `propio` an unresolved warning. Opens with `GET /vehicles?active=false&tenencia=propio&tenencia_source=default`.
+         *     `propio_sin_clasificar` is a SUB-COUNT of `propio` (the own cars nobody declared, `tenencia_source=default`), NOT a fifth bucket: the four above still sum to `total`. Kept for the clients that read it. Since app#7891 a car with no consignment contract is the dealership's own with nothing to declare, so this is not a pending task and a dealer-facing screen does not show it; `propio` already counts these cars.
          *
          *     `sin_costo` is always 0 since ADR 0162 (app#7720): a car in stock without Costo de compra is not flagged until it is sold. The list `GET /vehicles?view=sin_costo` still works as a filter; only its count is gone. Kept for the clients that read it, and still ABSENT for a caller without `dealership_economics:read`.
+         *
+         *     `by_tenencia.not_dealership_owned` (app#7892) is another SUB-COUNT of `propio`, not a bucket: the cars marked «No es de la automotora» (shown for someone else, no consignment contract yet; their tenencia stays `propio`). Opens with `GET /vehicles?active=false&not_dealership_owned=true`.
          *
          *     `mandato_sin_firmar` (ADR 0114 §5) counts the cars whose consignación (activa, or vendida) has an emitted mandato and no signed copy filed in the expediente. Opens with `GET /vehicles?view=mandato_sin_firmar`, the same predicate.
          *
@@ -301487,7 +307452,8 @@ export interface paths {
                          *           "consignacion_en_local": 0,
                          *           "consignacion_virtual": 0,
                          *           "consignacion_sin_contrato": 0,
-                         *           "propio_sin_clasificar": 7
+                         *           "propio_sin_clasificar": 7,
+                         *           "not_dealership_owned": 0
                          *         }
                          *       }
                          *     }
@@ -304563,7 +310529,7 @@ export interface paths {
                             items?: {
                                 id?: string;
                                 /** @enum {string} */
-                                field: "conversation.channel" | "conversation.source" | "conversation.status" | "conversation.handler" | "conversation.assignee" | "conversation.team" | "conversation.tag" | "message.body" | "contact.country" | "contact.language" | "contact.lifecycle_stage" | "contact.first_seen_days" | "hours.is_business_hours" | "flow.key" | "flow.answers" | "flow.booking_status";
+                                field: "conversation.channel" | "conversation.source" | "conversation.status" | "conversation.handler" | "conversation.assignee" | "conversation.team" | "conversation.tag" | "message.body" | "contact.country" | "contact.language" | "contact.lifecycle_stage" | "contact.first_seen_days" | "contact.origin" | "hours.is_business_hours" | "flow.key" | "flow.answers" | "flow.booking_status";
                                 op: string;
                                 value?: unknown;
                             }[];
@@ -304856,7 +310822,7 @@ export interface paths {
                             items?: {
                                 id?: string;
                                 /** @enum {string} */
-                                field: "conversation.channel" | "conversation.source" | "conversation.status" | "conversation.handler" | "conversation.assignee" | "conversation.team" | "conversation.tag" | "message.body" | "contact.country" | "contact.language" | "contact.lifecycle_stage" | "contact.first_seen_days" | "hours.is_business_hours" | "flow.key" | "flow.answers" | "flow.booking_status";
+                                field: "conversation.channel" | "conversation.source" | "conversation.status" | "conversation.handler" | "conversation.assignee" | "conversation.team" | "conversation.tag" | "message.body" | "contact.country" | "contact.language" | "contact.lifecycle_stage" | "contact.first_seen_days" | "contact.origin" | "hours.is_business_hours" | "flow.key" | "flow.answers" | "flow.booking_status";
                                 op: string;
                                 value?: unknown;
                             }[];
@@ -323580,6 +329546,12 @@ export interface components {
                     xml_path: string;
                 } | null;
             };
+            /** @description #7897: what was given back on this cobro (refunds to the card, transfers back, credits); null when nothing. `refunded` once it reaches the total. A cobro a full card refund voided still shows (status `void`) with this field. */
+            refund?: {
+                /** @enum {string} */
+                state: "partially_refunded" | "refunded";
+                refunded_clp: number;
+            } | null;
         };
         BillingHistoryPage: {
             /**
@@ -323799,6 +329771,22 @@ export interface components {
                 code: string;
                 name: string;
             }[];
+            /** @description Vitrina Finanzas asked together with Vitrina Clínica on the newest enrolment that did (`also_finanzas`): `pending` until the server ran the activation after the method turned active, then `activated` or `failed`. Null when nothing is in flight or recorded: no enrolment asked for it, or the enrolment ended failed or revoked before the method turned active. */
+            finanzas_activation: {
+                /** @enum {string} */
+                state: "pending" | "activated" | "failed";
+                /** @description What it ended with: the activation status (`active`, `awaiting_payment`, `already_active`) or a stable failure reason code (`clinic_not_activated`, `stale_flag`, `interrupted`, `suspended`, an activation status that is not in force such as `needs_enrollment`, a refusal reason, or `activation_error`). Never an exception message. Null while `pending`. An active Finanzas entitlement always reads `activated`. */
+                result: string | null;
+            } | null;
+            /** @description How the plan the newest enrolment asked to activate (`activate_plan`) ended: `pending` until the method turned active and the server ran it, then `activated` or `failed` with a reason code (the method can be active while the plan is not: show a failure with a retry). Settled from the entitlement: an active plan reads `activated`; one claimed more than 10 minutes ago and still pending reads `failed` / `interrupted`. Null when nothing is in flight or recorded. */
+            plan_activation: {
+                /** @enum {string} */
+                plan: "clinic_plan" | "finanzas";
+                /** @enum {string} */
+                state: "pending" | "activated" | "failed";
+                /** @description The activation status (`active`, `awaiting_payment`, `already_active`) or a stable failure reason code (`needs_quote`, `needs_enrollment`, `stale_flag`, `interrupted`, `suspended`, a refusal reason such as `no_subscription`, or `activation_error`). Never an exception message. Null while `pending`. */
+                result: string | null;
+            } | null;
         };
         ClinicProfessionalVitrinaAccess: {
             /**
@@ -324006,7 +329994,7 @@ export interface components {
         };
         WebhookEventDoc: {
             /** @enum {string} */
-            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
+            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.return_undone" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
             /** @description The schema version of this event type — every delivery carries it as `version`. Bumped only on a breaking change to `data`. */
             version: number;
             /** @description What the event is about — the `resource.type` of every delivery (`lead`, `vehicle`, `contact`, …). */
@@ -324073,7 +330061,7 @@ export interface components {
         CreateWebhookBody: {
             /** Format: uri */
             url: string;
-            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.return_undone" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
             description?: string | null;
             /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
             include_data?: boolean;
@@ -324113,6 +330101,28 @@ export interface components {
             /** @enum {string} */
             status: "queued";
         };
+        /** @description Only when this write took the car out of stock (sold, or `active: false`): its future visits, who was told and who to call. Absent when the write took nothing out of stock; `null` when the summary could not be read (the visits are still cancelled). */
+        CancelledVisits: {
+            count: number;
+            told: {
+                /** Format: uuid */
+                appointment_id: string;
+                starts_at: string;
+                name: string | null;
+                channel: string;
+            }[];
+            not_told: {
+                /** Format: uuid */
+                appointment_id: string;
+                starts_at: string;
+                name: string | null;
+                phone: string | null;
+                /** @enum {string} */
+                reason: "no_conversation" | "channel_unreachable" | "window_closed";
+            }[];
+            hidden_count: number;
+            message: string | null;
+        } | null;
         LeadActivity: {
             id: number;
             /** Format: uuid */
@@ -324205,6 +330215,8 @@ export interface components {
              * @description `mercadopago`: «Pagar ahora» — an unpaid cobro of this workspace to collect from the new card right away. The card’s subscription then starts its cycle within about an hour (12:00 Santiago at the earliest) and is armed with that cobro, instead of waiting for the cobro’s scheduled day.
              */
             pay_invoice_id?: string;
+            /** @description Only with `activate_plan: "clinic_plan"` (otherwise a validation error): Vitrina Finanzas is activated too, monthly, right after Vitrina Clínica, by the server (a closed browser does not lose it). Runs once per method with the same 24 hour limit as `activate_plan`; a Finanzas failure never undoes Clínica. Read the outcome in `finanzas_activation` of `GET /billing/payment-methods` and the Finanzas row of `GET /entitlements`. */
+            also_finanzas?: boolean;
             /**
              * @description The plan the owner asked to activate: `clinic_plan` (Vitrina Clínica, clinics) or `finanzas` (Vitrina Finanzas). The backend activates it, monthly, the moment this payment method becomes active (a Fintoc webhook can take minutes), exactly as the plan's own activate button would: the advance invoice is charged at issue and the plan opens only once it is paid. It always activates the MONTHLY plan (an annual plan is bought from its own screen and needs no card). It runs once per method, within 24 hours of the request; a newer enrolment or an abandoned checkout activates nothing. An enrolment that fails activates nothing. It never creates or enables an agent.
              * @enum {string}
@@ -324252,6 +330264,7 @@ export interface components {
             /** @enum {string} */
             tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
             approval?: components["schemas"]["SaleNoteApproveOnIssue"];
+            cancelled_visits?: components["schemas"]["CancelledVisits"];
         } & {
             [key: string]: unknown;
         };
@@ -324578,6 +330591,7 @@ export interface components {
                 [key: string]: unknown;
             }[];
             approval?: components["schemas"]["SaleNoteApproveOnIssue"];
+            cancelled_visits?: components["schemas"]["CancelledVisits"];
         } & {
             [key: string]: unknown;
         };
@@ -327058,6 +333072,11 @@ export interface components {
                  */
                 period?: string;
             }[];
+            /**
+             * Format: uuid
+             * @description A movement classified to a Retiros account names the owner who took it; one classified to «Capital pagado», the owner who contributed (#8103). Needs `finanzas_admin:write` too. Both writes are one transaction: a 422 `FINANZAS_OWNER_INVALID` (`owner_not_applicable`, `owner_not_in_force`, `owner_not_found`) changes nothing.
+             */
+            owner_id?: string;
         };
         FinanzasItemRef: {
             type: components["schemas"]["FinanzasItemType"];
@@ -328712,6 +334731,671 @@ export interface components {
                 } | null;
             }[];
         };
+        FinanzasCashMovement: {
+            id: string;
+            /** @description A day, `YYYY-MM-DD`. */
+            date: string;
+            /** @enum {string} */
+            direction: "inbound" | "outbound";
+            /** @description The whole movement; the line may be a part of it. */
+            amount_clp: number;
+            counterparty_name: string | null;
+            contraparte_id: string | null;
+        } | null;
+        FinanzasCashLine: {
+            /** @description `<payment_id>:<account_id | unclassified>`; a classified movement `<movement_id>:<account_id>`; a processor fee `<movement_id>:fee`. Stable across reads. */
+            line_key: string;
+            /**
+             * @description `document`: a payment on a document; `clinic_payment`: a clinic's patient payment, or a third party's whose money arrived; `movement`: a bank movement classified straight to an account, with no document (salaries, Previred, bank fees, rent paid by transfer, taxes); `processor_fee`: what a payment processor kept on a payout, paid that day.
+             * @enum {string}
+             */
+            kind: "document" | "clinic_payment" | "movement" | "processor_fee";
+            /** @enum {string} */
+            side: "collection" | "payment";
+            /**
+             * @description `current` = issued in the year asked (F22 1400 / 1409…); `earlier` = issued in an earlier year (1817 / 1818…); `later` = issued after the year (paid in advance).
+             * @enum {string}
+             */
+            document_year: "current" | "earlier" | "later";
+            payment: {
+                id: string;
+                /**
+                 * @description `bank_movement`: dated by the linked movement; `manual`: a date an owner gave an undated document or clinic payment record; `clinic_mirror_payment` / `clinic_mirror_refund`: a clinic payment (refund) mirrored from its clinic system, on its own date; `customer_payment`: a payment in Vitrina's caja, on its own date; `classified_movement`: a movement classified to an account with no document (`id` = the movement); `processor_fee`: the fee a processor kept on that payout (`id` = the movement).
+                 * @enum {string}
+                 */
+                source: "bank_movement" | "manual" | "clinic_mirror_payment" | "clinic_mirror_refund" | "customer_payment" | "classified_movement" | "processor_fee";
+                bank_movement_id: string | null;
+                /** @description A day, `YYYY-MM-DD`. */
+                date: string;
+                amount_clp: number | null;
+                rounding_clp: number;
+                /** @enum {string|null} */
+                method_kind: "cash" | "card" | "transfer" | "other" | null;
+                method_label: string | null;
+                payer_type: string | null;
+                /** @description A third party's clinic payment whose money arrived (a `payment` link from the movement, or a day an owner gave it): the payment record it settles and the day the clinic recorded it. */
+                payment_record: {
+                    id: string;
+                    /** @enum {string} */
+                    source: "clinic_mirror_payment";
+                    /** @description A day, `YYYY-MM-DD`. */
+                    date: string;
+                } | null;
+            };
+            document: {
+                id: string;
+                /** @enum {string} */
+                kind: "purchase" | "sale" | "honorario" | "manual_expense";
+                source: string;
+                dte_type: number | null;
+                dte_type_label: string | null;
+                folio: string | null;
+                /** @description A day, `YYYY-MM-DD`. */
+                issue_date: string;
+                counterparty_name: string | null;
+                contraparte_id: string | null;
+                is_credit_note: boolean;
+                adjusts_document_id: string | null;
+                total_clp: number;
+                /** @description Σ totals of the credit notes (DTE 60, 61, 112) that adjust it; the shares are taken after them. */
+                credit_notes_clp: number;
+                retention_clp: number;
+            } | null;
+            movement: components["schemas"]["FinanzasCashMovement"];
+            document_ids: string[];
+            /**
+             * @description Where the VAT split comes from: the linked `document`; the `boletas` a clinic payment is tied to; `month_boleta_mix` (no boleta named: the sociedad's boletas of that month, afecto vs exento); `none` (no document: a movement or a fee counts in full; a clinic payment with no boleta that month has base = amount and `no_vat_breakdown`).
+             * @enum {string}
+             */
+            attribution: "document" | "boletas" | "month_boleta_mix" | "none";
+            /** @description The account this share is classified to; null = the part not classified. */
+            account: {
+                id: string;
+                name: string;
+                kind: string;
+                /** @description «No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros). */
+                no_document: boolean;
+            } | null;
+            /** @description The document has only a total (e.g. a gasto created from a movement): base = gross, VAT unknown. */
+            no_vat_breakdown: boolean;
+            /** @description «Egreso sin documento», the accrual Resultado's rule: a movement classified to an account not marked «No lleva documento», or a gasto with no file attached on such an account. */
+            undocumented: boolean;
+            /**
+             * @description Set on the lines of `non_result` only.
+             * @enum {string|null}
+             */
+            non_result_kind: "withdrawal" | "loan" | "fixed_asset" | "capital" | "own_funds" | "other" | null;
+            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+            settled_clp: number;
+            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+            gross_clp: number;
+            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+            base_clp: number;
+            /** @description Its share of the document's neto. */
+            net_clp: number;
+            /** @description Its share of the document's exento. */
+            exempt_clp: number;
+            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+            vat_excluded_clp: number;
+            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+            retention_clp: number;
+        };
+        FinanzasCashUndated: {
+            /** @enum {string} */
+            side: "collection" | "payment";
+            /**
+             * @description `current` = issued in the year asked (F22 1400 / 1409…); `earlier` = issued in an earlier year (1817 / 1818…); `later` = issued after the year (paid in advance).
+             * @enum {string}
+             */
+            document_year: "current" | "earlier" | "later";
+            document: {
+                id: string;
+                /** @enum {string} */
+                kind: "purchase" | "sale" | "honorario" | "manual_expense";
+                source: string;
+                dte_type: number | null;
+                dte_type_label: string | null;
+                folio: string | null;
+                /** @description A day, `YYYY-MM-DD`. */
+                issue_date: string;
+                counterparty_name: string | null;
+                contraparte_id: string | null;
+                is_credit_note: boolean;
+                adjusts_document_id: string | null;
+                total_clp: number;
+                /** @description Σ totals of the credit notes (DTE 60, 61, 112) that adjust it; the shares are taken after them. */
+                credit_notes_clp: number;
+                retention_clp: number;
+            } | null;
+            document_ids: string[];
+            payment: {
+                id: string;
+                /**
+                 * @description `bank_movement`: dated by the linked movement; `manual`: a date an owner gave an undated document or clinic payment record; `clinic_mirror_payment` / `clinic_mirror_refund`: a clinic payment (refund) mirrored from its clinic system, on its own date; `customer_payment`: a payment in Vitrina's caja, on its own date; `classified_movement`: a movement classified to an account with no document (`id` = the movement); `processor_fee`: the fee a processor kept on that payout (`id` = the movement).
+                 * @enum {string}
+                 */
+                source: "bank_movement" | "manual" | "clinic_mirror_payment" | "clinic_mirror_refund" | "customer_payment" | "classified_movement" | "processor_fee";
+                bank_movement_id: string | null;
+                /** @description A day, `YYYY-MM-DD`. */
+                date: string;
+                amount_clp: number | null;
+                rounding_clp: number;
+                /** @enum {string|null} */
+                method_kind: "cash" | "card" | "transfer" | "other" | null;
+                method_label: string | null;
+                payer_type: string | null;
+                /** @description A third party's clinic payment whose money arrived (a `payment` link from the movement, or a day an owner gave it): the payment record it settles and the day the clinic recorded it. */
+                payment_record: {
+                    id: string;
+                    /** @enum {string} */
+                    source: "clinic_mirror_payment";
+                    /** @description A day, `YYYY-MM-DD`. */
+                    date: string;
+                } | null;
+            } | null;
+            /**
+             * @description Where the VAT split comes from: the linked `document`; the `boletas` a clinic payment is tied to; `month_boleta_mix` (no boleta named: the sociedad's boletas of that month, afecto vs exento); `none` (no document: a movement or a fee counts in full; a clinic payment with no boleta that month has base = amount and `no_vat_breakdown`).
+             * @enum {string}
+             */
+            attribution: "document" | "boletas" | "month_boleta_mix" | "none";
+            /** @enum {string} */
+            reason: "paid_before_vitrina" | "marked_paid_by_person" | "settled_without_movement" | "third_party_payer" | "unknown_payment_method";
+            settled_at: string | null;
+            /** @description A day, `YYYY-MM-DD`. */
+            paid_no_later_than: string | null;
+            no_vat_breakdown: boolean;
+            accounts: {
+                id: string;
+                name: string;
+                kind: string;
+                /** @description «No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros). */
+                no_document: boolean;
+            }[];
+            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+            settled_clp: number;
+            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+            gross_clp: number;
+            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+            base_clp: number;
+            /** @description Its share of the document's neto. */
+            net_clp: number;
+            /** @description Its share of the document's exento. */
+            exempt_clp: number;
+            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+            vat_excluded_clp: number;
+            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+            retention_clp: number;
+        };
+        FinanzasCashBasis: {
+            year: number;
+            /** @description A day, `YYYY-MM-DD`. */
+            from: string;
+            /** @description A day, `YYYY-MM-DD`. */
+            to: string;
+            /** @enum {string} */
+            currency: "CLP";
+            sociedad: {
+                connection_id: string;
+                rut: string;
+                legal_name: string | null;
+            } | null;
+            detail: boolean;
+            collections: components["schemas"]["FinanzasCashLine"][];
+            payments: components["schemas"]["FinanzasCashLine"][];
+            /** @description Money on `no_operacional` accounts (withdrawals, loans, fixed assets, capital, own funds): never in `collections` or `payments`. `side` is the direction: `collection` = money in (a loan received, a capital contribution), `payment` = money out. */
+            non_result: components["schemas"]["FinanzasCashLine"][];
+            undated: components["schemas"]["FinanzasCashUndated"][];
+            totals: {
+                collections: {
+                    current: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                    earlier: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                    later: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                };
+                payments: {
+                    current: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                    earlier: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                    later: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                };
+                undated: {
+                    collection: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                    payment: {
+                        lines: number;
+                        /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                        settled_clp: number;
+                        /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                        gross_clp: number;
+                        /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                        base_clp: number;
+                        /** @description Its share of the document's neto. */
+                        net_clp: number;
+                        /** @description Its share of the document's exento. */
+                        exempt_clp: number;
+                        /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                        vat_excluded_clp: number;
+                        /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                        retention_clp: number;
+                    };
+                };
+                non_result: {
+                    withdrawal: {
+                        collection: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                        payment: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                    };
+                    loan: {
+                        collection: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                        payment: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                    };
+                    fixed_asset: {
+                        collection: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                        payment: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                    };
+                    capital: {
+                        collection: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                        payment: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                    };
+                    own_funds: {
+                        collection: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                        payment: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                    };
+                    other: {
+                        collection: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                        payment: {
+                            lines: number;
+                            /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                            settled_clp: number;
+                            /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                            gross_clp: number;
+                            /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                            base_clp: number;
+                            /** @description Its share of the document's neto. */
+                            net_clp: number;
+                            /** @description Its share of the document's exento. */
+                            exempt_clp: number;
+                            /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                            vat_excluded_clp: number;
+                            /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                            retention_clp: number;
+                        };
+                    };
+                };
+                /** @description Always returned (also with `detail=false`): one subtotal per (side, account, document year, documented or not), over `collections`, `payments` and `non_result`. `account` null = the part not classified, clinic payments, and fees with no commission account. */
+                by_account: {
+                    /** @enum {string} */
+                    side: "collection" | "payment";
+                    /**
+                     * @description `current` = issued in the year asked (F22 1400 / 1409…); `earlier` = issued in an earlier year (1817 / 1818…); `later` = issued after the year (paid in advance).
+                     * @enum {string}
+                     */
+                    document_year: "current" | "earlier" | "later";
+                    account: {
+                        id: string;
+                        name: string;
+                        kind: string;
+                        /** @description «No lleva documento»: money out on this account never has a legal document (sueldos, Previred, gastos financieros, retiros). */
+                        no_document: boolean;
+                    } | null;
+                    undocumented: boolean;
+                    /**
+                     * @description Money on a `no_operacional` account, by its place in the plan de cuentas: `withdrawal` (Retiros), `loan` (Pasivo: a loan received in, its principal repaid out), `fixed_asset` (Activo fijo), `capital` (Patrimonio), `own_funds` (Activo circulante: caja y bancos, fondos mutuos, own-account moves), `other`.
+                     * @enum {string|null}
+                     */
+                    non_result_kind: "withdrawal" | "loan" | "fixed_asset" | "capital" | "own_funds" | "other" | null;
+                    lines: number;
+                    /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                    settled_clp: number;
+                    /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                    gross_clp: number;
+                    /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                    base_clp: number;
+                    /** @description Its share of the document's neto. */
+                    net_clp: number;
+                    /** @description Its share of the document's exento. */
+                    exempt_clp: number;
+                    /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                    vat_excluded_clp: number;
+                    /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                    retention_clp: number;
+                }[];
+                /** @description Always returned: one subtotal per (side, line kind, documented or not), over `collections` and `payments`. */
+                by_kind: {
+                    /** @enum {string} */
+                    side: "collection" | "payment";
+                    /**
+                     * @description `document`: a payment on a document; `clinic_payment`: a clinic's patient payment, or a third party's whose money arrived; `movement`: a bank movement classified straight to an account, with no document (salaries, Previred, bank fees, rent paid by transfer, taxes); `processor_fee`: what a payment processor kept on a payout, paid that day.
+                     * @enum {string}
+                     */
+                    kind: "document" | "clinic_payment" | "movement" | "processor_fee";
+                    undocumented: boolean;
+                    lines: number;
+                    /** @description What this line settles of the document (link amount + rounding), signed: a refund is negative. */
+                    settled_clp: number;
+                    /** @description Its share of the document total after credit notes; honorarios: GROSS. */
+                    gross_clp: number;
+                    /** @description What counts in the cash base, by the Resultado net rule: a sale without IVA débito and specific taxes; a purchase with crédito fiscal without its recoverable IVA and specific taxes; anything else (boletas, gastos with only a total, honorarios) in full. */
+                    base_clp: number;
+                    /** @description Its share of the document's neto. */
+                    net_clp: number;
+                    /** @description Its share of the document's exento. */
+                    exempt_clp: number;
+                    /** @description `gross_clp − base_clp`: IVA and specific taxes left out. */
+                    vat_excluded_clp: number;
+                    /** @description Honorarios: the retención (gross − settled), shown apart; 0 otherwise. */
+                    retention_clp: number;
+                }[];
+            };
+            coverage: {
+                /** @description A clinic: patient collections come from its payment ledger from `from` on (bank links on boletas are deposits then); null for a workspace that is not a clinic. */
+                payment_ledger: {
+                    /** @enum {string} */
+                    source: "clinic_mirror" | "vitrina_caja" | "clinic_mirror_and_vitrina_caja";
+                    /** @description A day, `YYYY-MM-DD`. */
+                    from: string;
+                } | null;
+                sii_connected: boolean;
+                sii_window_from: string | null;
+                backfill_done: boolean;
+                checked_from: string;
+                checked_to: string;
+                missing_months: {
+                    month: string;
+                    documents: number;
+                }[];
+                complete: boolean;
+                /** @description Money out in the year nothing explains (no link, no classification): possibly outlays this read cannot count until someone links or classifies them. */
+                unexplained_outflows: {
+                    movements: number;
+                    amount_clp: number;
+                };
+            };
+        };
         /** @description What «deja el saldo en …» names: the payment at which the confirmed balance first goes below zero; when it never does (or already starts below zero), the biggest payment of the lowest day. */
         FinanzasCashFlowItem: {
             /** @description Stable item key: document:<uuid>, recurring:<uuid>:<YYYY-MM-DD>, retention:<YYYY-MM>, rescue:<uuid>, cuotas:<day>, appointments:<day>, cash_pending. */
@@ -329472,6 +336156,205 @@ export interface components {
             lunch_break_minutes: number | null;
             updated_by: string | null;
             updated_at: string | null;
+        };
+        /** @enum {string} */
+        FinanzasOwnerTaxIdKind: "rut" | "passport" | "foreign_tax_id";
+        /** @enum {string} */
+        FinanzasOwnerPersonKind: "natural" | "juridica";
+        FinanzasOwnerHolding: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            owner_id: string;
+            /** Format: uuid */
+            dte_connection_id: string;
+            effective_from: string;
+            ended: boolean;
+            profit_share_pct: number | null;
+            paid_in_capital_clp: number | null;
+            subscribed_capital_clp: number | null;
+            created_at: string;
+        };
+        FinanzasOwner: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            dte_connection_id: string;
+            tax_id_kind: components["schemas"]["FinanzasOwnerTaxIdKind"];
+            tax_id: string;
+            name: string;
+            person_kind: components["schemas"]["FinanzasOwnerPersonKind"];
+            tax_residence_country: string;
+            created_at: string;
+            updated_at: string;
+        };
+        FinanzasOwnerWarning: {
+            /** @enum {string} */
+            code: "legal_person_owner" | "shares_not_100" | "profit_share_missing" | "no_split_basis";
+            /** @description Spanish, ready to show. */
+            message: string;
+            /** Format: uuid */
+            owner_id?: string;
+            /** @description `shares_not_100`: 100 minus the total; negative when over. */
+            shortfall_pct?: number;
+        };
+        FinanzasOwnerList: {
+            as_of: string;
+            sociedades: {
+                /** Format: uuid */
+                dte_connection_id: string;
+                legal_name: string | null;
+                tax_id: string | null;
+            }[];
+            owners: (components["schemas"]["FinanzasOwner"] & {
+                in_force: boolean;
+                holdings: components["schemas"]["FinanzasOwnerHolding"][];
+            })[];
+            warnings: components["schemas"]["FinanzasOwnerWarning"][];
+        };
+        FinanzasOwnerWithWarnings: {
+            owner: components["schemas"]["FinanzasOwner"];
+            warnings: components["schemas"]["FinanzasOwnerWarning"][];
+        };
+        FinanzasOwnerCreateBody: {
+            /**
+             * Format: uuid
+             * @description The sociedad: the id of its DTE connection (`clinic_dte_connection.id`), as on `finanzas_document.dte_connection_id`.
+             */
+            dte_connection_id: string;
+            /** @description RUT (módulo-11 checked, stored `12345678-5`) or a foreign id. */
+            tax_id: string;
+            tax_id_kind?: components["schemas"]["FinanzasOwnerTaxIdKind"] & unknown;
+            name: string;
+            person_kind?: components["schemas"]["FinanzasOwnerPersonKind"] & unknown;
+            /**
+             * @description ISO 3166-1 alpha-2 country of tax residence.
+             * @example CL
+             */
+            tax_residence_country: string;
+        };
+        FinanzasOwnerSplit: {
+            /** Format: uuid */
+            dte_connection_id: string;
+            as_of: string;
+            /**
+             * @description Which of the three rules was applied.
+             * @enum {string}
+             */
+            rule: "statute_profit_share" | "paid_in_capital" | "subscribed_capital" | "none";
+            owners: {
+                /** Format: uuid */
+                owner_id: string;
+                name: string;
+                tax_id: string;
+                tax_id_kind: components["schemas"]["FinanzasOwnerTaxIdKind"];
+                person_kind: components["schemas"]["FinanzasOwnerPersonKind"];
+                tax_residence_country: string;
+                effective_from: string;
+                profit_share_pct: number | null;
+                paid_in_capital_clp: number | null;
+                subscribed_capital_clp: number | null;
+                /** @description The share the form uses (percent); null when `rule` is `none`. */
+                share_pct: number | null;
+            }[];
+            total_pct: number;
+            shares_add_up: boolean;
+            /** @description 100 minus `total_pct`: positive = missing, negative = excess; 0 when it adds up. */
+            shortfall_pct: number;
+            warnings: components["schemas"]["FinanzasOwnerWarning"][];
+        };
+        FinanzasOwnerUpdateBody: {
+            name?: string;
+            person_kind?: components["schemas"]["FinanzasOwnerPersonKind"];
+            /**
+             * @description ISO 3166-1 alpha-2 country of tax residence.
+             * @example CL
+             */
+            tax_residence_country?: string;
+        };
+        FinanzasOwnerHoldingResult: {
+            holding: components["schemas"]["FinanzasOwnerHolding"];
+            warnings: components["schemas"]["FinanzasOwnerWarning"][];
+        };
+        FinanzasOwnerHoldingBody: {
+            /**
+             * @description A day, `YYYY-MM-DD`.
+             * @example 2026-12-31
+             */
+            effective_from: string;
+            /** @description The owner stops being an owner on `effective_from`; the other fields must be empty. */
+            ended?: boolean;
+            /** @description Share of profits agreed in the statutes, percent. */
+            profit_share_pct?: number | null;
+            paid_in_capital_clp?: number | null;
+            subscribed_capital_clp?: number | null;
+        };
+        FinanzasCapitalEntry: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            dte_connection_id: string;
+            /** Format: uuid */
+            owner_id: string;
+            entry_date: string;
+            /** @enum {string} */
+            kind: "contribution" | "increase" | "return";
+            /** @enum {string} */
+            capital_status: "paid_in" | "subscribed";
+            amount_clp: number;
+            /** Format: uuid */
+            bank_movement_id: string | null;
+            note: string | null;
+            created_at: string;
+        };
+        FinanzasCapitalEntryList: {
+            entries: components["schemas"]["FinanzasCapitalEntry"][];
+        };
+        FinanzasCapitalEntryBody: {
+            /** Format: uuid */
+            owner_id: string;
+            /**
+             * @description A day, `YYYY-MM-DD`.
+             * @example 2026-12-31
+             */
+            entry_date: string;
+            /** @enum {string} */
+            kind: "contribution" | "increase" | "return";
+            /** @enum {string} */
+            capital_status: "paid_in" | "subscribed";
+            amount_clp: number;
+            /** Format: uuid */
+            bank_movement_id?: string | null;
+            note?: string | null;
+        };
+        FinanzasOwnerAttributionList: {
+            movements: {
+                /** Format: uuid */
+                bank_movement_id: string;
+                date: string;
+                amount_clp: number;
+                /** @enum {string} */
+                kind: "retiro" | "capital";
+                /** Format: uuid */
+                owner_id: string | null;
+            }[];
+            unattributed_count: number;
+            unattributed_clp: number;
+        };
+        FinanzasMovementAttribution: {
+            /** Format: uuid */
+            bank_movement_id: string;
+            /**
+             * @description `retiro` / `capital` while the movement has a line on a Retiros / «Capital pagado» account (the UI then asks for the owner); null otherwise.
+             * @enum {string|null}
+             */
+            applies_as: "retiro" | "capital" | null;
+            /** Format: uuid */
+            owner_id: string | null;
+        };
+        FinanzasOwnerAttributionBody: {
+            /** Format: uuid */
+            owner_id: string;
         };
         FinanzasResumenCash: {
             /** @description «Caja hoy»: today’s balance of the operating accounts (savings apart) = the Flujo de caja opening. */
@@ -333136,7 +340019,7 @@ export interface components {
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
                 filters: ({
-                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id), `tag` (tag name) or `origin` (Origen of the contact: `meta`, `organic` or `unknown`; clinic workspaces only, refused with `entry_filter_origin_unavailable` elsewhere). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
@@ -333512,7 +340395,7 @@ export interface components {
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
                 filters: ({
-                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id), `tag` (tag name) or `origin` (Origen of the contact: `meta`, `organic` or `unknown`; clinic workspaces only, refused with `entry_filter_origin_unavailable` elsewhere). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
@@ -333863,7 +340746,7 @@ export interface components {
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
                 filters: ({
-                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id), `tag` (tag name) or `origin` (Origen of the contact: `meta`, `organic` or `unknown`; clinic workspaces only, refused with `entry_filter_origin_unavailable` elsewhere). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
@@ -334079,7 +340962,7 @@ export interface components {
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
                 filters: ({
-                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id), `tag` (tag name) or `origin` (Origen of the contact: `meta`, `organic` or `unknown`; clinic workspaces only, refused with `entry_filter_origin_unavailable` elsewhere). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
@@ -334119,7 +341002,7 @@ export interface components {
                 /** @enum {string} */
                 event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder" | "stage_changed" | "quoted_not_booked" | "appointment_booked" | "signed_up_not_bought" | "installment_overdue";
                 filters: ({
-                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id) or `tag` (tag name). */
+                    /** @description Custom sequences filter on `interest`, `source`, `stage` (stage id), `tag` (tag name) or `origin` (Origen of the contact: `meta`, `organic` or `unknown`; clinic workspaces only, refused with `entry_filter_origin_unavailable` elsewhere). */
                     field: string;
                     /** @enum {string} */
                     op: "in";
@@ -340782,6 +347665,10 @@ export interface components {
                 }[];
                 quantity: number;
                 unit_price_clp: number;
+                /** @description The regular unit price when the line was charged the price of a price promotion; null otherwise. */
+                regular_unit_price_clp: number | null;
+                /** @description The promotion that priced the line; null otherwise. */
+                price_promotion_name: string | null;
             }[];
             delivery_method: string | null;
             /** @description The delivery charge inside `total_clp` (a courier quote’s price). 0 for pickup. */
@@ -340940,7 +347827,17 @@ export interface components {
                     value: string;
                 }[];
                 sku: string | null;
+                /** @description The unit price charged, frozen when the order was created. While a price promotion held the variant it is the promotional price; a payment that arrives after the promotion ends still pays it. */
                 unit_price_clp: number;
+                /** @description The variant’s regular unit price when the order was created. Set only on a line priced by a price promotion; null on every other line. */
+                regular_unit_price_clp: number | null;
+                /**
+                 * Format: uuid
+                 * @description The price promotion that priced the line. Null off promotion, and null once the promotion is deleted (the line keeps its price and name).
+                 */
+                price_promotion_id: string | null;
+                /** @description The promotion’s name when the order was created (snapshot). Null on a line not priced by a promotion. */
+                price_promotion_name: string | null;
                 quantity: number;
                 line_total_clp: number;
                 /** Format: uuid */
@@ -341053,7 +347950,17 @@ export interface components {
                     value: string;
                 }[];
                 sku: string | null;
+                /** @description The unit price charged, frozen when the order was created. While a price promotion held the variant it is the promotional price; a payment that arrives after the promotion ends still pays it. */
                 unit_price_clp: number;
+                /** @description The variant’s regular unit price when the order was created. Set only on a line priced by a price promotion; null on every other line. */
+                regular_unit_price_clp: number | null;
+                /**
+                 * Format: uuid
+                 * @description The price promotion that priced the line. Null off promotion, and null once the promotion is deleted (the line keeps its price and name).
+                 */
+                price_promotion_id: string | null;
+                /** @description The promotion’s name when the order was created (snapshot). Null on a line not priced by a promotion. */
+                price_promotion_name: string | null;
                 quantity: number;
                 line_total_clp: number;
                 /** Format: uuid */
