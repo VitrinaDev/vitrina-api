@@ -13,6 +13,8 @@ export type ErrorCode =
   | 'UNAUTHORIZED'
   | 'FORBIDDEN'
   | 'CONFLICT'
+  | 'sitio_kind_mismatch'
+  | 'sitio_not_publishable'
   | 'ACCOUNT_DELETION_BLOCKED'
   | 'PARTNER_COMMISSION_MODEL_LOCKED'
   | 'WORKSPACE_CURRENCY_LOCKED'
@@ -99,6 +101,8 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'UNAUTHORIZED',
   'FORBIDDEN',
   'CONFLICT',
+  'sitio_kind_mismatch',
+  'sitio_not_publishable',
   'ACCOUNT_DELETION_BLOCKED',
   'PARTNER_COMMISSION_MODEL_LOCKED',
   'WORKSPACE_CURRENCY_LOCKED',
