@@ -16849,7 +16849,7 @@ export interface paths {
         };
         /**
          * Read what the site form editor needs besides the pipelines
-         * @description A site that does not support this section answers 404. `default_pipeline_id` and `default_stage_id` are the board and the first open stage a form that names none lands on (`null` while the workspace has no sales board). `first_touch` says whether a visitor who consents would get the workspace’s first WhatsApp contact: `ready`, else `reason` (`no_whatsapp`: no WhatsApp number to send from; `source_off`: the workspace has not turned the first contact on; `no_template`: the approved templates of both steps are not all there) and `setup_path`, the app page that fixes it. The pipelines themselves come from `GET /pipelines`. Read-only: it creates nothing and sends nothing.
+         * @description A site that does not support this section answers 404. `default_pipeline_id` and `default_stage_id` are the board and the first open stage a form that names none lands on (`null` while the workspace has no sales board). `first_touch` says whether a visitor who consents would get the workspace’s first WhatsApp contact: `ready`, else `reason` (`no_whatsapp`: no WhatsApp number to send from; `source_off`: the workspace has not turned the first contact on; `no_template`: the approved templates of both steps are not all there) and `setup_path`, the app page that fixes it. The pipelines themselves come from `GET /pipelines`. Read-only: it creates nothing and sends nothing. `qualifying_forms` (vitrina-app#8082): each site form section whose questions carry qualifying rules (`questions[].qualifying.accepted` in the site draft, written with `PUT /tenant/settings`, owner or admin). A submission of the PUBLISHED form whose every ruled question is answered with accepted options (a multiple choice: every selected option accepted; case and spaces folded, accents not) moves its lead to the board’s qualifying stage, once, never backward; only a lead the submission created is evaluated. The rules are never served to the site’s visitors. The board checked is the form’s own (`pipelineId`, else the default sales board), the one the site sends; a caller that sends another board is judged on that board. `rules` are the published ones; `qualifies_now` is false when a blocking problem stands (`rules_unreadable`, `form_title_not_unique`, `no_qualifying_stage`); `unpublished_changes` warns that the draft’s rules differ. Show `message` as-is.
          */
         get: {
             parameters: {
@@ -16875,7 +16875,32 @@ export interface paths {
                          *           "ready": false,
                          *           "reason": "source_off",
                          *           "setup_path": "/settings/primer-contacto"
-                         *         }
+                         *         },
+                         *         "qualifying_forms": [
+                         *           {
+                         *             "section_key": "formulario",
+                         *             "form_title": "Formulario de contacto",
+                         *             "rules": [
+                         *               {
+                         *                 "question_key": "servicio",
+                         *                 "label": "¿Qué servicio busca?",
+                         *                 "type": "single_choice",
+                         *                 "accepted": [
+                         *                   "Evaluación",
+                         *                   "Tratamiento"
+                         *                 ]
+                         *               }
+                         *             ],
+                         *             "qualifies_now": false,
+                         *             "problems": [
+                         *               {
+                         *                 "code": "no_qualifying_stage",
+                         *                 "blocking": true,
+                         *                 "message": "El pipeline de este formulario no tiene etapa calificadora. Nadie se mueve hasta que se marque una."
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -16891,6 +16916,24 @@ export interface paths {
                                     reason: "no_whatsapp" | "no_template" | "source_off" | null;
                                     setup_path: string | null;
                                 };
+                                qualifying_forms: {
+                                    section_key: string;
+                                    form_title: string | null;
+                                    rules: {
+                                        question_key: string;
+                                        label: string;
+                                        /** @enum {string} */
+                                        type: "single_choice" | "multiple_choice";
+                                        accepted: string[];
+                                    }[];
+                                    qualifies_now: boolean;
+                                    problems: {
+                                        /** @enum {string} */
+                                        code: "rules_unreadable" | "form_title_not_unique" | "no_qualifying_stage" | "unpublished_changes";
+                                        blocking: boolean;
+                                        message: string;
+                                    }[];
+                                }[];
                             };
                         };
                     };
