@@ -14,6 +14,7 @@ export type ErrorCode =
   | 'FORBIDDEN'
   | 'CONFLICT'
   | 'sitio_kind_mismatch'
+  | 'pipeline_invalid'
   | 'sitio_not_publishable'
   | 'ACCOUNT_DELETION_BLOCKED'
   | 'PARTNER_COMMISSION_MODEL_LOCKED'
@@ -102,6 +103,7 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'FORBIDDEN',
   'CONFLICT',
   'sitio_kind_mismatch',
+  'pipeline_invalid',
   'sitio_not_publishable',
   'ACCOUNT_DELETION_BLOCKED',
   'PARTNER_COMMISSION_MODEL_LOCKED',
