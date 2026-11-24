@@ -152485,6 +152485,9 @@ export interface paths {
                          *         "no_show_guidance": {
                          *           "from": "2026-06-26",
                          *           "to": "2026-09-23",
+                         *           "sample_size": 83,
+                         *           "min_sample_size": 20,
+                         *           "enough_data": true,
                          *           "by_origin": [
                          *             {
                          *               "key": "meta",
@@ -152496,7 +152499,7 @@ export interface paths {
                          *               "cancelled_notice_unknown": 1,
                          *               "unknown": 0,
                          *               "closed": 94,
-                         *               "no_show_pct": 25,
+                         *               "no_show_pct": 25.3,
                          *               "late_cancel_pct": 40,
                          *               "attendance_pct": 66
                          *             },
@@ -152621,6 +152624,9 @@ export interface paths {
                          *         "no_show_guidance": {
                          *           "from": "2026-06-26",
                          *           "to": "2026-09-23",
+                         *           "sample_size": 83,
+                         *           "min_sample_size": 20,
+                         *           "enough_data": true,
                          *           "by_origin": [
                          *             {
                          *               "key": "meta",
@@ -152632,7 +152638,7 @@ export interface paths {
                          *               "cancelled_notice_unknown": 1,
                          *               "unknown": 0,
                          *               "closed": 94,
-                         *               "no_show_pct": 25,
+                         *               "no_show_pct": 25.3,
                          *               "late_cancel_pct": 40,
                          *               "attendance_pct": 66
                          *             },
@@ -343299,10 +343305,37 @@ export interface components {
                     cancelled_notice_unknown: number;
                     unknown: number;
                     closed: number;
+                    /**
+                     * @description no_show / (attended + no_show) as a percent with ONE decimal (26.7), null with no closed citas.
+                     * @example 26.7
+                     */
                     no_show_pct: number | null;
+                    /**
+                     * @description late_cancel / (cancelled − cancelled_notice_unknown) as a percent with one decimal, null when no notice is known.
+                     * @example 40
+                     */
                     late_cancel_pct: number | null;
+                    /**
+                     * @description attended / closed as a percent with one decimal, null with no closed citas.
+                     * @example 66
+                     */
                     attendance_pct: number | null;
                 }[];
+                /**
+                 * @description Closed citas of Meta-origin patients the rate stands on: the `meta` row's attended + no_show (0 when the window has none).
+                 * @example 83
+                 */
+                sample_size: number;
+                /**
+                 * @description The sample the server counts as enough for the Meta rate to guide a decision.
+                 * @example 20
+                 */
+                min_sample_size: number;
+                /**
+                 * @description `sample_size >= min_sample_size`. When false the Meta `no_show_pct` is still returned but rests on too few citas to trust.
+                 * @example true
+                 */
+                enough_data: boolean;
             } | null;
         };
         ClinicCampaignOverbookBody: {

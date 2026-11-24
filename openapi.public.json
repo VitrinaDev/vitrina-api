@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "17.127.0",
+    "version": "17.131.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -39065,19 +39065,25 @@
                       "type": [
                         "number",
                         "null"
-                      ]
+                      ],
+                      "description": "no_show / (attended + no_show) as a percent with ONE decimal (26.7), null with no closed citas.",
+                      "example": 26.7
                     },
                     "late_cancel_pct": {
                       "type": [
                         "number",
                         "null"
-                      ]
+                      ],
+                      "description": "late_cancel / (cancelled − cancelled_notice_unknown) as a percent with one decimal, null when no notice is known.",
+                      "example": 40
                     },
                     "attendance_pct": {
                       "type": [
                         "number",
                         "null"
-                      ]
+                      ],
+                      "description": "attended / closed as a percent with one decimal, null with no closed citas.",
+                      "example": 66
                     }
                   },
                   "required": [
@@ -39095,12 +39101,30 @@
                     "attendance_pct"
                   ]
                 }
+              },
+              "sample_size": {
+                "type": "integer",
+                "description": "Closed citas of Meta-origin patients the rate stands on: the `meta` row's attended + no_show (0 when the window has none).",
+                "example": 83
+              },
+              "min_sample_size": {
+                "type": "integer",
+                "description": "The sample the server counts as enough for the Meta rate to guide a decision.",
+                "example": 20
+              },
+              "enough_data": {
+                "type": "boolean",
+                "description": "`sample_size >= min_sample_size`. When false the Meta `no_show_pct` is still returned but rests on too few citas to trust.",
+                "example": true
               }
             },
             "required": [
               "from",
               "to",
-              "by_origin"
+              "by_origin",
+              "sample_size",
+              "min_sample_size",
+              "enough_data"
             ]
           }
         },
@@ -281635,6 +281659,9 @@
                     "no_show_guidance": {
                       "from": "2026-06-26",
                       "to": "2026-09-23",
+                      "sample_size": 83,
+                      "min_sample_size": 20,
+                      "enough_data": true,
                       "by_origin": [
                         {
                           "key": "meta",
@@ -281646,7 +281673,7 @@
                           "cancelled_notice_unknown": 1,
                           "unknown": 0,
                           "closed": 94,
-                          "no_show_pct": 25,
+                          "no_show_pct": 25.3,
                           "late_cancel_pct": 40,
                           "attendance_pct": 66
                         },
@@ -281783,6 +281810,9 @@
                     "no_show_guidance": {
                       "from": "2026-06-26",
                       "to": "2026-09-23",
+                      "sample_size": 83,
+                      "min_sample_size": 20,
+                      "enough_data": true,
                       "by_origin": [
                         {
                           "key": "meta",
@@ -281794,7 +281824,7 @@
                           "cancelled_notice_unknown": 1,
                           "unknown": 0,
                           "closed": 94,
-                          "no_show_pct": 25,
+                          "no_show_pct": 25.3,
                           "late_cancel_pct": 40,
                           "attendance_pct": 66
                         },
