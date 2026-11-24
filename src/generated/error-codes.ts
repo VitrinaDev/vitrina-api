@@ -14,6 +14,14 @@ export type ErrorCode =
   | 'FORBIDDEN'
   | 'CONFLICT'
   | 'sitio_kind_mismatch'
+  | 'video_too_large'
+  | 'video_type_unsupported'
+  | 'video_not_uploaded'
+  | 'video_in_use'
+  | 'video_foreign'
+  | 'video_kind_unsupported'
+  | 'video_not_ready'
+  | 'poster_invalid'
   | 'pipeline_invalid'
   | 'sitio_not_publishable'
   | 'ACCOUNT_DELETION_BLOCKED'
@@ -103,6 +111,14 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'FORBIDDEN',
   'CONFLICT',
   'sitio_kind_mismatch',
+  'video_too_large',
+  'video_type_unsupported',
+  'video_not_uploaded',
+  'video_in_use',
+  'video_foreign',
+  'video_kind_unsupported',
+  'video_not_ready',
+  'poster_invalid',
   'pipeline_invalid',
   'sitio_not_publishable',
   'ACCOUNT_DELETION_BLOCKED',
