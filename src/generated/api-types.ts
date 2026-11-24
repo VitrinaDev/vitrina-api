@@ -16840,6 +16840,290 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant/sitio/form-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read what the site form editor needs besides the pipelines
+         * @description A site that does not support this section answers 404. `default_pipeline_id` and `default_stage_id` are the board and the first open stage a form that names none lands on (`null` while the workspace has no sales board). `first_touch` says whether a visitor who consents would get the workspace’s first WhatsApp contact: `ready`, else `reason` (`no_whatsapp`: no WhatsApp number to send from; `source_off`: the workspace has not turned the first contact on; `no_template`: the approved templates of both steps are not all there) and `setup_path`, the app page that fixes it. The pipelines themselves come from `GET /pipelines`. Read-only: it creates nothing and sends nothing.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Form options */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "default_pipeline_id": "6f1c2a40-0d3e-4c6e-9a55-3b7e1f9d2c10",
+                         *         "default_stage_id": "0b8d7e11-52a4-4f0e-8d3a-9c1e4a7b6d22",
+                         *         "first_touch": {
+                         *           "ready": false,
+                         *           "reason": "source_off",
+                         *           "setup_path": "/settings/primer-contacto"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                default_pipeline_id: string | null;
+                                /** Format: uuid */
+                                default_stage_id: string | null;
+                                first_touch: {
+                                    ready: boolean;
+                                    /** @enum {string|null} */
+                                    reason: "no_whatsapp" | "no_template" | "source_off" | null;
+                                    setup_path: string | null;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/sitio/booking-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read what the site booking section editor needs
+         * @description A site that does not support this section answers 404. `landings`: every «Reserva online» landing of the workspace, active or not, with the services it offers (`deposit_required` and `deposit_amount_clp` from the deposit policy, `price_clp` from the catálogo), its professionals, and `used_by_site` (the draft or the published booking section names it). `deposit_methods`: whether a deposit can be taken by payment link (`mercadopago`: the reservation charge mode allows a link and a payment provider is connected) and by transfer (`transfer`: at least one active receiving account). `setup_paths`: the app pages that create a landing and connect payments. Saving a booking section whose `landingId` is not one of these active landings, or whose `serviceId` the landing does not offer, answers 400 `booking_landing_invalid`. Read-only.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Booking options */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "landings": [
+                         *           {
+                         *             "id": "2c4f0e1a-7b3d-4e8f-9a21-5d6c7b8e9f01",
+                         *             "slug": "evaluacion",
+                         *             "name": "Evaluación",
+                         *             "title": "Evaluación inicial",
+                         *             "active": true,
+                         *             "services": [
+                         *               {
+                         *                 "id": "7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+                         *                 "name": "Evaluación inicial",
+                         *                 "deposit_required": true,
+                         *                 "deposit_amount_clp": 25000,
+                         *                 "price_clp": 45000
+                         *               }
+                         *             ],
+                         *             "professionals": [
+                         *               {
+                         *                 "id": "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
+                         *                 "name": "Camila Rojas"
+                         *               }
+                         *             ],
+                         *             "used_by_site": true
+                         *           }
+                         *         ],
+                         *         "deposit_methods": {
+                         *           "mercadopago": true,
+                         *           "transfer": true
+                         *         },
+                         *         "setup_paths": {
+                         *           "landings": "/reserva-online",
+                         *           "payments": "/settings/payments"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                landings: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    slug: string;
+                                    name: string;
+                                    title: string | null;
+                                    active: boolean;
+                                    services: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        deposit_required: boolean;
+                                        deposit_amount_clp: number | null;
+                                        price_clp: number | null;
+                                    }[];
+                                    professionals: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    }[];
+                                    used_by_site: boolean;
+                                }[];
+                                deposit_methods: {
+                                    mercadopago: boolean;
+                                    transfer: boolean;
+                                };
+                                setup_paths: {
+                                    landings: string;
+                                    payments: string;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tenant/modules": {
         parameters: {
             query?: never;
@@ -254596,6 +254880,688 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/sitio-videos/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a site sales video upload
+         * @description Records the video (mp4, mov or webm, at most 50 MB) and returns a presigned PUT URL valid 15 minutes. PUT the raw bytes there with the given headers (the browser can report progress), then call `complete`. A larger file answers 413 `video_too_large`; another type 400 `video_type_unsupported`. Needs `tenant:write`, the site entitlement, and a site that supports sales videos: any other site answers 403 `video_kind_unsupported`. Another workspace’s video id answers 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "mime_type": "video/mp4",
+                     *       "byte_size": 18200000,
+                     *       "file_name": "presentacion.mp4"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The video type: mp4, mov (quicktime) or webm.
+                         * @enum {string}
+                         */
+                        mime_type: "video/mp4" | "video/quicktime" | "video/webm";
+                        /** @description The file size in bytes. At most 52428800 (50 MB). */
+                        byte_size: number;
+                        file_name?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The record and the presigned PUT */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "asset": {
+                         *           "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *           "status": "pending_upload",
+                         *           "error_code": null,
+                         *           "mime_type": "video/mp4",
+                         *           "byte_size": 18200000,
+                         *           "url": null,
+                         *           "poster_url": null,
+                         *           "width": null,
+                         *           "height": null,
+                         *           "duration_seconds": null,
+                         *           "created_at": "2026-11-23T15:00:00.000Z"
+                         *         },
+                         *         "upload": {
+                         *           "url": "https://storage.example.test/upload?signature=redacted",
+                         *           "method": "PUT",
+                         *           "headers": {
+                         *             "content-type": "video/mp4"
+                         *           },
+                         *           "expires_at": "2026-11-23T15:15:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                asset: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /**
+                                     * @description `pending_upload` until `complete`, `processing` while the media worker transcodes, then `ready` or `failed`.
+                                     * @enum {string}
+                                     */
+                                    status: "pending_upload" | "processing" | "ready" | "failed";
+                                    /**
+                                     * @description Why a `failed` video failed; null otherwise.
+                                     * @enum {string|null}
+                                     */
+                                    error_code: "transcode_failed" | "unreadable" | "too_long" | null;
+                                    mime_type: string;
+                                    byte_size: number | null;
+                                    /** @description Public mp4 (H.264/AAC, fast start), immutable: `${MEDIA_PUBLIC_URL}/sitio-video/<tenant>/<id>/<sha8>.mp4`. Null until `ready`. */
+                                    url: string | null;
+                                    poster_url: string | null;
+                                    width: number | null;
+                                    height: number | null;
+                                    duration_seconds: number | null;
+                                    created_at: string;
+                                };
+                                upload: {
+                                    /**
+                                     * Format: uri
+                                     * @description Presigned PUT URL, valid 15 minutes.
+                                     */
+                                    url: string;
+                                    /** @enum {string} */
+                                    method: "PUT";
+                                    headers: {
+                                        [key: string]: string;
+                                    };
+                                    expires_at: string;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/sitio-videos/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish a sales video upload and start the transcode
+         * @description Checks the uploaded object (size and type), marks the record `processing` and queues the transcode to a web-safe H.264/AAC mp4 with a poster. Poll `GET /tenant/sitio-videos/{id}` every few seconds until `ready` or `failed`. Idempotent. 409 `video_not_uploaded` when the PUT has not reached storage yet. Needs `tenant:write`, the site entitlement, and a site that supports sales videos: any other site answers 403 `video_kind_unsupported`. Another workspace’s video id answers 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The record */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *         "status": "processing",
+                         *         "error_code": null,
+                         *         "mime_type": "video/mp4",
+                         *         "byte_size": 18200000,
+                         *         "url": null,
+                         *         "poster_url": null,
+                         *         "width": null,
+                         *         "height": null,
+                         *         "duration_seconds": null,
+                         *         "created_at": "2026-11-23T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /**
+                                 * @description `pending_upload` until `complete`, `processing` while the media worker transcodes, then `ready` or `failed`.
+                                 * @enum {string}
+                                 */
+                                status: "pending_upload" | "processing" | "ready" | "failed";
+                                /**
+                                 * @description Why a `failed` video failed; null otherwise.
+                                 * @enum {string|null}
+                                 */
+                                error_code: "transcode_failed" | "unreadable" | "too_long" | null;
+                                mime_type: string;
+                                byte_size: number | null;
+                                /** @description Public mp4 (H.264/AAC, fast start), immutable: `${MEDIA_PUBLIC_URL}/sitio-video/<tenant>/<id>/<sha8>.mp4`. Null until `ready`. */
+                                url: string | null;
+                                poster_url: string | null;
+                                width: number | null;
+                                height: number | null;
+                                duration_seconds: number | null;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/sitio-videos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read a sales video record
+         * @description The record with its status. `url` and `poster_url` are the public, immutable addresses (Range requests and a year of caching are served by the media bucket). A `failed` video carries `error_code`: `transcode_failed`, `unreadable` or `too_long`. Needs `tenant:read`, the site entitlement, and a site that supports sales videos: any other site answers 403 `video_kind_unsupported`. Another workspace’s video id answers 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The record */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *         "status": "ready",
+                         *         "error_code": null,
+                         *         "mime_type": "video/mp4",
+                         *         "byte_size": 18200000,
+                         *         "url": "https://media.example.test/sitio-video/0192a1b2-0000-7000-8000-000000000001/01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f/9f3a1c2e.mp4",
+                         *         "poster_url": "https://media.example.test/sitio-video/0192a1b2-0000-7000-8000-000000000001/01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f/poster-4b7d0e11.jpg",
+                         *         "width": 1080,
+                         *         "height": 1920,
+                         *         "duration_seconds": 92.4,
+                         *         "created_at": "2026-11-23T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /**
+                                 * @description `pending_upload` until `complete`, `processing` while the media worker transcodes, then `ready` or `failed`.
+                                 * @enum {string}
+                                 */
+                                status: "pending_upload" | "processing" | "ready" | "failed";
+                                /**
+                                 * @description Why a `failed` video failed; null otherwise.
+                                 * @enum {string|null}
+                                 */
+                                error_code: "transcode_failed" | "unreadable" | "too_long" | null;
+                                mime_type: string;
+                                byte_size: number | null;
+                                /** @description Public mp4 (H.264/AAC, fast start), immutable: `${MEDIA_PUBLIC_URL}/sitio-video/<tenant>/<id>/<sha8>.mp4`. Null until `ready`. */
+                                url: string | null;
+                                poster_url: string | null;
+                                width: number | null;
+                                height: number | null;
+                                duration_seconds: number | null;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a sales video
+         * @description Deletes the video and its poster from storage. Refused with 409 `video_in_use` while the PUBLISHED site shows it: remove the section and publish first. Needs `tenant:write`, the site entitlement, and a site that supports sales videos: any other site answers 403 `video_kind_unsupported`. Another workspace’s video id answers 404.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/sitio-videos/{id}/poster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace the poster of a sales video
+         * @description multipart/form-data with a `file` part (PNG, JPEG or WEBP, at most 4 MB). The video must be `ready` (409 `video_not_ready`). The image is straightened and its metadata removed, and stored under a new immutable address; the old poster is deleted. 400 `poster_invalid` for another type or size. Needs `tenant:write`, the site entitlement, and a site that supports sales videos: any other site answers 403 `video_kind_unsupported`. Another workspace’s video id answers 404.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary: poster.jpg)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        file: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The record */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *         "status": "ready",
+                         *         "error_code": null,
+                         *         "mime_type": "video/mp4",
+                         *         "byte_size": 18200000,
+                         *         "url": "https://media.example.test/sitio-video/0192a1b2-0000-7000-8000-000000000001/01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f/9f3a1c2e.mp4",
+                         *         "poster_url": "https://media.example.test/sitio-video/0192a1b2-0000-7000-8000-000000000001/01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f/poster-4b7d0e11.jpg",
+                         *         "width": 1080,
+                         *         "height": 1920,
+                         *         "duration_seconds": 92.4,
+                         *         "created_at": "2026-11-23T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /**
+                                 * @description `pending_upload` until `complete`, `processing` while the media worker transcodes, then `ready` or `failed`.
+                                 * @enum {string}
+                                 */
+                                status: "pending_upload" | "processing" | "ready" | "failed";
+                                /**
+                                 * @description Why a `failed` video failed; null otherwise.
+                                 * @enum {string|null}
+                                 */
+                                error_code: "transcode_failed" | "unreadable" | "too_long" | null;
+                                mime_type: string;
+                                byte_size: number | null;
+                                /** @description Public mp4 (H.264/AAC, fast start), immutable: `${MEDIA_PUBLIC_URL}/sitio-video/<tenant>/<id>/<sha8>.mp4`. Null until `ready`. */
+                                url: string | null;
+                                poster_url: string | null;
+                                width: number | null;
+                                height: number | null;
+                                duration_seconds: number | null;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
