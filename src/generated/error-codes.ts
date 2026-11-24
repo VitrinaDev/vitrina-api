@@ -26,6 +26,7 @@ export type ErrorCode =
   | 'booking_landing_invalid'
   | 'sitio_check_unavailable'
   | 'sitio_not_publishable'
+  | 'site_kind_unavailable'
   | 'ACCOUNT_DELETION_BLOCKED'
   | 'PARTNER_COMMISSION_MODEL_LOCKED'
   | 'WORKSPACE_CURRENCY_LOCKED'
@@ -126,6 +127,7 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'booking_landing_invalid',
   'sitio_check_unavailable',
   'sitio_not_publishable',
+  'site_kind_unavailable',
   'ACCOUNT_DELETION_BLOCKED',
   'PARTNER_COMMISSION_MODEL_LOCKED',
   'WORKSPACE_CURRENCY_LOCKED',

@@ -22974,6 +22974,8 @@ export interface paths {
                                 fbclid?: string | null;
                                 gclid?: string | null;
                                 anonymous_id?: string | null;
+                                fbp?: string | null;
+                                fbc?: string | null;
                             };
                             last_touch?: {
                                 utm_source?: string | null;
@@ -22985,8 +22987,12 @@ export interface paths {
                                 fbclid?: string | null;
                                 gclid?: string | null;
                                 anonymous_id?: string | null;
+                                fbp?: string | null;
+                                fbc?: string | null;
                             };
                         };
+                        /** Format: uuid */
+                        event_id?: string | null;
                         /** Format: uuid */
                         pipeline_id?: string;
                         /** Format: uuid */
@@ -23143,6 +23149,8 @@ export interface paths {
          *     Also carries `vende_tu_auto` (#5872): the «Vende tu auto» consignment landing view — path, the Oferta headline and claims, three steps, the Condiciones hint, rating and address — or `null` while the landing is off. Same view as `GET /widget/consignments/landing`.
          *
          *     A clinic site (`kind: clinic`) also carries `booking`: the PUBLISHED booking section’s «Reserva online» landing, resolved at request time, or `null` when there is no visible booking section or its landing is gone or switched off. `{ landing_slug, service_id, landing, deposit_methods }`: `landing_slug` is what the browser sends as `landing` to `/widget/clinic/*` with `publishable_key`; `service_id` is the section’s pinned service while the landing still offers it; `landing` is the view `GET /widget/clinic/landing` serves (services with `price_clp`, `deposit_required` and `deposit_amount_clp` from the deposit policy, professionals, `horizon_days`, `min_notice_minutes`, `require_document`, no token); `deposit_methods` (`mercadopago`, `transfer`) says how a deposit can be taken now. No amount is ever stored in the site content; the booking result is the authority at payment time. Absent on a dealer body.
+         *
+         *     A clinic site also carries `ads_tracking` (`key`, `tracker_src`, `endpoint`): the attribution tracker the site loads, the tracking half of `GET /public/sites/{siteId}/tag-config` for the tenant, cached 5 minutes, `null` when Vitrina Ads is not usable (the site then records first-party events only); and its `analytics` adds `consent_mode` (`none`|`banner`; `banner` = GA4, the Pixel and the tracker load only after the visitor accepts). Both absent on a dealer body.
          *
          *     Without the add-on, or before the first Publicar, `sitio`/`branding`/`analytics`/`content`/`contact`/`social`/`features`/`trust`/`financing` are `null` and `theme` is absent, and the storefront falls back to its built-in defaults.
          */
@@ -23412,7 +23420,7 @@ export interface paths {
         put?: never;
         /**
          * Record a storefront traffic/conversion event
-         * @description Capture one page_view / vehicle_view / lead_submit signal from the tenant's own Vitrina-built storefront. Append-only, no person data — the optional `dedup_key` is an opaque session-ish hint, hashed server-side before storage. Requires the narrow, write-only `storefront_events:write` scope. A bogus or foreign-tenant `vehicle_id` is refused by the underlying composite FK and acked identically to success (no enumeration oracle). Feeds `GET /insights/storefront`.
+         * @description Capture one page_view / vehicle_view / lead_submit signal from the tenant's own Vitrina-built storefront. Append-only, no person data — the optional `dedup_key` is an opaque session-ish hint, hashed server-side before storage. Requires the narrow, write-only `storefront_events:write` scope. A bogus or foreign-tenant `vehicle_id` is refused by the underlying composite FK and acked identically to success (no enumeration oracle). Feeds `GET /insights/storefront`. A clinic site (the `clinic_site` add-on, vitrina-app#8352) may also send `video_play`, `video_progress` (with `pct` 25/50/75/95), `booking_started`, `hour_chosen`, `checkout_opened` and `booking_confirmed`; `dedup_key` (the page view id) is required for page_view, video_play and video_progress, and the server keeps one row per page view, event and mark. Only `pct` is stored; no visitor id is taken. Every other tenant is validated against the original body (page_view / vehicle_view / lead_submit, `vehicle_id`, `dedup_key`) and gets a 400 for the rest. When the site kind cannot be read, the original body is answered as always and a clinic-only body gets a retryable 503 `site_kind_unavailable`. A clinic event is a first-party signal only, never an ads outcome; the report counts leads and bookings from their own records.
          */
         post: {
             parameters: {
@@ -23435,10 +23443,11 @@ export interface paths {
                      */
                     "application/json": {
                         /** @enum {string} */
-                        event: "page_view" | "vehicle_view" | "lead_submit";
+                        event: "page_view" | "vehicle_view" | "lead_submit" | "video_play" | "video_progress" | "booking_started" | "hour_chosen" | "checkout_opened" | "booking_confirmed";
                         /** Format: uuid */
                         vehicle_id?: string;
                         dedup_key?: string;
+                        pct?: number;
                     };
                 };
             };
