@@ -23,6 +23,8 @@ export type ErrorCode =
   | 'video_not_ready'
   | 'poster_invalid'
   | 'pipeline_invalid'
+  | 'booking_landing_invalid'
+  | 'sitio_check_unavailable'
   | 'sitio_not_publishable'
   | 'ACCOUNT_DELETION_BLOCKED'
   | 'PARTNER_COMMISSION_MODEL_LOCKED'
@@ -120,6 +122,8 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'video_not_ready',
   'poster_invalid',
   'pipeline_invalid',
+  'booking_landing_invalid',
+  'sitio_check_unavailable',
   'sitio_not_publishable',
   'ACCOUNT_DELETION_BLOCKED',
   'PARTNER_COMMISSION_MODEL_LOCKED',

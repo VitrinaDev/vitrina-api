@@ -23142,6 +23142,8 @@ export interface paths {
          *
          *     Also carries `vende_tu_auto` (#5872): the «Vende tu auto» consignment landing view — path, the Oferta headline and claims, three steps, the Condiciones hint, rating and address — or `null` while the landing is off. Same view as `GET /widget/consignments/landing`.
          *
+         *     A clinic site (`kind: clinic`) also carries `booking`: the PUBLISHED booking section’s «Reserva online» landing, resolved at request time, or `null` when there is no visible booking section or its landing is gone or switched off. `{ landing_slug, service_id, landing, deposit_methods }`: `landing_slug` is what the browser sends as `landing` to `/widget/clinic/*` with `publishable_key`; `service_id` is the section’s pinned service while the landing still offers it; `landing` is the view `GET /widget/clinic/landing` serves (services with `price_clp`, `deposit_required` and `deposit_amount_clp` from the deposit policy, professionals, `horizon_days`, `min_notice_minutes`, `require_document`, no token); `deposit_methods` (`mercadopago`, `transfer`) says how a deposit can be taken now. No amount is ever stored in the site content; the booking result is the authority at payment time. Absent on a dealer body.
+         *
          *     Without the add-on, or before the first Publicar, `sitio`/`branding`/`analytics`/`content`/`contact`/`social`/`features`/`trust`/`financing` are `null` and `theme` is absent, and the storefront falls back to its built-in defaults.
          */
         get: {
