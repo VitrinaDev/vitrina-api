@@ -27,6 +27,7 @@ export type ErrorCode =
   | 'sitio_check_unavailable'
   | 'sitio_not_publishable'
   | 'site_kind_unavailable'
+  | 'meta_pixel_not_allowed'
   | 'ACCOUNT_DELETION_BLOCKED'
   | 'PARTNER_COMMISSION_MODEL_LOCKED'
   | 'WORKSPACE_CURRENCY_LOCKED'
@@ -128,6 +129,7 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'sitio_check_unavailable',
   'sitio_not_publishable',
   'site_kind_unavailable',
+  'meta_pixel_not_allowed',
   'ACCOUNT_DELETION_BLOCKED',
   'PARTNER_COMMISSION_MODEL_LOCKED',
   'WORKSPACE_CURRENCY_LOCKED',
