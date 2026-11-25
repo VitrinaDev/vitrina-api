@@ -31594,6 +31594,8 @@ export interface paths {
          * @description Groups of live contacts sharing a phone (last ten digits, minimum eight) or a lowercased email, over the whole book rather than one page. A phone group and an email group covering the same people are reported once, as the phone one. Ordered biggest first and capped at 100 clusters; `meta.total` is the real cluster count, so a client can tell «these are all of them» from «these are the worst».
          *
          *     Each cluster carries its members in full, so a merge screen needs no second read. Feed the survivor and the rest to `POST /contacts/{id}/merge`.
+         *
+         *     A cluster’s `id` is `<reason>:<value>` and `value` is the shared key. On a clinic, a caller without `clinic_patient_contact:read` gets `value: null` and an opaque `id` (`<reason>:<32 hex>`, stable for the workspace) instead: never the number or the address.
          */
         get: {
             parameters: {
