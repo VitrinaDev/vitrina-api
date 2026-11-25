@@ -24599,7 +24599,9 @@ export interface paths {
          * List leads
          * @description The flat list, paged (`page` / `page_size`, max 200) and filterable by board, stage, status, source, intent, owner, team, contact, value band, score band and last activity; `q` matches the title and the contact. `temperature` is a SHORTCUT over `score` (`cold` 0–39 · `warm` 40–69 · `hot` 70–100 · `unscored` score IS NULL) and explicit `min_score` / `max_score` win over it — do not confuse it with the `temperature` FIELD on a lead, which is a judgement somebody recorded about momentum and is not derived from the score. `resource_type` and `resource_id` must be supplied together and narrow to the leads interested in one record. `meta.pagination.total` is the match count, not the page size. A member whose role restricts record visibility sees only the leads they own.
          *
-         *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id` — plus `stage_name` and `contact_name` when the caller holds the scope that embed rides (`stages:read`, `contacts:read`); a name the caller may not read is ABSENT, never `null`. `meta` is unchanged. A 200-row page is ~525k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /leads/{id}` for the ones you need whole.
+         *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id`, `qualification` — plus `stage_name` and `contact_name` when the caller holds the scope that embed rides (`stages:read`, `contacts:read`); a name the caller may not read is ABSENT, never `null`. `meta` is unchanged. A 200-row page is ~525k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /leads/{id}` for the ones you need whole.
+         *
+         *     Every row carries `qualification` (the `LeadQualification` schema). The form-qualification verdict of the lead, or `null` when it has none (most leads: a lead that came from a chat or a click-to-WhatsApp ad never has one). `state`: `qualified`, `not_qualified`, or `no_answers` (the person never answered the qualifying questions). `source`: `attribution_rules` (the agency rules, judged by the attribution engine) or `site_form` (the owner's rules on the site form). When a lead has both, the newest `decided_at` wins and, on an exact tie, `site_form`. Read-only.
          *
          *     On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values.
          */
@@ -24633,7 +24635,7 @@ export interface paths {
                     first_touch_to?: string;
                     page?: number;
                     page_size?: number;
-                    /** @description `full` (default): every column plus the `contact` / `stage` / `pipeline` / `busqueda` embeds, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id`, plus `stage_name` / `contact_name` when the caller may read that embed. Pagination and `meta` are unchanged. Use `summary` to page through many leads cheaply, then `GET /leads/{id}` for the ones you need in full. */
+                    /** @description `full` (default): every column plus the `contact` / `stage` / `pipeline` / `busqueda` embeds and `qualification`, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id`, `qualification`, plus `stage_name` / `contact_name` when the caller may read that embed. Pagination and `meta` are unchanged. Use `summary` to page through many leads cheaply, then `GET /leads/{id}` for the ones you need in full. */
                     fields?: "summary" | "full";
                 };
                 header?: never;
@@ -24745,7 +24747,8 @@ export interface paths {
                          *             "id": "44444444-0000-4000-8000-000000000001",
                          *             "kind": "sales",
                          *             "name": "Ventas"
-                         *           }
+                         *           },
+                         *           "qualification": null
                          *         },
                          *         {
                          *           "id": "99999999-0000-4000-8000-000000000002",
@@ -24841,6 +24844,11 @@ export interface paths {
                          *             "id": "44444444-0000-4000-8000-000000000001",
                          *             "kind": "sales",
                          *             "name": "Ventas"
+                         *           },
+                         *           "qualification": {
+                         *             "state": "qualified",
+                         *             "source": "attribution_rules",
+                         *             "decided_at": "2026-09-19T09:14:02.000Z"
                          *           }
                          *         }
                          *       ],
@@ -25916,7 +25924,7 @@ export interface paths {
         };
         /**
          * Leads grouped by stage (board view)
-         * @description The board itself: every stage with its leads already nested, up to 200 per column — one request instead of one per column. The cards carry the same embeds and the same scope gating as `GET /leads`. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values.
+         * @description The board itself: every stage with its leads already nested, up to 200 per column — one request instead of one per column. The cards carry the same embeds and the same scope gating as `GET /leads`, and `qualification` (the `LeadQualification` schema). On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values.
          */
         get: {
             parameters: {
@@ -26046,7 +26054,8 @@ export interface paths {
                          *                   "id": "44444444-0000-4000-8000-000000000001",
                          *                   "kind": "sales",
                          *                   "name": "Ventas"
-                         *                 }
+                         *                 },
+                         *                 "qualification": null
                          *               }
                          *             ]
                          *           },
@@ -26152,6 +26161,11 @@ export interface paths {
                          *                   "id": "44444444-0000-4000-8000-000000000001",
                          *                   "kind": "sales",
                          *                   "name": "Ventas"
+                         *                 },
+                         *                 "qualification": {
+                         *                   "state": "qualified",
+                         *                   "source": "attribution_rules",
+                         *                   "decided_at": "2026-09-19T09:14:02.000Z"
                          *                 }
                          *               }
                          *             ]
@@ -26356,7 +26370,7 @@ export interface paths {
         };
         /**
          * Get a lead
-         * @description One opportunity, with its contact, stage and pipeline embedded. On a clinic workspace it also carries `origin`: the Origen of its contact, Meta (with the ad), Orgánico (a linked contact with no ad touch) or Sin dato (no contact) — the attribution Vitrina Ads reports. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values. It also carries `form_submissions`: the patient's answers to a clinic landing form, one entry per submission (`source`, `form_id`, `form_name`, `title`, `fields` as ordered {label, value} pairs, `received_at`), newest first, at most 10; empty when the lead never sent a form with answers. Answers can be health data and follow the contact's privacy rule: only callers who also hold `contacts:read` receive the key (it is omitted otherwise, and when its read fails), and the list and kanban reads never carry it. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
+         * @description One opportunity, with its contact, stage and pipeline embedded. On a clinic workspace it also carries `origin`: the Origen of its contact, Meta (with the ad), Orgánico (a linked contact with no ad touch) or Sin dato (no contact) — the attribution Vitrina Ads reports. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values. It also carries `form_submissions`: the patient's answers to a clinic landing form, one entry per submission (`source`, `form_id`, `form_name`, `title`, `fields` as ordered {label, value} pairs, `received_at`), newest first, at most 10; empty when the lead never sent a form with answers. Answers can be health data and follow the contact's privacy rule: only callers who also hold `contacts:read` receive the key (it is omitted otherwise, and when its read fails), and the list and kanban reads never carry it. It also carries `qualification` (the `LeadQualification` schema). The form-qualification verdict of the lead, or `null` when it has none (most leads: a lead that came from a chat or a click-to-WhatsApp ad never has one). `state`: `qualified`, `not_qualified`, or `no_answers` (the person never answered the qualifying questions). `source`: `attribution_rules` (the agency rules, judged by the attribution engine) or `site_form` (the owner's rules on the site form). When a lead has both, the newest `decided_at` wins and, on an exact tie, `site_form`. Read-only. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
          */
         get: {
             parameters: {
@@ -26471,6 +26485,11 @@ export interface paths {
                          *           "id": "44444444-0000-4000-8000-000000000001",
                          *           "kind": "sales",
                          *           "name": "Ventas"
+                         *         },
+                         *         "qualification": {
+                         *           "state": "qualified",
+                         *           "source": "attribution_rules",
+                         *           "decided_at": "2026-09-19T09:14:02.000Z"
                          *         },
                          *         "form_submissions": [
                          *           {
@@ -195264,9 +195283,11 @@ export interface paths {
          *
          *     Each row also carries `waiting_since` — when its customer started waiting on a human, `null` when nobody waits (the «Esperando respuesta» rule; see the `waiting` parameter). `waiting=true` lists only waiting conversations, team-wide; `sort=wait` orders urgent first, then the longest wait. `waiting_state` says why: `owed` (waiting), `closed_by_customer` (the customer only acknowledged, thanked or closed after we answered), `nothing_owed` (they declined, or the message is not for us), `paid_or_in_store` (a transfer receipt right after we sent our bank details, or «llegué» / «voy subiendo»: a suggestion for a person to confirm — nothing moves a lead or records a payment) or `promised_later` (we promised to write on a later day: a dated «Recordatorio acordado» follow-up, due at `waiting_due_at`, after which the thread is waiting again) or `visit_passed` (the customer announced a store visit — «mañana paso», «el martes voy» — for a day that is now over, with nothing newer from them: a «Recordatorio acordado» to check whether they came falls due at `waiting_due_at`, the morning after; the thread does not come back to the queue when it does) or `customer_later` (the customer deferred — «la otra semana», «por la quincena me acerco», «el lunes te aviso» — and an open «Recordatorio acordado» covers it, due at `waiting_due_at`: out of the queue until the customer writes again or it falls due) — the ones left out of the queue by a confident verdict on the newest unanswered customer message, voice notes read as their transcript — and `null` when nobody waits at all. `waiting=closed` lists those left-out threads (still live: resolving stays a person’s click).
          *
+         *     Each row also carries `qualification` (the `LeadQualification` schema): the form-qualification verdict of the thread's lead, `{ state, source, decided_at }` or `null`. The lead is the newest one opened from or attached to the thread (open leads first), else the contact's newest open lead. `state` is `qualified`, `not_qualified` or `no_answers`; `source` is `attribution_rules` or `site_form`; with both, the newest `decided_at` wins (a tie goes to `site_form`).
+         *
          *     Rows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.
          *
-         *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.
+         *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin`, `qualification` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.
          */
         get: {
             parameters: {
@@ -195315,7 +195336,7 @@ export interface paths {
                     sort?: "created_at" | "updated_at" | "last_message_date" | "wait";
                     order?: "asc" | "desc";
                     include?: "counts";
-                    /** @description `full` (default): the inbox row with its `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow`, `ad_origin` and `last_call`, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin`, plus `contact_name`, `ticket_status`, `current_stage_id` off the embeds and `assignee_name` / `unread` when the list computed them. Pagination, `meta` and `counts` are unchanged. Use `summary` to page the inbox cheaply, then `GET /conversations/{id}` for one thread in full. */
+                    /** @description `full` (default): the inbox row with its `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow`, `ad_origin`, `qualification` and `last_call`, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin`, `qualification`, plus `contact_name`, `ticket_status`, `current_stage_id` off the embeds and `assignee_name` / `unread` when the list computed them. Pagination, `meta` and `counts` are unchanged. Use `summary` to page the inbox cheaply, then `GET /conversations/{id}` for one thread in full. */
                     fields?: "summary" | "full";
                 };
                 header?: never;
@@ -195455,7 +195476,12 @@ export interface paths {
                          *           "waiting_since": null,
                          *           "waiting_state": null,
                          *           "waiting_due_at": null,
-                         *           "waiting_subject_id": null
+                         *           "waiting_subject_id": null,
+                         *           "qualification": {
+                         *             "state": "no_answers",
+                         *             "source": "attribution_rules",
+                         *             "decided_at": "2026-09-22T11:02:40.000Z"
+                         *           }
                          *         },
                          *         {
                          *           "id": "bbbbbbbb-0000-4000-8000-000000000002",
@@ -195596,7 +195622,8 @@ export interface paths {
                          *           "waiting_since": null,
                          *           "waiting_state": null,
                          *           "waiting_due_at": null,
-                         *           "waiting_subject_id": null
+                         *           "waiting_subject_id": null,
+                         *           "qualification": null
                          *         }
                          *       ],
                          *       "meta": {
@@ -195621,6 +195648,7 @@ export interface paths {
                             data: {
                                 ad_origin: components["schemas"]["AdOrigin"];
                                 campaign_origin?: components["schemas"]["ConversationCampaignOrigin"];
+                                qualification?: components["schemas"]["LeadQualification"];
                             }[];
                             meta?: {
                                 [key: string]: unknown;
@@ -196183,6 +196211,7 @@ export interface paths {
                             data: {
                                 ad_origin: components["schemas"]["AdOrigin"];
                                 campaign_origin?: components["schemas"]["ConversationCampaignOrigin"];
+                                qualification?: components["schemas"]["LeadQualification"];
                                 reply_via?: components["schemas"]["ConversationReplyVia"];
                             };
                             meta?: {
@@ -346346,6 +346375,24 @@ export interface components {
             started_by_campaign: boolean;
             /** @description The newest message in the thread is that send — «Enviada · sin respuesta». */
             awaiting_reply: boolean;
+        } | null;
+        /** @description List rows only: the form-qualification verdict of the thread's lead (`null` when none). */
+        LeadQualification: {
+            /**
+             * @description The verdict.
+             * @enum {string}
+             */
+            state: "qualified" | "not_qualified" | "no_answers";
+            /**
+             * @description Who judged: the attribution engine (agency rules) or the site form (the owner's rules).
+             * @enum {string}
+             */
+            source: "attribution_rules" | "site_form";
+            /**
+             * Format: date-time
+             * @description When the verdict was decided (ISO 8601).
+             */
+            decided_at: string;
         } | null;
         /** @description Non-null ONLY when this conversation cannot carry a reply (a website form, `website`, or a Yapo lead, `yapo`): every send on it answers 409 `CHANNEL_READ_ONLY`, and this names the WhatsApp thread to use instead. Absent on every channel that can reply. */
         ConversationReplyVia: {
