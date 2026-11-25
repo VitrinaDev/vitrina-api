@@ -17463,6 +17463,728 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant/storefront-domains": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the domains this workspace’s site is served from
+         * @description Needs `tenant:read`. Each row is a host the workspace holds (`ejemplo.cl`), never a full origin. The origins a site may call the API from are derived from these rows (apex plus `www.` for every eligible domain, plus the workspace’s Vitrina-hosted address), so a registered domain takes effect at the next site bootstrap.
+         *
+         *     Every row carries its state, so one call renders the whole domain screen:
+         *     * `method`: `none` (registry only), `nameservers` (the domain is delegated to Vitrina) or `cname` (one host attached by a CNAME record).
+         *     * Nameservers: `zone_status` `sin_zona` | `pendiente_ns` (the owner has to set the nameservers at the registrar) | `verificando` | `activo` | `error`; `zone_nameservers` is the pair assigned to THIS domain (show exactly that pair, never another domain’s); `zone_error_code`, and `dns_guard` naming the mail records the new setup is missing when the code is `dns_records_missing`; `zone_created_at`, `zone_checked_at`, `zone_activated_at`.
+         *     * CNAME: `hostname_status` `pendiente_dns` | `emitiendo_certificado` | `activo` | `error`; `dns_records`, the records the owner creates (`type`, `name`, `value`, `purpose`, and `status` `pending` or `verified`); `hostname_error_code` (a hint while pending, the failure on `error`); `ownership_verified_at` (null until the ownership record is seen); `claim_expires_at` (when an unverified claim is released; null once verified); `hostname_created_at`, `hostname_checked_at`, `hostname_activated_at`.
+         *     * `origins_granted_at`: non-null once the host may call the API from the site.
+         *
+         *     `meta.configuration.configured` and `meta.hostname_configuration.configured` say whether this deployment can delegate a domain or attach one by CNAME at all. `meta.site_url` is the site’s public URL, read-only: the live custom host when there is one, else the Vitrina-hosted address, `null` when the workspace has no site.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Site domains */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "3d6f0a52-8c1e-4b7a-9e24-6a1c5d7f8b90",
+                         *           "domain": "ejemplo.cl",
+                         *           "created_at": "2026-11-20T14:00:00.000Z",
+                         *           "method": "nameservers",
+                         *           "zone_status": "pendiente_ns",
+                         *           "zone_nameservers": [
+                         *             "ada.ns.example.net",
+                         *             "bob.ns.example.net"
+                         *           ],
+                         *           "dns_guard": null,
+                         *           "zone_error_code": null,
+                         *           "zone_created_at": "2026-11-20T14:00:00.000Z",
+                         *           "zone_checked_at": null,
+                         *           "zone_activated_at": null,
+                         *           "origins_granted_at": null,
+                         *           "hostname_status": null,
+                         *           "hostname_error_code": null,
+                         *           "dns_records": [],
+                         *           "hostname_created_at": null,
+                         *           "hostname_checked_at": null,
+                         *           "hostname_activated_at": null,
+                         *           "ownership_verified_at": null,
+                         *           "claim_expires_at": null
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "total": 1,
+                         *         "configuration": {
+                         *           "configured": true
+                         *         },
+                         *         "hostname_configuration": {
+                         *           "configured": true
+                         *         },
+                         *         "site_url": "https://ejemplo.cl"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                domain: string;
+                                created_at: string;
+                                /** @enum {string} */
+                                method: "none" | "nameservers" | "cname";
+                                /** @enum {string} */
+                                zone_status: "sin_zona" | "pendiente_ns" | "verificando" | "activo" | "error";
+                                zone_nameservers: string[];
+                                dns_guard: {
+                                    [key: string]: unknown;
+                                } | null;
+                                zone_error_code: string | null;
+                                zone_created_at: string | null;
+                                zone_checked_at: string | null;
+                                zone_activated_at: string | null;
+                                origins_granted_at: string | null;
+                                /** @enum {string|null} */
+                                hostname_status: "pendiente_dns" | "emitiendo_certificado" | "activo" | "error" | null;
+                                hostname_error_code: string | null;
+                                dns_records: {
+                                    /** @enum {string} */
+                                    type: "CNAME" | "TXT";
+                                    name: string;
+                                    value: string;
+                                    /** @enum {string} */
+                                    purpose: "routing" | "ownership" | "certificate";
+                                    /** @enum {string} */
+                                    status?: "pending" | "verified";
+                                }[];
+                                hostname_created_at: string | null;
+                                hostname_checked_at: string | null;
+                                hostname_activated_at: string | null;
+                                ownership_verified_at: string | null;
+                                claim_expires_at: string | null;
+                            }[];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Register a domain for the site
+         * @description Needs `tenant:write`. Accepts anything that reduces to a registrable host: `ejemplo.cl`, `www.ejemplo.cl` and `https://WWW.Ejemplo.cl/` are one registration. A host with a port or path, an IP literal or `localhost` is refused (400). A host that is not available is refused with 409 `details.reason: "domain_not_available"`: one answer for a host another workspace holds (hosts are unique across workspaces), a Vitrina host, and a domain the hosting provider already holds outside this workspace; nothing is written. Registering a domain this workspace already holds is a no-op that returns the existing row.
+         *
+         *     Without `method` the row is registry-only: the domain may call the API from the site. `method: "nameservers"` (or `delegate_zone: true`) also delegates the domain: the row comes back `pendiente_ns` with the nameserver pair to set at the registrar, and the domain enters the allowed origins only once the delegation is verified (`POST /tenant/storefront-domains/{domain}/zone/check`). Delegating needs the workspace to have a site (409 `site_not_provisioned` otherwise, nothing written).
+         *
+         *     `method: "cname"` attaches ONE host without moving nameservers, and may be `www.ejemplo.cl` itself. A main domain cannot carry a CNAME: 400 with `details.reason: "cname_needs_subdomain"`. The row comes back `hostname_status: "pendiente_dns"` with `dns_records`: the ownership TXT and the routing CNAME the owner creates, plus any certificate TXT. The host goes live (`activo`) only after the ownership record is verified; an unverified claim serves nothing and is released at `claim_expires_at` (7 days). `hostname_status` moves through `pendiente_dns` (`hostname_error_code` may hint `ownership_missing`, `cname_missing` or `cname_wrong_target`), `emitiendo_certificado`, `activo` and `error` (`cname_missing`, `cname_wrong_target`, `caa_blocks`, `hostname_taken`, `not_configured`, `cloudflare_error` = the hosting provider failed). A host already set up outside this workspace is refused (`hostname_taken`) and left untouched. 503 `details.reason: "not_configured"` when this deployment cannot attach by CNAME or delegate, with nothing written; 409 `site_not_provisioned` when the workspace has no site yet; 502 when the hosting provider refuses (retry later). `method: "cname"` cannot be combined with `delegate_zone` (400).
+         *
+         *     Removing a domain is done in the Vitrina app by a signed-in person; it is not part of the public API.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "domain": "www.ejemplo.cl",
+                     *       "method": "cname"
+                     *     }
+                     */
+                    "application/json": {
+                        domain: string;
+                        delegate_zone?: boolean;
+                        /** @enum {string} */
+                        method?: "nameservers" | "cname";
+                    };
+                };
+            };
+            responses: {
+                /** @description The registered domain */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "9b2c7e10-5f43-4d8a-a6b1-0e3d4c5f6a71",
+                         *         "domain": "www.ejemplo.cl",
+                         *         "created_at": "2026-11-20T14:00:00.000Z",
+                         *         "method": "cname",
+                         *         "zone_status": "sin_zona",
+                         *         "zone_nameservers": [],
+                         *         "dns_guard": null,
+                         *         "zone_error_code": null,
+                         *         "zone_created_at": null,
+                         *         "zone_checked_at": null,
+                         *         "zone_activated_at": null,
+                         *         "origins_granted_at": null,
+                         *         "hostname_status": "pendiente_dns",
+                         *         "hostname_error_code": null,
+                         *         "dns_records": [
+                         *           {
+                         *             "type": "TXT",
+                         *             "name": "_cf-custom-hostname.www.ejemplo.cl",
+                         *             "value": "3f1e0b7a-0000-4000-8000-000000000001",
+                         *             "purpose": "ownership",
+                         *             "status": "pending"
+                         *           },
+                         *           {
+                         *             "type": "CNAME",
+                         *             "name": "www.ejemplo.cl",
+                         *             "value": "landings.example.test",
+                         *             "purpose": "routing",
+                         *             "status": "pending"
+                         *           }
+                         *         ],
+                         *         "hostname_created_at": "2026-11-20T14:00:00.000Z",
+                         *         "hostname_checked_at": null,
+                         *         "hostname_activated_at": null,
+                         *         "ownership_verified_at": null,
+                         *         "claim_expires_at": "2026-11-27T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                domain: string;
+                                created_at: string;
+                                /** @enum {string} */
+                                method: "none" | "nameservers" | "cname";
+                                /** @enum {string} */
+                                zone_status: "sin_zona" | "pendiente_ns" | "verificando" | "activo" | "error";
+                                zone_nameservers: string[];
+                                dns_guard: {
+                                    [key: string]: unknown;
+                                } | null;
+                                zone_error_code: string | null;
+                                zone_created_at: string | null;
+                                zone_checked_at: string | null;
+                                zone_activated_at: string | null;
+                                origins_granted_at: string | null;
+                                /** @enum {string|null} */
+                                hostname_status: "pendiente_dns" | "emitiendo_certificado" | "activo" | "error" | null;
+                                hostname_error_code: string | null;
+                                dns_records: {
+                                    /** @enum {string} */
+                                    type: "CNAME" | "TXT";
+                                    name: string;
+                                    value: string;
+                                    /** @enum {string} */
+                                    purpose: "routing" | "ownership" | "certificate";
+                                    /** @enum {string} */
+                                    status?: "pending" | "verified";
+                                }[];
+                                hostname_created_at: string | null;
+                                hostname_checked_at: string | null;
+                                hostname_activated_at: string | null;
+                                ownership_verified_at: string | null;
+                                claim_expires_at: string | null;
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/storefront-domains/{domain}/zone/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify a delegated domain and activate it when it is safe
+         * @description Needs `tenant:write`. The `{domain}` path parameter is the host as registered (`ejemplo.cl`). The same check the background sweep runs every few minutes, so calling it only skips the wait.
+         *
+         *     In order: (1) whether the delegation is active (not yet means `verificando`, a normal answer); (2) the mail-record guard: a record the previous DNS served and the new setup lacks BLOCKS activation with `zone_error_code: "dns_records_missing"` and `dns_guard.missing_mx` / `dns_guard.missing_spf` naming it, so activating never takes the domain’s email down; (3) attach the apex and its `www.` twin to the site; (4) only then `activo`, which is also when the domain enters the allowed origins. A failed attach leaves `error` and the allowed origins untouched.
+         *
+         *     A domain that is not delegated is a 409; a domain already `activo` is returned untouched. 404 when the workspace does not hold the domain.
+         *
+         *     At most one provider check per domain every 30 s, also for parallel calls: inside that window the stored row is returned with `meta.retry_after_seconds`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    domain: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The domain row after the transition the check produced */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "3d6f0a52-8c1e-4b7a-9e24-6a1c5d7f8b90",
+                         *         "domain": "ejemplo.cl",
+                         *         "created_at": "2026-11-20T14:00:00.000Z",
+                         *         "method": "nameservers",
+                         *         "zone_status": "activo",
+                         *         "zone_nameservers": [
+                         *           "ada.ns.example.net",
+                         *           "bob.ns.example.net"
+                         *         ],
+                         *         "dns_guard": null,
+                         *         "zone_error_code": null,
+                         *         "zone_created_at": "2026-11-20T14:00:00.000Z",
+                         *         "zone_checked_at": "2026-11-21T10:00:00.000Z",
+                         *         "zone_activated_at": "2026-11-21T10:00:00.000Z",
+                         *         "origins_granted_at": "2026-11-21T10:00:00.000Z",
+                         *         "hostname_status": null,
+                         *         "hostname_error_code": null,
+                         *         "dns_records": [],
+                         *         "hostname_created_at": null,
+                         *         "hostname_checked_at": null,
+                         *         "hostname_activated_at": null,
+                         *         "ownership_verified_at": null,
+                         *         "claim_expires_at": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                domain: string;
+                                created_at: string;
+                                /** @enum {string} */
+                                method: "none" | "nameservers" | "cname";
+                                /** @enum {string} */
+                                zone_status: "sin_zona" | "pendiente_ns" | "verificando" | "activo" | "error";
+                                zone_nameservers: string[];
+                                dns_guard: {
+                                    [key: string]: unknown;
+                                } | null;
+                                zone_error_code: string | null;
+                                zone_created_at: string | null;
+                                zone_checked_at: string | null;
+                                zone_activated_at: string | null;
+                                origins_granted_at: string | null;
+                                /** @enum {string|null} */
+                                hostname_status: "pendiente_dns" | "emitiendo_certificado" | "activo" | "error" | null;
+                                hostname_error_code: string | null;
+                                dns_records: {
+                                    /** @enum {string} */
+                                    type: "CNAME" | "TXT";
+                                    name: string;
+                                    value: string;
+                                    /** @enum {string} */
+                                    purpose: "routing" | "ownership" | "certificate";
+                                    /** @enum {string} */
+                                    status?: "pending" | "verified";
+                                }[];
+                                hostname_created_at: string | null;
+                                hostname_checked_at: string | null;
+                                hostname_activated_at: string | null;
+                                ownership_verified_at: string | null;
+                                claim_expires_at: string | null;
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/storefront-domains/{domain}/hostname/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify a domain attached by CNAME
+         * @description Needs `tenant:write`. The `{domain}` path parameter is the host as registered (`ejemplo.cl`). The same check the background poller runs, plus a request to re-run the validation, so calling it skips the wait. It reads the ownership and routing records and the certificate, and answers the row in whatever state that produced: `pendiente_dns` and `emitiendo_certificado` are normal answers, not failures. When everything is ready the row becomes `activo` and the host may call the API from the site; the site is then redeployed on that address. From `error` it restarts the polling window. A domain that was not attached by CNAME is a 409; an `activo` one is returned untouched. 404 when the workspace does not hold the domain; 503 when this deployment cannot attach by CNAME.
+         *
+         *     At most one provider check per domain every 30 s, also for parallel calls: inside that window the stored row is returned with `meta.retry_after_seconds`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    domain: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The domain row after the check */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "9b2c7e10-5f43-4d8a-a6b1-0e3d4c5f6a71",
+                         *         "domain": "www.ejemplo.cl",
+                         *         "created_at": "2026-11-20T14:00:00.000Z",
+                         *         "method": "cname",
+                         *         "zone_status": "sin_zona",
+                         *         "zone_nameservers": [],
+                         *         "dns_guard": null,
+                         *         "zone_error_code": null,
+                         *         "zone_created_at": null,
+                         *         "zone_checked_at": null,
+                         *         "zone_activated_at": null,
+                         *         "origins_granted_at": null,
+                         *         "hostname_status": "emitiendo_certificado",
+                         *         "hostname_error_code": null,
+                         *         "dns_records": [
+                         *           {
+                         *             "type": "TXT",
+                         *             "name": "_cf-custom-hostname.www.ejemplo.cl",
+                         *             "value": "3f1e0b7a-0000-4000-8000-000000000001",
+                         *             "purpose": "ownership",
+                         *             "status": "verified"
+                         *           },
+                         *           {
+                         *             "type": "CNAME",
+                         *             "name": "www.ejemplo.cl",
+                         *             "value": "landings.example.test",
+                         *             "purpose": "routing",
+                         *             "status": "verified"
+                         *           }
+                         *         ],
+                         *         "hostname_created_at": "2026-11-20T14:00:00.000Z",
+                         *         "hostname_checked_at": "2026-11-21T10:00:00.000Z",
+                         *         "hostname_activated_at": null,
+                         *         "ownership_verified_at": "2026-11-21T10:00:00.000Z",
+                         *         "claim_expires_at": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                domain: string;
+                                created_at: string;
+                                /** @enum {string} */
+                                method: "none" | "nameservers" | "cname";
+                                /** @enum {string} */
+                                zone_status: "sin_zona" | "pendiente_ns" | "verificando" | "activo" | "error";
+                                zone_nameservers: string[];
+                                dns_guard: {
+                                    [key: string]: unknown;
+                                } | null;
+                                zone_error_code: string | null;
+                                zone_created_at: string | null;
+                                zone_checked_at: string | null;
+                                zone_activated_at: string | null;
+                                origins_granted_at: string | null;
+                                /** @enum {string|null} */
+                                hostname_status: "pendiente_dns" | "emitiendo_certificado" | "activo" | "error" | null;
+                                hostname_error_code: string | null;
+                                dns_records: {
+                                    /** @enum {string} */
+                                    type: "CNAME" | "TXT";
+                                    name: string;
+                                    value: string;
+                                    /** @enum {string} */
+                                    purpose: "routing" | "ownership" | "certificate";
+                                    /** @enum {string} */
+                                    status?: "pending" | "verified";
+                                }[];
+                                hostname_created_at: string | null;
+                                hostname_checked_at: string | null;
+                                hostname_activated_at: string | null;
+                                ownership_verified_at: string | null;
+                                claim_expires_at: string | null;
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/entitlements": {
         parameters: {
             query?: never;
