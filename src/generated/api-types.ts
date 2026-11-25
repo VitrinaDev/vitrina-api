@@ -196754,7 +196754,7 @@ export interface paths {
         };
         /**
          * Get conversation
-         * @description The conversation row with the full transcript embedded (`message[]`, unbounded) — the historical, still-default shape every existing consumer keeps seeing unchanged.
+         * @description The conversation row with the full transcript embedded (`message[]`, unbounded) — the historical, still-default shape every existing consumer keeps seeing unchanged. `message[]` is ordered newest first (`created_at` descending, then `id` descending for two messages on the same instant).
          *
          *     Pass `?exclude=messages` to opt into the SAME row without that embed. Any caller that re-reads this on a clock should: the embed has no limit, so a two-year-old thread returns two years of messages every time. `GET /conversations/{id}/messages` pages them properly.
          *
@@ -256223,7 +256223,7 @@ export interface paths {
         get?: never;
         /**
          * Replace the poster of a sales video
-         * @description multipart/form-data with a `file` part (PNG, JPEG or WEBP, at most 4 MB). The video must be `ready` (409 `video_not_ready`). The image is straightened and its metadata removed, and stored under a new immutable address; the old poster is deleted. 400 `poster_invalid` for another type or size. Needs `tenant:write`, the site entitlement, and a site that supports sales videos: any other site answers 403 `video_kind_unsupported`. Another workspace’s video id answers 404.
+         * @description multipart/form-data with a `file` part (PNG, JPG or WebP, at most 4 MB). The video must be `ready` (409 `video_not_ready`). The image is straightened and its metadata removed, and stored under a new immutable address; the old poster is deleted. 400 `poster_invalid` for another type or size. Needs `tenant:write`, the site entitlement, and a site that supports sales videos: any other site answers 403 `video_kind_unsupported`. Another workspace’s video id answers 404.
          */
         put: {
             parameters: {
